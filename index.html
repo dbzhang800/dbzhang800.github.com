@@ -9,8 +9,7 @@
   <meta name="author" content="Debao Zhang">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="Install Ruby 1.9.3 Octopress depends on Ruby 1.9.2 or newer. Mac X 10.8 The Ruby provided by mac is 1.8.7, so we need to install the latest one by &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -94,7 +93,128 @@
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><h1>Install Ruby 1.9.3</h1>
+
+<p>Octopress depends on Ruby 1.9.2 or newer.</p>
+
+<h3>Mac X 10.8</h3>
+
+<p>The Ruby provided by mac is 1.8.7, so we need to install the latest one by ourself.</p>
+
+<p>The missing package manager for OS X - <strong>Homebrew</strong>, provides ruby 1.9.3.</p>
+
+<pre><code>$ruby &lt;(curl -fsSk https://raw.github.com/mxcl/homebrew/go)
+$brew update
+$brew install ruby ruby-build rbenv
+</code></pre>
+
+<p>Edit ~/.bash_login and add following line:</p>
+
+<pre><code>export PATH=/usr/local/Cellar/ruby/1.9.3-p194/bin:$PATH
+</code></pre>
+
+<h3>Ubuntu 12.10</h3>
+
+<p>Nothing special, apt-get is enough.</p>
+
+<h3>Windows</h3>
+
+<p>Download <a href="http://rubyforge.org/frs/?group_id=167">RubyInstaller</a> and <a href="https://github.com/oneclick/rubyinstaller/downloads/">DevKit</a>, then install them.</p>
+
+<p>&#8220;Start Command Prompt with Ruby&#8221;, and changed to the directory where DevKit extracted, and run:</p>
+
+<pre><code>ruby dk.rb init
+ruby dk.rb install
+gem install rdiscount --platform=ruby
+</code></pre>
+
+<p>Set environment variable</p>
+
+<pre><code>set LANG=zh_CN.UTF-8
+set LC_ALL=zh_CN.UTF-8
+</code></pre>
+
+<h1>Install octopress</h1>
+
+<p>Download the octopress</p>
+
+<pre><code>$git clone git://github.com/imathis/octopress.git octopress
+$cd octopress
+</code></pre>
+
+<p>Install some stuff.</p>
+
+<pre><code>$gem install bundler
+$bindle install
+$rake install
+</code></pre>
+
+<h1>Configure octopress</h1>
+
+<ul>
+<li>Open <strong>_config.yml</strong>, then edit</li>
+</ul>
+
+
+<p><code>url</code>, <code>title</code>, <code>subtitle</code>, and <code>author</code></p>
+
+<ul>
+<li>Open <strong>source/_include/custom/head.html</strong>,</li>
+</ul>
+
+
+<p>then comment</p>
+
+<pre><code>&lt;link href="http://fonts.googleapis.com/..."
+&lt;link href="http://fonts.googleapis.com/..."
+</code></pre>
+
+<p>As they has been block in China, which make the blog loads very slow.</p>
+
+<h1>Write and View Blog</h1>
+
+<p>To add a new post</p>
+
+<pre><code>$rake new_post["My first blog"]
+</code></pre>
+
+<p>Then</p>
+
+<pre><code>$rake generate
+$rake preview
+</code></pre>
+
+<h1>Deploy</h1>
+
+<p>Create a repository called username.github.com</p>
+
+<p>Run</p>
+
+<pre><code>$rake setup_github_pages
+</code></pre>
+
+<p>Produce HTML and Deploy it.</p>
+
+<pre><code>$rake generate
+$rake deploy
+</code></pre>
+
+<p>Push source to the source branch</p>
+
+<pre><code>git add .
+git commit -a -m 'comment'
+git push origin source
+</code></pre>
+
+<h1>Reference</h1>
+
+<ul>
+<li><a href="http://octopress.org/docs">http://octopress.org/docs</a></li>
+<li><a href="http://www.moncefbelyamani.com/how-to-install-and-configure-octopress-on-a-mac/">http://www.moncefbelyamani.com/how-to-install-and-configure-octopress-on-a-mac/</a></li>
+<li><a href="http://shanewfx.github.com/blog/2012/02/16/bulid-blog-by-octopress/">http://shanewfx.github.com/blog/2012/02/16/bulid-blog-by-octopress/</a></li>
+<li><a href="http://daringfireball.net/projects/markdown/syntax">http://daringfireball.net/projects/markdown/syntax</a></li>
+</ul>
+
 </div>
   
   
