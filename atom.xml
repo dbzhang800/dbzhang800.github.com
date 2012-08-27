@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[1+1=2]]></title>
+  <link href="http://dbzhang800.github.com/atom.xml" rel="self"/>
+  <link href="http://dbzhang800.github.com/"/>
+  <updated>2012-08-27T23:50:54+08:00</updated>
+  <id>http://dbzhang800.github.com/</id>
+  <author>
+    <name><![CDATA[Debao Zhang]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Setup and Configure My Octopress Blog]]></title>
+    <link href="http://dbzhang800.github.com/blog/2012/08/27/setup-and-configure-my-octopress-blog/"/>
+    <updated>2012-08-27T21:44:00+08:00</updated>
+    <id>http://dbzhang800.github.com/blog/2012/08/27/setup-and-configure-my-octopress-blog</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+</feed>
