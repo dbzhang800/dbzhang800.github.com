@@ -4,7 +4,7 @@
   <title><![CDATA[Category: tools | 1+1=2]]></title>
   <link href="http://dbzhang800.github.com/blog/categories/tools/atom.xml" rel="self"/>
   <link href="http://dbzhang800.github.com/"/>
-  <updated>2012-08-28T02:27:12+08:00</updated>
+  <updated>2012-08-28T13:10:10+08:00</updated>
   <id>http://dbzhang800.github.com/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -15,10 +15,10 @@
   
   <entry>
     <title type="html"><![CDATA[Setup and Configure My Octopress Blog]]></title>
-    <link href="http://dbzhang800.github.com/blog/2012/08/27/setup-and-configure-my-octopress-blog/"/>
+    <link href="http://dbzhang800.github.com/blog/2012/08/setup-and-configure-my-octopress-blog/"/>
     <updated>2012-08-27T21:44:00+08:00</updated>
-    <id>http://dbzhang800.github.com/blog/2012/08/27/setup-and-configure-my-octopress-blog</id>
-    <content type="html"><![CDATA[<h1>Install Ruby 1.9.3</h1>
+    <id>http://dbzhang800.github.com/blog/2012/08/setup-and-configure-my-octopress-blog</id>
+    <content type="html"><![CDATA[<h2>Install Ruby 1.9.3</h2>
 
 <p>Octopress depends on Ruby 1.9.2 or newer.</p>
 
@@ -59,7 +59,7 @@ gem install rdiscount --platform=ruby
 set LC_ALL=zh_CN.UTF-8
 </code></pre>
 
-<h1>Install octopress</h1>
+<h2>Install octopress</h2>
 
 <p>Download the octopress</p>
 
@@ -74,7 +74,7 @@ $bindle install
 $rake install
 </code></pre>
 
-<h1>Configure octopress</h1>
+<h2>Configure octopress</h2>
 
 <ul>
 <li>Open <strong>_config.yml</strong>, then edit</li>
@@ -94,9 +94,9 @@ $rake install
 &lt;link href="http://fonts.googleapis.com/..."
 </code></pre>
 
-<p>As they has been block in China, which make the blog loads very slow.</p>
+<p>As they has been blocked in China, which make the blog take too long time to load.</p>
 
-<h1>Write and View Blog</h1>
+<h2>Write and View Blog</h2>
 
 <p>To add a new post</p>
 
@@ -109,7 +109,7 @@ $rake install
 $rake preview
 </code></pre>
 
-<h1>Deploy</h1>
+<h2>Deploy</h2>
 
 <p>Create a repository called username.github.com</p>
 
@@ -131,7 +131,7 @@ git commit -a -m 'comment'
 git push origin source
 </code></pre>
 
-<h1>Reference</h1>
+<h2>Reference</h2>
 
 <ul>
 <li><a href="http://octopress.org/docs">http://octopress.org/docs</a></li>
