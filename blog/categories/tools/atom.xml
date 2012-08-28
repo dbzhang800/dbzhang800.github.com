@@ -4,7 +4,7 @@
   <title><![CDATA[Category: tools | 1+1=2]]></title>
   <link href="http://dbzhang800.github.com/blog/categories/tools/atom.xml" rel="self"/>
   <link href="http://dbzhang800.github.com/"/>
-  <updated>2012-08-28T16:53:22+08:00</updated>
+  <updated>2012-08-29T00:33:46+08:00</updated>
   <id>http://dbzhang800.github.com/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -12,6 +12,119 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Sandbox: For Octopress Usage and Markdown Syntax Test]]></title>
+    <link href="http://dbzhang800.github.com/blog/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test/"/>
+    <updated>2012-08-28T17:32:00+08:00</updated>
+    <id>http://dbzhang800.github.com/blog/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test</id>
+    <content type="html"><![CDATA[<h2>Table Test</h2>
+
+<p>Source Code:</p>
+
+<pre><code>Left Aligned Header | Center Header | Right Aligned Header
+:-------------------|:-------------:|--------------------:
+Cell 0 0            | Cell 0 1      | Cell 0 2
+Cell 1 0            | Cell 1 1      | Cell 1 2
+… | … | …
+Long Long Long Long Line … | Not so long Line … | Short Line
+</code></pre>
+
+<p>Preview:</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">Left Aligned Header </th>
+<th align="center"> Center Header </th>
+<th align="right"> Right Aligned Header</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Cell 0 0            </td>
+<td align="center"> Cell 0 1      </td>
+<td align="right"> Cell 0 2</td>
+</tr>
+<tr>
+<td align="left">Cell 1 0            </td>
+<td align="center"> Cell 1 1      </td>
+<td align="right"> Cell 1 2</td>
+</tr>
+<tr>
+<td align="left">… </td>
+<td align="center"> … </td>
+<td align="right"> …</td>
+</tr>
+<tr>
+<td align="left">Long Long Long Long Line … </td>
+<td align="center"> Not so long Line … </td>
+<td align="right"> Short Line</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>Code Highlight</h2>
+
+<p>Source Code:</p>
+
+<pre><code>```cpp First Code block of C++
+#include &lt;iostream&gt;
+int main()
+{
+    std::cout&lt;&lt;"dbzhang800"&lt;&lt;std::endl;
+}
+
+```
+</code></pre>
+
+<p>Preview:</p>
+
+<p>```cpp First Code block of C++</p>
+
+<h1>include <iostream></h1>
+
+<p>int main()
+{</p>
+
+<pre><code>std::cout&lt;&lt;"dbzhang800"&lt;&lt;std::endl;
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>Source Code:</p>
+
+<pre><code>```python Python Block Test
+import sys
+if __name__ == '__main__':
+    pass
+```
+</code></pre>
+
+<p>Preview:</p>
+
+<p>```python Python Block Test
+import sys
+if <strong>name</strong> == '<strong>main</strong>':</p>
+
+<pre><code>pass
+</code></pre>
+
+<p>```</p>
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://octopress.org/docs">http://octopress.org/docs</a></li>
+<li><a href="http://daringfireball.net/projects/markdown/syntax">http://daringfireball.net/projects/markdown/syntax</a></li>
+<li><a href="http://programus.github.com/blog/2012/03/07/add-table-data-css-for-octopress/">http://programus.github.com/blog/2012/03/07/add-table-data-css-for-octopress/</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Setup and Configure My Octopress Blog]]></title>
