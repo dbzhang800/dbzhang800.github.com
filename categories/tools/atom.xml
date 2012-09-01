@@ -4,7 +4,7 @@
   <title><![CDATA[Category: tools | 1+1=2]]></title>
   <link href="http://blog.debao.me/categories/tools/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2012-09-01T17:45:14+08:00</updated>
+  <updated>2012-09-01T22:22:29+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -131,7 +131,9 @@ if <strong>name</strong> == '<strong>main</strong>':</p>
     <link href="http://blog.debao.me/2012/08/setup-and-configure-my-octopress-blog/"/>
     <updated>2012-08-27T21:44:00+08:00</updated>
     <id>http://blog.debao.me/2012/08/setup-and-configure-my-octopress-blog</id>
-    <content type="html"><![CDATA[<h2>Install Ruby 1.9.3</h2>
+    <content type="html"><![CDATA[<p>I am using Mac OS X 10.8, Ubuntu 12.10 and Windows Vista at present. I want to have a simple blog which can be coutrolled by myself …</p>
+
+<h2>Install Ruby 1.9.3</h2>
 
 <p>Octopress depends on Ruby 1.9.2 or newer.</p>
 
@@ -237,12 +239,95 @@ $rake preview
 $rake deploy
 </code></pre>
 
-<p>Push source to the source branch</p>
+<p>Push source to the source branch, or other private place.</p>
 
 <pre><code>git add .
 git commit -a -m 'comment'
 git push origin source
 </code></pre>
+
+<h2>Custom Domain</h2>
+
+<p>I want to use <code>blog.debao.me</code> for my pages. So create a file called <code>CNAME</code> under <code>source</code> directory. Then put the subdomain into the file</p>
+
+<pre><code>blog.debao.me
+</code></pre>
+
+<p>Next, I need to setup my DNS. Add a <em>CNAME record</em> pointing to the pages is enough.</p>
+
+<pre><code>blog.debao.me IN CNAME xxxxxx.github.com
+</code></pre>
+
+<h3>Redirect?</h3>
+
+<p>At present, I hope that following two domains can be redirected to the pages too.</p>
+
+<pre><code>debao.me
+www.debao.me
+</code></pre>
+
+<p>This is very easy, isn't it?</p>
+
+<p>Though many <em>Sponsoring Registrars</em> such as <code>godaddy</code> have provided such function for us. But it doesn't work in China.</p>
+
+<p>So I need to create another site, then let such too domains point to it.</p>
+
+<p>Project pages provided by github can be used in such cases. What we need is a <em>index.html</em> file, such as</p>
+
+<pre><code>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;1+1=2&lt;/title&gt;
+    &lt;meta http-equiv="REFRESH" content="0;url=http://blog.debao.me/"&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+  Please visit &lt;a herf="http://blog.debao.me"&gt;http://blog.debao.me&lt;/a&gt; ... .
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>Then, create a <em>CNAME</em> file</p>
+
+<pre><code>debao.me
+</code></pre>
+
+<p>Push above files to gh-pages branch.</p>
+
+<p>Next, I need to setup my DNS. Add two <em>A records</em> pointing to the pages.</p>
+
+<pre><code>debao.me IN A 204.232.175.78
+www.debao.me IN A 204.232.175.78
+</code></pre>
+
+<p><strong>Note that</strong>, github will automaticly generate redirect from www.xxxx.me to xxxx.me for us.</p>
+
+<h2>Remove blog from url path</h2>
+
+<p>The urls of my blog look like this</p>
+
+<pre><code>http://blog.debao.me/blog/...
+</code></pre>
+
+<p>which seems not good. So I want to move evertything to the root directory.</p>
+
+<p>First, <code>_config.yml</code> file:</p>
+
+<pre><code>permalink:/:year/:month/:title/
+category_dir: categories
+pagination_dir:
+</code></pre>
+
+<p>Second, <code>source/_include/custon/navigation.html</code></p>
+
+<pre><code>&lt;li&gt;&lt;a href="/archives""&gt; Archives&lt;/a&gt;&lt;/li&gt;
+</code></pre>
+
+<p>And <code>source/index.html</code></p>
+
+<pre><code>&lt;a href="http://blog.debao.me/archives"&gt; Blog Archives&lt;/a&gt;
+</code></pre>
+
+<p>Finally, Move <code>archives</code> from directory <code>source/blog</code> to <code>source</code>.</p>
 
 <h2>Reference</h2>
 
