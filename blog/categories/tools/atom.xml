@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: tools | 1+1=2]]></title>
-  <link href="http://blog.debao.me/blog/categories/tools/atom.xml" rel="self"/>
-  <link href="http://blog.debao.me/"/>
-  <updated>2012-09-01T11:58:55+08:00</updated>
-  <id>http://blog.debao.me/</id>
+  <link href="http://dbzhang800.github.com/blog/categories/tools/atom.xml" rel="self"/>
+  <link href="http://dbzhang800.github.com/"/>
+  <updated>2012-09-01T17:42:38+08:00</updated>
+  <id>http://dbzhang800.github.com/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Sandbox: For Octopress Usage and Markdown Syntax Test]]></title>
-    <link href="http://blog.debao.me/blog/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test/"/>
+    <link href="http://dbzhang800.github.com/blog/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test/"/>
     <updated>2012-08-28T17:32:00+08:00</updated>
-    <id>http://blog.debao.me/blog/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test</id>
+    <id>http://dbzhang800.github.com/blog/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test</id>
     <content type="html"><![CDATA[<h2>Table Test</h2>
 
 <p>Source Code:</p>
@@ -128,9 +128,9 @@ if <strong>name</strong> == '<strong>main</strong>':</p>
   
   <entry>
     <title type="html"><![CDATA[Setup and Configure My Octopress Blog]]></title>
-    <link href="http://blog.debao.me/blog/2012/08/setup-and-configure-my-octopress-blog/"/>
+    <link href="http://dbzhang800.github.com/blog/2012/08/setup-and-configure-my-octopress-blog/"/>
     <updated>2012-08-27T21:44:00+08:00</updated>
-    <id>http://blog.debao.me/blog/2012/08/setup-and-configure-my-octopress-blog</id>
+    <id>http://dbzhang800.github.com/blog/2012/08/setup-and-configure-my-octopress-blog</id>
     <content type="html"><![CDATA[<h2>Install Ruby 1.9.3</h2>
 
 <p>Octopress depends on Ruby 1.9.2 or newer.</p>
