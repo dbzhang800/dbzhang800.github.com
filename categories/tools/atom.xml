@@ -4,7 +4,7 @@
   <title><![CDATA[Category: tools | 1+1=2]]></title>
   <link href="http://blog.debao.me/categories/tools/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2012-09-02T00:30:12+08:00</updated>
+  <updated>2012-09-02T12:35:16+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -274,6 +274,8 @@ www.debao.me
 
 <p>Project pages provided by github can be used in such cases. What we need is a <em>index.html</em> file, such as</p>
 
+<p>``` html index.html</p>
+
 <pre><code>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"&gt;
 &lt;html&gt;
   &lt;head&gt;
@@ -285,6 +287,8 @@ www.debao.me
   &lt;/body&gt;
 &lt;/html&gt;
 </code></pre>
+
+<p>```</p>
 
 <p>Then, create a <em>CNAME</em> file</p>
 
