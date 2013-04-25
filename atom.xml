@@ -4,7 +4,7 @@
   <title><![CDATA[1+1=2]]></title>
   <link href="http://blog.debao.me/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2012-09-02T18:59:28+08:00</updated>
+  <updated>2013-04-25T09:57:15+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -12,6 +12,149 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[My first C Extension To Numpy]]></title>
+    <link href="http://blog.debao.me/2013/04/my-first-c-extension-to-numpy/"/>
+    <updated>2013-04-25T09:24:00+08:00</updated>
+    <id>http://blog.debao.me/2013/04/my-first-c-extension-to-numpy</id>
+    <content type="html"><![CDATA[<h2>A Simple Example</h2>
+
+<p>Let&#8217;s create and extension module called <code>opee</code> and let&#8217;s say we want to create a Python interface to one C function <code>example</code>. This function takes a numpy array as argument and return an integer. We want this function to be callable from Python as follows:</p>
+
+<pre><code>&gt;&gt;&gt; import opee
+&gt;&gt;&gt; import numpy
+&gt;&gt;&gt; a = numpy.zeros( (2,3,4) )
+&gt;&gt;&gt; opee.example()
+</code></pre>
+
+<h2>Souce Code</h2>
+
+<p>Begin by creating a file <code>opeemodule.c</code>.</p>
+
+<figure class='code'><figcaption><span>opeemodule.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &quot;Python.h&quot;</span>
+</span><span class='line'><span class="cp">#include &quot;numpy/arrayobject.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="n">PyObject</span><span class="o">*</span>
+</span><span class='line'><span class="nf">example</span> <span class="p">(</span><span class="n">PyObject</span> <span class="o">*</span><span class="n">dummy</span><span class="p">,</span> <span class="n">PyObject</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">PyObject</span> <span class="o">*</span><span class="n">arg1</span><span class="o">=</span><span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">PyObject</span> <span class="o">*</span><span class="n">arr1</span><span class="o">=</span><span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">nd</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">PyArg_ParseTuple</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s">&quot;O&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arg1</span><span class="p">))</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">arr1</span> <span class="o">=</span> <span class="n">PyArray_FROM_OTF</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">NPY_DOUBLE</span><span class="p">,</span> <span class="n">NPY_IN_ARRAY</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">arr1</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">nd</span> <span class="o">=</span> <span class="n">PyArray_NDIM</span><span class="p">(</span><span class="n">arr1</span><span class="p">);</span>   <span class="c1">//number of dimensions</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Py_DECREF</span><span class="p">(</span><span class="n">arr1</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">PyInt_FromLong</span><span class="p">(</span><span class="n">nd</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="k">struct</span> <span class="n">PyMethodDef</span> <span class="n">methods</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">{</span><span class="s">&quot;example&quot;</span><span class="p">,</span> <span class="n">example</span><span class="p">,</span> <span class="n">METH_VARARGS</span><span class="p">,</span> <span class="s">&quot;descript of example&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">PyMODINIT_FUNC</span>
+</span><span class='line'><span class="nf">initopee</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">Py_InitModule</span><span class="p">(</span><span class="s">&quot;opee&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">import_array</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Building</h2>
+
+<p>First, we create a setup script.</p>
+
+<figure class='code'><figcaption><span>setup.py</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/env python</span>
+</span><span class='line'><span class="c"># -*- coding: UTF-8 -*-</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span><span class="p">,</span> <span class="n">Extension</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ext_modules</span> <span class="o">=</span> <span class="p">[</span> <span class="n">Extension</span><span class="p">(</span><span class="s">&#39;opee&#39;</span><span class="p">,</span> <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;opeemodule.c&#39;</span><span class="p">])</span> <span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">setup</span><span class="p">(</span>
+</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;Opee&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">version</span> <span class="o">=</span> <span class="s">&#39;1.0&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">include_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">get_include</span><span class="p">()],</span> <span class="c">#Add Include path of numpy</span>
+</span><span class='line'>        <span class="n">ext_modules</span> <span class="o">=</span> <span class="n">ext_modules</span>
+</span><span class='line'>      <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then run</p>
+
+<pre><code>python setup.py instll
+</code></pre>
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://docs.scipy.org/doc/numpy/user/c-info.how-to-extend.html">http://docs.scipy.org/doc/numpy/user/c-info.how-to-extend.html</a></li>
+<li><a href="http://docs.python.org/2/extending/extending.html">http://docs.python.org/2/extending/extending.html</a></li>
+<li><a href="http://docs.python.org/2/extending/building.html">http://docs.python.org/2/extending/building.html</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Sandbox: For Octopress Usage and Markdown Syntax Test]]></title>
