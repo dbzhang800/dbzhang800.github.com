@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | 1+1=2]]></title>
   <link href="http://blog.debao.me/categories/octopress/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2013-06-18T15:11:19+08:00</updated>
+  <updated>2013-06-18T16:12:14+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -12,6 +12,47 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[screen.css used by octopress]]></title>
+    <link href="http://blog.debao.me/2013/06/screen-dot-css-used-by-octopress/"/>
+    <updated>2013-06-18T15:48:00+08:00</updated>
+    <id>http://blog.debao.me/2013/06/screen-dot-css-used-by-octopress</id>
+    <content type="html"><![CDATA[<h2>screen.css</h2>
+
+<p>The css file used by octopress blog with the default theme is called <code>screen.css</code>, which locates in source/stylesheets/screen.css.</p>
+
+<h2>screen.scss</h2>
+
+<p>The screen.scss file, which locates in sass/screen.scss, is used to generate the above css file.</p>
+
+<p>```scss screen.scss
+@import "compass";
+@include global-reset;
+@include reset-html5;</p>
+
+<p>@import "custom/colors";
+@import "custom/fonts";
+@import "custom/layout";
+@import "base";
+@import "partials";
+@import "custom/styles";
+```</p>
+
+<p>In the first line, <code>compass</code>, which is an open-source CSS Authoring Framework, is imported.</p>
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://octopress.org/docs/theme/template/">http://octopress.org/docs/theme/template/</a></li>
+<li><a href="http://octopress.org/docs/theme/styles/">http://octopress.org/docs/theme/styles/</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Sass_%28stylesheet_language%29">http://en.wikipedia.org/wiki/Sass_%28stylesheet_language%29</a></li>
+<li><a href="http://sass-lang.com/tutorial.html">http://sass-lang.com/tutorial.html</a></li>
+<li><a href="http://compass-style.org/reference/compass/reset/utilities/">http://compass-style.org/reference/compass/reset/utilities/</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Sandbox: For Octopress Usage and Markdown Syntax Test]]></title>

@@ -5,13 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Sandbox: For Octopress Usage and Markdown Syntax Test - 1+1=2</title>
+  <title>screen.css used by octopress - 1+1=2</title>
   <meta name="author" content="Debao Zhang">
 
   
-  <meta name="description" content="Table Test Source Code: Left Aligned Header | Center Header | Right Aligned Header
-:-------------------|:-------------:|--------------------:
-Cell 0 &hellip;">
+  <meta name="description" content="screen.css The css file used by octopress blog with the default theme is called screen.css, which locates in source/stylesheets/screen.css. screen. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +18,7 @@ Cell 0 &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.debao.me/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test/">
+  <link rel="canonical" href="http://blog.debao.me/2013/06/screen-dot-css-used-by-octopress/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -81,7 +79,7 @@ Cell 0 &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Sandbox: For Octopress Usage and Markdown Syntax Test</h1>
+      <h1 class="entry-title">screen.css Used by Octopress</h1>
     
     
       <p class="meta">
@@ -97,7 +95,7 @@ Cell 0 &hellip;">
   
 
 
-<time datetime="2012-08-28T17:32:00+08:00" pubdate data-updated="true">Aug 28<span>th</span>, 2012</time>
+<time datetime="2013-06-18T15:48:00+08:00" pubdate data-updated="true">Jun 18<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -106,108 +104,47 @@ Cell 0 &hellip;">
   </header>
 
 
-<div class="entry-content"><h2>Table Test</h2>
+<div class="entry-content"><h2>screen.css</h2>
 
-<p>Source Code:</p>
+<p>The css file used by octopress blog with the default theme is called <code>screen.css</code>, which locates in source/stylesheets/screen.css.</p>
 
-<pre><code>Left Aligned Header | Center Header | Right Aligned Header
-:-------------------|:-------------:|--------------------:
-Cell 0 0            | Cell 0 1      | Cell 0 2
-Cell 1 0            | Cell 1 1      | Cell 1 2
-… | … | …
-Long Long Long Long Line … | Not so long Line … | Short Line
-</code></pre>
+<h2>screen.scss</h2>
 
-<p>Preview:</p>
+<p>The screen.scss file, which locates in sass/screen.scss, is used to generate the above css file.</p>
 
-<table>
-<thead>
-<tr>
-<th align="left">Left Aligned Header </th>
-<th align="center"> Center Header </th>
-<th align="right"> Right Aligned Header</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left">Cell 0 0            </td>
-<td align="center"> Cell 0 1      </td>
-<td align="right"> Cell 0 2</td>
-</tr>
-<tr>
-<td align="left">Cell 1 0            </td>
-<td align="center"> Cell 1 1      </td>
-<td align="right"> Cell 1 2</td>
-</tr>
-<tr>
-<td align="left">… </td>
-<td align="center"> … </td>
-<td align="right"> …</td>
-</tr>
-<tr>
-<td align="left">Long Long Long Long Line … </td>
-<td align="center"> Not so long Line … </td>
-<td align="right"> Short Line</td>
-</tr>
-</tbody>
-</table>
-
-
-<h2>Code Highlight</h2>
-
-<p>Source Code:</p>
-
-<pre><code>```cpp First Code block of C++
-#include &lt;iostream&gt;
-int main()
-{
-    std::cout&lt;&lt;"dbzhang800"&lt;&lt;std::endl;
-}
-
-```
-</code></pre>
-
-<p>Preview:</p>
-
-<figure class='code'><figcaption><span>First Code block of C++</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>screen.scss</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
-</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;dbzhang800&quot;</span><span class="o">&lt;&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='scss'><span class='line'><span class="k">@import</span> <span class="s2">&quot;compass&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">@include</span><span class="nd"> global-reset</span><span class="p">;</span>
+</span><span class='line'><span class="k">@include</span><span class="nd"> reset-html5</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@import</span> <span class="s2">&quot;custom/colors&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">@import</span> <span class="s2">&quot;custom/fonts&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">@import</span> <span class="s2">&quot;custom/layout&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">@import</span> <span class="s2">&quot;base&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">@import</span> <span class="s2">&quot;partials&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">@import</span> <span class="s2">&quot;custom/styles&quot;</span><span class="p">;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Source Code:</p>
-
-<pre><code>```python Python Block Test
-import sys
-if __name__ == '__main__':
-    pass
-```
-</code></pre>
-
-<p>Preview:</p>
-
-<figure class='code'><figcaption><span>Python Block Test</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
-</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
-</span><span class='line'>    <span class="k">pass</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<p>In the first line, <code>compass</code>, which is an open-source CSS Authoring Framework, is imported.</p>
 
 <h2>Reference</h2>
 
 <ul>
-<li><a href="http://octopress.org/docs">http://octopress.org/docs</a></li>
-<li><a href="http://daringfireball.net/projects/markdown/syntax">http://daringfireball.net/projects/markdown/syntax</a></li>
-<li><a href="http://programus.github.com/blog/2012/03/07/add-table-data-css-for-octopress/">http://programus.github.com/blog/2012/03/07/add-table-data-css-for-octopress/</a></li>
+<li><a href="http://octopress.org/docs/theme/template/">http://octopress.org/docs/theme/template/</a></li>
+<li><a href="http://octopress.org/docs/theme/styles/">http://octopress.org/docs/theme/styles/</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Sass_%28stylesheet_language%29">http://en.wikipedia.org/wiki/Sass_%28stylesheet_language%29</a></li>
+<li><a href="http://sass-lang.com/tutorial.html">http://sass-lang.com/tutorial.html</a></li>
+<li><a href="http://compass-style.org/reference/compass/reset/utilities/">http://compass-style.org/reference/compass/reset/utilities/</a></li>
 </ul>
 
 </div>
@@ -232,7 +169,7 @@ if __name__ == '__main__':
   
 
 
-<time datetime="2012-08-28T17:32:00+08:00" pubdate data-updated="true">Aug 28<span>th</span>, 2012</time>
+<time datetime="2013-06-18T15:48:00+08:00" pubdate data-updated="true">Jun 18<span>th</span>, 2013</time>
       
 
 <span class="categories">
@@ -253,10 +190,8 @@ if __name__ == '__main__':
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/2012/08/setup-and-configure-my-octopress-blog/" title="Previous Post: Setup and Configure My Octopress Blog">&laquo; Setup and Configure My Octopress Blog</a>
+        <a class="basic-alignment left" href="/2013/04/my-first-c-extension-to-numpy/" title="Previous Post: My first C Extension To Numpy">&laquo; My first C Extension To Numpy</a>
       
-      
-        <a class="basic-alignment right" href="/2013/04/my-first-c-extension-to-numpy/" title="Next Post: My first C Extension To Numpy">My first C Extension To Numpy &raquo;</a>
       
     </p>
   </footer>
@@ -329,8 +264,8 @@ Except where otherwise noted, content in Debao's blog is licensed under a <a rel
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.debao.me/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test/';
-        var disqus_url = 'http://blog.debao.me/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test/';
+        var disqus_identifier = 'http://blog.debao.me/2013/06/screen-dot-css-used-by-octopress/';
+        var disqus_url = 'http://blog.debao.me/2013/06/screen-dot-css-used-by-octopress/';
         var disqus_script = 'embed.js';
       
     (function () {
