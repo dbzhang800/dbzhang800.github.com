@@ -4,7 +4,7 @@
   <title><![CDATA[1+1=2]]></title>
   <link href="http://blog.debao.me/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2013-04-25T11:33:41+08:00</updated>
+  <updated>2013-06-18T11:02:41+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -282,6 +282,9 @@
 </span><span class='line'><span class="c1">//....</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<pre><code>python setup.py build_ext --inplace
+</code></pre>
 
 <h2>Reference</h2>
 
