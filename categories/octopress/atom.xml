@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: tools | 1+1=2]]></title>
-  <link href="http://blog.debao.me/categories/tools/atom.xml" rel="self"/>
+  <title><![CDATA[Category: octopress | 1+1=2]]></title>
+  <link href="http://blog.debao.me/categories/octopress/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2013-06-18T14:17:22+08:00</updated>
+  <updated>2013-06-18T15:11:19+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
