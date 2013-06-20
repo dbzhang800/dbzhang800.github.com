@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Qt-Macros | 1+1=2]]></title>
+  <link href="http://blog.debao.me/categories/qt-macros/atom.xml" rel="self"/>
+  <link href="http://blog.debao.me/"/>
+  <updated>2013-06-20T11:30:09+08:00</updated>
+  <id>http://blog.debao.me/</id>
+  <author>
+    <name><![CDATA[Debao Zhang]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Qt Macro: Q_DECLARE_TYPEINFO]]></title>
+    <link href="http://blog.debao.me/2013/06/qt-macro-q-declare-typeinfo/"/>
+    <updated>2013-06-19T16:45:00+08:00</updated>
+    <id>http://blog.debao.me/2013/06/qt-macro-q-declare-typeinfo</id>
+    <content type="html"><![CDATA[<h2>Definition</h2>
+
+<p>Q_DECLARE_TYPEINFO is used to specialise a template class called QTypeInfo.</p>
+
+<p>```cpp qtypeinfo.h</p>
+
+<h1>define Q_DECLARE_TYPEINFO_BODY(TYPE, FLAGS) \</h1>
+
+<p>class QTypeInfo<TYPE > \
+{ \
+public: \</p>
+
+<pre><code>enum { \
+    isComplex = (((FLAGS) &amp; Q_PRIMITIVE_TYPE) == 0), \
+    isStatic = (((FLAGS) &amp; (Q_MOVABLE_TYPE | Q_PRIMITIVE_TYPE)) == 0), \
+    isLarge = (sizeof(TYPE)&gt;sizeof(void*)), \
+    isPointer = false, \
+    isDummy = (((FLAGS) &amp; Q_DUMMY_TYPE) != 0), \
+    sizeOf = sizeof(TYPE) \
+}; \
+static inline const char *name() { return #TYPE; } \
+</code></pre>
+
+<p>}</p>
+
+<h1>define Q_DECLARE_TYPEINFO(TYPE, FLAGS) \</h1>
+
+<p>template&lt;> \
+Q_DECLARE_TYPEINFO_BODY(TYPE, FLAGS)
+```</p>
+
+<h2>Where Q_DECLARE_TYPEINFO is used?</h2>
+
+<p>The documention says that:</p>
+
+<p><blockquote><p>Q_DECLARE_TYPEINFO( Type, Flags)</p></p><p><p>   You can use this macro to specify information about a custom type Type. With accurate type information, Qt's generic containers can choose appropriate storage methods and algorithms.</p></blockquote></p>
+
+<p>Let's find where QTypeInfo is used in Qt's source code:</p>
+
+<p>```cpp qlist.h
+template <typename T>
+class QList
+{</p>
+
+<pre><code>struct Node { void *v;
+    Q_INLINE_TEMPLATE T &amp;t()
+    { return *reinterpret_cast&lt;T*&gt;(QTypeInfo&lt;T&gt;::isLarge || QTypeInfo&lt;T&gt;::isStatic
+                                   ? v : this); }
+};
+</code></pre>
+
+<p>//...
+```</p>
+
+<p>```cpp qvector.h
+template <typename T>
+void QVector<T>::reallocData(const int asize, const int aalloc, QArrayData::AllocationOptions options)
+{
+//...</p>
+
+<pre><code>            if (QTypeInfo&lt;T&gt;::isStatic || (isShared &amp;&amp; QTypeInfo&lt;T&gt;::isComplex)) {
+                // we can not move the data, we need to copy construct it
+                while (srcBegin != srcEnd) {
+                    new (dst++) T(*srcBegin++);
+                }
+            } else {
+                ::memcpy(static_cast&lt;void *&gt;(dst), static_cast&lt;void *&gt;(srcBegin), (srcEnd - srcBegin) * sizeof(T));
+</code></pre>
+
+<p>//...
+```</p>
+
+<h2>TYPEINFO flags</h2>
+
+<p>```cpp qtypeinfo.h
+enum { /<em> TYPEINFO flags </em>/</p>
+
+<pre><code>Q_COMPLEX_TYPE = 0,
+Q_PRIMITIVE_TYPE = 0x1,
+Q_STATIC_TYPE = 0,
+Q_MOVABLE_TYPE = 0x2,
+Q_DUMMY_TYPE = 0x4
+</code></pre>
+
+<p>};
+```</p>
+
+<ul>
+<li>Q_PRIMITIVE_TYPE specifies that Type is a POD (plain old data) type with no constructor or destructor, or else a type where every bit pattern is a valid object and memcpy() creates a valid independent copy of the object.</li>
+<li>Q_MOVABLE_TYPE specifies that Type has a constructor and/or a destructor but can be moved in memory using memcpy().</li>
+<li>Q_COMPLEX_TYPE (the default) specifies that Type has constructors and/or a destructor and that it may not be moved in memory.</li>
+</ul>
+
+
+<p>For QVector, When an insertion takes place, the elements that come after the point of insertion must be moved one position further. If T is a movable type, this is achieved using memmove(); otherwise, QVector<T> needs to move the items one by one using operator=(). The same applies to removals in the middle.</p>
+
+<p><img class="center" src="/images/blog/2013/q_declare_typeinfo_qvector_insert.png"></p>
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://doc.qt.digia.com/qq/qq19-containers.html">http://doc.qt.digia.com/qq/qq19-containers.html</a></li>
+<li><a href="http://www.drdobbs.com/c-made-easier-plain-old-data/184401508">http://www.drdobbs.com/c-made-easier-plain-old-data/184401508</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

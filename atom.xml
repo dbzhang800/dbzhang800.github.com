@@ -4,7 +4,7 @@
   <title><![CDATA[1+1=2]]></title>
   <link href="http://blog.debao.me/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2013-06-19T09:43:55+08:00</updated>
+  <updated>2013-06-20T11:30:09+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -12,6 +12,153 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Qt Macro: Q_DECLARE_TYPEINFO]]></title>
+    <link href="http://blog.debao.me/2013/06/qt-macro-q-declare-typeinfo/"/>
+    <updated>2013-06-19T16:45:00+08:00</updated>
+    <id>http://blog.debao.me/2013/06/qt-macro-q-declare-typeinfo</id>
+    <content type="html"><![CDATA[<h2>Definition</h2>
+
+<p>Q_DECLARE_TYPEINFO is used to specialise a template class called QTypeInfo.</p>
+
+<figure class='code'><figcaption><span>qtypeinfo.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#define Q_DECLARE_TYPEINFO_BODY(TYPE, FLAGS) \</span>
+</span><span class='line'><span class="cp">class QTypeInfo&lt;TYPE &gt; \</span>
+</span><span class='line'><span class="cp">{ \</span>
+</span><span class='line'><span class="cp">public: \</span>
+</span><span class='line'><span class="cp">    enum { \</span>
+</span><span class='line'><span class="cp">        isComplex = (((FLAGS) &amp; Q_PRIMITIVE_TYPE) == 0), \</span>
+</span><span class='line'><span class="cp">        isStatic = (((FLAGS) &amp; (Q_MOVABLE_TYPE | Q_PRIMITIVE_TYPE)) == 0), \</span>
+</span><span class='line'><span class="cp">        isLarge = (sizeof(TYPE)&gt;sizeof(void*)), \</span>
+</span><span class='line'><span class="cp">        isPointer = false, \</span>
+</span><span class='line'><span class="cp">        isDummy = (((FLAGS) &amp; Q_DUMMY_TYPE) != 0), \</span>
+</span><span class='line'><span class="cp">        sizeOf = sizeof(TYPE) \</span>
+</span><span class='line'><span class="cp">    }; \</span>
+</span><span class='line'><span class="cp">    static inline const char *name() { return #TYPE; } \</span>
+</span><span class='line'><span class="cp">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define Q_DECLARE_TYPEINFO(TYPE, FLAGS) \</span>
+</span><span class='line'><span class="cp">template&lt;&gt; \</span>
+</span><span class='line'><span class="cp">Q_DECLARE_TYPEINFO_BODY(TYPE, FLAGS)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Where Q_DECLARE_TYPEINFO is used?</h2>
+
+<p>The documention says that:</p>
+
+<blockquote><p>Q_DECLARE_TYPEINFO( Type, Flags)<br/>   <br/>   You can use this macro to specify information about a custom type Type. With accurate type information, Qt&#8217;s generic containers can choose appropriate storage methods and algorithms.</p></blockquote>
+
+
+<p>Let&#8217;s find where QTypeInfo is used in Qt&#8217;s source code:</p>
+
+<figure class='code'><figcaption><span>qlist.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">QList</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">struct</span> <span class="n">Node</span> <span class="p">{</span> <span class="kt">void</span> <span class="o">*</span><span class="n">v</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">Q_INLINE_TEMPLATE</span> <span class="n">T</span> <span class="o">&amp;</span><span class="n">t</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span> <span class="k">return</span> <span class="o">*</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">T</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">QTypeInfo</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">isLarge</span> <span class="o">||</span> <span class="n">QTypeInfo</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">isStatic</span>
+</span><span class='line'>                                       <span class="o">?</span> <span class="n">v</span> <span class="o">:</span> <span class="k">this</span><span class="p">);</span> <span class="p">}</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'><span class="c1">//...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>qvector.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+</span><span class='line'><span class="kt">void</span> <span class="n">QVector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">reallocData</span><span class="p">(</span><span class="k">const</span> <span class="kt">int</span> <span class="n">asize</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">aalloc</span><span class="p">,</span> <span class="n">QArrayData</span><span class="o">::</span><span class="n">AllocationOptions</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="c1">//...</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">QTypeInfo</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">isStatic</span> <span class="o">||</span> <span class="p">(</span><span class="n">isShared</span> <span class="o">&amp;&amp;</span> <span class="n">QTypeInfo</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">isComplex</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="c1">// we can not move the data, we need to copy construct it</span>
+</span><span class='line'>                    <span class="k">while</span> <span class="p">(</span><span class="n">srcBegin</span> <span class="o">!=</span> <span class="n">srcEnd</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                        <span class="k">new</span> <span class="p">(</span><span class="n">dst</span><span class="o">++</span><span class="p">)</span> <span class="n">T</span><span class="p">(</span><span class="o">*</span><span class="n">srcBegin</span><span class="o">++</span><span class="p">);</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="o">::</span><span class="n">memcpy</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">void</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">dst</span><span class="p">),</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">void</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">srcBegin</span><span class="p">),</span> <span class="p">(</span><span class="n">srcEnd</span> <span class="o">-</span> <span class="n">srcBegin</span><span class="p">)</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">T</span><span class="p">));</span>
+</span><span class='line'><span class="c1">//...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>TYPEINFO flags</h2>
+
+<figure class='code'><figcaption><span>qtypeinfo.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">enum</span> <span class="p">{</span> <span class="cm">/* TYPEINFO flags */</span>
+</span><span class='line'>    <span class="n">Q_COMPLEX_TYPE</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Q_PRIMITIVE_TYPE</span> <span class="o">=</span> <span class="mh">0x1</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Q_STATIC_TYPE</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Q_MOVABLE_TYPE</span> <span class="o">=</span> <span class="mh">0x2</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Q_DUMMY_TYPE</span> <span class="o">=</span> <span class="mh">0x4</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Q_PRIMITIVE_TYPE specifies that Type is a POD (plain old data) type with no constructor or destructor, or else a type where every bit pattern is a valid object and memcpy() creates a valid independent copy of the object.</li>
+<li>Q_MOVABLE_TYPE specifies that Type has a constructor and/or a destructor but can be moved in memory using memcpy().</li>
+<li>Q_COMPLEX_TYPE (the default) specifies that Type has constructors and/or a destructor and that it may not be moved in memory.</li>
+</ul>
+
+
+<p>For QVector, When an insertion takes place, the elements that come after the point of insertion must be moved one position further. If T is a movable type, this is achieved using memmove(); otherwise, QVector<T> needs to move the items one by one using operator=(). The same applies to removals in the middle.</p>
+
+<p><img class="center" src="http://blog.debao.me/images/blog/2013/q_declare_typeinfo_qvector_insert.png"></p>
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://doc.qt.digia.com/qq/qq19-containers.html">http://doc.qt.digia.com/qq/qq19-containers.html</a></li>
+<li><a href="http://www.drdobbs.com/c-made-easier-plain-old-data/184401508">http://www.drdobbs.com/c-made-easier-plain-old-data/184401508</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[screen.css used by octopress]]></title>
