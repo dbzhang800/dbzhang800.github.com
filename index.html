@@ -9,25 +9,8 @@
   <meta name="author" content="Debao Zhang">
 
   
-  <meta name="description" content="Definition Q_DECLARE_TYPEINFO is used to specialise a template class called QTypeInfo. qtypeinfo.h1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-# &hellip;">
+  <meta name="description" content="QMetaType It associates a type name to a type ID, enabling construction and destruction to occur dynamically at runtime.
+QMetaType is used as a &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -94,6 +77,467 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/06/qt-macro-q-declare-metatype/">Qt Macro: Q_DECLARE_METATYPE</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-21T11:29:00+08:00" pubdate data-updated="true">Jun 21<span>st</span>, 2013</time>
+        
+         | <a href="/2013/06/qt-macro-q-declare-metatype/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>QMetaType</h2>
+
+<ul>
+<li>It associates a type name to a type ID, enabling construction and destruction to occur dynamically at runtime.</li>
+<li>QMetaType is used as a helper in QVariant and queued signals and slots connections.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span>example1</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;QtCore&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">MyClass</span><span class="p">()</span> <span class="p">{</span><span class="n">qDebug</span><span class="p">(</span><span class="s">&quot;Created&quot;</span><span class="p">);}</span>
+</span><span class='line'>    <span class="o">~</span><span class="n">MyClass</span><span class="p">()</span> <span class="p">{</span><span class="n">qDebug</span><span class="p">(</span><span class="s">&quot;Destroyed&quot;</span><span class="p">);}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">id</span> <span class="o">=</span> <span class="n">qRegisterMetaType</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;MyClass&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">void</span> <span class="o">*</span><span class="n">myClassPtr</span> <span class="o">=</span> <span class="n">QMetaType</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">QMetaType</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">myClassPtr</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">myClassPtr</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and</p>
+
+<figure class='code'><figcaption><span>example2</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;QtCore&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">MyClass</span><span class="p">()</span> <span class="p">{</span><span class="n">qDebug</span><span class="p">(</span><span class="s">&quot;Created&quot;</span><span class="p">);}</span>
+</span><span class='line'>    <span class="n">MyClass</span><span class="p">(</span><span class="k">const</span> <span class="n">MyClass</span><span class="o">&amp;</span> <span class="p">){</span><span class="n">qDebug</span><span class="p">(</span><span class="s">&quot;Copy&quot;</span><span class="p">);}</span>
+</span><span class='line'>    <span class="o">~</span><span class="n">MyClass</span><span class="p">()</span> <span class="p">{</span><span class="n">qDebug</span><span class="p">(</span><span class="s">&quot;Destroyed&quot;</span><span class="p">);}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="n">Q_DECLARE_METATYPE</span><span class="p">(</span><span class="n">MyClass</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">MyClass</span> <span class="n">cls</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">QVariant</span> <span class="n">var1</span> <span class="o">=</span> <span class="n">QVariant</span><span class="o">::</span><span class="n">fromValue</span><span class="p">(</span><span class="n">cls</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">MyClass</span> <span class="n">cls1</span> <span class="o">=</span> <span class="n">var1</span><span class="p">.</span><span class="n">value</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">&gt;</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The Q_DECLARE_METATYPE() makes the type known to all template based functions, including QVariant. But if we want to use the type in queued signal and slot connections or in QObject&#8217;s property system, you have to call qRegisterMetaType() since the names are resolved at runtime.</p>
+
+<h2>Q_DECLARE_METATYPE</h2>
+
+<p>This macro is used to specialise the template class QMetaTypeId with typename TYPE, in which, a static member function qt_metatype_id() is defined.</p>
+
+<p>qRegisterMetaType() is called to register the TYPE and generate a TYPE ID. Then the TYPE ID is saved in local static vairable metatype_id.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#define Q_DECLARE_METATYPE(TYPE)                                        \</span>
+</span><span class='line'><span class="cp">    QT_BEGIN_NAMESPACE                                                  \</span>
+</span><span class='line'><span class="cp">    template &lt;&gt;                                                         \</span>
+</span><span class='line'><span class="cp">    struct QMetaTypeId&lt; TYPE &gt;                                          \</span>
+</span><span class='line'><span class="cp">    {                                                                   \</span>
+</span><span class='line'><span class="cp">        enum { Defined = 1 };                                           \</span>
+</span><span class='line'><span class="cp">        static int qt_metatype_id()                                     \</span>
+</span><span class='line'><span class="cp">            {                                                           \</span>
+</span><span class='line'><span class="cp">                static QBasicAtomicInt metatype_id = Q_BASIC_ATOMIC_INITIALIZER(0); \</span>
+</span><span class='line'><span class="cp">                if (const int id = metatype_id.loadAcquire())           \</span>
+</span><span class='line'><span class="cp">                    return id;                                          \</span>
+</span><span class='line'><span class="cp">                const int newId = qRegisterMetaType&lt; TYPE &gt;(#TYPE,      \</span>
+</span><span class='line'><span class="cp">                              reinterpret_cast&lt; TYPE *&gt;(quintptr(-1))); \</span>
+</span><span class='line'><span class="cp">                metatype_id.storeRelease(newId);                        \</span>
+</span><span class='line'><span class="cp">                return newId;                                           \</span>
+</span><span class='line'><span class="cp">            }                                                           \</span>
+</span><span class='line'><span class="cp">    };                                                                  \</span>
+</span><span class='line'><span class="cp">    QT_END_NAMESPACE</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that, for Qt&#8217;s builtin types, <code>Q_DECLARE_BUILTIN_METATYPE</code> instead of <code>Q_DECLARE_METATYPE</code> is used. The ids of these types are constant.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#define Q_DECLARE_BUILTIN_METATYPE(TYPE, METATYPEID, NAME) \</span>
+</span><span class='line'><span class="cp">    QT_BEGIN_NAMESPACE \</span>
+</span><span class='line'><span class="cp">    template&lt;&gt; struct QMetaTypeId2&lt;NAME&gt; \</span>
+</span><span class='line'><span class="cp">    { \</span>
+</span><span class='line'><span class="cp">        enum { Defined = 1, IsBuiltIn = true, MetaType = METATYPEID };   \</span>
+</span><span class='line'><span class="cp">        static inline Q_DECL_CONSTEXPR int qt_metatype_id() { return METATYPEID; } \</span>
+</span><span class='line'><span class="cp">    }; \</span>
+</span><span class='line'><span class="cp">    QT_END_NAMESPACE</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Olivier Goffart said that,</p>
+
+<blockquote><p>I beleive it has been added so adding builting type do not conflicts with<br/>Q_DECLARE_METATYPE of the same type.</p></blockquote>
+
+
+<h2>qRegisterMetaType</h2>
+
+<p>Information of Qt&#8217;s builtin types is saved in a static global const struct array <code>types[]</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="p">{</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">typeName</span><span class="p">;</span> <span class="kt">int</span> <span class="n">typeNameLength</span><span class="p">;</span> <span class="kt">int</span> <span class="n">type</span><span class="p">;</span> <span class="p">}</span> <span class="n">types</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">//  ...</span>
+</span><span class='line'>    <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">QMetaType</span><span class="o">::</span><span class="n">UnknownType</span><span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>While the information of the types register through qRegisterMetaType is stored in static QVector with type QCustomTypeInfo</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">Q_GLOBAL_STATIC</span><span class="p">(</span><span class="n">QVector</span><span class="o">&lt;</span><span class="n">QCustomTypeInfo</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">customTypes</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The definition of QCustomTypeInfo:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">class</span> <span class="nc">QMetaTypeInterface</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">QMetaType</span><span class="o">::</span><span class="n">Creator</span> <span class="n">creator</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">QMetaType</span><span class="o">::</span><span class="n">Deleter</span> <span class="n">deleter</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">QMetaType</span><span class="o">::</span><span class="n">SaveOperator</span> <span class="n">saveOp</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">QMetaType</span><span class="o">::</span><span class="n">LoadOperator</span> <span class="n">loadOp</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">QMetaType</span><span class="o">::</span><span class="n">Constructor</span> <span class="n">constructor</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">QMetaType</span><span class="o">::</span><span class="n">Destructor</span> <span class="n">destructor</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">size</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">quint32</span> <span class="n">flags</span><span class="p">;</span> <span class="c1">// same as QMetaType::TypeFlags</span>
+</span><span class='line'>    <span class="k">const</span> <span class="n">QMetaObject</span> <span class="o">*</span><span class="n">metaObject</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">QCustomTypeInfo</span> <span class="o">:</span> <span class="k">public</span> <span class="n">QMetaTypeInterface</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">QCustomTypeInfo</span><span class="p">()</span>
+</span><span class='line'>        <span class="o">:</span> <span class="n">alias</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">QMetaTypeInterface</span> <span class="n">empty</span> <span class="o">=</span> <span class="n">QT_METATYPE_INTERFACE_INIT</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'>        <span class="o">*</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">QMetaTypeInterface</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">)</span> <span class="o">=</span> <span class="n">empty</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">QByteArray</span> <span class="n">typeName</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">alias</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>qRegisterMetaType() vs qRegisterMetaType(const char *)</h3>
+
+<p>When Call qRegisterMetaType() to register the type T. T must be declared with Q_DECLARE_METATYPE()
+As the member function qt_metatype_id() which is expaned from Q_DECLARE_METATYPE will be called in qMetaTypeId<T>().</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+</span><span class='line'><span class="kr">inline</span> <span class="n">Q_DECL_CONSTEXPR</span> <span class="kt">int</span> <span class="n">qRegisterMetaType</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">qMetaTypeId</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And we can see that, qRegisterMetaType(const char *) is called in qt_metatype_id() too.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">qRegisterMetaType</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">typeName</span>
+</span><span class='line'><span class="cp">#ifndef Q_QDOC</span>
+</span><span class='line'>    <span class="p">,</span> <span class="n">T</span> <span class="o">*</span> <span class="n">dummy</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="p">,</span> <span class="k">typename</span> <span class="n">QtPrivate</span><span class="o">::</span><span class="n">MetaTypeDefinedHelper</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">QMetaTypeId2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">Defined</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">QMetaTypeId2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">IsBuiltIn</span><span class="o">&gt;::</span><span class="n">DefinedType</span> <span class="n">defined</span> <span class="o">=</span> <span class="n">QtPrivate</span><span class="o">::</span><span class="n">MetaTypeDefinedHelper</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">QMetaTypeId2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">Defined</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">QMetaTypeId2</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">IsBuiltIn</span><span class="o">&gt;::</span><span class="n">Defined</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">QT_PREPEND_NAMESPACE</span><span class="p">(</span><span class="n">QByteArray</span><span class="p">)</span> <span class="n">normalizedTypeName</span> <span class="o">=</span> <span class="n">QMetaObject</span><span class="o">::</span><span class="n">normalizedType</span><span class="p">(</span><span class="n">typeName</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">qRegisterNormalizedMetaType</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">normalizedTypeName</span><span class="p">,</span> <span class="n">dummy</span><span class="p">,</span> <span class="n">defined</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, QCustomTypeInfo will be constructed and added to the static QVector.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">QVector</span><span class="o">&lt;</span><span class="n">QCustomTypeInfo</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ct</span> <span class="o">=</span> <span class="n">customTypes</span><span class="p">();</span>
+</span><span class='line'><span class="c1">//...</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">QCustomTypeInfo</span> <span class="n">inf</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">inf</span><span class="p">.</span><span class="n">typeName</span> <span class="o">=</span> <span class="n">normalizedTypeName</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">inf</span><span class="p">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">creator</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">inf</span><span class="p">.</span><span class="n">deleter</span> <span class="o">=</span> <span class="n">deleter</span><span class="p">;</span>
+</span><span class='line'>        <span class="c1">//...</span>
+</span><span class='line'>        <span class="n">inf</span><span class="p">.</span><span class="n">metaObject</span> <span class="o">=</span> <span class="n">metaObject</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">idx</span> <span class="o">=</span> <span class="n">ct</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">()</span> <span class="o">+</span> <span class="n">User</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">ct</span><span class="o">-&gt;</span><span class="n">append</span><span class="p">(</span><span class="n">inf</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">idx</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>pointerToTypeDerivedFromQObject ?</h2>
+
+<p>Q_DECLARE_METATYPE for QObjectDerived class can be omitted. For example,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;QtCore&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">QObjectDerived</span> <span class="o">:</span> <span class="k">public</span> <span class="n">QObject</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">Q_OBJECT</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="c1">//Q_DECLARE_METATYPE(QObjectDerived*)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="n">Q_DECLARE_METATYPE</span><span class="p">(</span><span class="n">MyClass</span><span class="o">*</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &quot;main.moc&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">qDebug</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">qMetaTypeId</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">*&gt;</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">qDebug</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">qMetaTypeId</span><span class="o">&lt;</span><span class="n">QObjectDerived</span><span class="o">*&gt;</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here, another internal QMetaTypeId* is introduced.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">QMetaTypeIdQObject</span><span class="o">&lt;</span><span class="n">T</span><span class="o">*</span><span class="p">,</span> <span class="cm">/* isPointerToTypeDerivedFromQObject */</span> <span class="kc">true</span><span class="o">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">enum</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">Defined</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">int</span> <span class="n">qt_metatype_id</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">static</span> <span class="n">QBasicAtomicInt</span> <span class="n">metatype_id</span> <span class="o">=</span> <span class="n">Q_BASIC_ATOMIC_INITIALIZER</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="k">const</span> <span class="kt">int</span> <span class="n">id</span> <span class="o">=</span> <span class="n">metatype_id</span><span class="p">.</span><span class="n">loadAcquire</span><span class="p">())</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">id</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="k">const</span> <span class="n">cName</span> <span class="o">=</span> <span class="n">T</span><span class="o">::</span><span class="n">staticMetaObject</span><span class="p">.</span><span class="n">className</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">QByteArray</span> <span class="n">typeName</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">typeName</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="kt">int</span><span class="p">(</span><span class="n">strlen</span><span class="p">(</span><span class="n">cName</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">typeName</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">cName</span><span class="p">).</span><span class="n">append</span><span class="p">(</span><span class="sc">&#39;*&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">const</span> <span class="kt">int</span> <span class="n">newId</span> <span class="o">=</span> <span class="n">qRegisterNormalizedMetaType</span><span class="o">&lt;</span><span class="n">T</span><span class="o">*&gt;</span><span class="p">(</span>
+</span><span class='line'>                        <span class="n">typeName</span><span class="p">,</span>
+</span><span class='line'>                        <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">T</span><span class="o">**&gt;</span><span class="p">(</span><span class="n">quintptr</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)));</span>
+</span><span class='line'>        <span class="n">metatype_id</span><span class="p">.</span><span class="n">storeRelease</span><span class="p">(</span><span class="n">newId</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">newId</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://lists.qt-project.org/pipermail/development/2012-February/001880.html">[Development] QMetaTypeId and QMetaTypeId2</a></li>
+<li><a href="http://steveire.wordpress.com/2011/03/16/implementing-qvariantqmetatype-features-with-template-tricks/">http://steveire.wordpress.com/2011/03/16/implementing-qvariantqmetatype-features-with-template-tricks/</a></li>
+<li><a href="http://qt-project.org/wiki/QVariant">http://qt-project.org/wiki/QVariant</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1073,6 +1517,10 @@ pagination_dir:
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2013/06/qt-macro-q-declare-metatype/">Qt Macro: Q_DECLARE_METATYPE</a>
+      </li>
+    
+      <li class="post">
         <a href="/2013/06/qt-macro-q-declare-typeinfo/">Qt Macro: Q_DECLARE_TYPEINFO</a>
       </li>
     
@@ -1088,15 +1536,11 @@ pagination_dir:
         <a href="/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test/">Sandbox: For Octopress Usage and Markdown Syntax Test</a>
       </li>
     
-      <li class="post">
-        <a href="/2012/08/setup-and-configure-my-octopress-blog/">Setup and Configure My Octopress Blog</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/categories/octopress' style='font-size: 160.0%'>octopress(3)</a> <a href='/categories/python' style='font-size: 120.0%'>python(1)</a> <a href='/categories/qt' style='font-size: 120.0%'>Qt(1)</a> <a href='/categories/qt-macros' style='font-size: 120.0%'>Qt-Macros(1)</a> </span>
+    <span id="tag-cloud"><a href='/categories/octopress' style='font-size: 160.0%'>octopress(3)</a> <a href='/categories/python' style='font-size: 120.0%'>python(1)</a> <a href='/categories/qt' style='font-size: 140.0%'>Qt(2)</a> <a href='/categories/qt-macros' style='font-size: 140.0%'>Qt-Macros(2)</a> <a href='/categories/qt5' style='font-size: 120.0%'>Qt5(1)</a> </span>
 </section>
 
   

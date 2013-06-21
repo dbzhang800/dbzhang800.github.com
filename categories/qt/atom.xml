@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Qt | 1+1=2]]></title>
   <link href="http://blog.debao.me/categories/qt/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2013-06-20T11:30:09+08:00</updated>
+  <updated>2013-06-21T17:16:01+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -12,6 +12,321 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Qt Macro: Q_DECLARE_METATYPE]]></title>
+    <link href="http://blog.debao.me/2013/06/qt-macro-q-declare-metatype/"/>
+    <updated>2013-06-21T11:29:00+08:00</updated>
+    <id>http://blog.debao.me/2013/06/qt-macro-q-declare-metatype</id>
+    <content type="html"><![CDATA[<h2>QMetaType</h2>
+
+<ul>
+<li>It associates a type name to a type ID, enabling construction and destruction to occur dynamically at runtime.</li>
+<li>QMetaType is used as a helper in QVariant and queued signals and slots connections.</li>
+</ul>
+
+
+<p>```cpp  example1</p>
+
+<h1>include <QtCore></h1>
+
+<p>class MyClass
+{
+public:</p>
+
+<pre><code>MyClass() {qDebug("Created");}
+~MyClass() {qDebug("Destroyed");}
+</code></pre>
+
+<p>};</p>
+
+<p>int main(int argc, char *argv[])
+{</p>
+
+<pre><code>int id = qRegisterMetaType&lt;MyClass&gt;("MyClass");
+
+void *myClassPtr = QMetaType::create(id);
+QMetaType::destroy(id, myClassPtr);
+myClassPtr = 0;
+</code></pre>
+
+<p>}</p>
+
+<p>```
+and</p>
+
+<p>```cpp example2</p>
+
+<h1>include <QtCore></h1>
+
+<p>class MyClass
+{
+public:</p>
+
+<pre><code>MyClass() {qDebug("Created");}
+MyClass(const MyClass&amp; ){qDebug("Copy");}
+~MyClass() {qDebug("Destroyed");}
+</code></pre>
+
+<p>};
+Q_DECLARE_METATYPE(MyClass)</p>
+
+<p>int main(int argc, char *argv[])
+{</p>
+
+<pre><code>MyClass cls;
+QVariant var1 = QVariant::fromValue(cls);
+MyClass cls1 = var1.value&lt;MyClass&gt;();
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The Q_DECLARE_METATYPE() makes the type known to all template based functions, including QVariant. But if we want to use the type in queued signal and slot connections or in QObject's property system, you have to call qRegisterMetaType() since the names are resolved at runtime.</p>
+
+<h2>Q_DECLARE_METATYPE</h2>
+
+<p>This macro is used to specialise the template class QMetaTypeId with typename TYPE, in which, a static member function qt_metatype_id() is defined.</p>
+
+<p>qRegisterMetaType() is called to register the TYPE and generate a TYPE ID. Then the TYPE ID is saved in local static vairable metatype_id.</p>
+
+<p>```cpp</p>
+
+<h1>define Q_DECLARE_METATYPE(TYPE)                                        \</h1>
+
+<pre><code>QT_BEGIN_NAMESPACE                                                  \
+template &lt;&gt;                                                         \
+struct QMetaTypeId&lt; TYPE &gt;                                          \
+{                                                                   \
+    enum { Defined = 1 };                                           \
+    static int qt_metatype_id()                                     \
+        {                                                           \
+            static QBasicAtomicInt metatype_id = Q_BASIC_ATOMIC_INITIALIZER(0); \
+            if (const int id = metatype_id.loadAcquire())           \
+                return id;                                          \
+            const int newId = qRegisterMetaType&lt; TYPE &gt;(#TYPE,      \
+                          reinterpret_cast&lt; TYPE *&gt;(quintptr(-1))); \
+            metatype_id.storeRelease(newId);                        \
+            return newId;                                           \
+        }                                                           \
+};                                                                  \
+QT_END_NAMESPACE
+</code></pre>
+
+<p>```</p>
+
+<p>Note that, for Qt's builtin types, <code>Q_DECLARE_BUILTIN_METATYPE</code> instead of <code>Q_DECLARE_METATYPE</code> is used. The ids of these types are constant.
+```</p>
+
+<h1>define Q_DECLARE_BUILTIN_METATYPE(TYPE, METATYPEID, NAME) \</h1>
+
+<pre><code>QT_BEGIN_NAMESPACE \
+template&lt;&gt; struct QMetaTypeId2&lt;NAME&gt; \
+{ \
+    enum { Defined = 1, IsBuiltIn = true, MetaType = METATYPEID };   \
+    static inline Q_DECL_CONSTEXPR int qt_metatype_id() { return METATYPEID; } \
+}; \
+QT_END_NAMESPACE
+</code></pre>
+
+<p>```
+Olivier Goffart said that,
+<blockquote><p>I beleive it has been added so adding builting type do not conflicts with<br/>Q_DECLARE_METATYPE of the same type.</p></blockquote></p>
+
+<h2>qRegisterMetaType</h2>
+
+<p>Information of Qt's builtin types is saved in a static global const struct array <code>types[]</code>.</p>
+
+<p>```
+static const struct { const char * typeName; int typeNameLength; int type; } types[] = {</p>
+
+<pre><code>//  ...
+{0, 0, QMetaType::UnknownType}
+</code></pre>
+
+<p>};</p>
+
+<p>```</p>
+
+<p>While the information of the types register through qRegisterMetaType is stored in static QVector with type QCustomTypeInfo
+<code>
+Q_GLOBAL_STATIC(QVector&lt;QCustomTypeInfo&gt;, customTypes)
+</code></p>
+
+<p>The definition of QCustomTypeInfo:</p>
+
+<p>```cpp
+class QMetaTypeInterface
+{
+public:</p>
+
+<pre><code>QMetaType::Creator creator;
+QMetaType::Deleter deleter;
+QMetaType::SaveOperator saveOp;
+QMetaType::LoadOperator loadOp;
+QMetaType::Constructor constructor;
+QMetaType::Destructor destructor;
+int size;
+quint32 flags; // same as QMetaType::TypeFlags
+const QMetaObject *metaObject;
+</code></pre>
+
+<p>};</p>
+
+<p>public:
+class QCustomTypeInfo : public QMetaTypeInterface
+{
+public:</p>
+
+<pre><code>QCustomTypeInfo()
+    : alias(-1)
+{
+    QMetaTypeInterface empty = QT_METATYPE_INTERFACE_INIT(void);
+    *static_cast&lt;QMetaTypeInterface*&gt;(this) = empty;
+}
+QByteArray typeName;
+int alias;
+</code></pre>
+
+<p>};</p>
+
+<p>```</p>
+
+<h3>qRegisterMetaType() vs qRegisterMetaType(const char *)</h3>
+
+<p>When Call qRegisterMetaType() to register the type T. T must be declared with Q_DECLARE_METATYPE()
+As the member function qt_metatype_id() which is expaned from Q_DECLARE_METATYPE will be called in qMetaTypeId<T>().
+```
+template <typename T>
+inline Q_DECL_CONSTEXPR int qRegisterMetaType()
+{</p>
+
+<pre><code>return qMetaTypeId&lt;T&gt;();
+</code></pre>
+
+<p>}
+```
+And we can see that, qRegisterMetaType(const char *) is called in qt_metatype_id() too.</p>
+
+<p>```
+template <typename T>
+int qRegisterMetaType(const char *typeName</p>
+
+<h1>ifndef Q_QDOC</h1>
+
+<pre><code>, T * dummy = 0
+, typename QtPrivate::MetaTypeDefinedHelper&lt;T, QMetaTypeId2&lt;T&gt;::Defined &amp;&amp; !QMetaTypeId2&lt;T&gt;::IsBuiltIn&gt;::DefinedType defined = QtPrivate::MetaTypeDefinedHelper&lt;T, QMetaTypeId2&lt;T&gt;::Defined &amp;&amp; !QMetaTypeId2&lt;T&gt;::IsBuiltIn&gt;::Defined
+</code></pre>
+
+<h1>endif</h1>
+
+<p>)
+{</p>
+
+<pre><code>QT_PREPEND_NAMESPACE(QByteArray) normalizedTypeName = QMetaObject::normalizedType(typeName);
+return qRegisterNormalizedMetaType&lt;T&gt;(normalizedTypeName, dummy, defined);
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Finally, QCustomTypeInfo will be constructed and added to the static QVector.</p>
+
+<p>```</p>
+
+<pre><code>QVector&lt;QCustomTypeInfo&gt; *ct = customTypes();
+</code></pre>
+
+<p>//...</p>
+
+<pre><code>        QCustomTypeInfo inf;
+        inf.typeName = normalizedTypeName;
+        inf.creator = creator;
+        inf.deleter = deleter;
+        //...
+        inf.metaObject = metaObject;
+        idx = ct-&gt;size() + User;
+        ct-&gt;append(inf);
+        return idx;
+</code></pre>
+
+<p>```</p>
+
+<h2>pointerToTypeDerivedFromQObject ?</h2>
+
+<p>Q_DECLARE_METATYPE for QObjectDerived class can be omitted. For example,</p>
+
+<p>```</p>
+
+<h1>include <QtCore></h1>
+
+<p>class QObjectDerived : public QObject
+{
+  Q_OBJECT
+};
+//Q_DECLARE_METATYPE(QObjectDerived*)</p>
+
+<p>class MyClass
+{</p>
+
+<p>};
+Q_DECLARE_METATYPE(MyClass*)</p>
+
+<h1>include "main.moc"</h1>
+
+<p>int main()
+{</p>
+
+<pre><code>qDebug() &lt;&lt; qMetaTypeId&lt;MyClass*&gt;();
+qDebug() &lt;&lt; qMetaTypeId&lt;QObjectDerived*&gt;();
+
+return 0;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Here, another internal QMetaTypeId<em> is introduced.
+```
+template <typename T>
+struct QMetaTypeIdQObject&lt;T</em>, /<em> isPointerToTypeDerivedFromQObject </em>/ true>
+{</p>
+
+<pre><code>enum {
+    Defined = 1
+};
+
+static int qt_metatype_id()
+{
+    static QBasicAtomicInt metatype_id = Q_BASIC_ATOMIC_INITIALIZER(0);
+    if (const int id = metatype_id.loadAcquire())
+        return id;
+    const char * const cName = T::staticMetaObject.className();
+    QByteArray typeName;
+    typeName.reserve(int(strlen(cName)) + 1);
+    typeName.append(cName).append('*');
+    const int newId = qRegisterNormalizedMetaType&lt;T*&gt;(
+                    typeName,
+                    reinterpret_cast&lt;T**&gt;(quintptr(-1)));
+    metatype_id.storeRelease(newId);
+    return newId;
+}
+</code></pre>
+
+<p>};</p>
+
+<p>```</p>
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://lists.qt-project.org/pipermail/development/2012-February/001880.html">[Development] QMetaTypeId and QMetaTypeId2</a></li>
+<li><a href="http://steveire.wordpress.com/2011/03/16/implementing-qvariantqmetatype-features-with-template-tricks/">http://steveire.wordpress.com/2011/03/16/implementing-qvariantqmetatype-features-with-template-tricks/</a></li>
+<li><a href="http://qt-project.org/wiki/QVariant">http://qt-project.org/wiki/QVariant</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Qt Macro: Q_DECLARE_TYPEINFO]]></title>
