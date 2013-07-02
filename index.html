@@ -9,8 +9,7 @@
   <meta name="author" content="Debao Zhang">
 
   
-  <meta name="description" content="QMetaType It associates a type name to a type ID, enabling construction and destruction to occur dynamically at runtime.
-QMetaType is used as a &hellip;">
+  <meta name="description" content="Q_DECLARE_INTERFACE(InterfaceClassName, InterfaceId) This macro associate the given InterfaceId to the interface class called InterfaceClassName.The &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +76,200 @@ QMetaType is used as a &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/06/qt-macro-q-declare-interface/">Qt Macro: Q_DECLARE_INTERFACE</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-25T12:34:00+08:00" pubdate data-updated="true">Jun 25<span>th</span>, 2013</time>
+        
+         | <a href="/2013/06/qt-macro-q-declare-interface/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Q_DECLARE_INTERFACE(InterfaceClassName, InterfaceId)</h2>
+
+<p>This macro associate the given InterfaceId to the interface class called InterfaceClassName.The macro is normally used right after the interface definition:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">class</span> <span class="nc">MyInterface</span> <span class="p">{};</span>
+</span><span class='line'><span class="n">Q_DECLARE_INTERFACE</span><span class="p">(</span><span class="n">MyInterface</span><span class="p">,</span> <span class="s">&quot;me.debao.qt.myinterface&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Q_DECLARE_INTERFACE is a macro that defines helper function that make qobject_cast&lt;IFace<em>>(QObject </em>object) return a IFace pointer.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#  define Q_DECLARE_INTERFACE(IFace, IId) \</span>
+</span><span class='line'><span class="cp">    template &lt;&gt; inline const char *qobject_interface_iid&lt;IFace *&gt;() \</span>
+</span><span class='line'><span class="cp">    { return IId; } \</span>
+</span><span class='line'><span class="cp">    template &lt;&gt; inline IFace *qobject_cast&lt;IFace *&gt;(QObject *object) \</span>
+</span><span class='line'><span class="cp">    { return reinterpret_cast&lt;IFace *&gt;((object ? object-&gt;qt_metacast(IId) : 0)); } \</span>
+</span><span class='line'><span class="cp">    template &lt;&gt; inline IFace *qobject_cast&lt;IFace *&gt;(const QObject *object) \</span>
+</span><span class='line'><span class="cp">    { return reinterpret_cast&lt;IFace *&gt;((object ? const_cast&lt;QObject *&gt;(object)-&gt;qt_metacast(IId) : 0)); }</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>InterfaceId is used in the function <code>QObject::qt_metacast(InterfaceId)</code>. But, how does this function work?</p>
+
+<h2>Q_INTERFACES(&#8230;)</h2>
+
+<p>This macro tells Qt which interfaces the class implements.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">class</span> <span class="nc">PluginObject</span> <span class="o">:</span> <span class="k">public</span> <span class="n">QObject</span><span class="p">,</span> <span class="k">public</span> <span class="n">MyInterface</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">Q_OBJECT</span>
+</span><span class='line'>    <span class="n">Q_INTERFACES</span><span class="p">(</span><span class="n">MyInterface</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="p">...</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When moc find Q_INTERFACES, it will generate a function called qt_metacast()</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="o">*</span><span class="n">PluginObject</span><span class="o">::</span><span class="n">qt_metacast</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">iname</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">iname</span><span class="p">,</span> <span class="s">&quot;PluginObject&quot;</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">iname</span><span class="p">,</span> <span class="s">&quot;MyInterface&quot;</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">MyInterface</span> <span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">iname</span><span class="p">,</span> <span class="s">&quot;me.debao.qt.myinterface&quot;</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">MyInterface</span> <span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">//...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Q_PLUGIN_METADATA ()</h2>
+
+<p>This macro is being used to declare meta data which will be part of plugin. Then these data can be obtained without load the plugin.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">class</span> <span class="nc">PluginObject</span> <span class="o">:</span> <span class="k">public</span> <span class="n">QObject</span><span class="p">,</span> <span class="k">public</span> <span class="n">MyInterface</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">Q_OBJECT</span>
+</span><span class='line'>    <span class="n">Q_PLUGIN_METADATA</span><span class="p">(</span><span class="n">IID</span> <span class="s">&quot;me.dabao.qt.myinterface&quot;</span> <span class="n">FILE</span> <span class="s">&quot;abc.json&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">Q_INTERFACES</span><span class="p">(</span><span class="n">MyInterface</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="p">...</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When moc encounter the macro, it will generate char array to store the meta data(IID string, FILE contents and other infomation such as QTVERSION) and a macro to export the plugin.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">static</span> <span class="k">const</span> <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">qt_pluginMetaData</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="sc">&#39;Q&#39;</span><span class="p">,</span> <span class="sc">&#39;T&#39;</span><span class="p">,</span> <span class="sc">&#39;M&#39;</span><span class="p">,</span> <span class="sc">&#39;E&#39;</span><span class="p">,</span> <span class="sc">&#39;T&#39;</span><span class="p">,</span> <span class="sc">&#39;A&#39;</span><span class="p">,</span> <span class="sc">&#39;D&#39;</span><span class="p">,</span> <span class="sc">&#39;A&#39;</span><span class="p">,</span> <span class="sc">&#39;T&#39;</span><span class="p">,</span> <span class="sc">&#39;A&#39;</span><span class="p">,</span> <span class="sc">&#39; &#39;</span><span class="p">,</span> <span class="sc">&#39; &#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="mh">0x71</span><span class="p">,</span> <span class="mh">0x62</span><span class="p">,</span> <span class="mh">0x6a</span><span class="p">,</span> <span class="mh">0x73</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span>
+</span><span class='line'>    <span class="mh">0xe0</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x0b</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span>
+</span><span class='line'>    <span class="mh">0xcc</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x1b</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span>
+</span><span class='line'><span class="c1">//...</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="n">QT_MOC_EXPORT_PLUGIN</span><span class="p">(</span><span class="n">EchoPlugin</span><span class="p">,</span> <span class="n">EchoPlugin</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In macro QT_MOC_EXPORT_PLUGIN, two C functions get exported.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#define Q_PLUGIN_INSTANCE(IMPLEMENTATION) \</span>
+</span><span class='line'><span class="cp">        { \</span>
+</span><span class='line'><span class="cp">            static QT_PREPEND_NAMESPACE(QPointer)&lt;QT_PREPEND_NAMESPACE(QObject)&gt; _instance; \</span>
+</span><span class='line'><span class="cp">            if (!_instance)      \</span>
+</span><span class='line'><span class="cp">                _instance = new IMPLEMENTATION; \</span>
+</span><span class='line'><span class="cp">            return _instance; \</span>
+</span><span class='line'><span class="cp">        }</span>
+</span><span class='line'><span class="cp">#  define QT_MOC_EXPORT_PLUGIN(PLUGINCLASS, PLUGINCLASSNAME)      \</span>
+</span><span class='line'><span class="cp">            Q_EXTERN_C Q_DECL_EXPORT \</span>
+</span><span class='line'><span class="cp">            const char *qt_plugin_query_metadata() \</span>
+</span><span class='line'><span class="cp">            { return (const char *)qt_pluginMetaData; } \</span>
+</span><span class='line'><span class="cp">            Q_EXTERN_C Q_DECL_EXPORT QT_PREPEND_NAMESPACE(QObject) *qt_plugin_instance() \</span>
+</span><span class='line'><span class="cp">            Q_PLUGIN_INSTANCE(PLUGINCLASS)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Reference</h2>
+
+<ul>
+<li>http://qt-project.org/wiki/QtPlugins</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1517,6 +1710,10 @@ pagination_dir:
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2013/06/qt-macro-q-declare-interface/">Qt Macro: Q_DECLARE_INTERFACE</a>
+      </li>
+    
+      <li class="post">
         <a href="/2013/06/qt-macro-q-declare-metatype/">Qt Macro: Q_DECLARE_METATYPE</a>
       </li>
     
@@ -1532,15 +1729,11 @@ pagination_dir:
         <a href="/2013/04/my-first-c-extension-to-numpy/">My first C Extension To Numpy</a>
       </li>
     
-      <li class="post">
-        <a href="/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test/">Sandbox: For Octopress Usage and Markdown Syntax Test</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/categories/octopress' style='font-size: 160.0%'>octopress(3)</a> <a href='/categories/python' style='font-size: 120.0%'>python(1)</a> <a href='/categories/qt' style='font-size: 140.0%'>Qt(2)</a> <a href='/categories/qt-macros' style='font-size: 140.0%'>Qt-Macros(2)</a> <a href='/categories/qt5' style='font-size: 120.0%'>Qt5(1)</a> </span>
+    <span id="tag-cloud"><a href='/categories/octopress' style='font-size: 160.0%'>octopress(3)</a> <a href='/categories/python' style='font-size: 120.0%'>python(1)</a> <a href='/categories/qt' style='font-size: 160.0%'>Qt(3)</a> <a href='/categories/qt-macros' style='font-size: 160.0%'>Qt-Macros(3)</a> <a href='/categories/qt5' style='font-size: 140.0%'>Qt5(2)</a> </span>
 </section>
 
   

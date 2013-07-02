@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Qt | 1+1=2]]></title>
   <link href="http://blog.debao.me/categories/qt/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2013-06-21T17:16:01+08:00</updated>
+  <updated>2013-07-02T11:38:48+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -12,6 +12,142 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Qt Macro: Q_DECLARE_INTERFACE]]></title>
+    <link href="http://blog.debao.me/2013/06/qt-macro-q-declare-interface/"/>
+    <updated>2013-06-25T12:34:00+08:00</updated>
+    <id>http://blog.debao.me/2013/06/qt-macro-q-declare-interface</id>
+    <content type="html"><![CDATA[<h2>Q_DECLARE_INTERFACE(InterfaceClassName, InterfaceId)</h2>
+
+<p>This macro associate the given InterfaceId to the interface class called InterfaceClassName.The macro is normally used right after the interface definition:</p>
+
+<p><code>cpp
+class MyInterface {};
+Q_DECLARE_INTERFACE(MyInterface, "me.debao.qt.myinterface")
+</code></p>
+
+<p>Q_DECLARE_INTERFACE is a macro that defines helper function that make qobject_cast&lt;IFace<em>>(QObject </em>object) return a IFace pointer.
+```cpp</p>
+
+<h1>define Q_DECLARE_INTERFACE(IFace, IId) \</h1>
+
+<pre><code>template &lt;&gt; inline const char *qobject_interface_iid&lt;IFace *&gt;() \
+{ return IId; } \
+template &lt;&gt; inline IFace *qobject_cast&lt;IFace *&gt;(QObject *object) \
+{ return reinterpret_cast&lt;IFace *&gt;((object ? object-&gt;qt_metacast(IId) : 0)); } \
+template &lt;&gt; inline IFace *qobject_cast&lt;IFace *&gt;(const QObject *object) \
+{ return reinterpret_cast&lt;IFace *&gt;((object ? const_cast&lt;QObject *&gt;(object)-&gt;qt_metacast(IId) : 0)); }
+</code></pre>
+
+<p>```</p>
+
+<p>InterfaceId is used in the function <code>QObject::qt_metacast(InterfaceId)</code>. But, how does this function work?</p>
+
+<h2>Q_INTERFACES(...)</h2>
+
+<p>This macro tells Qt which interfaces the class implements.</p>
+
+<p>```cpp
+class PluginObject : public QObject, public MyInterface
+{</p>
+
+<pre><code>Q_OBJECT
+Q_INTERFACES(MyInterface)
+</code></pre>
+
+<p>public:</p>
+
+<pre><code>...
+</code></pre>
+
+<p>};</p>
+
+<p>```</p>
+
+<p>When moc find Q_INTERFACES, it will generate a function called qt_metacast()</p>
+
+<p>```cpp
+void <em>PluginObject::qt_metacast(const char </em>iname)
+{</p>
+
+<pre><code>if (strcmp(iname, "PluginObject")==0) return this;
+if (strcmp(iname, "MyInterface")==0) return static_cast&lt;MyInterface *&gt;(this);
+if (strcmp(iname, "me.debao.qt.myinterface")==0) return static_cast&lt;MyInterface *&gt;(this);
+//...
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>Q_PLUGIN_METADATA ()</h2>
+
+<p>This macro is being used to declare meta data which will be part of plugin. Then these data can be obtained without load the plugin.</p>
+
+<p>```cpp
+class PluginObject : public QObject, public MyInterface
+{</p>
+
+<pre><code>Q_OBJECT
+Q_PLUGIN_METADATA(IID "me.dabao.qt.myinterface" FILE "abc.json")
+Q_INTERFACES(MyInterface)
+</code></pre>
+
+<p>public:</p>
+
+<pre><code>...
+</code></pre>
+
+<p>};
+```</p>
+
+<p>When moc encounter the macro, it will generate char array to store the meta data(IID string, FILE contents and other infomation such as QTVERSION) and a macro to export the plugin.</p>
+
+<p>```cpp
+static const unsigned char qt_pluginMetaData[] = {</p>
+
+<pre><code>'Q', 'T', 'M', 'E', 'T', 'A', 'D', 'A', 'T', 'A', ' ', ' ',
+0x71, 0x62, 0x6a, 0x73, 0x01, 0x00, 0x00, 0x00,
+0xe0, 0x00, 0x00, 0x00, 0x0b, 0x00, 0x00, 0x00,
+0xcc, 0x00, 0x00, 0x00, 0x1b, 0x03, 0x00, 0x00,
+</code></pre>
+
+<p>//...
+};
+QT_MOC_EXPORT_PLUGIN(EchoPlugin, EchoPlugin)
+<code>
+In macro QT_MOC_EXPORT_PLUGIN, two C functions get exported.
+</code>cpp</p>
+
+<h1>define Q_PLUGIN_INSTANCE(IMPLEMENTATION) \</h1>
+
+<pre><code>    { \
+        static QT_PREPEND_NAMESPACE(QPointer)&lt;QT_PREPEND_NAMESPACE(QObject)&gt; _instance; \
+        if (!_instance)      \
+            _instance = new IMPLEMENTATION; \
+        return _instance; \
+    }
+</code></pre>
+
+<h1>define QT_MOC_EXPORT_PLUGIN(PLUGINCLASS, PLUGINCLASSNAME)      \</h1>
+
+<pre><code>        Q_EXTERN_C Q_DECL_EXPORT \
+        const char *qt_plugin_query_metadata() \
+        { return (const char *)qt_pluginMetaData; } \
+        Q_EXTERN_C Q_DECL_EXPORT QT_PREPEND_NAMESPACE(QObject) *qt_plugin_instance() \
+        Q_PLUGIN_INSTANCE(PLUGINCLASS)
+</code></pre>
+
+<p>```</p>
+
+<h2>Reference</h2>
+
+<ul>
+<li>http://qt-project.org/wiki/QtPlugins</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Qt Macro: Q_DECLARE_METATYPE]]></title>
