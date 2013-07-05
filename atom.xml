@@ -4,7 +4,7 @@
   <title><![CDATA[1+1=2]]></title>
   <link href="http://blog.debao.me/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2013-07-02T11:38:48+08:00</updated>
+  <updated>2013-07-05T17:34:46+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -12,6 +12,193 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Redirect current process's stdout to a Widget such as QTextEdit]]></title>
+    <link href="http://blog.debao.me/2013/07/redirect-current-processs-stdout-to-a-widget-such-as-qtextedit/"/>
+    <updated>2013-07-05T17:26:00+08:00</updated>
+    <id>http://blog.debao.me/2013/07/redirect-current-processs-stdout-to-a-widget-such-as-qtextedit</id>
+    <content type="html"><![CDATA[<p>Note:
+* Source code can be got from https://github.com/dbzhang800/StdoutRedirector
+* This class can only be used in Qt5, as QWindowsPipeReader which is introduced in Qt5.0 is used.</p>
+
+<h2>Implementation</h2>
+
+<h3>Windows</h3>
+
+<ul>
+<li>Normally, we need to create pipe with CreatePipe(), then attach stdout to it&#8217;s write end with SetStdHandle(), then read from pipe&#8217;s read end with ReadFile().</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">createWinPipe</span><span class="p">(</span><span class="n">hRead</span><span class="p">,</span> <span class="n">hWrite</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">m_channels</span> <span class="o">&amp;</span> <span class="n">StandardOutput</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">::</span><span class="n">SetStdHandle</span><span class="p">(</span><span class="n">STD_OUTPUT_HANDLE</span><span class="p">,</span> <span class="n">hWrite</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">m_channels</span> <span class="o">&amp;</span> <span class="n">StandardError</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">::</span><span class="n">SetStdHandle</span><span class="p">(</span><span class="n">STD_ERROR_HANDLE</span><span class="p">,</span> <span class="n">hWrite</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>But the CRT has already completed initialization before the application gets a chance to call SetStdHandle(); the three low I/O handles 0, 1, and 2 have already been set up to use the original OS handles. So we must deal with this layer using posix api _dup2() too.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">_open_osfhandle</span><span class="p">((</span><span class="n">intptr_t</span><span class="p">)</span><span class="n">hWrite</span><span class="p">,</span> <span class="n">_O_WRONLY</span><span class="o">|</span><span class="n">_O_TEXT</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">m_channels</span> <span class="o">&amp;</span> <span class="n">StandardOutput</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">_dup2</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">m_channels</span> <span class="o">&amp;</span> <span class="n">StandardError</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">_dup2</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+</span><span class='line'><span class="n">_close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Anonymous pipes created with CreatePipe() do not support asynchronous I/O, so named pipe is used.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">static</span> <span class="kt">void</span> <span class="n">createWinPipe</span><span class="p">(</span><span class="n">HANDLE</span> <span class="o">&amp;</span><span class="n">hRead</span><span class="p">,</span> <span class="n">HANDLE</span> <span class="o">&amp;</span><span class="n">hWrite</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">QString</span> <span class="n">pipeName</span> <span class="o">=</span> <span class="n">QString</span><span class="o">::</span><span class="n">fromLatin1</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\\\\</span><span class="s">.</span><span class="se">\\</span><span class="s">pipe</span><span class="se">\\</span><span class="s">stdoutredirector-%1&quot;</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">QUuid</span><span class="o">::</span><span class="n">createUuid</span><span class="p">().</span><span class="n">toString</span><span class="p">());</span>
+</span><span class='line'>    <span class="n">SECURITY_ATTRIBUTES</span> <span class="n">attributes</span> <span class="o">=</span> <span class="p">{</span><span class="k">sizeof</span><span class="p">(</span><span class="n">SECURITY_ATTRIBUTES</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">false</span><span class="p">};</span>
+</span><span class='line'>    <span class="n">hRead</span> <span class="o">=</span> <span class="o">::</span><span class="n">CreateNamedPipe</span><span class="p">((</span><span class="kt">wchar_t</span><span class="o">*</span><span class="p">)</span><span class="n">pipeName</span><span class="p">.</span><span class="n">utf16</span><span class="p">(),</span> <span class="n">PIPE_ACCESS_INBOUND</span> <span class="o">|</span> <span class="n">FILE_FLAG_OVERLAPPED</span><span class="p">,</span>
+</span><span class='line'>                                  <span class="n">PIPE_TYPE_BYTE</span> <span class="o">|</span> <span class="n">PIPE_WAIT</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attributes</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">SECURITY_ATTRIBUTES</span> <span class="n">attributes2</span> <span class="o">=</span> <span class="p">{</span><span class="k">sizeof</span><span class="p">(</span><span class="n">SECURITY_ATTRIBUTES</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">true</span><span class="p">};</span>
+</span><span class='line'>    <span class="n">hWrite</span> <span class="o">=</span> <span class="o">::</span><span class="n">CreateFile</span><span class="p">((</span><span class="kt">wchar_t</span><span class="o">*</span><span class="p">)</span><span class="n">pipeName</span><span class="p">.</span><span class="n">utf16</span><span class="p">(),</span> <span class="n">GENERIC_WRITE</span><span class="p">,</span>
+</span><span class='line'>                        <span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attributes2</span><span class="p">,</span> <span class="n">OPEN_EXISTING</span><span class="p">,</span> <span class="n">FILE_FLAG_OVERLAPPED</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">::</span><span class="n">ConnectNamedPipe</span><span class="p">(</span><span class="n">hRead</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>QWindowsPipeReader is used to watch the pipe read end.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">pipeReader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">QWindowsPipeReader</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'><span class="n">pipeReader</span><span class="o">-&gt;</span><span class="n">setHandle</span><span class="p">(</span><span class="n">hRead</span><span class="p">);</span>
+</span><span class='line'><span class="n">pipeReader</span><span class="o">-&gt;</span><span class="n">startAsyncRead</span><span class="p">();</span>
+</span><span class='line'><span class="n">connect</span><span class="p">(</span><span class="n">pipeReader</span><span class="p">,</span> <span class="n">SIGNAL</span><span class="p">(</span><span class="n">readyRead</span><span class="p">()),</span> <span class="k">this</span><span class="p">,</span> <span class="n">SIGNAL</span><span class="p">(</span><span class="n">readyRead</span><span class="p">()));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Posix</h3>
+
+<ul>
+<li>First, we create a pipe, then make the writable end of the pipe the new stdout, and finally, read from the readable part of the pipe.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">::</span><span class="n">pipe</span><span class="p">(</span><span class="n">pipeEnds</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">m_channels</span> <span class="o">&amp;</span> <span class="n">StandardOutput</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">::</span><span class="n">dup2</span><span class="p">(</span><span class="n">pipeEnds</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">m_channels</span> <span class="o">&amp;</span> <span class="n">StandardError</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">::</span><span class="n">dup2</span><span class="p">(</span><span class="n">pipeEnds</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">);</span>
+</span><span class='line'><span class="o">::</span><span class="n">close</span><span class="p">(</span><span class="n">pipeEnds</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>QSocketNotifier is used in order to monitor the activity  of the pipe-read-end.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">socketNotifier</span> <span class="o">=</span> <span class="k">new</span> <span class="n">QSocketNotifier</span><span class="p">(</span><span class="n">pipeEnds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">QSocketNotifier</span><span class="o">::</span><span class="n">Read</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+</span><span class='line'><span class="n">connect</span><span class="p">(</span><span class="n">socketNotifier</span><span class="p">,</span> <span class="n">SIGNAL</span><span class="p">(</span><span class="n">activated</span><span class="p">(</span><span class="kt">int</span><span class="p">)),</span> <span class="k">this</span><span class="p">,</span> <span class="n">SLOT</span><span class="p">(</span><span class="n">onSocketActivated</span><span class="p">()));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Note that QSocketNotifier will keep emitting signal if data exists in the pipe, while our readyRead() only emit when new data arrival, so QRingBuffer is used as a buffer.</li>
+</ul>
+
+
+<h2>Issues</h2>
+
+<ul>
+<li>[Windows]Can&#8217;t capture the stdout output generated by another dlls.</li>
+</ul>
+
+
+<p>If the dll compiled with a c/c++ run-time which is different from the run-time used by current application, or the run-time staticly linked to the dll or application, we will encounter this problem.</p>
+
+<p>The reason is that, the DLL grabs the stdout handles when it is loaded, which  took place before we changed the stdout handles. Dynamically load the DLL after changing the stdout handles will be helpful in this case.</p>
+
+<ul>
+<li>[Windows]Can&#8217;t capture the output of qDebug()</li>
+</ul>
+
+
+<p>When the application build as a GUI application(without CONFIG += console in the .pro file), the debug messages will be send to the Debuger using the system api OutputDebugString().</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">OutputDebugString</span><span class="p">(</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span> <span class="kt">wchar_t</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">logMessage</span><span class="p">.</span><span class="n">utf16</span><span class="p">()));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If <code>CONFIG+=console</code> is added to the .pro file, the debug message will be sent to the stderr.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;%s&quot;</span><span class="p">,</span> <span class="n">logMessage</span><span class="p">.</span><span class="n">toLocal8Bit</span><span class="p">().</span><span class="n">constData</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://support.microsoft.com/kb/q105305">INFO: Calling CRT Output Routines from a GUI Application </a></li>
+<li><a href="http://homepage.ntlworld.com./jonathan.deboynepollard/FGA/redirecting-standard-io.html">Redirecting standard I/O from within a program</a></li>
+<li><a href="http://www.halcyon.com/~ast/dload/guicon.htm">Adding Console I/O to a Win32 GUI App</a></li>
+<li><a href="http://stackoverflow.com/questions/3202654/will-loading-a-dll-dynamically-reconcile-its-stderr-to-a-main-application-if-so">Will loading a DLL dynamically reconcile its stderr to a main application? If so, then how…?</a></li>
+<li><a href="http://stackoverflow.com/questions/5911147/how-to-redirect-printf-output-back-into-code">How to redirect printf output back into code?</a></li>
+<li><a href="http://social.msdn.microsoft.com/Forums/vstudio/en-US/a111b4c6-c491-4586-8fcb-2ad67bfbbae8/is-setstdhandlestdoutputhandle-broken-under-windows-7-">Is SetStdHandle(STD_OUTPUT_HANDLE, ..) broken under windows 7 ?? </a></li>
+<li><a href="http://www.adras.com/Redirect-stderr-stdout-to-a-file-using-SetStdHandle.t8132-144.html">Redirect stderr/stdout to a file using SetStdHandle</a></li>
+<li><a href="http://fixunix.com/programmer/95541-converting-file*-handle.html">Converting a FILE* to a HANDLE ?</a></li>
+<li><a href="http://lists.qt.nokia.com/public/qt-interest/2011-January/030998.html">How to capture stdout and redirect it to the gui?</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Qt Macro: Q_DECLARE_INTERFACE]]></title>
