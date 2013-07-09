@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Qt5 | 1+1=2]]></title>
   <link href="http://blog.debao.me/categories/qt5/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2013-07-05T17:34:46+08:00</updated>
+  <updated>2013-07-09T11:38:44+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -18,9 +18,13 @@
     <link href="http://blog.debao.me/2013/07/redirect-current-processs-stdout-to-a-widget-such-as-qtextedit/"/>
     <updated>2013-07-05T17:26:00+08:00</updated>
     <id>http://blog.debao.me/2013/07/redirect-current-processs-stdout-to-a-widget-such-as-qtextedit</id>
-    <content type="html"><![CDATA[<p>Note:
-* Source code can be got from https://github.com/dbzhang800/StdoutRedirector
-* This class can only be used in Qt5, as QWindowsPipeReader which is introduced in Qt5.0 is used.</p>
+    <content type="html"><![CDATA[<p>Note:</p>
+
+<ul>
+<li>Source code can be got from https://github.com/dbzhang800/StdoutRedirector</li>
+<li>This class can only be used in Qt5, as QWindowsPipeReader which is introduced in Qt5.0 is used.</li>
+</ul>
+
 
 <h2>Implementation</h2>
 

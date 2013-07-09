@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Qt | 1+1=2]]></title>
   <link href="http://blog.debao.me/categories/qt/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2013-07-05T17:34:46+08:00</updated>
+  <updated>2013-07-09T11:38:44+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -14,13 +14,295 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Link Confilict between SDL and Qt under Windows]]></title>
+    <link href="http://blog.debao.me/2013/07/link-confilict-between-sdl-and-qt-under-windows/"/>
+    <updated>2013-07-09T09:22:00+08:00</updated>
+    <id>http://blog.debao.me/2013/07/link-confilict-between-sdl-and-qt-under-windows</id>
+    <content type="html"><![CDATA[<p>Someone complain that, when using SDL and Qt in the same project under Windows, the linker will generate link error.</p>
+
+<blockquote><p>SDLmain.lib(SDL_win32_main.obj):-1: error: LNK2005: _WinMain@16 already defined in qtmaind.lib(qtmain_win.obj)</p></blockquote>
+
+<p>What happened behined this?</p>
+
+<p>```</p>
+
+<h1>include <QApplication></h1>
+
+<h1>include &lt;SDL.h></h1>
+
+<p>int main(int argc, char** argv)
+{
+return 0;
+}
+```</p>
+
+<h2>WinMain vs main</h2>
+
+<p>The C and C++ standards require any program to have a function called <em>main</em>, which serves as the program's startup function. It can have one of the following signatures:</p>
+
+<p><code>
+int main()
+int main(int argc, char* argv[])
+</code></p>
+
+<p>However, <em>WinMain</em> is selected by Microsoft as the conventional name used for the GUI application entry point.</p>
+
+<p><code>
+int CALLBACK WinMain(
+  _In_  HINSTANCE hInstance,
+  _In_  HINSTANCE hPrevInstance,
+  _In_  LPSTR lpCmdLine,
+  _In_  int nCmdShow
+);
+</code></p>
+
+<p>As a crossplatform library, both SDL and Qt don't require user to use the <em>WinMain</em> function to create GUI application for Windows. Instead, they both provided a <strong>WinMain()</strong> for us.</p>
+
+<h2>WinMain provided by Qt</h2>
+
+<h3>qtmain.lib provided by Qt</h3>
+
+<p>As a Qt developer, we all know that, when ceating a GUI application under windows. qtmain.lib(or libqtmain.a) will be linked to the application.</p>
+
+<p>If we open the source file of the library, we can see that our <em>main()</em> entry is called by a wrapped function WinMain()</p>
+
+<p>```cpp  %QTDIR%/src/winmain/qtmain_win.cpp
+/<em>
+  WinMain() - Initializes Windows and calls user's startup function main().
+  NOTE: WinMain() won't be called if the application was linked as a "console"
+  application.
+</em>/</p>
+
+<p>extern "C"
+int APIENTRY WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR, int cmdShow)
+{
+...</p>
+
+<pre><code>int result = main(argc, argv.data());
+</code></pre>
+
+<p>...
+}
+```</p>
+
+<p>Very insteresting, isn't it? But</p>
+
+<h3>This work well for MSVC though, but not for MinGW</h3>
+
+<p>Consider we have a simple windows application which contians both main() and WinMain()</p>
+
+<p>```cpp</p>
+
+<h1>include &lt;windows.h></h1>
+
+<p>int main()
+{
+  MessageBoxW (NULL, L"Hello World from main!", L"hello", MB_OK | MB_ICONINFORMATION);
+  return 0;
+}</p>
+
+<p>int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInst, LPTSTR lpCmdLine, int nShowCmd)
+{
+  MessageBoxW (NULL, L"Hello World from WinMain!", L"hello", MB_OK | MB_ICONINFORMATION);
+  return 0;
+}
+<code>
+* For MSVC, WinMain() or main() will be used depending on whether</code>/entry:WinMainCRTStartup``` is passed to the linker or not.
+* For MinGW, WinMain() will never be called if main() exists!</p>
+
+<h3>How to solve this problem for MinGW</h3>
+
+<p>Let's see what happened when build a Qt Gui application under Windows.</p>
+
+<p>In Qt souce file qwindowdefs.h or qtmain_win.cpp, we can find following code.
+```cpp</p>
+
+<h1>if defined(QT_NEEDS_QMAIN)</h1>
+
+<h1>define main qMain</h1>
+
+<h1>endif</h1>
+
+<p>```</p>
+
+<p>So <em>main()</em> doesn't exist any more when QT_NEEDS_QMAIN is defined!</p>
+
+<h3>What happened for Gui Application?</h3>
+
+<p>We know that,</p>
+
+<p><code>
+CONFIG += windows
+</code>
+is the default config of qmake, and that's why we have to add</p>
+
+<p><code>
+CONFIG += console
+</code></p>
+
+<p>if when want to create a mormal console application.</p>
+
+<p>The former will force the qmake to load a feature file called <em>windows.prf</em>, in which we can find fowllowing code:</p>
+
+<p>```
+CONFIG -= console
+contains(TEMPLATE, ".*app"){</p>
+
+<pre><code>QMAKE_LFLAGS += $$QMAKE_LFLAGS_WINDOWS
+win32-g++:DEFINES += QT_NEEDS_QMAIN
+win32-borland:DEFINES += QT_NEEDS_QMAIN
+
+qt:for(entryLib, $$list($$unique(QMAKE_LIBS_QT_ENTRY))) {
+    isEqual(entryLib, -lqtmain): {
+        CONFIG(debug, debug|release): QMAKE_LIBS += $${entryLib}$${QT_LIBINFIX}d
+        else: QMAKE_LIBS += $${entryLib}$${QT_LIBINFIX}
+    } else {
+        QMAKE_LIBS += $${entryLib}
+    }
+}
+</code></pre>
+
+<p>}
+```
+As you can see, three things done here:</p>
+
+<ul>
+<li>Windows subsystem instead of console subsystem is linked, so no black-cmd-window will be shown when the application running. Note that, <code>$$QMAKE_LFLAGS_WINDOWS</code> will be expanded to <code>/subsystem:windows</code> or <code>-Wl,-subsystem,windows</code>.</li>
+<li><code>QT_NEEDS_QMAIN</code> is defined for MinGW, so main() will be renamed to qMain which will be called by WinMain()</li>
+<li><code>qtmain.lib</code> is passed to the linked which provides the definition of WinMain().</li>
+</ul>
+
+
+<h2>WinMain provided by SDL</h2>
+
+<p>Now, consider that we have familiar what's happpened in Qt, it's time to go into the SDL.</p>
+
+<h3>WinMain is provided by SDLmain.lib</h3>
+
+<p>Source code is more or less like this
+```cpp
+/<em> This is where execution begins [console apps] </em>/
+int
+console_main(int argc, char *argv[])
+{
+//...</p>
+
+<pre><code>/* Run the application main() code */
+status = SDL_main(argc, argv);
+</code></pre>
+
+<p>//...
+}</p>
+
+<p>/<em> This is where execution begins [windowed apps] </em>/
+int WINAPI
+WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
+{</p>
+
+<pre><code>char **argv;
+int argc;
+char *cmdline;
+</code></pre>
+
+<p>//...</p>
+
+<pre><code>/* Run the main program */
+console_main(argc, argv);
+</code></pre>
+
+<p>//...
+}
+```</p>
+
+<p>As we can see, a function named SDL_main() is called by WinMain here, but in where is this function defined?</p>
+
+<p>```cpp SDL_main.h</p>
+
+<h1>define main    SDL_main</h1>
+
+<p>```</p>
+
+<h2>How to solve the confilict between the two WinMain()</h2>
+
+<p>Very interesting ^_^</p>
+
+<ul>
+<li>Qt: WinMain() provided by qtmain.lib</li>
+<li>SDL: WinMain() provided by SDLmain.lib</li>
+<li>Qt: main() is redefined to qMain() for MinGW</li>
+<li>SDL: main() is redefined to SDL_main() always</li>
+</ul>
+
+
+<p>Consider that</p>
+
+<ul>
+<li>WinMain() in SDLmain.lib provide some initialization for SDL, while WinMain() in qtmain.lib not provide such thing for Qt.</li>
+<li>SDLmain is provided for all platform, while qtmain is for Windows only.</li>
+</ul>
+
+
+<p>We tended to use the WinMain() provided by SDLmain.lib instead of qtmain.lib</p>
+
+<p>So we can simply add following line to the .pro file to solve the  <code>_WinMain@16</code> conflict.</p>
+
+<p><code>
+win32:QMAKE_LIBS_QT_ENGTRY -= -lqtmain
+</code></p>
+
+<p>Though this works very for MSVC, but not that well for MinGW. As this cause macro re-definition, and whether the application can be linked successfully will depend on the order of the headers included.</p>
+
+<p>```cpp
+//Qt</p>
+
+<h1>if defined(QT_NEEDS_QMAIN)</h1>
+
+<h1>define main qMain</h1>
+
+<h1>endif</h1>
+
+<p>//SDL</p>
+
+<h1>define main    SDL_main</h1>
+
+<p>```</p>
+
+<p>So another line is needed</p>
+
+<p><code>
+win32:QMAKE_LIBS_QT_ENGTRY -= -lqtmain
+win32-g++:DEFINES -= QT_NEEDS_QMAIN
+</code></p>
+
+<p>or we can disable windows application facility provided by qmake totally, then do it ourself.</p>
+
+<p><code>
+CONFIG-= windows
+QMAKE_LFLAGS += $$QMAKE_LFLAGS_WINDOWS
+</code></p>
+
+<h2>Reference</h2>
+
+<ul>
+<li>http://wiki.libsdl.org/moin.fcg/FAQWindows</li>
+<li>http://blog.csdn.net/dbzhang800/article/details/6358996</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Redirect current process's stdout to a Widget such as QTextEdit]]></title>
     <link href="http://blog.debao.me/2013/07/redirect-current-processs-stdout-to-a-widget-such-as-qtextedit/"/>
     <updated>2013-07-05T17:26:00+08:00</updated>
     <id>http://blog.debao.me/2013/07/redirect-current-processs-stdout-to-a-widget-such-as-qtextedit</id>
-    <content type="html"><![CDATA[<p>Note:
-* Source code can be got from https://github.com/dbzhang800/StdoutRedirector
-* This class can only be used in Qt5, as QWindowsPipeReader which is introduced in Qt5.0 is used.</p>
+    <content type="html"><![CDATA[<p>Note:</p>
+
+<ul>
+<li>Source code can be got from https://github.com/dbzhang800/StdoutRedirector</li>
+<li>This class can only be used in Qt5, as QWindowsPipeReader which is introduced in Qt5.0 is used.</li>
+</ul>
+
 
 <h2>Implementation</h2>
 
