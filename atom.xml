@@ -4,7 +4,7 @@
   <title><![CDATA[1+1=2]]></title>
   <link href="http://blog.debao.me/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2013-07-09T11:38:44+08:00</updated>
+  <updated>2013-07-16T13:44:36+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -12,6 +12,153 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[left shift operator overloading for QDebug()]]></title>
+    <link href="http://blog.debao.me/2013/07/left-shift-operator-overloading-for-qdebug/"/>
+    <updated>2013-07-16T10:04:00+08:00</updated>
+    <id>http://blog.debao.me/2013/07/left-shift-operator-overloading-for-qdebug</id>
+    <content type="html"><![CDATA[<p>Consider that we have create a custom type:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">struct</span> <span class="n">Point</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="n">Point</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span><span class="p">)</span><span class="o">:</span><span class="n">x</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">y</span><span class="p">(</span><span class="n">y</span><span class="p">){}</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">x</span><span class="p">;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">y</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If we want to make it work with qDebug(), we need to implement a streaming operator:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">QDebug</span> <span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">QDebug</span> <span class="n">dbg</span><span class="p">,</span> <span class="k">const</span> <span class="n">Point</span> <span class="o">&amp;</span><span class="n">p</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But, wait &#8230;</p>
+
+<p>When we using pure c++, what we do is:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">ostream</span> <span class="o">&amp;</span><span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">ostream</span> <span class="o">&amp;</span><span class="n">out</span><span class="p">,</span> <span class="k">const</span> <span class="n">Point</span> <span class="o">&amp;</span><span class="n">p</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Why QDebug object is passed by value instead of reference?</strong></p>
+
+<h2>qDebug() vs. std::cout</h2>
+
+<p>In first glance, qDebug() is very similiar to std::cout.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;From Qt qDebug()&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;From C++ std::cout&quot;</span><span class="o">&lt;&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>However, each time we call qDebug(), a <em>new</em> <code>QDebug</code> object will be created.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">QDebug</span> <span class="n">qDebug</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">QDebug</span><span class="p">(</span><span class="n">QtDebugMsg</span><span class="p">);</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>while std::cout is a <em>global</em> <code>std::ostream</code> object, the header file iostream is more or less like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">namespace</span> <span class="n">std</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">extern</span> <span class="n">ostream</span> <span class="n">cout</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">static</span> <span class="n">ios_base</span><span class="o">::</span><span class="n">Init</span> <span class="n">__ioinit</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Why reference doesn&#8217;t work for QDebug</h2>
+
+<p>We know that,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">qDebug</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">Point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>can be wrriten as:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">QDebug</span><span class="p">(</span><span class="n">QtDebugMsg</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">Point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Which can also be wrriten as:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">operator</span> <span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">QDebug</span><span class="p">(</span><span class="n">QtDebugMsg</span><span class="p">),</span> <span class="n">Point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As we can see, a temporary QDebug object is passed to the function in above statements.</p>
+
+<p>But in C++, we know that,</p>
+
+<blockquote><p>A temporary cannot be bound to a non-const reference.</p></blockquote>
+
+<p>That why</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">QDebug</span> <span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">QDebug</span> <span class="n">dbg</span><span class="p">,</span> <span class="k">const</span> <span class="n">Point</span> <span class="o">&amp;</span><span class="n">p</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>should be used instead of</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">QDebug</span> <span class="o">&amp;</span> <span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">QDebug</span> <span class="o">&amp;</span><span class="n">dbg</span><span class="p">,</span> <span class="k">const</span> <span class="n">Point</span> <span class="o">&amp;</span><span class="n">p</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Problem?</h2>
+
+<p>Some one complain that, though</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">QDebug</span> <span class="o">&amp;</span> <span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">QDebug</span> <span class="o">&amp;</span><span class="n">dbg</span><span class="p">,</span> <span class="k">const</span> <span class="n">Point</span> <span class="o">&amp;</span><span class="n">p</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>doesn&#8217;t work for <code>qDebug()&lt;&lt;Point(1,2);</code>, but it  indeed works for <code>qDebug()&lt;&lt;""&lt;&lt;Point(1,2);</code>. Why?</p>
+
+<p>The latter statement can be re-written as</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">operator</span> <span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">QDebug</span><span class="p">(</span><span class="n">QtDebugMsg</span><span class="p">).</span><span class="k">operator</span> <span class="o">&lt;&lt;</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">),</span> <span class="n">Point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and note that, QDebug has provided the member function for type <code>char *</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">QDebug</span> <span class="o">&amp;</span> <span class="n">QDebug</span><span class="o">::</span><span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">s</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>in which a reference to current QDebug object is return.</p>
+
+<p>So C++ compiler will be happy with this now.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Link Confilict between SDL and Qt under Windows]]></title>
