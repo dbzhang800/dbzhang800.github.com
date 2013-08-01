@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Qt5 | 1+1=2]]></title>
   <link href="http://blog.debao.me/categories/qt5/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2013-07-16T13:44:36+08:00</updated>
+  <updated>2013-08-01T12:39:54+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -255,12 +255,14 @@ if (strcmp(iname, "me.debao.qt.myinterface")==0) return static_cast&lt;MyInterfa
 
 <p>This macro is being used to declare meta data which will be part of plugin. Then these data can be obtained without load the plugin.</p>
 
+<p><strong>NOTE: The plugin IID has nothing todo with the INTERFACES IID.</strong></p>
+
 <p>```cpp
 class PluginObject : public QObject, public MyInterface
 {</p>
 
 <pre><code>Q_OBJECT
-Q_PLUGIN_METADATA(IID "me.dabao.qt.myinterface" FILE "abc.json")
+Q_PLUGIN_METADATA(IID "me.dabao.qt.myplugin" FILE "abc.json")
 Q_INTERFACES(MyInterface)
 </code></pre>
 
@@ -307,6 +309,71 @@ In macro QT_MOC_EXPORT_PLUGIN, two C functions get exported.
         { return (const char *)qt_pluginMetaData; } \
         Q_EXTERN_C Q_DECL_EXPORT QT_PREPEND_NAMESPACE(QObject) *qt_plugin_instance() \
         Q_PLUGIN_INSTANCE(PLUGINCLASS)
+</code></pre>
+
+<p>```</p>
+
+<h3>Magic in moc</h3>
+
+<p>All the magic of this macro can be found in the source code of moc:</p>
+
+<p>```cpp
+void Generator::generatePluginMetaData()
+{</p>
+
+<pre><code>if (cdef-&gt;pluginData.iid.isEmpty())
+    return;
+
+// Write plugin meta data #ifdefed QT_NO_DEBUG with debug=false,
+// true, respectively.
+
+QJsonObject data;
+const QString debugKey = QStringLiteral("debug");
+data.insert(QStringLiteral("IID"), QLatin1String(cdef-&gt;pluginData.iid.constData()));
+data.insert(QStringLiteral("className"), QLatin1String(cdef-&gt;classname.constData()));
+data.insert(QStringLiteral("version"), (int)QT_VERSION);
+data.insert(debugKey, QJsonValue(false));
+data.insert(QStringLiteral("MetaData"), cdef-&gt;pluginData.metaData.object());
+
+fputs("\nQT_PLUGIN_METADATA_SECTION const uint qt_section_alignment_dummy = 42;\n\n"
+      "#ifdef QT_NO_DEBUG\n", out);
+writePluginMetaData(out, data);
+
+fputs("\n#else // QT_NO_DEBUG\n", out);
+
+data.remove(debugKey);
+data.insert(debugKey, QJsonValue(true));
+writePluginMetaData(out, data);
+
+fputs("#endif // QT_NO_DEBUG\n\n", out);
+
+// 'Use' all namespaces.
+int pos = cdef-&gt;qualified.indexOf("::");
+for ( ; pos != -1 ; pos = cdef-&gt;qualified.indexOf("::", pos + 2) )
+    fprintf(out, "using namespace %s;\n", cdef-&gt;qualified.left(pos).constData());
+fprintf(out, "QT_MOC_EXPORT_PLUGIN(%s, %s)\n\n",
+        cdef-&gt;qualified.constData(), cdef-&gt;classname.constData());
+</code></pre>
+
+<p>}
+```</p>
+
+<p>All the data can be retrieved through QPluginLoader before we really load the library.</p>
+
+<p><code>cpp
+QJsonObject QPluginLoader::metaData() const
+</code></p>
+
+<p>For example:</p>
+
+<p>```cpp</p>
+
+<pre><code>    QPluginLoader pluginLoader(fileName);
+    QString iid = pluginLoader.metaData().value("IID").toString();
+    if (iid == "my_plugin_iid") {
+        pluginLoader.load();
+        //...
+    }
 </code></pre>
 
 <p>```</p>
