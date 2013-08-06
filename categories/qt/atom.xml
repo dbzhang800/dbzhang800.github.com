@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Qt | 1+1=2]]></title>
   <link href="http://blog.debao.me/categories/qt/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2013-08-01T12:39:54+08:00</updated>
+  <updated>2013-08-06T17:22:44+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -12,6 +12,483 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How to use QThread in the right way (Part 1)]]></title>
+    <link href="http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-1/"/>
+    <updated>2013-08-05T17:34:00+08:00</updated>
+    <id>http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-1</id>
+    <content type="html"><![CDATA[<h2>A short history</h2>
+
+<p>Long long ago, <strong>subclass QThread and reimplement its run() function</strong> is the only recommended way of using QThread. This is rather intuitive and easy to used. But when SLOTS or Qt Event System are used in the worker thread, some users <a href="http://blog.qt.digia.com/blog/2010/06/17/youre-doing-it-wrong/">do it wrong</a>. So Bradley T. Hughes, one of the Qt core developers, recommend that <strong>use worker objects by moving them to the thread using QObject::moveToThread</strong> . Unfortunately, some users don't understand the relationship of two usages and and some others thought that the former usage is totally wrong. So Olivier Goffart, one of the former Qt core developers, tell the users: <a href="http://woboq.com/blog/qthread-you-were-not-doing-so-wrong.html">You were not doing so wrong</a>. Finally, we can find both usages in the documentation of QThread.</p>
+
+<h2>QThread::run() is the thread entry point</h2>
+
+<p>From the Qt Documentation, we can see that</p>
+
+<blockquote><p>A QThread instance represents a thread and provides the means to start() a thread, which will then execute the reimplementation of QThread::run(). The run() implementation is for a thread what the main() entry point is for the application.</p></blockquote>
+
+<p>As QThread::run() is the thread entry point, it is rather intuitive to use the Usage 1.</p>
+
+<h2>Usage 1-0</h2>
+
+<p>To run some code in a new thread, subclass QThread and reimplement its run() function.</p>
+
+<p>For example</p>
+
+<p>```cpp</p>
+
+<h1>include <QtCore></h1>
+
+<p>class Thread : public QThread
+{
+private:</p>
+
+<pre><code>void run()
+{
+    qDebug()&lt;&lt;"From worker thread: "&lt;&lt;currentThreadId();
+}
+</code></pre>
+
+<p>};</p>
+
+<p>int main(int argc, char *argv[])
+{</p>
+
+<pre><code>QCoreApplication a(argc, argv);
+qDebug()&lt;&lt;"From main thread: "&lt;&lt;QThread::currentThreadId();
+
+Thread t;
+QObject::connect(&amp;t, SIGNAL(finished()), &amp;a, SLOT(quit()));
+
+t.start();
+return a.exec();
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The output more or less look like:</p>
+
+<pre><code>From main thread:  0x15a8 
+From worker thread:  0x128c 
+</code></pre>
+
+<h2>Usage 1-1</h2>
+
+<p>As QThread::run() is the thread entry point, so it easy to undersand that, all the codes that are not get called in the run() function directly won't be executed in the worker thread.</p>
+
+<p>In the following example, the member variable <code>m_stop</code> will be operated by both stop() and run(). Consider that the former will be executed in main thread while the latter is executed in worker thread, mutex or other facility is needed.</p>
+
+<p>```cpp</p>
+
+<h1>if QT_VERSION>=0x050000</h1>
+
+<h1>include <QtWidgets></h1>
+
+<h1>else</h1>
+
+<h1>include <QtGui></h1>
+
+<h1>endif</h1>
+
+<p>class Thread : public QThread
+{</p>
+
+<pre><code>Q_OBJECT
+</code></pre>
+
+<p>public:</p>
+
+<pre><code>Thread():m_stop(false)
+{}
+</code></pre>
+
+<p>public slots:</p>
+
+<pre><code>void stop()
+{
+    qDebug()&lt;&lt;"Thread::stop called from main thread: "&lt;&lt;currentThreadId();
+    QMutexLocker locker(&amp;m_mutex);
+    m_stop=true;
+}
+</code></pre>
+
+<p>private:</p>
+
+<pre><code>QMutex m_mutex;
+bool m_stop;
+
+void run()
+{
+    qDebug()&lt;&lt;"From worker thread: "&lt;&lt;currentThreadId();
+    while (1) {
+        {
+        QMutexLocker locker(&amp;m_mutex);
+        if (m_stop) break;
+        }
+        msleep(10);
+    }
+}
+</code></pre>
+
+<p>};</p>
+
+<h1>include "main.moc"</h1>
+
+<p>int main(int argc, char *argv[])
+{</p>
+
+<pre><code>QApplication a(argc, argv);
+qDebug()&lt;&lt;"From main thread: "&lt;&lt;QThread::currentThreadId();
+QPushButton btn("Stop Thread");
+Thread t;
+
+QObject::connect(&amp;btn, SIGNAL(clicked()), &amp;t, SLOT(stop()));
+QObject::connect(&amp;t, SIGNAL(finished()), &amp;a, SLOT(quit()));
+
+t.start();
+btn.show();
+return a.exec();
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The output is more or less like</p>
+
+<pre><code>From main thread:  0x13a8 
+From worker thread:  0xab8 
+Thread::stop called from main thread:  0x13a8
+</code></pre>
+
+<p>You can see that the Thread::stop() is executed in the main thread.</p>
+
+<h2>Usage 1-2 (Wrong Usage)</h2>
+
+<p>Though above examples are easy to understand, but it's not so intuitive when event system(or queued-connection) is introduced in worker thread.</p>
+
+<p>For example, what should we do if we want to do something periodly in the worker thread?</p>
+
+<ul>
+<li>Create a QTimer in the Thread::run()</li>
+<li>Connect the timeout signal to the slot of Thread</li>
+</ul>
+
+
+<p>```cpp</p>
+
+<h1>include <QtCore></h1>
+
+<p>class Thread : public QThread
+{</p>
+
+<pre><code>Q_OBJECT
+</code></pre>
+
+<p>private slots:</p>
+
+<pre><code>void onTimeout()
+{
+    qDebug()&lt;&lt;"Thread::onTimeout get called from? : "&lt;&lt;QThread::currentThreadId();
+}
+</code></pre>
+
+<p>private:</p>
+
+<pre><code>void run()
+{
+    qDebug()&lt;&lt;"From worker thread: "&lt;&lt;currentThreadId();
+    QTimer timer;
+    connect(&amp;timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
+    timer.start(1000);
+
+    exec();
+}
+</code></pre>
+
+<p>};</p>
+
+<h1>include "main.moc"</h1>
+
+<p>int main(int argc, char *argv[])
+{</p>
+
+<pre><code>QCoreApplication a(argc, argv);
+qDebug()&lt;&lt;"From main thread: "&lt;&lt;QThread::currentThreadId();
+
+Thread t;
+t.start();
+
+return a.exec();
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>At first glance, the code seems fine. When the thread starts executing, we setup a QTimer thats going to run in the current thread's event queue. We connect the <code>onTimeout()</code>  to the timeout signal. Then we except it works in the worker thread?</p>
+
+<p>But, the result of the example is</p>
+
+<pre><code>From main thread:  0x13a4 
+From worker thread:  0x1330 
+Thread::onTimeout get called from?:  0x13a4 
+Thread::onTimeout get called from?:  0x13a4 
+Thread::onTimeout get called from?:  0x13a4 
+</code></pre>
+
+<p>Very interesting, isn't it? (We will discuss what happened behined this in next blog)</p>
+
+<h3>How to solve this problem</h3>
+
+<p>In order to make the this SLOT works in the worker thread, some one pass the <code>Qt::DirectConnection</code> to the connect() function,</p>
+
+<p>```cpp</p>
+
+<pre><code>    connect(&amp;timer, SIGNAL(timeout()), this, SLOT(onTimeout()), Qt::DirectConnection);
+</code></pre>
+
+<p>```</p>
+
+<p>and some other add following line to the thread constructor.</p>
+
+<p>```cpp</p>
+
+<pre><code>    moveToThread(this)
+</code></pre>
+
+<p>```</p>
+
+<p>Both of them work as expected. But ...</p>
+
+<p><a href="http://blog.qt.digia.com/blog/2010/06/17/youre-doing-it-wrong/">The second usage is wrong</a>,</p>
+
+<blockquote><p>Even though this seems to work, it’s confusing, and not how QThread was designed to be used(all of the functions in QThread were written and intended to be called from the creating thread, not the thread that QThread starts)</p></blockquote>
+
+<p>In fact, according to above statements, the first workaround is wrong too. As onTimeout() which is a member of our Thread object, get called from the creating thread too.</p>
+
+<p>Both of them are bad uasge?! what should we do?</p>
+
+<h2>Usage 1-3</h2>
+
+<p>As none of the member of QThread object are designed to be called from the worker thread. So we must create an independent worker object if we want to use SLOTS.</p>
+
+<p>```cpp</p>
+
+<h1>include <QtCore></h1>
+
+<p>class Worker : public QObject
+{</p>
+
+<pre><code>Q_OBJECT
+</code></pre>
+
+<p>private slots:</p>
+
+<pre><code>void onTimeout()
+{
+    qDebug()&lt;&lt;"Worker::onTimeout get called from?: "&lt;&lt;QThread::currentThreadId();
+}
+</code></pre>
+
+<p>};</p>
+
+<p>class Thread : public QThread
+{</p>
+
+<pre><code>Q_OBJECT
+</code></pre>
+
+<p>private:</p>
+
+<pre><code>void run()
+{
+    qDebug()&lt;&lt;"From work thread: "&lt;&lt;currentThreadId();
+    QTimer timer;
+    Worker worker;
+    connect(&amp;timer, SIGNAL(timeout()), &amp;worker, SLOT(onTimeout()));
+    timer.start(1000);
+
+    exec();
+}
+</code></pre>
+
+<p>};</p>
+
+<h1>include "main.moc"</h1>
+
+<p>int main(int argc, char *argv[])
+{</p>
+
+<pre><code>QCoreApplication a(argc, argv);
+qDebug()&lt;&lt;"From main thread: "&lt;&lt;QThread::currentThreadId();
+
+Thread t;
+t.start();
+
+return a.exec();
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The result of the application is</p>
+
+<pre><code>From main thread:  0x810 
+From work thread:  0xfac 
+Worker::onTimeout get called from?:  0xfac 
+Worker::onTimeout get called from?:  0xfac 
+Worker::onTimeout get called from?:  0xfac 
+</code></pre>
+
+<p>Problem solved now!</p>
+
+<p>Though this works perfect, but you may have notice that, when event loop <code>QThread::exec()</code> is used in the worker thread, the code in the QThread::run() seems has nothing to do with QThread itself.</p>
+
+<p>So can we move the object creation out of the QThread::run(), and at the same time, the slots of they will still be called by the QThread::run()?</p>
+
+<h2>Usage 2-0</h2>
+
+<p>If we only want to make use of QThread::exec(), which has been called by QThread::run() by default, there will be no need to subclass the QThread any more.</p>
+
+<ul>
+<li>Create a Worker object</li>
+<li>Do signal and slot connections</li>
+<li>Move the Worker object to a sub-thread</li>
+<li>Start thread</li>
+</ul>
+
+
+<p>```cpp</p>
+
+<h1>include <QtCore></h1>
+
+<p>class Worker : public QObject
+{</p>
+
+<pre><code>Q_OBJECT
+</code></pre>
+
+<p>private slots:</p>
+
+<pre><code>void onTimeout()
+{
+    qDebug()&lt;&lt;"Worker::onTimeout get called from?: "&lt;&lt;QThread::currentThreadId();
+}
+</code></pre>
+
+<p>};</p>
+
+<h1>include "main.moc"</h1>
+
+<p>int main(int argc, char *argv[])
+{</p>
+
+<pre><code>QCoreApplication a(argc, argv);
+qDebug()&lt;&lt;"From main thread: "&lt;&lt;QThread::currentThreadId();
+
+QThread t;
+QTimer timer;
+Worker worker;
+
+QObject::connect(&amp;timer, SIGNAL(timeout()), &amp;worker, SLOT(onTimeout()));
+timer.start(1000);
+
+timer.moveToThread(&amp;t);
+worker.moveToThread(&amp;t);
+
+t.start();
+
+return a.exec();
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The result is:</p>
+
+<pre><code>From main thread:  0x1310 
+Worker::onTimeout get called from?:  0x121c 
+Worker::onTimeout get called from?:  0x121c 
+Worker::onTimeout get called from?:  0x121c 
+</code></pre>
+
+<p>As expected, the slot doesn't run in the main thread.</p>
+
+<p>In this example, both of the QTimer and Worker are moved to the sub-thread. In fact, moving QTimer to sub-thread is not required.</p>
+
+<h1>Usage 2-1</h1>
+
+<p>Simply remove the line <code>timer.moveToThread(&amp;t);</code> from above example will work as expected too.</p>
+
+<p>```cpp
+int main(int argc, char *argv[])
+{</p>
+
+<pre><code>QCoreApplication a(argc, argv);
+qDebug()&lt;&lt;"From main thread: "&lt;&lt;QThread::currentThreadId();
+
+QThread t;
+QTimer timer;
+Worker worker;
+
+QObject::connect(&amp;timer, SIGNAL(timeout()), &amp;worker, SLOT(onTimeout()));
+timer.start(1000);
+</code></pre>
+
+<p>//    timer.moveToThread(&amp;t);</p>
+
+<pre><code>worker.moveToThread(&amp;t);
+
+t.start();
+
+return a.exec();
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The difference is that:</p>
+
+<p>In last example,</p>
+
+<ul>
+<li>The signal <code>timeout()</code> is emitted from sub-thread</li>
+<li>As timer and worker live in the same thread, their connection type is direct connection.</li>
+<li>The slot get called in the same thead in which signal get emitted.</li>
+</ul>
+
+
+<p>While in this example,</p>
+
+<ul>
+<li>The signal <code>timeout()</code> emitted from main thread,</li>
+<li>As timer and worker live in different threads, their connection type is queued connection.</li>
+<li>The slot get called in its living thread, which is the sub-thread.</li>
+</ul>
+
+
+<p>Thanks to a mechanism called queued connections, it is safe to connect signals and slots across different threads. If all the across threads communication are done though queued connections, the usual multithreading precautions such as QMutex will no longer need to be taken.</p>
+
+<h2>In short</h2>
+
+<ul>
+<li>Subclass QThread and reimplement its run() function is intuitive and there are still many perfectly valid reasons to subclass QThread, but when event loop is used is worker thread, most user can't do it in the right way.</li>
+<li>Use worker objects by moving them to the thread is easy to use when event loop exists, as it has hidden the details of event loop and queued connection.</li>
+</ul>
+
+
+<h2>Reference</h2>
+
+<ul>
+<li>http://blog.qt.digia.com/blog/2010/06/17/youre-doing-it-wrong/</li>
+<li>http://woboq.com/blog/qthread-you-were-not-doing-so-wrong.html</li>
+<li>http://ilearnstuff.blogspot.com/2012/08/when-qthread-isnt-thread.html</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[left shift operator overloading for QDebug()]]></title>
@@ -785,321 +1262,6 @@ QJsonObject QPluginLoader::metaData() const
 
 <ul>
 <li>http://qt-project.org/wiki/QtPlugins</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Qt Macro: Q_DECLARE_METATYPE]]></title>
-    <link href="http://blog.debao.me/2013/06/qt-macro-q-declare-metatype/"/>
-    <updated>2013-06-21T11:29:00+08:00</updated>
-    <id>http://blog.debao.me/2013/06/qt-macro-q-declare-metatype</id>
-    <content type="html"><![CDATA[<h2>QMetaType</h2>
-
-<ul>
-<li>It associates a type name to a type ID, enabling construction and destruction to occur dynamically at runtime.</li>
-<li>QMetaType is used as a helper in QVariant and queued signals and slots connections.</li>
-</ul>
-
-
-<p>```cpp  example1</p>
-
-<h1>include <QtCore></h1>
-
-<p>class MyClass
-{
-public:</p>
-
-<pre><code>MyClass() {qDebug("Created");}
-~MyClass() {qDebug("Destroyed");}
-</code></pre>
-
-<p>};</p>
-
-<p>int main(int argc, char *argv[])
-{</p>
-
-<pre><code>int id = qRegisterMetaType&lt;MyClass&gt;("MyClass");
-
-void *myClassPtr = QMetaType::create(id);
-QMetaType::destroy(id, myClassPtr);
-myClassPtr = 0;
-</code></pre>
-
-<p>}</p>
-
-<p>```
-and</p>
-
-<p>```cpp example2</p>
-
-<h1>include <QtCore></h1>
-
-<p>class MyClass
-{
-public:</p>
-
-<pre><code>MyClass() {qDebug("Created");}
-MyClass(const MyClass&amp; ){qDebug("Copy");}
-~MyClass() {qDebug("Destroyed");}
-</code></pre>
-
-<p>};
-Q_DECLARE_METATYPE(MyClass)</p>
-
-<p>int main(int argc, char *argv[])
-{</p>
-
-<pre><code>MyClass cls;
-QVariant var1 = QVariant::fromValue(cls);
-MyClass cls1 = var1.value&lt;MyClass&gt;();
-</code></pre>
-
-<p>}
-```</p>
-
-<p>The Q_DECLARE_METATYPE() makes the type known to all template based functions, including QVariant. But if we want to use the type in queued signal and slot connections or in QObject's property system, you have to call qRegisterMetaType() since the names are resolved at runtime.</p>
-
-<h2>Q_DECLARE_METATYPE</h2>
-
-<p>This macro is used to specialise the template class QMetaTypeId with typename TYPE, in which, a static member function qt_metatype_id() is defined.</p>
-
-<p>qRegisterMetaType() is called to register the TYPE and generate a TYPE ID. Then the TYPE ID is saved in local static vairable metatype_id.</p>
-
-<p>```cpp</p>
-
-<h1>define Q_DECLARE_METATYPE(TYPE)                                        \</h1>
-
-<pre><code>QT_BEGIN_NAMESPACE                                                  \
-template &lt;&gt;                                                         \
-struct QMetaTypeId&lt; TYPE &gt;                                          \
-{                                                                   \
-    enum { Defined = 1 };                                           \
-    static int qt_metatype_id()                                     \
-        {                                                           \
-            static QBasicAtomicInt metatype_id = Q_BASIC_ATOMIC_INITIALIZER(0); \
-            if (const int id = metatype_id.loadAcquire())           \
-                return id;                                          \
-            const int newId = qRegisterMetaType&lt; TYPE &gt;(#TYPE,      \
-                          reinterpret_cast&lt; TYPE *&gt;(quintptr(-1))); \
-            metatype_id.storeRelease(newId);                        \
-            return newId;                                           \
-        }                                                           \
-};                                                                  \
-QT_END_NAMESPACE
-</code></pre>
-
-<p>```</p>
-
-<p>Note that, for Qt's builtin types, <code>Q_DECLARE_BUILTIN_METATYPE</code> instead of <code>Q_DECLARE_METATYPE</code> is used. The ids of these types are constant.
-```</p>
-
-<h1>define Q_DECLARE_BUILTIN_METATYPE(TYPE, METATYPEID, NAME) \</h1>
-
-<pre><code>QT_BEGIN_NAMESPACE \
-template&lt;&gt; struct QMetaTypeId2&lt;NAME&gt; \
-{ \
-    enum { Defined = 1, IsBuiltIn = true, MetaType = METATYPEID };   \
-    static inline Q_DECL_CONSTEXPR int qt_metatype_id() { return METATYPEID; } \
-}; \
-QT_END_NAMESPACE
-</code></pre>
-
-<p>```
-Olivier Goffart said that,
-<blockquote><p>I beleive it has been added so adding builting type do not conflicts with<br/>Q_DECLARE_METATYPE of the same type.</p></blockquote></p>
-
-<h2>qRegisterMetaType</h2>
-
-<p>Information of Qt's builtin types is saved in a static global const struct array <code>types[]</code>.</p>
-
-<p>```
-static const struct { const char * typeName; int typeNameLength; int type; } types[] = {</p>
-
-<pre><code>//  ...
-{0, 0, QMetaType::UnknownType}
-</code></pre>
-
-<p>};</p>
-
-<p>```</p>
-
-<p>While the information of the types register through qRegisterMetaType is stored in static QVector with type QCustomTypeInfo
-<code>
-Q_GLOBAL_STATIC(QVector&lt;QCustomTypeInfo&gt;, customTypes)
-</code></p>
-
-<p>The definition of QCustomTypeInfo:</p>
-
-<p>```cpp
-class QMetaTypeInterface
-{
-public:</p>
-
-<pre><code>QMetaType::Creator creator;
-QMetaType::Deleter deleter;
-QMetaType::SaveOperator saveOp;
-QMetaType::LoadOperator loadOp;
-QMetaType::Constructor constructor;
-QMetaType::Destructor destructor;
-int size;
-quint32 flags; // same as QMetaType::TypeFlags
-const QMetaObject *metaObject;
-</code></pre>
-
-<p>};</p>
-
-<p>public:
-class QCustomTypeInfo : public QMetaTypeInterface
-{
-public:</p>
-
-<pre><code>QCustomTypeInfo()
-    : alias(-1)
-{
-    QMetaTypeInterface empty = QT_METATYPE_INTERFACE_INIT(void);
-    *static_cast&lt;QMetaTypeInterface*&gt;(this) = empty;
-}
-QByteArray typeName;
-int alias;
-</code></pre>
-
-<p>};</p>
-
-<p>```</p>
-
-<h3>qRegisterMetaType() vs qRegisterMetaType(const char *)</h3>
-
-<p>When Call qRegisterMetaType() to register the type T. T must be declared with Q_DECLARE_METATYPE()
-As the member function qt_metatype_id() which is expaned from Q_DECLARE_METATYPE will be called in qMetaTypeId<T>().
-```
-template <typename T>
-inline Q_DECL_CONSTEXPR int qRegisterMetaType()
-{</p>
-
-<pre><code>return qMetaTypeId&lt;T&gt;();
-</code></pre>
-
-<p>}
-```
-And we can see that, qRegisterMetaType(const char *) is called in qt_metatype_id() too.</p>
-
-<p>```
-template <typename T>
-int qRegisterMetaType(const char *typeName</p>
-
-<h1>ifndef Q_QDOC</h1>
-
-<pre><code>, T * dummy = 0
-, typename QtPrivate::MetaTypeDefinedHelper&lt;T, QMetaTypeId2&lt;T&gt;::Defined &amp;&amp; !QMetaTypeId2&lt;T&gt;::IsBuiltIn&gt;::DefinedType defined = QtPrivate::MetaTypeDefinedHelper&lt;T, QMetaTypeId2&lt;T&gt;::Defined &amp;&amp; !QMetaTypeId2&lt;T&gt;::IsBuiltIn&gt;::Defined
-</code></pre>
-
-<h1>endif</h1>
-
-<p>)
-{</p>
-
-<pre><code>QT_PREPEND_NAMESPACE(QByteArray) normalizedTypeName = QMetaObject::normalizedType(typeName);
-return qRegisterNormalizedMetaType&lt;T&gt;(normalizedTypeName, dummy, defined);
-</code></pre>
-
-<p>}
-```</p>
-
-<p>Finally, QCustomTypeInfo will be constructed and added to the static QVector.</p>
-
-<p>```</p>
-
-<pre><code>QVector&lt;QCustomTypeInfo&gt; *ct = customTypes();
-</code></pre>
-
-<p>//...</p>
-
-<pre><code>        QCustomTypeInfo inf;
-        inf.typeName = normalizedTypeName;
-        inf.creator = creator;
-        inf.deleter = deleter;
-        //...
-        inf.metaObject = metaObject;
-        idx = ct-&gt;size() + User;
-        ct-&gt;append(inf);
-        return idx;
-</code></pre>
-
-<p>```</p>
-
-<h2>pointerToTypeDerivedFromQObject ?</h2>
-
-<p>Q_DECLARE_METATYPE for QObjectDerived class can be omitted. For example,</p>
-
-<p>```</p>
-
-<h1>include <QtCore></h1>
-
-<p>class QObjectDerived : public QObject
-{
-  Q_OBJECT
-};
-//Q_DECLARE_METATYPE(QObjectDerived*)</p>
-
-<p>class MyClass
-{</p>
-
-<p>};
-Q_DECLARE_METATYPE(MyClass*)</p>
-
-<h1>include "main.moc"</h1>
-
-<p>int main()
-{</p>
-
-<pre><code>qDebug() &lt;&lt; qMetaTypeId&lt;MyClass*&gt;();
-qDebug() &lt;&lt; qMetaTypeId&lt;QObjectDerived*&gt;();
-
-return 0;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>Here, another internal QMetaTypeId<em> is introduced.
-```
-template <typename T>
-struct QMetaTypeIdQObject&lt;T</em>, /<em> isPointerToTypeDerivedFromQObject </em>/ true>
-{</p>
-
-<pre><code>enum {
-    Defined = 1
-};
-
-static int qt_metatype_id()
-{
-    static QBasicAtomicInt metatype_id = Q_BASIC_ATOMIC_INITIALIZER(0);
-    if (const int id = metatype_id.loadAcquire())
-        return id;
-    const char * const cName = T::staticMetaObject.className();
-    QByteArray typeName;
-    typeName.reserve(int(strlen(cName)) + 1);
-    typeName.append(cName).append('*');
-    const int newId = qRegisterNormalizedMetaType&lt;T*&gt;(
-                    typeName,
-                    reinterpret_cast&lt;T**&gt;(quintptr(-1)));
-    metatype_id.storeRelease(newId);
-    return newId;
-}
-</code></pre>
-
-<p>};</p>
-
-<p>```</p>
-
-<h2>Reference</h2>
-
-<ul>
-<li><a href="http://lists.qt-project.org/pipermail/development/2012-February/001880.html">[Development] QMetaTypeId and QMetaTypeId2</a></li>
-<li><a href="http://steveire.wordpress.com/2011/03/16/implementing-qvariantqmetatype-features-with-template-tricks/">http://steveire.wordpress.com/2011/03/16/implementing-qvariantqmetatype-features-with-template-tricks/</a></li>
-<li><a href="http://qt-project.org/wiki/QVariant">http://qt-project.org/wiki/QVariant</a></li>
 </ul>
 
 ]]></content>

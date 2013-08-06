@@ -4,7 +4,7 @@
   <title><![CDATA[1+1=2]]></title>
   <link href="http://blog.debao.me/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2013-08-01T12:39:54+08:00</updated>
+  <updated>2013-08-06T17:22:44+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -12,6 +12,617 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How to use QThread in the right way (Part 1)]]></title>
+    <link href="http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-1/"/>
+    <updated>2013-08-05T17:34:00+08:00</updated>
+    <id>http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-1</id>
+    <content type="html"><![CDATA[<h2>A short history</h2>
+
+<p>Long long ago, <strong>subclass QThread and reimplement its run() function</strong> is the only recommended way of using QThread. This is rather intuitive and easy to used. But when SLOTS or Qt Event System are used in the worker thread, some users <a href="http://blog.qt.digia.com/blog/2010/06/17/youre-doing-it-wrong/">do it wrong</a>. So Bradley T. Hughes, one of the Qt core developers, recommend that <strong>use worker objects by moving them to the thread using QObject::moveToThread</strong> . Unfortunately, some users don&#8217;t understand the relationship of two usages and and some others thought that the former usage is totally wrong. So Olivier Goffart, one of the former Qt core developers, tell the users: <a href="http://woboq.com/blog/qthread-you-were-not-doing-so-wrong.html">You were not doing so wrong</a>. Finally, we can find both usages in the documentation of QThread.</p>
+
+<h2>QThread::run() is the thread entry point</h2>
+
+<p>From the Qt Documentation, we can see that</p>
+
+<blockquote><p>A QThread instance represents a thread and provides the means to start() a thread, which will then execute the reimplementation of QThread::run(). The run() implementation is for a thread what the main() entry point is for the application.</p></blockquote>
+
+<p>As QThread::run() is the thread entry point, it is rather intuitive to use the Usage 1.</p>
+
+<h2>Usage 1-0</h2>
+
+<p>To run some code in a new thread, subclass QThread and reimplement its run() function.</p>
+
+<p>For example</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;QtCore&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Thread</span> <span class="o">:</span> <span class="k">public</span> <span class="n">QThread</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">private</span><span class="o">:</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">run</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;From worker thread: &quot;</span><span class="o">&lt;&lt;</span><span class="n">currentThreadId</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">QCoreApplication</span> <span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;From main thread: &quot;</span><span class="o">&lt;&lt;</span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Thread</span> <span class="n">t</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">,</span> <span class="n">SIGNAL</span><span class="p">(</span><span class="n">finished</span><span class="p">()),</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">,</span> <span class="n">SLOT</span><span class="p">(</span><span class="n">quit</span><span class="p">()));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">t</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The output more or less look like:</p>
+
+<pre><code>From main thread:  0x15a8 
+From worker thread:  0x128c 
+</code></pre>
+
+<h2>Usage 1-1</h2>
+
+<p>As QThread::run() is the thread entry point, so it easy to undersand that, all the codes that are not get called in the run() function directly won&#8217;t be executed in the worker thread.</p>
+
+<p>In the following example, the member variable <code>m_stop</code> will be operated by both stop() and run(). Consider that the former will be executed in main thread while the latter is executed in worker thread, mutex or other facility is needed.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#if QT_VERSION&gt;=0x050000</span>
+</span><span class='line'><span class="cp">#include &lt;QtWidgets&gt;</span>
+</span><span class='line'><span class="cp">#else</span>
+</span><span class='line'><span class="cp">#include &lt;QtGui&gt;</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Thread</span> <span class="o">:</span> <span class="k">public</span> <span class="n">QThread</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">Q_OBJECT</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">Thread</span><span class="p">()</span><span class="o">:</span><span class="n">m_stop</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="nl">slots:</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">stop</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;Thread::stop called from main thread: &quot;</span><span class="o">&lt;&lt;</span><span class="n">currentThreadId</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">QMutexLocker</span> <span class="n">locker</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m_mutex</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">m_stop</span><span class="o">=</span><span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">private</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">QMutex</span> <span class="n">m_mutex</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">bool</span> <span class="n">m_stop</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">run</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;From worker thread: &quot;</span><span class="o">&lt;&lt;</span><span class="n">currentThreadId</span><span class="p">();</span>
+</span><span class='line'>        <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>            <span class="n">QMutexLocker</span> <span class="n">locker</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m_mutex</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">m_stop</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="n">msleep</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &quot;main.moc&quot;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">QApplication</span> <span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;From main thread: &quot;</span><span class="o">&lt;&lt;</span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">QPushButton</span> <span class="n">btn</span><span class="p">(</span><span class="s">&quot;Stop Thread&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">Thread</span> <span class="n">t</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">btn</span><span class="p">,</span> <span class="n">SIGNAL</span><span class="p">(</span><span class="n">clicked</span><span class="p">()),</span> <span class="o">&amp;</span><span class="n">t</span><span class="p">,</span> <span class="n">SLOT</span><span class="p">(</span><span class="n">stop</span><span class="p">()));</span>
+</span><span class='line'>    <span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">,</span> <span class="n">SIGNAL</span><span class="p">(</span><span class="n">finished</span><span class="p">()),</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">,</span> <span class="n">SLOT</span><span class="p">(</span><span class="n">quit</span><span class="p">()));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">t</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">btn</span><span class="p">.</span><span class="n">show</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The output is more or less like</p>
+
+<pre><code>From main thread:  0x13a8 
+From worker thread:  0xab8 
+Thread::stop called from main thread:  0x13a8
+</code></pre>
+
+<p>You can see that the Thread::stop() is executed in the main thread.</p>
+
+<h2>Usage 1-2 (Wrong Usage)</h2>
+
+<p>Though above examples are easy to understand, but it&#8217;s not so intuitive when event system(or queued-connection) is introduced in worker thread.</p>
+
+<p>For example, what should we do if we want to do something periodly in the worker thread?</p>
+
+<ul>
+<li>Create a QTimer in the Thread::run()</li>
+<li>Connect the timeout signal to the slot of Thread</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;QtCore&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Thread</span> <span class="o">:</span> <span class="k">public</span> <span class="n">QThread</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">Q_OBJECT</span>
+</span><span class='line'><span class="k">private</span> <span class="nl">slots:</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">onTimeout</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;Thread::onTimeout get called from? : &quot;</span><span class="o">&lt;&lt;</span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">private</span><span class="o">:</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">run</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;From worker thread: &quot;</span><span class="o">&lt;&lt;</span><span class="n">currentThreadId</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">QTimer</span> <span class="n">timer</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span> <span class="n">SIGNAL</span><span class="p">(</span><span class="n">timeout</span><span class="p">()),</span> <span class="k">this</span><span class="p">,</span> <span class="n">SLOT</span><span class="p">(</span><span class="n">onTimeout</span><span class="p">()));</span>
+</span><span class='line'>        <span class="n">timer</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">exec</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &quot;main.moc&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">QCoreApplication</span> <span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;From main thread: &quot;</span><span class="o">&lt;&lt;</span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Thread</span> <span class="n">t</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">t</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At first glance, the code seems fine. When the thread starts executing, we setup a QTimer thats going to run in the current thread&#8217;s event queue. We connect the <code>onTimeout()</code>  to the timeout signal. Then we except it works in the worker thread?</p>
+
+<p>But, the result of the example is</p>
+
+<pre><code>From main thread:  0x13a4 
+From worker thread:  0x1330 
+Thread::onTimeout get called from?:  0x13a4 
+Thread::onTimeout get called from?:  0x13a4 
+Thread::onTimeout get called from?:  0x13a4 
+</code></pre>
+
+<p>Very interesting, isn&#8217;t it? (We will discuss what happened behined this in next blog)</p>
+
+<h3>How to solve this problem</h3>
+
+<p>In order to make the this SLOT works in the worker thread, some one pass the <code>Qt::DirectConnection</code> to the connect() function,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span> <span class="n">SIGNAL</span><span class="p">(</span><span class="n">timeout</span><span class="p">()),</span> <span class="k">this</span><span class="p">,</span> <span class="n">SLOT</span><span class="p">(</span><span class="n">onTimeout</span><span class="p">()),</span> <span class="n">Qt</span><span class="o">::</span><span class="n">DirectConnection</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and some other add following line to the thread constructor.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>  <span class="n">moveToThread</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Both of them work as expected. But &#8230;</p>
+
+<p><a href="http://blog.qt.digia.com/blog/2010/06/17/youre-doing-it-wrong/">The second usage is wrong</a>,</p>
+
+<blockquote><p>Even though this seems to work, it’s confusing, and not how QThread was designed to be used(all of the functions in QThread were written and intended to be called from the creating thread, not the thread that QThread starts)</p></blockquote>
+
+<p>In fact, according to above statements, the first workaround is wrong too. As onTimeout() which is a member of our Thread object, get called from the creating thread too.</p>
+
+<p>Both of them are bad uasge?! what should we do?</p>
+
+<h2>Usage 1-3</h2>
+
+<p>As none of the member of QThread object are designed to be called from the worker thread. So we must create an independent worker object if we want to use SLOTS.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;QtCore&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Worker</span> <span class="o">:</span> <span class="k">public</span> <span class="n">QObject</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">Q_OBJECT</span>
+</span><span class='line'><span class="k">private</span> <span class="nl">slots:</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">onTimeout</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;Worker::onTimeout get called from?: &quot;</span><span class="o">&lt;&lt;</span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Thread</span> <span class="o">:</span> <span class="k">public</span> <span class="n">QThread</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">Q_OBJECT</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">private</span><span class="o">:</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">run</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;From work thread: &quot;</span><span class="o">&lt;&lt;</span><span class="n">currentThreadId</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">QTimer</span> <span class="n">timer</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">Worker</span> <span class="n">worker</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span> <span class="n">SIGNAL</span><span class="p">(</span><span class="n">timeout</span><span class="p">()),</span> <span class="o">&amp;</span><span class="n">worker</span><span class="p">,</span> <span class="n">SLOT</span><span class="p">(</span><span class="n">onTimeout</span><span class="p">()));</span>
+</span><span class='line'>        <span class="n">timer</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">exec</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &quot;main.moc&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">QCoreApplication</span> <span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;From main thread: &quot;</span><span class="o">&lt;&lt;</span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Thread</span> <span class="n">t</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">t</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>The result of the application is</p>
+
+<pre><code>From main thread:  0x810 
+From work thread:  0xfac 
+Worker::onTimeout get called from?:  0xfac 
+Worker::onTimeout get called from?:  0xfac 
+Worker::onTimeout get called from?:  0xfac 
+</code></pre>
+
+<p>Problem solved now!</p>
+
+<p>Though this works perfect, but you may have notice that, when event loop <code>QThread::exec()</code> is used in the worker thread, the code in the QThread::run() seems has nothing to do with QThread itself.</p>
+
+<p>So can we move the object creation out of the QThread::run(), and at the same time, the slots of they will still be called by the QThread::run()?</p>
+
+<h2>Usage 2-0</h2>
+
+<p>If we only want to make use of QThread::exec(), which has been called by QThread::run() by default, there will be no need to subclass the QThread any more.</p>
+
+<ul>
+<li>Create a Worker object</li>
+<li>Do signal and slot connections</li>
+<li>Move the Worker object to a sub-thread</li>
+<li>Start thread</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;QtCore&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Worker</span> <span class="o">:</span> <span class="k">public</span> <span class="n">QObject</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">Q_OBJECT</span>
+</span><span class='line'><span class="k">private</span> <span class="nl">slots:</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">onTimeout</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;Worker::onTimeout get called from?: &quot;</span><span class="o">&lt;&lt;</span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &quot;main.moc&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">QCoreApplication</span> <span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;From main thread: &quot;</span><span class="o">&lt;&lt;</span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">QThread</span> <span class="n">t</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">QTimer</span> <span class="n">timer</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">Worker</span> <span class="n">worker</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span> <span class="n">SIGNAL</span><span class="p">(</span><span class="n">timeout</span><span class="p">()),</span> <span class="o">&amp;</span><span class="n">worker</span><span class="p">,</span> <span class="n">SLOT</span><span class="p">(</span><span class="n">onTimeout</span><span class="p">()));</span>
+</span><span class='line'>    <span class="n">timer</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">timer</span><span class="p">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">worker</span><span class="p">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">t</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The result is:</p>
+
+<pre><code>From main thread:  0x1310 
+Worker::onTimeout get called from?:  0x121c 
+Worker::onTimeout get called from?:  0x121c 
+Worker::onTimeout get called from?:  0x121c 
+</code></pre>
+
+<p>As expected, the slot doesn&#8217;t run in the main thread.</p>
+
+<p>In this example, both of the QTimer and Worker are moved to the sub-thread. In fact, moving QTimer to sub-thread is not required.</p>
+
+<h1>Usage 2-1</h1>
+
+<p>Simply remove the line <code>timer.moveToThread(&amp;t);</code> from above example will work as expected too.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">QCoreApplication</span> <span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;From main thread: &quot;</span><span class="o">&lt;&lt;</span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">QThread</span> <span class="n">t</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">QTimer</span> <span class="n">timer</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">Worker</span> <span class="n">worker</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span> <span class="n">SIGNAL</span><span class="p">(</span><span class="n">timeout</span><span class="p">()),</span> <span class="o">&amp;</span><span class="n">worker</span><span class="p">,</span> <span class="n">SLOT</span><span class="p">(</span><span class="n">onTimeout</span><span class="p">()));</span>
+</span><span class='line'>    <span class="n">timer</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//    timer.moveToThread(&amp;t);</span>
+</span><span class='line'>    <span class="n">worker</span><span class="p">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">t</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The difference is that:</p>
+
+<p>In last example,</p>
+
+<ul>
+<li>The signal <code>timeout()</code> is emitted from sub-thread</li>
+<li>As timer and worker live in the same thread, their connection type is direct connection.</li>
+<li>The slot get called in the same thead in which signal get emitted.</li>
+</ul>
+
+
+<p>While in this example,</p>
+
+<ul>
+<li>The signal <code>timeout()</code> emitted from main thread,</li>
+<li>As timer and worker live in different threads, their connection type is queued connection.</li>
+<li>The slot get called in its living thread, which is the sub-thread.</li>
+</ul>
+
+
+<p>Thanks to a mechanism called queued connections, it is safe to connect signals and slots across different threads. If all the across threads communication are done though queued connections, the usual multithreading precautions such as QMutex will no longer need to be taken.</p>
+
+<h2>In short</h2>
+
+<ul>
+<li>Subclass QThread and reimplement its run() function is intuitive and there are still many perfectly valid reasons to subclass QThread, but when event loop is used is worker thread, most user can&#8217;t do it in the right way.</li>
+<li>Use worker objects by moving them to the thread is easy to use when event loop exists, as it has hidden the details of event loop and queued connection.</li>
+</ul>
+
+
+<h2>Reference</h2>
+
+<ul>
+<li>http://blog.qt.digia.com/blog/2010/06/17/youre-doing-it-wrong/</li>
+<li>http://woboq.com/blog/qthread-you-were-not-doing-so-wrong.html</li>
+<li>http://ilearnstuff.blogspot.com/2012/08/when-qthread-isnt-thread.html</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[left shift operator overloading for QDebug()]]></title>
