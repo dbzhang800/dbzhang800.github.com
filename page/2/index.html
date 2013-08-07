@@ -9,7 +9,9 @@
   <meta name="author" content="Debao Zhang">
 
   
-  <meta name="description" content="I am using Mac OS X 10.8, Ubuntu 12.10 and Windows Vista at present. I want to have a simple blog which can be coutrolled by myself … Install Ruby 1. &hellip;">
+  <meta name="description" content="Table Test Source Code: Left Aligned Header | Center Header | Right Aligned Header
+:-------------------|:-------------:|--------------------:
+Cell 0 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +78,147 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test/">Sandbox: For Octopress Usage and Markdown Syntax Test</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-28T17:32:00+08:00" pubdate data-updated="true">Aug 28<span>th</span>, 2012</time>
+        
+         | <a href="/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Table Test</h2>
+
+<p>Source Code:</p>
+
+<pre><code>Left Aligned Header | Center Header | Right Aligned Header
+:-------------------|:-------------:|--------------------:
+Cell 0 0            | Cell 0 1      | Cell 0 2
+Cell 1 0            | Cell 1 1      | Cell 1 2
+… | … | …
+Long Long Long Long Line … | Not so long Line … | Short Line
+</code></pre>
+
+<p>Preview:</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">Left Aligned Header </th>
+<th align="center"> Center Header </th>
+<th align="right"> Right Aligned Header</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Cell 0 0            </td>
+<td align="center"> Cell 0 1      </td>
+<td align="right"> Cell 0 2</td>
+</tr>
+<tr>
+<td align="left">Cell 1 0            </td>
+<td align="center"> Cell 1 1      </td>
+<td align="right"> Cell 1 2</td>
+</tr>
+<tr>
+<td align="left">… </td>
+<td align="center"> … </td>
+<td align="right"> …</td>
+</tr>
+<tr>
+<td align="left">Long Long Long Long Line … </td>
+<td align="center"> Not so long Line … </td>
+<td align="right"> Short Line</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>Code Highlight</h2>
+
+<p>Source Code:</p>
+
+<pre><code>```cpp First Code block of C++
+#include &lt;iostream&gt;
+int main()
+{
+    std::cout&lt;&lt;"dbzhang800"&lt;&lt;std::endl;
+}
+
+```
+</code></pre>
+
+<p>Preview:</p>
+
+<figure class='code'><figcaption><span>First Code block of C++</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;dbzhang800&quot;</span><span class="o">&lt;&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Source Code:</p>
+
+<pre><code>```python Python Block Test
+import sys
+if __name__ == '__main__':
+    pass
+```
+</code></pre>
+
+<p>Preview:</p>
+
+<figure class='code'><figcaption><span>Python Block Test</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">pass</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://octopress.org/docs">http://octopress.org/docs</a></li>
+<li><a href="http://daringfireball.net/projects/markdown/syntax">http://daringfireball.net/projects/markdown/syntax</a></li>
+<li><a href="http://programus.github.com/blog/2012/03/07/add-table-data-css-for-octopress/">http://programus.github.com/blog/2012/03/07/add-table-data-css-for-octopress/</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -347,6 +490,10 @@ pagination_dir:
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2013/08/how-to-use-qthread-in-the-right-way-part-2/">How to use QThread in the right way (Part 2)</a>
+      </li>
+    
+      <li class="post">
         <a href="/2013/08/how-to-use-qthread-in-the-right-way-part-1/">How to use QThread in the right way (Part 1)</a>
       </li>
     
@@ -362,15 +509,11 @@ pagination_dir:
         <a href="/2013/07/redirect-current-processs-stdout-to-a-widget-such-as-qtextedit/">Redirect current process&#8217;s stdout to a Widget such as QTextEdit</a>
       </li>
     
-      <li class="post">
-        <a href="/2013/06/qt-macro-q-declare-interface/">Qt Macro: Q_DECLARE_INTERFACE</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/categories/octopress' style='font-size: 125.71428571428572%'>octopress(3)</a> <a href='/categories/python' style='font-size: 108.57142857142857%'>python(1)</a> <a href='/categories/qt' style='font-size: 160.0%'>Qt(7)</a> <a href='/categories/qt-macros' style='font-size: 125.71428571428572%'>Qt-Macros(3)</a> <a href='/categories/qt5' style='font-size: 125.71428571428572%'>Qt5(3)</a> <a href='/categories/sdl' style='font-size: 108.57142857142857%'>SDL(1)</a> </span>
+    <span id="tag-cloud"><a href='/categories/octopress' style='font-size: 122.5%'>octopress(3)</a> <a href='/categories/python' style='font-size: 107.5%'>python(1)</a> <a href='/categories/qt' style='font-size: 160.0%'>Qt(8)</a> <a href='/categories/qt-macros' style='font-size: 122.5%'>Qt-Macros(3)</a> <a href='/categories/qt5' style='font-size: 122.5%'>Qt5(3)</a> <a href='/categories/qthread' style='font-size: 115.0%'>QThread(2)</a> <a href='/categories/sdl' style='font-size: 107.5%'>SDL(1)</a> </span>
 </section>
 
   
