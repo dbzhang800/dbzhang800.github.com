@@ -4,7 +4,7 @@
   <title><![CDATA[1+1=2]]></title>
   <link href="http://blog.debao.me/atom.xml" rel="self"/>
   <link href="http://blog.debao.me/"/>
-  <updated>2013-08-07T12:25:12+08:00</updated>
+  <updated>2013-12-08T15:13:03+08:00</updated>
   <id>http://blog.debao.me/</id>
   <author>
     <name><![CDATA[Debao Zhang]]></name>
@@ -12,6 +12,114 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Notes on OpenSSL and Qt]]></title>
+    <link href="http://blog.debao.me/2013/12/openssl-and-qt/"/>
+    <updated>2013-12-06T16:55:00+08:00</updated>
+    <id>http://blog.debao.me/2013/12/openssl-and-qt</id>
+    <content type="html"><![CDATA[<ul>
+<li>Libraries name of openssl?</li>
+</ul>
+
+
+<p>The &#8220;library&#8221; portion of OpenSSL consists of two libraries.</p>
+
+<p>On posix system they are named:</p>
+
+<ul>
+<li>libssl</li>
+<li>libcrypto</li>
+</ul>
+
+
+<p>while on Windows(32bit) they are named completely different:</p>
+
+<ul>
+<li>libeay32</li>
+<li>ssleay32</li>
+</ul>
+
+
+<h2>qsslocket_openssl_symbols.cpp</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">static</span> <span class="n">QPair</span><span class="o">&lt;</span><span class="n">QSystemLibrary</span><span class="o">*</span><span class="p">,</span> <span class="n">QSystemLibrary</span><span class="o">*&gt;</span> <span class="n">loadOpenSslWin32</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">QPair</span><span class="o">&lt;</span><span class="n">QSystemLibrary</span><span class="o">*</span><span class="p">,</span><span class="n">QSystemLibrary</span><span class="o">*&gt;</span> <span class="n">pair</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">pair</span><span class="p">.</span><span class="n">first</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">pair</span><span class="p">.</span><span class="n">second</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// When OpenSSL is built using MSVC then the libraries are named &#39;ssleay32.dll&#39; and &#39;libeay32&#39;dll&#39;.</span>
+</span><span class='line'>    <span class="c1">// When OpenSSL is built using GCC then different library names are used (depending on the OpenSSL version)</span>
+</span><span class='line'>    <span class="c1">// The oldest version of a GCC-based OpenSSL which can be detected by the code below is 0.9.8g (released in 2007)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">tryToLoadOpenSslWin32Library</span><span class="p">(</span><span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;ssleay32&quot;</span><span class="p">),</span> <span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;libeay32&quot;</span><span class="p">),</span> <span class="n">pair</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">tryToLoadOpenSslWin32Library</span><span class="p">(</span><span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;libssl-10&quot;</span><span class="p">),</span> <span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;libcrypto-10&quot;</span><span class="p">),</span> <span class="n">pair</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">tryToLoadOpenSslWin32Library</span><span class="p">(</span><span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;libssl-8&quot;</span><span class="p">),</span> <span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;libcrypto-8&quot;</span><span class="p">),</span> <span class="n">pair</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">tryToLoadOpenSslWin32Library</span><span class="p">(</span><span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;libssl-7&quot;</span><span class="p">),</span> <span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;libcrypto-7&quot;</span><span class="p">),</span> <span class="n">pair</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">pair</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>ssl.pri</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># Add optional SSL libs</span>
+</span><span class='line'><span class="cp"># Static linking of OpenSSL with msvc:</span>
+</span><span class='line'><span class="cp">#   - Binaries http:</span><span class="c1">//slproweb.com/products/Win32OpenSSL.html</span>
+</span><span class='line'><span class="cp">#   - also needs -lUser32 -lAdvapi32 -lGdi32 -lCrypt32</span>
+</span><span class='line'><span class="cp">#   - libs in &lt;OPENSSL_DIR&gt;\lib\VC\static</span>
+</span><span class='line'><span class="cp">#   - configure: -openssl -openssl-linked -I &lt;OPENSSL_DIR&gt;\include -L &lt;OPENSSL_DIR&gt;\lib\VC\static OPENSSL_LIBS=&quot;-lUser32 -lAdvapi32 -lGdi32&quot; OPENSSL_LIBS_DEBUG=&quot;-lssleay32MDd -llibeay32MDd&quot; OPENSSL_LIBS_RELEASE=&quot;-lssleay32MD -llibeay32MD&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>configure option</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">openssl</span> <span class="p">........</span> <span class="n">Do</span> <span class="n">not</span> <span class="n">compile</span> <span class="n">support</span> <span class="k">for</span> <span class="n">OpenSSL</span><span class="p">.</span>
+</span><span class='line'> <span class="o">+</span>  <span class="o">-</span><span class="n">openssl</span> <span class="p">...........</span> <span class="n">Enable</span> <span class="n">run</span><span class="o">-</span><span class="n">time</span> <span class="n">OpenSSL</span> <span class="n">support</span><span class="p">.</span>
+</span><span class='line'><span class="o">-</span><span class="n">openssl</span><span class="o">-</span><span class="n">linked</span> <span class="p">....</span> <span class="n">Enabled</span> <span class="n">linked</span> <span class="n">OpenSSL</span> <span class="n">support</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Reference</h2>
+
+<ul>
+<li>http://www.ski-epic.com/2007_notes_on_openssl/index.html</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[How to use QThread in the right way (Part 2)]]></title>

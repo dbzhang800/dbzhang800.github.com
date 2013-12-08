@@ -1,0 +1,355 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Notes on OpenSSL and Qt - 1+1=2</title>
+  <meta name="author" content="Debao Zhang">
+
+  
+  <meta name="description" content="Libraries name of openssl? The &#8220;library&#8221; portion of OpenSSL consists of two libraries. On posix system they are named: libssl
+libcrypto &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.debao.me/2013/12/openssl-and-qt/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="1+1=2" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"-->
+<!--link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"-->
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34482339-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">1+1=2</a></h1>
+  
+    <h2>Debao's Blog ... </h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.debao.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Notes on OpenSSL and Qt</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-06T16:55:00+08:00" pubdate data-updated="true">Dec 6<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><ul>
+<li>Libraries name of openssl?</li>
+</ul>
+
+
+<p>The &#8220;library&#8221; portion of OpenSSL consists of two libraries.</p>
+
+<p>On posix system they are named:</p>
+
+<ul>
+<li>libssl</li>
+<li>libcrypto</li>
+</ul>
+
+
+<p>while on Windows(32bit) they are named completely different:</p>
+
+<ul>
+<li>libeay32</li>
+<li>ssleay32</li>
+</ul>
+
+
+<h2>qsslocket_openssl_symbols.cpp</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">static</span> <span class="n">QPair</span><span class="o">&lt;</span><span class="n">QSystemLibrary</span><span class="o">*</span><span class="p">,</span> <span class="n">QSystemLibrary</span><span class="o">*&gt;</span> <span class="n">loadOpenSslWin32</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">QPair</span><span class="o">&lt;</span><span class="n">QSystemLibrary</span><span class="o">*</span><span class="p">,</span><span class="n">QSystemLibrary</span><span class="o">*&gt;</span> <span class="n">pair</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">pair</span><span class="p">.</span><span class="n">first</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">pair</span><span class="p">.</span><span class="n">second</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// When OpenSSL is built using MSVC then the libraries are named &#39;ssleay32.dll&#39; and &#39;libeay32&#39;dll&#39;.</span>
+</span><span class='line'>    <span class="c1">// When OpenSSL is built using GCC then different library names are used (depending on the OpenSSL version)</span>
+</span><span class='line'>    <span class="c1">// The oldest version of a GCC-based OpenSSL which can be detected by the code below is 0.9.8g (released in 2007)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">tryToLoadOpenSslWin32Library</span><span class="p">(</span><span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;ssleay32&quot;</span><span class="p">),</span> <span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;libeay32&quot;</span><span class="p">),</span> <span class="n">pair</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">tryToLoadOpenSslWin32Library</span><span class="p">(</span><span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;libssl-10&quot;</span><span class="p">),</span> <span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;libcrypto-10&quot;</span><span class="p">),</span> <span class="n">pair</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">tryToLoadOpenSslWin32Library</span><span class="p">(</span><span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;libssl-8&quot;</span><span class="p">),</span> <span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;libcrypto-8&quot;</span><span class="p">),</span> <span class="n">pair</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">tryToLoadOpenSslWin32Library</span><span class="p">(</span><span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;libssl-7&quot;</span><span class="p">),</span> <span class="n">QLatin1String</span><span class="p">(</span><span class="s">&quot;libcrypto-7&quot;</span><span class="p">),</span> <span class="n">pair</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">pair</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>ssl.pri</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># Add optional SSL libs</span>
+</span><span class='line'><span class="cp"># Static linking of OpenSSL with msvc:</span>
+</span><span class='line'><span class="cp">#   - Binaries http:</span><span class="c1">//slproweb.com/products/Win32OpenSSL.html</span>
+</span><span class='line'><span class="cp">#   - also needs -lUser32 -lAdvapi32 -lGdi32 -lCrypt32</span>
+</span><span class='line'><span class="cp">#   - libs in &lt;OPENSSL_DIR&gt;\lib\VC\static</span>
+</span><span class='line'><span class="cp">#   - configure: -openssl -openssl-linked -I &lt;OPENSSL_DIR&gt;\include -L &lt;OPENSSL_DIR&gt;\lib\VC\static OPENSSL_LIBS=&quot;-lUser32 -lAdvapi32 -lGdi32&quot; OPENSSL_LIBS_DEBUG=&quot;-lssleay32MDd -llibeay32MDd&quot; OPENSSL_LIBS_RELEASE=&quot;-lssleay32MD -llibeay32MD&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>configure option</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">openssl</span> <span class="p">........</span> <span class="n">Do</span> <span class="n">not</span> <span class="n">compile</span> <span class="n">support</span> <span class="k">for</span> <span class="n">OpenSSL</span><span class="p">.</span>
+</span><span class='line'> <span class="o">+</span>  <span class="o">-</span><span class="n">openssl</span> <span class="p">...........</span> <span class="n">Enable</span> <span class="n">run</span><span class="o">-</span><span class="n">time</span> <span class="n">OpenSSL</span> <span class="n">support</span><span class="p">.</span>
+</span><span class='line'><span class="o">-</span><span class="n">openssl</span><span class="o">-</span><span class="n">linked</span> <span class="p">....</span> <span class="n">Enabled</span> <span class="n">linked</span> <span class="n">OpenSSL</span> <span class="n">support</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Reference</h2>
+
+<ul>
+<li>http://www.ski-epic.com/2007_notes_on_openssl/index.html</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Debao Zhang</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-06T16:55:00+08:00" pubdate data-updated="true">Dec 6<span>th</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2013/08/how-to-use-qthread-in-the-right-way-part-2/" title="Previous Post: How to use QThread in the right way (Part 2)">&laquo; How to use QThread in the right way (Part 2)</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/12/openssl-and-qt/">Notes on OpenSSL and Qt</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/08/how-to-use-qthread-in-the-right-way-part-2/">How to use QThread in the right way (Part 2)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/08/how-to-use-qthread-in-the-right-way-part-1/">How to use QThread in the right way (Part 1)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/07/left-shift-operator-overloading-for-qdebug/">left shift operator overloading for QDebug()</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/07/link-confilict-between-sdl-and-qt-under-windows/">Link Confilict between SDL and Qt under Windows</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/categories/octopress' style='font-size: 122.5%'>octopress(3)</a> <a href='/categories/python' style='font-size: 107.5%'>python(1)</a> <a href='/categories/qt' style='font-size: 160.0%'>Qt(8)</a> <a href='/categories/qt-macros' style='font-size: 122.5%'>Qt-Macros(3)</a> <a href='/categories/qt5' style='font-size: 122.5%'>Qt5(3)</a> <a href='/categories/qthread' style='font-size: 115.0%'>QThread(2)</a> <a href='/categories/sdl' style='font-size: 107.5%'>SDL(1)</a> </span>
+</section>
+<section>
+    <h1>License</h1>
+    <p>
+    <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a>
+    <br />
+    Except where otherwise noted, content in Debao's blog is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.
+    </p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a>
+<br />
+Except where otherwise noted, content in Debao's blog is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.
+<br />
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'github800';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.debao.me/2013/12/openssl-and-qt/';
+        var disqus_url = 'http://blog.debao.me/2013/12/openssl-and-qt/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

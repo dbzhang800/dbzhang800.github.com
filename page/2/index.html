@@ -9,9 +9,7 @@
   <meta name="author" content="Debao Zhang">
 
   
-  <meta name="description" content="Table Test Source Code: Left Aligned Header | Center Header | Right Aligned Header
-:-------------------|:-------------:|--------------------:
-Cell 0 &hellip;">
+  <meta name="description" content="A Simple Example Let&#8217;s create an extension module called opee and let&#8217;s say we want to create a Python interface to one C function &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +76,319 @@ Cell 0 &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/04/my-first-c-extension-to-numpy/">My First C Extension to Numpy</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-25T09:24:00+08:00" pubdate data-updated="true">Apr 25<span>th</span>, 2013</time>
+        
+         | <a href="/2013/04/my-first-c-extension-to-numpy/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>A Simple Example</h2>
+
+<p>Let&#8217;s create an extension module called <code>opee</code> and let&#8217;s say we want to create a Python interface to one C function <code>example</code>. This function takes a numpy array as argument and return an integer. We want this function to be callable from Python as follows:</p>
+
+<pre><code>&gt;&gt;&gt; import opee
+&gt;&gt;&gt; import numpy
+&gt;&gt;&gt; a = numpy.zeros( (2,3,4) )
+&gt;&gt;&gt; opee.example()
+</code></pre>
+
+<p>To do this we need two files. The first is the C file which contains the actual code, and the second is the setup.py file used to create the module.</p>
+
+<h3>Souce Code</h3>
+
+<p>Begin by creating a file <code>opeemodule.c</code>.</p>
+
+<figure class='code'><figcaption><span>opeemodule.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &quot;Python.h&quot;</span>
+</span><span class='line'><span class="cp">#include &quot;numpy/arrayobject.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="n">PyObject</span><span class="o">*</span>
+</span><span class='line'><span class="nf">example</span> <span class="p">(</span><span class="n">PyObject</span> <span class="o">*</span><span class="n">dummy</span><span class="p">,</span> <span class="n">PyObject</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">PyObject</span> <span class="o">*</span><span class="n">arg1</span><span class="o">=</span><span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">PyObject</span> <span class="o">*</span><span class="n">arr1</span><span class="o">=</span><span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">nd</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">PyArg_ParseTuple</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s">&quot;O&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arg1</span><span class="p">))</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">arr1</span> <span class="o">=</span> <span class="n">PyArray_FROM_OTF</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">NPY_DOUBLE</span><span class="p">,</span> <span class="n">NPY_IN_ARRAY</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">arr1</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">nd</span> <span class="o">=</span> <span class="n">PyArray_NDIM</span><span class="p">(</span><span class="n">arr1</span><span class="p">);</span>   <span class="c1">//number of dimensions</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Py_DECREF</span><span class="p">(</span><span class="n">arr1</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">PyInt_FromLong</span><span class="p">(</span><span class="n">nd</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="k">struct</span> <span class="n">PyMethodDef</span> <span class="n">methods</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">{</span><span class="s">&quot;example&quot;</span><span class="p">,</span> <span class="n">example</span><span class="p">,</span> <span class="n">METH_VARARGS</span><span class="p">,</span> <span class="s">&quot;descript of example&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">PyMODINIT_FUNC</span>
+</span><span class='line'><span class="nf">initopee</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">Py_InitModule</span><span class="p">(</span><span class="s">&quot;opee&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">import_array</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Building</h3>
+
+<p>First, we create a setup script.</p>
+
+<figure class='code'><figcaption><span>setup.py</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/env python</span>
+</span><span class='line'><span class="c"># -*- coding: UTF-8 -*-</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span><span class="p">,</span> <span class="n">Extension</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ext_modules</span> <span class="o">=</span> <span class="p">[</span> <span class="n">Extension</span><span class="p">(</span><span class="s">&#39;opee&#39;</span><span class="p">,</span> <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;opeemodule.c&#39;</span><span class="p">])</span> <span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">setup</span><span class="p">(</span>
+</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;Opee&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">version</span> <span class="o">=</span> <span class="s">&#39;1.0&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">include_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">get_include</span><span class="p">()],</span> <span class="c">#Add Include path of numpy</span>
+</span><span class='line'>        <span class="n">ext_modules</span> <span class="o">=</span> <span class="n">ext_modules</span>
+</span><span class='line'>      <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then run</p>
+
+<pre><code>python setup.py instll
+</code></pre>
+
+<h2>Second Example</h2>
+
+<figure class='code'><figcaption><span>test.py</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">opee</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</span><span class='line'><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">,</span> <span class="mf">3.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">]])</span>
+</span><span class='line'><span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">,</span> <span class="mf">3.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">]])</span>
+</span><span class='line'><span class="n">opee</span><span class="o">.</span><span class="n">example</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span> <span class="n">c</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>opeemodule.cpp</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &quot;Python.h&quot;</span>
+</span><span class='line'><span class="cp">#include &quot;numpy/arrayobject.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="n">PyObject</span><span class="o">*</span>
+</span><span class='line'><span class="nf">example</span> <span class="p">(</span><span class="n">PyObject</span> <span class="o">*</span><span class="n">dummy</span><span class="p">,</span> <span class="n">PyObject</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">PyObject</span> <span class="o">*</span><span class="n">arg1</span><span class="o">=</span><span class="nb">NULL</span><span class="p">,</span> <span class="o">*</span><span class="n">arg2</span><span class="o">=</span><span class="nb">NULL</span><span class="p">,</span> <span class="o">*</span><span class="n">out</span><span class="o">=</span><span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">PyArrayObject</span> <span class="o">*</span><span class="n">arr1</span><span class="o">=</span><span class="nb">NULL</span><span class="p">,</span> <span class="o">*</span><span class="n">arr2</span><span class="o">=</span><span class="nb">NULL</span><span class="p">,</span> <span class="o">*</span><span class="n">oarr</span><span class="o">=</span><span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">PyArg_ParseTuple</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s">&quot;OOO!&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arg1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arg2</span><span class="p">,</span>
+</span><span class='line'>        <span class="o">&amp;</span><span class="n">PyArray_Type</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">out</span><span class="p">))</span> <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">arr1</span> <span class="o">=</span> <span class="p">(</span><span class="n">PyArrayObject</span><span class="o">*</span><span class="p">)</span><span class="n">PyArray_FROM_OTF</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">NPY_DOUBLE</span><span class="p">,</span> <span class="n">NPY_IN_ARRAY</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">arr1</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">arr2</span> <span class="o">=</span> <span class="p">(</span><span class="n">PyArrayObject</span><span class="o">*</span><span class="p">)</span><span class="n">PyArray_FROM_OTF</span><span class="p">(</span><span class="n">arg2</span><span class="p">,</span> <span class="n">NPY_DOUBLE</span><span class="p">,</span> <span class="n">NPY_IN_ARRAY</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">arr2</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">goto</span> <span class="n">fail</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">oarr</span> <span class="o">=</span> <span class="p">(</span><span class="n">PyArrayObject</span><span class="o">*</span><span class="p">)</span><span class="n">PyArray_FROM_OTF</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">NPY_DOUBLE</span><span class="p">,</span> <span class="n">NPY_INOUT_ARRAY</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">oarr</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">goto</span> <span class="n">fail</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/*vv* code that makes use of arguments *vv*/</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">nd</span> <span class="o">=</span> <span class="n">PyArray_NDIM</span><span class="p">(</span><span class="n">arr1</span><span class="p">);</span>   <span class="c1">//number of dimensions</span>
+</span><span class='line'>    <span class="n">npy_intp</span> <span class="o">*</span><span class="n">shape</span> <span class="o">=</span> <span class="n">PyArray_DIMS</span><span class="p">(</span><span class="n">arr1</span><span class="p">);</span>  <span class="c1">// npy_intp array of length nd showing length in each dim.</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">nd</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot; &quot;</span><span class="o">&lt;&lt;</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="o">&lt;&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">arr2</span><span class="o">-&gt;</span><span class="n">nd</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot; &quot;</span><span class="o">&lt;&lt;</span><span class="n">arr2</span><span class="o">-&gt;</span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="o">&lt;&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">oarr</span><span class="o">-&gt;</span><span class="n">dimensions</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">oarr</span><span class="o">-&gt;</span><span class="n">dimensions</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="kt">double</span> <span class="o">*</span><span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="o">*</span><span class="p">)</span><span class="n">PyArray_GETPTR2</span><span class="p">(</span><span class="n">oarr</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
+</span><span class='line'>            <span class="o">*</span><span class="n">v</span> <span class="o">=</span> <span class="o">*</span><span class="n">v</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="cm">/*^^* code that makes use of arguments *^^*/</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Py_DECREF</span><span class="p">(</span><span class="n">arr1</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">Py_DECREF</span><span class="p">(</span><span class="n">arr2</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">Py_DECREF</span><span class="p">(</span><span class="n">oarr</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">Py_INCREF</span><span class="p">(</span><span class="n">Py_None</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">Py_None</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nl">fail:</span>
+</span><span class='line'>    <span class="n">Py_XDECREF</span><span class="p">(</span><span class="n">arr1</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">Py_XDECREF</span><span class="p">(</span><span class="n">arr2</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">PyArray_XDECREF_ERR</span><span class="p">(</span><span class="n">oarr</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//....</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>python setup.py build_ext --inplace
+</code></pre>
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://docs.scipy.org/doc/numpy/user/c-info.how-to-extend.html">http://docs.scipy.org/doc/numpy/user/c-info.how-to-extend.html</a></li>
+<li><a href="http://docs.python.org/2/extending/extending.html">http://docs.python.org/2/extending/extending.html</a></li>
+<li><a href="http://docs.python.org/2/extending/building.html">http://docs.python.org/2/extending/building.html</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -490,6 +801,10 @@ pagination_dir:
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2013/12/openssl-and-qt/">Notes on OpenSSL and Qt</a>
+      </li>
+    
+      <li class="post">
         <a href="/2013/08/how-to-use-qthread-in-the-right-way-part-2/">How to use QThread in the right way (Part 2)</a>
       </li>
     
@@ -503,10 +818,6 @@ pagination_dir:
     
       <li class="post">
         <a href="/2013/07/link-confilict-between-sdl-and-qt-under-windows/">Link Confilict between SDL and Qt under Windows</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2013/07/redirect-current-processs-stdout-to-a-widget-such-as-qtextedit/">Redirect current process&#8217;s stdout to a Widget such as QTextEdit</a>
       </li>
     
   </ul>
