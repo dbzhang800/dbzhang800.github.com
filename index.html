@@ -56,6 +56,34 @@
   		<article>
 <header>
       <h1 class="entry-title">
+        <a href="http://blog.debao.me/zh/2015/04/obligations-of-the-lgpl/">使用LGPL授权的Qt开发商用程序的注意事项</a>
+      </h1>
+    <p class="meta">
+<time datetime="2015-04-22T22:09:00+08:00" pubdate>2015-04-22(周三)</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>注意：我不是律师，本文内容也只是我个人的理解，故内容仅供参考。如对LGPL如有任何疑问，请咨询你的律师。</p>
+</blockquote>
+<p>从Qt5.4开始，一些新增加的模块开始使用LGPLv3授权，而不是先前的LGPLv2.1授权。 
+而这两个东西到底有什么区别，还真搞不清楚。</p>
+<h2>LGPLv2.1 vs LGPLv3</h2>
+<p><a href="http://www.gnu.org/licenses/quick-guide-gplv3.html">A Quick Guide to GPLv3</a> 一文中介绍了GPL引入新版本的目的：主要是使用户远离以下三种的威胁。这应该也是LGPL 新旧版本的主要区别吧。</p>
+<ul>
+<li>Tivoization</li>
+<li>Laws prohibiting free software</li>
+<li>Discriminatory patent deals</li>
+</ul>
+<p>另外，这两个版本也不完全兼容 <a href="http://www.gnu.org/licenses/gpl-faq.html#AllCompatibility">How are the various GNU licenses compatible with each other?</a>。</p>
+<p>不过这些区别对普通用户似乎没有多大影响。</p>
+<p>好吧，忽略二者的区别，那么LGPL有哪些基本要求 ...</p></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/zh/2015/04/obligations-of-the-lgpl/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
         <a href="http://blog.debao.me/2015/04/hello-pelican/">Hello Pelican</a>
       </h1>
     <p class="meta">
@@ -259,35 +287,6 @@ public:
     <a rel="full-article" href="http://blog.debao.me/2013/06/qt-macro-q_declare_metatype/">Read On &crarr;</a>
   </footer>
   		</article>
-  		<article>
-<header>
-      <h1 class="entry-title">
-        <a href="http://blog.debao.me/2013/06/qt-macro-q_declare_typeinfo/">"Qt Macro: Q_DECLARE_TYPEINFO"</a>
-      </h1>
-    <p class="meta">
-<time datetime="2013-06-19T16:45:00+08:00" pubdate>Wed, 19 Jun 2013</time>    </p>
-</header>
-
-  <div class="entry-content"><h2>Definition</h2>
-<p>Q_DECLARE_TYPEINFO is used to specialise a template class called QTypeInfo. </p>
-<p>```cpp qtypeinfo.h</p>
-<h1>define Q_DECLARE_TYPEINFO_BODY(TYPE, FLAGS) \</h1>
-<p>class QTypeInfo<TYPE > \
-{ \
-public: \
-    enum { \
-        isComplex = (((FLAGS) &amp; Q_PRIMITIVE_TYPE) == 0), \
-        isStatic = (((FLAGS) &amp; (Q_MOVABLE_TYPE | Q_PRIMITIVE_TYPE)) == 0), \
-        isLarge = (sizeof(TYPE)&gt;sizeof(void<em>)), \
-        isPointer = false, \
-        isDummy = (((FLAGS) &amp; Q_DUMMY_TYPE) != 0), \
-        sizeOf = sizeof(TYPE) \
-    }; \
-    static inline const char </em>name ...</type></p></div>
-  <footer>
-    <a rel="full-article" href="http://blog.debao.me/2013/06/qt-macro-q_declare_typeinfo/">Read On &crarr;</a>
-  </footer>
-  		</article>
 <div class="pagination">
     <a class="prev" href="http://blog.debao.me/index2.html">&larr; Older</a>
 
@@ -297,6 +296,9 @@ public: \
   <section>
     <h1>Recent Posts</h1>
     <ul id="recent_posts">
+      <li class="post">
+          <a href="http://blog.debao.me/zh/2015/04/obligations-of-the-lgpl/">使用LGPL授权的Qt开发商用程序的注意事项</a>
+      </li>
       <li class="post">
           <a href="http://blog.debao.me/2015/04/hello-pelican/">Hello Pelican</a>
       </li>
@@ -308,9 +310,6 @@ public: \
       </li>
       <li class="post">
           <a href="http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-1/">"How to use QThread in the right way (Part 1)"</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/2013/07/left-shift-operator-overloading-for-qdebug/">"left shift operator overloading for QDebug()"</a>
       </li>
     </ul>
   </section>
@@ -327,7 +326,7 @@ public: \
 
   <section>
   <h1>Tags</h1>
-    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
+    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/zhong-wen.html">中文</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
 
 
 

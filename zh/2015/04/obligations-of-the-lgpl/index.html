@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>使用LGPL授权的Qt开发商用程序的注意事项 &mdash; 1+1=10</title>
+  <meta name="author" content="Debao Zhang">
+
+  <link href="http://blog.debao.me/atom.xml" type="application/atom+xml" rel="alternate"
+        title="1+1=10 Atom Feed" />
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="http://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="http://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+  <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+  <link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="http://blog.debao.me/">1+1=10</a></h1>
+    <h2>Debao's Blog...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="http://blog.debao.me/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+
+<ul class="main-navigation">
+      <li >
+        <a href="http://blog.debao.me/category/python.html">Python</a>
+      </li>
+      <li class="active">
+        <a href="http://blog.debao.me/category/qt.html">Qt</a>
+      </li>
+      <li >
+        <a href="http://blog.debao.me/category/tool.html">Tool</a>
+      </li>
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">使用LGPL授权的Qt开发商用程序的注意事项</h1>
+    <p class="meta">
+<time datetime="2015-04-22T22:09:00+08:00" pubdate>2015-04-22(周三)</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>注意：我不是律师，本文内容也只是我个人的理解，故内容仅供参考。如对LGPL如有任何疑问，请咨询你的律师。</p>
+</blockquote>
+<p>从Qt5.4开始，一些新增加的模块开始使用LGPLv3授权，而不是先前的LGPLv2.1授权。 
+而这两个东西到底有什么区别，还真搞不清楚。</p>
+<h2>LGPLv2.1 vs LGPLv3</h2>
+<p><a href="http://www.gnu.org/licenses/quick-guide-gplv3.html">A Quick Guide to GPLv3</a> 一文中介绍了GPL引入新版本的目的：主要是使用户远离以下三种的威胁。这应该也是LGPL 新旧版本的主要区别吧。</p>
+<ul>
+<li>Tivoization</li>
+<li>Laws prohibiting free software</li>
+<li>Discriminatory patent deals</li>
+</ul>
+<p>另外，这两个版本也不完全兼容 <a href="http://www.gnu.org/licenses/gpl-faq.html#AllCompatibility">How are the various GNU licenses compatible with each other?</a>。</p>
+<p>不过这些区别对普通用户似乎没有多大影响。</p>
+<p>好吧，忽略二者的区别，那么LGPL有哪些基本要求。试着看看许可<a href="http://www.gnu.org/licenses/lgpl-2.1.html">LGPLv2.1</a>或<a href="http://www.gnu.org/licenses/lgpl-3.0.html">LGPLv3</a>的文本，真的晕了...</p>
+<h2>使用LGPL库后，应用程序的义务</h2>
+<p>详见LGPLv2.1 的 section 6 或 LGPLv3 的 section 4</p>
+<blockquote>
+<p>You may convey a Combined Work under terms of your choice that, taken together, effectively do not restrict modification of the portions of the Library contained in the Combined Work and reverse engineering for debugging such modifications, if you also do each of the following:</p>
+</blockquote>
+<p>大意是：应用程序可以闭源，但不能限制用户对程序所包含的Qt库部分的修改，以及出于对Qt库所做修改进行调试目的对应用程序所进行的逆向工程。同时，以下条款也必须满足</p>
+<h3>程序的每一份拷贝必须声明使用了LGPL授权的Qt</h3>
+<p>LGPLv3 相关条文：</p>
+<blockquote>
+<p>a) Give prominent notice with each copy of the Combined Work that the Library is used in it and that the Library and its use are covered by this License.</p>
+</blockquote>
+<h3>程序必须附带LGPL许可的副本</h3>
+<p>LGPLv3 相关条文：</p>
+<blockquote>
+<p>b) Accompany the Combined Work with a copy of the GNU GPL and this license document.</p>
+</blockquote>
+<h3>如果程序执行过程中显示版权信息，那么必须显示Qt库的版权信息，并提供到LGPL许可副本的链接</h3>
+<p>LGPLv3 相关条文：</p>
+<blockquote>
+<p>c) For a Combined Work that displays copyright notices during execution, include the copyright notice for the Library among these notices, as well as a reference directing the user to the copies of the GNU GPL and this license document.</p>
+</blockquote>
+<h3>确保应用程序的用户能够自由地替换掉你所使用的Qt</h3>
+<p>LGPLv3 相关条文：</p>
+<blockquote>
+<p>d) Do one of the following:</p>
+<ul>
+<li>0) Convey the Minimal Corresponding Source under the terms of this License, and the Corresponding Application Code in a form suitable for, and under terms that permit, the user to recombine or relink the Application with a modified version of the Linked Version to produce a modified Combined Work, in the manner specified by section 6 of the GNU GPL for conveying Corresponding Source.</li>
+<li>1) Use a suitable shared library mechanism for linking with the Library. A suitable mechanism is one that (a) uses at run time a copy of the Library already present on the user's computer system, and (b) will operate properly with a modified version of the Library that is interface-compatible with the Linked Version.</li>
+</ul>
+</blockquote>
+<p>解读：这儿提供了三种做法</p>
+<p>1 静态库链接的方式是可行的，但是必须提供相应的代码或预编译的文件，使得用户能够使用修改后的Qt重新编译或链接出可用的应用程序。</p>
+<p>实际操作中，这个应该不容易实现。</p>
+<p>2 如果用户系统中有可用的Qt的动态库，可以让应用程序直接使用它</p>
+<p>对Linux等默认装有Qt库的系统，这应该是最简单的做法。</p>
+<p>不过Windows等系统中，一般都没有Qt运行库，意味着要让用户先安装Qt，而后再安装使用程序。实际操作中，可能会不太友好。</p>
+<p>3 提供程序的同时，为用户提供相应的Qt运行库。但必须确保用户能够用其他接口兼容的Qt库直接替换我们提供的Qt运行库。</p>
+<p>Windows下可能只能这么做了。</p>
+<h3>只要用户要求，就必须提供相应的安装信息(Installation Information)</h3>
+<p>LGPLv3 相关条文：</p>
+<blockquote>
+<p>e) Provide Installation Information, but only if you would otherwise be required to provide such information under section 6 of the GNU GPL, and only to the extent that such information is necessary to install and execute a modified version of the Combined Work produced by recombining or relinking the Application with a modified version of the Linked Version. (If you use option 4d0, the Installation Information must accompany the Minimal Corresponding Source and Corresponding Application Code. If you use option 4d1, you must provide the Installation Information in the manner specified by section 6 of the GNU GPL for conveying Corresponding Source.)</p>
+</blockquote>
+<p>解读：</p>
+<p>里面又涉及一大堆GPLv3中的条文。看不懂(可能一开始就用LGPL2.1的条文简单些)，不过 
+按照 <a href="http://www.qt.io/qt-licensing-terms/">qt-licensing-terms</a> 中的说法，Qt库的源代码（包括对Qt库的修改），都需要随程序一块提供，或者提供获取到源码的方式。特别值得注意的是，即使没有对Qt库进行任何修改，这些东西也必须提供。</p>
+<h2>Links</h2>
+<ul>
+<li>http://www.gnu.org/licenses/lgpl-3.0.html</li>
+<li>http://www.gnu.org/licenses/lgpl-2.1.html</li>
+<li>http://www.gnu.org/licenses/gpl-faq.html#LGPLStaticVsDynamic</li>
+<li>
+<p>http://www.gnu.org/licenses/quick-guide-gplv3.html</p>
+</li>
+<li>
+<p>http://www.qt.io/qt-licensing-terms/</p>
+</li>
+<li>http://www.olafsw.de/protecting-software-freedom-the-qt-license-update/</li>
+<li>
+<p>http://blog.qt.io/blog/2014/08/20/adding-lgpl-v3-to-qt/</p>
+</li>
+<li>
+<p>http://en.wikipedia.org/wiki/Tivoization</p>
+</li>
+<li>
+<p>http://bbs.csdn.net/topics/350224093</p>
+</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2015-04-22T22:09:00+08:00" pubdate>2015-04-22(周三)</time>  <span class="categories">
+    <a class='category' href='http://blog.debao.me/category/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="http://blog.debao.me/tag/zhong-wen.html">中文</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="http://blog.debao.me/zh/2015/04/obligations-of-the-lgpl/">使用LGPL授权的Qt开发商用程序的注意事项</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2015/04/hello-pelican/">Hello Pelican</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2013/12/openssl-and-qt/">"Notes on OpenSSL and Qt"</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-2/">"How to use QThread in the right way (Part 2)"</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-1/">"How to use QThread in the right way (Part 1)"</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="http://blog.debao.me/category/python.html">python</a></li>
+        <li><a href="http://blog.debao.me/category/qt.html">Qt</a></li>
+        <li><a href="http://blog.debao.me/category/tool.html">tool</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/zhong-wen.html">中文</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
+
+
+
+  <section>
+    <h1>GitHub Repos</h1>
+    <ul id="gh_repos">
+      <li class="loading">Status updating...</li>
+    </ul>
+    <script type="text/javascript">
+      $.domReady(function(){
+          if (!window.jXHR){
+              var jxhr = document.createElement('script');
+              jxhr.type = 'text/javascript';
+              jxhr.src = 'http://blog.debao.me/theme/js/jXHR.js';
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(jxhr, s);
+          }
+
+          github.showRepos({
+              user: 'dbzhang800',
+              count: 5,
+              skip_forks: true,
+              target: '#gh_repos'
+          });
+      });
+    </script>
+    <script src="http://blog.debao.me/theme/js/github.js" type="text/javascript"> </script>
+  </section>
+
+    <section>
+        <h1>Blogroll</h1>
+        <ul>
+            <li><a href="http://getpelican.com/" target="_blank">Pelican</a></li>
+            <li><a href="http://python.org/" target="_blank">Python.org</a></li>
+            <li><a href="http://jinja.pocoo.org/" target="_blank">Jinja2</a></li>
+            <li><a href="http://github.com" target="_blank">Github</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2012&ndash;2015  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="http://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="http://blog.debao.me/theme/js/ender.js"></script>
+  <script src="http://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var disqus_shortname = 'github800';
+    var disqus_identifier = '/zh/2015/04/obligations-of-the-lgpl/';
+    var disqus_url = 'http://blog.debao.me/zh/2015/04/obligations-of-the-lgpl/';
+    var disqus_title = '使用LGPL授权的Qt开发商用程序的注意事项';
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = "//" + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+  </script>
+</body>
+</html>

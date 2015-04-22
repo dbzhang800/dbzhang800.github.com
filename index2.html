@@ -56,6 +56,35 @@
   		<article>
 <header>
       <h1 class="entry-title">
+        <a href="http://blog.debao.me/2013/06/qt-macro-q_declare_typeinfo/">"Qt Macro: Q_DECLARE_TYPEINFO"</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-06-19T16:45:00+08:00" pubdate>Wed, 19 Jun 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><h2>Definition</h2>
+<p>Q_DECLARE_TYPEINFO is used to specialise a template class called QTypeInfo. </p>
+<p>```cpp qtypeinfo.h</p>
+<h1>define Q_DECLARE_TYPEINFO_BODY(TYPE, FLAGS) \</h1>
+<p>class QTypeInfo<TYPE > \
+{ \
+public: \
+    enum { \
+        isComplex = (((FLAGS) &amp; Q_PRIMITIVE_TYPE) == 0), \
+        isStatic = (((FLAGS) &amp; (Q_MOVABLE_TYPE | Q_PRIMITIVE_TYPE)) == 0), \
+        isLarge = (sizeof(TYPE)&gt;sizeof(void<em>)), \
+        isPointer = false, \
+        isDummy = (((FLAGS) &amp; Q_DUMMY_TYPE) != 0), \
+        sizeOf = sizeof(TYPE) \
+    }; \
+    static inline const char </em>name ...</type></p></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/2013/06/qt-macro-q_declare_typeinfo/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
         <a href="http://blog.debao.me/2013/06/screencss-used-by-octopress/">"screen.css used by octopress"</a>
       </h1>
     <p class="meta">
@@ -147,6 +176,9 @@
     <h1>Recent Posts</h1>
     <ul id="recent_posts">
       <li class="post">
+          <a href="http://blog.debao.me/zh/2015/04/obligations-of-the-lgpl/">使用LGPL授权的Qt开发商用程序的注意事项</a>
+      </li>
+      <li class="post">
           <a href="http://blog.debao.me/2015/04/hello-pelican/">Hello Pelican</a>
       </li>
       <li class="post">
@@ -157,9 +189,6 @@
       </li>
       <li class="post">
           <a href="http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-1/">"How to use QThread in the right way (Part 1)"</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/2013/07/left-shift-operator-overloading-for-qdebug/">"left shift operator overloading for QDebug()"</a>
       </li>
     </ul>
   </section>
@@ -176,7 +205,7 @@
 
   <section>
   <h1>Tags</h1>
-    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
+    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/zhong-wen.html">中文</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
 
 
 
