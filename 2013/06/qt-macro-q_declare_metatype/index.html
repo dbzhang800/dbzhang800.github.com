@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>"Qt Macro: Q_DECLARE_METATYPE" &mdash; 1+1=10</title>
+  <meta name="author" content="Debao Zhang">
+
+  <link href="http://blog.debao.me/atom.xml" type="application/atom+xml" rel="alternate"
+        title="1+1=10 Atom Feed" />
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="http://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="http://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+  <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+  <link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="http://blog.debao.me/">1+1=10</a></h1>
+    <h2>Debao's Blog...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="http://blog.debao.me/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+
+<ul class="main-navigation">
+      <li >
+        <a href="http://blog.debao.me/category/python.html">Python</a>
+      </li>
+      <li class="active">
+        <a href="http://blog.debao.me/category/qt.html">Qt</a>
+      </li>
+      <li >
+        <a href="http://blog.debao.me/category/tool.html">Tool</a>
+      </li>
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">"Qt Macro: Q_DECLARE_METATYPE"</h1>
+    <p class="meta">
+<time datetime="2013-06-21T11:29:00+08:00" pubdate>Fri, 21 Jun 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><h2>QMetaType</h2>
+<ul>
+<li>It associates a type name to a type ID, enabling construction and destruction to occur dynamically at runtime.</li>
+<li>QMetaType is used as a helper in QVariant and queued signals and slots connections. </li>
+</ul>
+<p>```cpp  example1</p>
+<h1>include <QtCore></h1>
+<p>class MyClass
+{
+public:
+    MyClass() {qDebug("Created");}
+    ~MyClass() {qDebug("Destroyed");}
+};</p>
+<p>int main(int argc, char *argv[])
+{
+    int id = qRegisterMetaType<MyClass>("MyClass");</p>
+<div class="highlight"><pre><span class="nt">void</span> <span class="o">*</span><span class="nt">myClassPtr</span> <span class="o">=</span> <span class="nt">QMetaType</span><span class="o">:</span><span class="nd">:create</span><span class="o">(</span><span class="nt">id</span><span class="o">);</span>
+<span class="nt">QMetaType</span><span class="o">:</span><span class="nd">:destroy</span><span class="o">(</span><span class="nt">id</span><span class="o">,</span> <span class="nt">myClassPtr</span><span class="o">);</span>
+<span class="nt">myClassPtr</span> <span class="o">=</span> <span class="nt">0</span><span class="o">;</span>
+</pre></div>
+
+
+<p>}</p>
+<div class="highlight"><pre><span class="n">and</span>
+
+<span class="err">```</span><span class="n">cpp</span> <span class="n">example2</span>
+<span class="cp">#include &lt;QtCore&gt;</span>
+
+<span class="n">class</span> <span class="n">MyClass</span>
+<span class="p">{</span>
+<span class="nl">public</span><span class="p">:</span>
+    <span class="n">MyClass</span><span class="p">()</span> <span class="p">{</span><span class="n">qDebug</span><span class="p">(</span><span class="s">&quot;Created&quot;</span><span class="p">);}</span>
+    <span class="n">MyClass</span><span class="p">(</span><span class="k">const</span> <span class="n">MyClass</span><span class="o">&amp;</span> <span class="p">){</span><span class="n">qDebug</span><span class="p">(</span><span class="s">&quot;Copy&quot;</span><span class="p">);}</span>
+    <span class="o">~</span><span class="n">MyClass</span><span class="p">()</span> <span class="p">{</span><span class="n">qDebug</span><span class="p">(</span><span class="s">&quot;Destroyed&quot;</span><span class="p">);}</span>
+<span class="p">};</span>
+<span class="n">Q_DECLARE_METATYPE</span><span class="p">(</span><span class="n">MyClass</span><span class="p">)</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="n">MyClass</span> <span class="n">cls</span><span class="p">;</span>
+    <span class="n">QVariant</span> <span class="n">var1</span> <span class="o">=</span> <span class="n">QVariant</span><span class="o">::</span><span class="n">fromValue</span><span class="p">(</span><span class="n">cls</span><span class="p">);</span>
+    <span class="n">MyClass</span> <span class="n">cls1</span> <span class="o">=</span> <span class="n">var1</span><span class="p">.</span><span class="n">value</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>The Q_DECLARE_METATYPE() makes the type known to all template based functions, including QVariant. But if we want to use the type in queued signal and slot connections or in QObject's property system, you have to call qRegisterMetaType() since the names are resolved at runtime.</p>
+<h2>Q_DECLARE_METATYPE</h2>
+<p>This macro is used to specialise the template class QMetaTypeId with typename TYPE, in which, a static member function qt_metatype_id() is defined.</p>
+<p>qRegisterMetaType() is called to register the TYPE and generate a TYPE ID. Then the TYPE ID is saved in local static vairable metatype_id.</p>
+<div class="highlight"><pre><span class="cp">#define Q_DECLARE_METATYPE(TYPE)                                        \</span>
+<span class="cp">    QT_BEGIN_NAMESPACE                                                  \</span>
+<span class="cp">    template &lt;&gt;                                                         \</span>
+<span class="cp">    struct QMetaTypeId&lt; TYPE &gt;                                          \</span>
+<span class="cp">    {                                                                   \</span>
+<span class="cp">        enum { Defined = 1 };                                           \</span>
+<span class="cp">        static int qt_metatype_id()                                     \</span>
+<span class="cp">            {                                                           \</span>
+<span class="cp">                static QBasicAtomicInt metatype_id = Q_BASIC_ATOMIC_INITIALIZER(0); \</span>
+<span class="cp">                if (const int id = metatype_id.loadAcquire())           \</span>
+<span class="cp">                    return id;                                          \</span>
+<span class="cp">                const int newId = qRegisterMetaType&lt; TYPE &gt;(#TYPE,      \</span>
+<span class="cp">                              reinterpret_cast&lt; TYPE *&gt;(quintptr(-1))); \</span>
+<span class="cp">                metatype_id.storeRelease(newId);                        \</span>
+<span class="cp">                return newId;                                           \</span>
+<span class="cp">            }                                                           \</span>
+<span class="cp">    };                                                                  \</span>
+<span class="cp">    QT_END_NAMESPACE</span>
+</pre></div>
+
+
+<p>Note that, for Qt's builtin types, <code>Q_DECLARE_BUILTIN_METATYPE</code> instead of <code>Q_DECLARE_METATYPE</code> is used. The ids of these types are constant.</p>
+<div class="highlight"><pre>#define Q_DECLARE_BUILTIN_METATYPE(TYPE, METATYPEID, NAME) \
+    QT_BEGIN_NAMESPACE \
+    template&lt;&gt; struct QMetaTypeId2&lt;NAME&gt; \
+    { \
+        enum { Defined = 1, IsBuiltIn = true, MetaType = METATYPEID };   \
+        static inline Q_DECL_CONSTEXPR int qt_metatype_id() { return METATYPEID; } \
+    }; \
+    QT_END_NAMESPACE
+</pre></div>
+
+
+<p _="%" endblockquote="endblockquote">Olivier Goffart said that,
+{% blockquote %}
+I beleive it has been added so adding builting type do not conflicts with
+Q_DECLARE_METATYPE of the same type.</p>
+<h2>qRegisterMetaType</h2>
+<p>Information of Qt's builtin types is saved in a static global const struct array <code>types[]</code>.</p>
+<div class="highlight"><pre>static const struct { const char * typeName; int typeNameLength; int type; } types[] = {
+    //  ...
+    {0, 0, QMetaType::UnknownType}
+};
+</pre></div>
+
+
+<p>While the information of the types register through qRegisterMetaType is stored in static QVector with type QCustomTypeInfo</p>
+<div class="highlight"><pre>Q_GLOBAL_STATIC(QVector&lt;QCustomTypeInfo&gt;, customTypes)
+</pre></div>
+
+
+<p>The definition of QCustomTypeInfo:</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">QMetaTypeInterface</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">QMetaType</span><span class="o">::</span><span class="n">Creator</span> <span class="n">creator</span><span class="p">;</span>
+    <span class="n">QMetaType</span><span class="o">::</span><span class="n">Deleter</span> <span class="n">deleter</span><span class="p">;</span>
+    <span class="n">QMetaType</span><span class="o">::</span><span class="n">SaveOperator</span> <span class="n">saveOp</span><span class="p">;</span>
+    <span class="n">QMetaType</span><span class="o">::</span><span class="n">LoadOperator</span> <span class="n">loadOp</span><span class="p">;</span>
+    <span class="n">QMetaType</span><span class="o">::</span><span class="n">Constructor</span> <span class="n">constructor</span><span class="p">;</span>
+    <span class="n">QMetaType</span><span class="o">::</span><span class="n">Destructor</span> <span class="n">destructor</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">size</span><span class="p">;</span>
+    <span class="n">quint32</span> <span class="n">flags</span><span class="p">;</span> <span class="c1">// same as QMetaType::TypeFlags</span>
+    <span class="k">const</span> <span class="n">QMetaObject</span> <span class="o">*</span><span class="n">metaObject</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="k">class</span> <span class="nc">QCustomTypeInfo</span> <span class="o">:</span> <span class="k">public</span> <span class="n">QMetaTypeInterface</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">QCustomTypeInfo</span><span class="p">()</span>
+        <span class="o">:</span> <span class="n">alias</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">QMetaTypeInterface</span> <span class="n">empty</span> <span class="o">=</span> <span class="n">QT_METATYPE_INTERFACE_INIT</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+        <span class="o">*</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">QMetaTypeInterface</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">)</span> <span class="o">=</span> <span class="n">empty</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">QByteArray</span> <span class="n">typeName</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">alias</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<h3>qRegisterMetaType() vs qRegisterMetaType(const char *)</h3>
+<p>When Call qRegisterMetaType() to register the type T. T must be declared with Q_DECLARE_METATYPE()
+As the member function qt_metatype_id() which is expaned from Q_DECLARE_METATYPE will be called in qMetaTypeId<T>(). </p>
+<div class="highlight"><pre>template &lt;typename T&gt;
+inline Q_DECL_CONSTEXPR int qRegisterMetaType()
+{
+    return qMetaTypeId&lt;T&gt;();
+}
+</pre></div>
+
+
+<p>And we can see that, qRegisterMetaType(const char *) is called in qt_metatype_id() too.</p>
+<div class="highlight"><pre><span class="nt">template</span> <span class="o">&lt;</span><span class="nt">typename</span> <span class="nt">T</span><span class="o">&gt;</span>
+<span class="nt">int</span> <span class="nt">qRegisterMetaType</span><span class="o">(</span><span class="nt">const</span> <span class="nt">char</span> <span class="o">*</span><span class="nt">typeName</span>
+<span class="nf">#ifndef</span> <span class="nt">Q_QDOC</span>
+    <span class="o">,</span> <span class="nt">T</span> <span class="o">*</span> <span class="nt">dummy</span> <span class="o">=</span> <span class="nt">0</span>
+    <span class="o">,</span> <span class="nt">typename</span> <span class="nt">QtPrivate</span><span class="o">:</span><span class="nd">:MetaTypeDefinedHelper</span><span class="o">&lt;</span><span class="nt">T</span><span class="o">,</span> <span class="nt">QMetaTypeId2</span><span class="o">&lt;</span><span class="nt">T</span><span class="o">&gt;:</span><span class="nd">:Defined</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nt">QMetaTypeId2</span><span class="o">&lt;</span><span class="nt">T</span><span class="o">&gt;:</span><span class="nd">:IsBuiltIn</span><span class="o">&gt;:</span><span class="nd">:DefinedType</span> <span class="nt">defined</span> <span class="o">=</span> <span class="nt">QtPrivate</span><span class="o">:</span><span class="nd">:MetaTypeDefinedHelper</span><span class="o">&lt;</span><span class="nt">T</span><span class="o">,</span> <span class="nt">QMetaTypeId2</span><span class="o">&lt;</span><span class="nt">T</span><span class="o">&gt;:</span><span class="nd">:Defined</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nt">QMetaTypeId2</span><span class="o">&lt;</span><span class="nt">T</span><span class="o">&gt;:</span><span class="nd">:IsBuiltIn</span><span class="o">&gt;:</span><span class="nd">:Defined</span>
+<span class="nf">#endif</span>
+<span class="o">)</span>
+<span class="p">{</span>
+    <span class="n">QT_PREPEND_NAMESPACE</span><span class="p">(</span><span class="n">QByteArray</span><span class="p">)</span> <span class="n">normalizedTypeName</span> <span class="o">=</span> <span class="n">QMetaObject</span><span class="o">::</span><span class="n">normalizedType</span><span class="p">(</span><span class="n">typeName</span><span class="p">);</span>
+    <span class="n">return</span> <span class="n">qRegisterNormalizedMetaType</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">normalizedTypeName</span><span class="o">,</span> <span class="n">dummy</span><span class="o">,</span> <span class="n">defined</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Finally, QCustomTypeInfo will be constructed and added to the static QVector.</p>
+<div class="highlight"><pre>    QVector&lt;QCustomTypeInfo&gt; *ct = customTypes();
+//...
+
+            QCustomTypeInfo inf;
+            inf.typeName = normalizedTypeName;
+            inf.creator = creator;
+            inf.deleter = deleter;
+            //...
+            inf.metaObject = metaObject;
+            idx = ct-&gt;size() + User;
+            ct-&gt;append(inf);
+            return idx;
+</pre></div>
+
+
+<h2>pointerToTypeDerivedFromQObject ?</h2>
+<p>Q_DECLARE_METATYPE for QObjectDerived class can be omitted. For example,</p>
+<div class="highlight"><pre><span class="cp">#include &lt;QtCore&gt;</span>
+
+<span class="n">class</span> <span class="nl">QObjectDerived</span> <span class="p">:</span> <span class="n">public</span> <span class="n">QObject</span>
+<span class="p">{</span>
+  <span class="n">Q_OBJECT</span>
+<span class="p">};</span>
+<span class="c1">//Q_DECLARE_METATYPE(QObjectDerived*)</span>
+
+<span class="n">class</span> <span class="n">MyClass</span>
+<span class="p">{</span>
+
+<span class="p">};</span>
+<span class="n">Q_DECLARE_METATYPE</span><span class="p">(</span><span class="n">MyClass</span><span class="o">*</span><span class="p">)</span>
+
+<span class="cp">#include &quot;main.moc&quot;</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">qDebug</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">qMetaTypeId</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">*&gt;</span><span class="p">();</span>
+    <span class="n">qDebug</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">qMetaTypeId</span><span class="o">&lt;</span><span class="n">QObjectDerived</span><span class="o">*&gt;</span><span class="p">();</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Here, another internal QMetaTypeId* is introduced.</p>
+<div class="highlight"><pre><span class="nt">template</span> <span class="o">&lt;</span><span class="nt">typename</span> <span class="nt">T</span><span class="o">&gt;</span>
+<span class="nt">struct</span> <span class="nt">QMetaTypeIdQObject</span><span class="o">&lt;</span><span class="nt">T</span><span class="o">*,</span> <span class="c">/* isPointerToTypeDerivedFromQObject */</span> <span class="nt">true</span><span class="o">&gt;</span>
+<span class="p">{</span>
+    <span class="n">enum</span> <span class="err">{</span>
+        <span class="n">Defined</span> <span class="o">=</span> <span class="m">1</span>
+    <span class="p">}</span><span class="o">;</span>
+
+    <span class="nt">static</span> <span class="nt">int</span> <span class="nt">qt_metatype_id</span><span class="o">()</span>
+    <span class="p">{</span>
+        <span class="k">static</span> <span class="n">QBasicAtomicInt</span> <span class="n">metatype_id</span> <span class="o">=</span> <span class="n">Q_BASIC_ATOMIC_INITIALIZER</span><span class="p">(</span><span class="m">0</span><span class="p">);</span>
+        <span class="n">if</span> <span class="p">(</span><span class="n">const</span> <span class="n">int</span> <span class="n">id</span> <span class="o">=</span> <span class="n">metatype_id</span><span class="o">.</span><span class="n">loadAcquire</span><span class="p">())</span>
+            <span class="n">return</span> <span class="n">id</span><span class="p">;</span>
+        <span class="n">const</span> <span class="n">char</span> <span class="o">*</span> <span class="n">const</span> <span class="n">cName</span> <span class="o">=</span> <span class="n">T</span><span class="o">::</span><span class="n">staticMetaObject</span><span class="o">.</span><span class="n">className</span><span class="p">();</span>
+        <span class="n">QByteArray</span> <span class="n">typeName</span><span class="p">;</span>
+        <span class="n">typeName</span><span class="o">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">int</span><span class="p">(</span><span class="n">strlen</span><span class="p">(</span><span class="n">cName</span><span class="p">))</span> <span class="o">+</span> <span class="m">1</span><span class="p">);</span>
+        <span class="n">typeName</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cName</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">);</span>
+        <span class="n">const</span> <span class="n">int</span> <span class="n">newId</span> <span class="o">=</span> <span class="n">qRegisterNormalizedMetaType</span><span class="o">&lt;</span><span class="n">T</span><span class="o">*&gt;</span><span class="p">(</span>
+                        <span class="n">typeName</span><span class="o">,</span>
+                        <span class="n">reinterpret_cast</span><span class="o">&lt;</span><span class="n">T</span><span class="o">**&gt;</span><span class="p">(</span><span class="n">quintptr</span><span class="p">(</span><span class="m">-1</span><span class="p">)));</span>
+        <span class="n">metatype_id</span><span class="o">.</span><span class="n">storeRelease</span><span class="p">(</span><span class="n">newId</span><span class="p">);</span>
+        <span class="n">return</span> <span class="n">newId</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="err">}</span><span class="o">;</span>
+</pre></div>
+
+
+<h2>Reference</h2>
+<ul>
+<li><a href="http://lists.qt-project.org/pipermail/development/2012-February/001880.html">[Development] QMetaTypeId and QMetaTypeId2</a> </li>
+<li><a href="http://steveire.wordpress.com/2011/03/16/implementing-qvariantqmetatype-features-with-template-tricks/">http://steveire.wordpress.com/2011/03/16/implementing-qvariantqmetatype-features-with-template-tricks/</a></li>
+<li><a href="http://qt-project.org/wiki/QVariant">http://qt-project.org/wiki/QVariant</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2013-06-21T11:29:00+08:00" pubdate>Fri, 21 Jun 2013</time>  <span class="categories">
+    <a class='category' href='http://blog.debao.me/category/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="http://blog.debao.me/2015/04/hello-pelican/">Hello Pelican</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2013/12/openssl-and-qt/">"Notes on OpenSSL and Qt"</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-2/">"How to use QThread in the right way (Part 2)"</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-1/">"How to use QThread in the right way (Part 1)"</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2013/07/left-shift-operator-overloading-for-qdebug/">"left shift operator overloading for QDebug()"</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="http://blog.debao.me/category/python.html">python</a></li>
+        <li><a href="http://blog.debao.me/category/qt.html">Qt</a></li>
+        <li><a href="http://blog.debao.me/category/tool.html">tool</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
+
+
+
+  <section>
+    <h1>GitHub Repos</h1>
+    <ul id="gh_repos">
+      <li class="loading">Status updating...</li>
+    </ul>
+    <script type="text/javascript">
+      $.domReady(function(){
+          if (!window.jXHR){
+              var jxhr = document.createElement('script');
+              jxhr.type = 'text/javascript';
+              jxhr.src = 'http://blog.debao.me/theme/js/jXHR.js';
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(jxhr, s);
+          }
+
+          github.showRepos({
+              user: 'dbzhang800',
+              count: 5,
+              skip_forks: true,
+              target: '#gh_repos'
+          });
+      });
+    </script>
+    <script src="http://blog.debao.me/theme/js/github.js" type="text/javascript"> </script>
+  </section>
+
+    <section>
+        <h1>Blogroll</h1>
+        <ul>
+            <li><a href="http://getpelican.com/" target="_blank">Pelican</a></li>
+            <li><a href="http://python.org/" target="_blank">Python.org</a></li>
+            <li><a href="http://jinja.pocoo.org/" target="_blank">Jinja2</a></li>
+            <li><a href="http://github.com" target="_blank">Github</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2012&ndash;2015  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="http://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="http://blog.debao.me/theme/js/ender.js"></script>
+  <script src="http://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var disqus_shortname = 'github800';
+    var disqus_identifier = '/2013/06/qt-macro-q_declare_metatype/';
+    var disqus_url = 'http://blog.debao.me/2013/06/qt-macro-q_declare_metatype/';
+    var disqus_title = '"Qt Macro: Q_DECLARE_METATYPE"';
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = "//" + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+  </script>
+</body>
+</html>
