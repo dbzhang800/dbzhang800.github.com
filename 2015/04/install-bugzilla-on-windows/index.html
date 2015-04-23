@@ -4,11 +4,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Categories &mdash; 1+1=10</title>
+  <title>Install Bugzilla on Windows &mdash; 1+1=10</title>
   <meta name="author" content="Debao Zhang">
 
   <link href="http://blog.debao.me/atom.xml" type="application/atom+xml" rel="alternate"
         title="1+1=10 Atom Feed" />
+
+
 
 
 
@@ -46,24 +48,142 @@
       <li >
         <a href="http://blog.debao.me/category/qt.html">Qt</a>
       </li>
-      <li >
+      <li class="active">
         <a href="http://blog.debao.me/category/tool.html">Tool</a>
       </li>
 </ul></nav>
   <div id="main">
     <div id="content">
 <div>
-	<article role="article">
-    	<header>
-    		<h1 class="entry-title">Blog Categories</h1>
-    	</header>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Install Bugzilla on Windows</h1>
+    <p class="meta">
+<time datetime="2015-04-23T10:11:00+08:00" pubdate>Thu, 23 Apr 2015</time>    </p>
+</header>
 
-	<p>
-		<a href="http://blog.debao.me/category/python.html">python</a> (1)<br>
-		<a href="http://blog.debao.me/category/qt.html">Qt</a> (10)<br>
-		<a href="http://blog.debao.me/category/tool.html">tool</a> (5)<br>
-	</p>
-	</article>
+  <div class="entry-content"><p>According to the <a href="http://bugzilla.readthedocs.org/en/5.0/installing/windows.html">documentation</a> of Bugzilla 5.0, the following applications should be installed first:</p>
+<ul>
+<li>ActiveState Perl 5.18.2 (5.12.4 or higher)</li>
+<li>Apache 2.4 (2.2.x or higher)</li>
+<li>MySql 5.6 (5.0.15 or higher)</li>
+</ul>
+<h2>Download Bugzilla</h2>
+<div class="highlight"><pre>git clone --branch 5.0 https://git.mozilla.org/bugzilla/bugzilla bugzilla
+</pre></div>
+
+
+<p>or (when 5.0 is released)</p>
+<div class="highlight"><pre>git clone --branch bugzilla-5.0-stable https://git.mozilla.org/bugzilla/bugzilla bugzilla
+</pre></div>
+
+
+<h2>Install required perl modules</h2>
+<div class="highlight"><pre>ppm install CGI.pm Digest-SHA TimeDate DateTime DateTime-TimeZone DBI Template-Toolkit Email-Sender Email-MIME URI List-MoreUtils Math-Random-ISAAC File-Slurp JSON-XS Win32 Win32-API DBD-mysql DateTime::TimeZone::Local::Win32
+</pre></div>
+
+
+<p>Note, Don't forget <code>DateTime::TimeZone::Local::Win32</code>, otherwise, following error will occur when we try to use bugzilla.</p>
+<p>The following modules are needed if want to use bugzilla to sent mails through smtp.</p>
+<div class="highlight"><pre>ppm install Authen-SASL Net-SMTP-SSL
+</pre></div>
+
+
+<blockquote>
+<p>Cannot determine local time zone   </p>
+</blockquote>
+<h2>MySQL Configuration</h2>
+<h3>Add a user</h3>
+<p>Connect to mysqld</p>
+<div class="highlight"><pre>mysql -u root -p
+</pre></div>
+
+
+<p>Then add a new user call <strong>bugs</strong></p>
+<div class="highlight"><pre>GRANT SELECT, INSERT,
+UPDATE, DELETE, INDEX, ALTER, CREATE, LOCK TABLES,
+CREATE TEMPORARY TABLES, DROP, REFERENCES ON bugs.*
+TO bugs@localhost IDENTIFIED BY &#39;mypassword&#39;;
+
+FLUSH PRIVILEGES;
+</pre></div>
+
+
+<h3>Configuration File</h3>
+<p>On my system, the conf file is at <code>C:\ProgramData\MySQL\MySQL Server 5.6\my.ini</code></p>
+<p>Add following lines</p>
+<div class="highlight"><pre><span class="k">[mysqld]</span>
+<span class="c1"># Allow packets up to 16M</span>
+<span class="na">max_allowed_packet</span><span class="o">=</span><span class="s">16M</span>
+<span class="c1"># Allow small words in full-text indexes</span>
+<span class="na">ft_min_word_len</span><span class="o">=</span><span class="s">2</span>
+</pre></div>
+
+
+<h2>Apache Configuration</h2>
+<ul>
+<li>Enable CGI Support by uncommenting following line</li>
+</ul>
+<div class="highlight"><pre>    AddHandler cgi-script .cgi
+</pre></div>
+
+
+<ul>
+<li>Config Bugzilla</li>
+</ul>
+<div class="highlight"><pre>    Alias &quot;/bugzilla&quot; &quot;d:/www/Bugzilla&quot;
+    <span class="nt">&lt;Directory</span> <span class="err">&quot;d:/www/Bugzilla&quot;</span><span class="nt">&gt;</span>
+        ScriptInterpreterSource Registry-Strict
+        Options +ExecCGI +FollowSymLinks
+        DirectoryIndex index.cgi index.html
+        AllowOverride Limit FileInfo Indexes Options
+        Require all granted
+    <span class="nt">&lt;/Directory&gt;</span>
+</pre></div>
+
+
+<p>Note: </p>
+<blockquote>
+<p>In order for ScriptInterpreterSource Registry-Strict to work, create a key HKEY_CLASSES_ROOT.cgi\Shell\ExecCGI\Command with the default value of the full path of perl.exe with a -T parameter. For example C:\Perl64\bin\perl.exe -T.</p>
+</blockquote>
+<h2>checksetup.pl</h2>
+<ul>
+<li>Run checksetup.pl to generate <code>localconfig</code> file.</li>
+</ul>
+<p>Edit the <code>localconfig</code> file, in our case, only <code>$db_pass</code> is needed.</p>
+<ul>
+<li>Run checksetup.pl again</li>
+</ul>
+<p>Database tables will be created.</p>
+<p>Administrator account (user name and password) will be created at the same time.</p>
+<h2>OK</h2>
+<p><code>http://127.0.0.1/bugzilla</code> should works now.</p>
+<h2>Links</h2>
+<ul>
+<li>http://bugzilla.readthedocs.org/en/5.0/installing/windows.html</li>
+<li>http://search.cpan.org/dist/DateTime-TimeZone/lib/DateTime/TimeZone.pm</li>
+<li>http://www.cnblogs.com/mr-wid/archive/2013/05/09/3068229.html</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2015-04-23T10:11:00+08:00" pubdate>Thu, 23 Apr 2015</time>  <span class="categories">
+    <a class='category' href='http://blog.debao.me/category/tool.html'>tool</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="http://blog.debao.me/tag/.html"></a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
 </div>
 <aside class="sidebar">
   <section>
@@ -150,6 +270,9 @@
   <script src="http://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
   <script type="text/javascript">
     var disqus_shortname = 'github800';
+    var disqus_identifier = '/2015/04/install-bugzilla-on-windows/';
+    var disqus_url = 'http://blog.debao.me/2015/04/install-bugzilla-on-windows/';
+    var disqus_title = 'Install Bugzilla on Windows';
     (function() {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
       dsq.src = "//" + disqus_shortname + '.disqus.com/embed.js';

@@ -1,5 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>1+1=10</title><link href="http://blog.debao.me/" rel="alternate"></link><link href="http://blog.debao.me/feeds/tool.atom.xml" rel="self"></link><id>http://blog.debao.me/</id><updated>2015-04-22T14:18:00+08:00</updated><entry><title>Hello Pelican</title><link href="http://blog.debao.me/2015/04/hello-pelican/" rel="alternate"></link><updated>2015-04-22T14:18:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2015-04-22:2015/04/hello-pelican/</id><summary type="html">&lt;p&gt;Octopress is a great blog system, but it's not easy to maintain for users who don't familiar with ruby. So I switch to Pelican, which is written in Python.&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>1+1=10</title><link href="http://blog.debao.me/" rel="alternate"></link><link href="http://blog.debao.me/feeds/tool.atom.xml" rel="self"></link><id>http://blog.debao.me/</id><updated>2015-04-23T10:11:00+08:00</updated><entry><title>Install Bugzilla on Windows</title><link href="http://blog.debao.me/2015/04/install-bugzilla-on-windows/" rel="alternate"></link><updated>2015-04-23T10:11:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2015-04-23:2015/04/install-bugzilla-on-windows/</id><summary type="html">&lt;p&gt;According to the &lt;a href="http://bugzilla.readthedocs.org/en/5.0/installing/windows.html"&gt;documentation&lt;/a&gt; of Bugzilla 5.0, the following applications should be installed first:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ActiveState Perl 5.18.2 (5.12.4 or higher)&lt;/li&gt;
+&lt;li&gt;Apache 2.4 (2.2.x or higher)&lt;/li&gt;
+&lt;li&gt;MySql 5.6 (5.0.15 or higher)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Download Bugzilla&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;git clone --branch 5.0 https://git.mozilla.org/bugzilla/bugzilla bugzilla
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;or (when 5.0 is released)&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;git clone --branch bugzilla-5.0-stable https://git.mozilla.org/bugzilla/bugzilla bugzilla
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Install required perl modules&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;ppm install CGI.pm Digest-SHA TimeDate DateTime DateTime-TimeZone DBI Template-Toolkit Email-Sender Email-MIME URI List-MoreUtils Math-Random-ISAAC File-Slurp JSON-XS Win32 Win32-API DBD-mysql DateTime::TimeZone::Local::Win32
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Note, Don't forget &lt;code&gt;DateTime::TimeZone::Local::Win32&lt;/code&gt;, otherwise, following error will occur when we try to use bugzilla.&lt;/p&gt;
+&lt;p&gt;The following modules are needed if want to use bugzilla to sent mails through smtp.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;ppm install Authen-SASL Net-SMTP-SSL
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;Cannot determine local time zone   &lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;MySQL Configuration&lt;/h2&gt;
+&lt;h3&gt;Add a user&lt;/h3&gt;
+&lt;p&gt;Connect to mysqld&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql -u root -p
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Then add a new user call &lt;strong&gt;bugs&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;GRANT SELECT, INSERT,
+UPDATE, DELETE, INDEX, ALTER, CREATE, LOCK TABLES,
+CREATE TEMPORARY TABLES, DROP, REFERENCES ON bugs.*
+TO bugs@localhost IDENTIFIED BY &amp;#39;mypassword&amp;#39;;
+
+FLUSH PRIVILEGES;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Configuration File&lt;/h3&gt;
+&lt;p&gt;On my system, the conf file is at &lt;code&gt;C:\ProgramData\MySQL\MySQL Server 5.6\my.ini&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Add following lines&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;[mysqld]&lt;/span&gt;
+&lt;span class="c1"&gt;# Allow packets up to 16M&lt;/span&gt;
+&lt;span class="na"&gt;max_allowed_packet&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;16M&lt;/span&gt;
+&lt;span class="c1"&gt;# Allow small words in full-text indexes&lt;/span&gt;
+&lt;span class="na"&gt;ft_min_word_len&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;2&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Apache Configuration&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Enable CGI Support by uncommenting following line&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    AddHandler cgi-script .cgi
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;Config Bugzilla&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    Alias &amp;quot;/bugzilla&amp;quot; &amp;quot;d:/www/Bugzilla&amp;quot;
+    &lt;span class="nt"&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class="err"&gt;&amp;quot;d:/www/Bugzilla&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+        ScriptInterpreterSource Registry-Strict
+        Options +ExecCGI +FollowSymLinks
+        DirectoryIndex index.cgi index.html
+        AllowOverride Limit FileInfo Indexes Options
+        Require all granted
+    &lt;span class="nt"&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Note: &lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;In order for ScriptInterpreterSource Registry-Strict to work, create a key HKEY_CLASSES_ROOT.cgi\Shell\ExecCGI\Command with the default value of the full path of perl.exe with a -T parameter. For example C:\Perl64\bin\perl.exe -T.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;checksetup.pl&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Run checksetup.pl to generate &lt;code&gt;localconfig&lt;/code&gt; file.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Edit the &lt;code&gt;localconfig&lt;/code&gt; file, in our case, only &lt;code&gt;$db_pass&lt;/code&gt; is needed.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Run checksetup.pl again&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Database tables will be created.&lt;/p&gt;
+&lt;p&gt;Administrator account (user name and password) will be created at the same time.&lt;/p&gt;
+&lt;h2&gt;OK&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;http://127.0.0.1/bugzilla&lt;/code&gt; should works now.&lt;/p&gt;
+&lt;h2&gt;Links&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;http://bugzilla.readthedocs.org/en/5.0/installing/windows.html&lt;/li&gt;
+&lt;li&gt;http://search.cpan.org/dist/DateTime-TimeZone/lib/DateTime/TimeZone.pm&lt;/li&gt;
+&lt;li&gt;http://www.cnblogs.com/mr-wid/archive/2013/05/09/3068229.html&lt;/li&gt;
+&lt;/ul&gt;</summary><category term=""></category></entry><entry><title>Hello Pelican</title><link href="http://blog.debao.me/2015/04/hello-pelican/" rel="alternate"></link><updated>2015-04-22T14:18:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2015-04-22:2015/04/hello-pelican/</id><summary type="html">&lt;p&gt;Octopress is a great blog system, but it's not easy to maintain for users who don't familiar with ruby. So I switch to Pelican, which is written in Python.&lt;/p&gt;
 &lt;h2&gt;Links&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="http://jakevdp.github.io/blog/2013/05/07/migrating-from-octopress-to-pelican/"&gt;Migrating from Octopress to Pelican&lt;/a&gt;&lt;/li&gt;
