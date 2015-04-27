@@ -1,5 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>1+1=10</title><link href="http://blog.debao.me/" rel="alternate"></link><link href="http://blog.debao.me/atom.xml" rel="self"></link><id>http://blog.debao.me/</id><updated>2015-04-23T10:11:00+08:00</updated><entry><title>Install Bugzilla on Windows</title><link href="http://blog.debao.me/2015/04/install-bugzilla-on-windows/" rel="alternate"></link><updated>2015-04-23T10:11:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2015-04-23:2015/04/install-bugzilla-on-windows/</id><summary type="html">&lt;p&gt;According to the &lt;a href="http://bugzilla.readthedocs.org/en/5.0/installing/windows.html"&gt;documentation&lt;/a&gt; of Bugzilla 5.0, the following applications should be installed first:&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>1+1=10</title><link href="http://blog.debao.me/" rel="alternate"></link><link href="http://blog.debao.me/atom.xml" rel="self"></link><id>http://blog.debao.me/</id><updated>2015-04-24T10:33:00+08:00</updated><entry><title>Install MediaWiki on Windows</title><link href="http://blog.debao.me/2015/04/install-mediawiki-on-windows/" rel="alternate"></link><updated>2015-04-24T10:33:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2015-04-24:2015/04/install-mediawiki-on-windows/</id><summary type="html">&lt;p&gt;MediaWiki + Apache + php + MySQL&lt;/p&gt;
+&lt;h2&gt;MySQL&lt;/h2&gt;
+&lt;p&gt;Download and install the msi installer of MySQL 5.6 from http://dev.mysql.com/downloads/installer/&lt;/p&gt;
+&lt;h2&gt;Apache&lt;/h2&gt;
+&lt;p&gt;Download and install Apache 2.4 from http://www.apachelounge.com/download/&lt;/p&gt;
+&lt;h2&gt;PHP&lt;/h2&gt;
+&lt;p&gt;Download and install php 5.8.6 from http://windows.php.net/download/&lt;/p&gt;
+&lt;p&gt;Rename &lt;code&gt;php.ini-production&lt;/code&gt; to  &lt;code&gt;php.ini&lt;/code&gt;, then enable mysql extension&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;extension_dir = &amp;quot;c:/php-5.6.8/ext&amp;quot;
+extension = php_mysql.dll
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Enable intl extension&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;extension = php_intl.dll
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;To make &lt;code&gt;intl&lt;/code&gt; really works, the following files which sit in the PHP directory&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;icudt54.dll&lt;/li&gt;
+&lt;li&gt;icuio54.dll&lt;/li&gt;
+&lt;li&gt;iculx54.dll&lt;/li&gt;
+&lt;li&gt;icutu54.dll&lt;/li&gt;
+&lt;li&gt;icuin54.dll&lt;/li&gt;
+&lt;li&gt;icule54.dll&lt;/li&gt;
+&lt;li&gt;icutest54.dll&lt;/li&gt;
+&lt;li&gt;icuuc54.dll&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Should be copied to the bin path of Apache, or one of the path in system environment variant &lt;code&gt;PATH&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Add following line to the conf file of apache to enable php.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;LoadModule php5_module &amp;quot;c:/php-5.6.8/php5apache2_4.dll&amp;quot;
+AddHandler application/x-httpd-php .php
+# configure the path to php.ini
+PHPIniDir &amp;quot;C:/php-5.6.8&amp;quot;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Add index.php to DirectoryIndex&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;DirectoryIndex index.html index.php
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Create a simple .php file for test.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;&amp;lt;?php&lt;/span&gt; &lt;span class="nb"&gt;phpinfo&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="cp"&gt;?&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;MediaWiki&lt;/h2&gt;
+&lt;p&gt;Download MediaWiki 1.24.2 from http://www.mediawiki.org/wiki/Download&lt;/p&gt;
+&lt;p&gt;Add following line to the conf file of Apache.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;# MediaWiki
+Alias &amp;quot;/wiki&amp;quot; &amp;quot;d:/www/mediawiki-1.24.2&amp;quot;
+&lt;span class="nt"&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class="err"&gt;&amp;quot;d:/www/mediawiki-1.24.2&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+    ScriptInterpreterSource Registry-Strict
+    Options +ExecCGI +FollowSymLinks
+    DirectoryIndex index.php index.html
+    AllowOverride Limit FileInfo Indexes Options
+    Require all granted
+&lt;span class="nt"&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class="err"&gt;&amp;quot;d:/www/mediawiki-1.24.2/images&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+   # Ignore .htaccess files
+   AllowOverride None
+
+   # Serve HTML as plaintext, don&amp;#39;t execute SHTML
+   AddType text/plain .html .htm .shtml .php
+
+   # Don&amp;#39;t run arbitrary PHP code.
+   php_admin_flag engine off
+
+   # If you&amp;#39;ve other scripting languages, disable them too.
+&lt;span class="nt"&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Run&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;http://localhost/wiki/mw-config/index.php
+&lt;/pre&gt;&lt;/div&gt;</summary><category term=""></category></entry><entry><title>Install Bugzilla on Windows</title><link href="http://blog.debao.me/2015/04/install-bugzilla-on-windows/" rel="alternate"></link><updated>2015-04-23T10:11:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2015-04-23:2015/04/install-bugzilla-on-windows/</id><summary type="html">&lt;p&gt;According to the &lt;a href="http://bugzilla.readthedocs.org/en/5.0/installing/windows.html"&gt;documentation&lt;/a&gt; of Bugzilla 5.0, the following applications should be installed first:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;ActiveState Perl 5.18.2 (5.12.4 or higher)&lt;/li&gt;
 &lt;li&gt;Apache 2.4 (2.2.x or higher)&lt;/li&gt;

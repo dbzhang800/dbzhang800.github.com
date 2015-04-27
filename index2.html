@@ -56,6 +56,27 @@
   		<article>
 <header>
       <h1 class="entry-title">
+        <a href="http://blog.debao.me/2013/06/qt-macro-q_declare_interface/">"Qt Macro: Q_DECLARE_INTERFACE"</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-06-25T12:34:00+08:00" pubdate>Tue, 25 Jun 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><h2>Q_DECLARE_INTERFACE(InterfaceClassName, InterfaceId)</h2>
+<p>This macro associate the given InterfaceId to the interface class called InterfaceClassName.The macro is normally used right after the interface definition:</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">MyInterface</span> <span class="p">{};</span>
+<span class="n">Q_DECLARE_INTERFACE</span><span class="p">(</span><span class="n">MyInterface</span><span class="p">,</span> <span class="s">&quot;me.debao.qt.myinterface&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Q_DECLARE_INTERFACE is a macro that defines helper function that make qobject_cast<IFace*>(QObject *object) return a IFace pointer ...</iface*></p></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/2013/06/qt-macro-q_declare_interface/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
         <a href="http://blog.debao.me/2013/06/qt-macro-q_declare_metatype/">"Qt Macro: Q_DECLARE_METATYPE"</a>
       </h1>
     <p class="meta">
@@ -203,6 +224,9 @@ public: \
     <h1>Recent Posts</h1>
     <ul id="recent_posts">
       <li class="post">
+          <a href="http://blog.debao.me/2015/04/install-mediawiki-on-windows/">Install MediaWiki on Windows</a>
+      </li>
+      <li class="post">
           <a href="http://blog.debao.me/2015/04/install-bugzilla-on-windows/">Install Bugzilla on Windows</a>
       </li>
       <li class="post">
@@ -213,9 +237,6 @@ public: \
       </li>
       <li class="post">
           <a href="http://blog.debao.me/2013/12/openssl-and-qt/">"Notes on OpenSSL and Qt"</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-2/">"How to use QThread in the right way (Part 2)"</a>
       </li>
     </ul>
   </section>

@@ -4,11 +4,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Tag:  &mdash; 1+1=10</title>
+  <title>Install MediaWiki on Windows &mdash; 1+1=10</title>
   <meta name="author" content="Debao Zhang">
 
   <link href="http://blog.debao.me/atom.xml" type="application/atom+xml" rel="alternate"
         title="1+1=10 Atom Feed" />
+
+
 
 
 
@@ -46,48 +48,118 @@
       <li >
         <a href="http://blog.debao.me/category/qt.html">Qt</a>
       </li>
-      <li >
+      <li class="active">
         <a href="http://blog.debao.me/category/tool.html">Tool</a>
       </li>
 </ul></nav>
   <div id="main">
     <div id="content">
 <div>
-	<article role="article">
-    	<header>
-    		<h1 class="entry-title">Tag: </h1>
-    	</header>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Install MediaWiki on Windows</h1>
+    <p class="meta">
+<time datetime="2015-04-24T10:33:00+08:00" pubdate>Fri, 24 Apr 2015</time>    </p>
+</header>
 
-    	<div id="blog-archives">
-            <h2>2015</h2>
-                    <article>
-                        <h1><a href="http://blog.debao.me/2015/04/install-mediawiki-on-windows/">Install MediaWiki on Windows</a></h1>
-                        <time datetime="2015-04-24 10:33:00+08:00" pubdate>
-                            <span class="month">Apr</span>
-                            <span class="day">24</span>
-                            <span class="year">2015</span>
-                        </time>
-                        <footer>
-                            <span class="categories">posted in
-                                <a class='category' href='http://blog.debao.me/category/tool.html'>tool</a>
-                            </span>
-                        </footer>
-                    </article>
-                    <article>
-                        <h1><a href="http://blog.debao.me/2015/04/install-bugzilla-on-windows/">Install Bugzilla on Windows</a></h1>
-                        <time datetime="2015-04-23 10:11:00+08:00" pubdate>
-                            <span class="month">Apr</span>
-                            <span class="day">23</span>
-                            <span class="year">2015</span>
-                        </time>
-                        <footer>
-                            <span class="categories">posted in
-                                <a class='category' href='http://blog.debao.me/category/tool.html'>tool</a>
-                            </span>
-                        </footer>
-                    </article>
-	    </div>
-    </article>
+  <div class="entry-content"><p>MediaWiki + Apache + php + MySQL</p>
+<h2>MySQL</h2>
+<p>Download and install the msi installer of MySQL 5.6 from http://dev.mysql.com/downloads/installer/</p>
+<h2>Apache</h2>
+<p>Download and install Apache 2.4 from http://www.apachelounge.com/download/</p>
+<h2>PHP</h2>
+<p>Download and install php 5.8.6 from http://windows.php.net/download/</p>
+<p>Rename <code>php.ini-production</code> to  <code>php.ini</code>, then enable mysql extension</p>
+<div class="highlight"><pre>extension_dir = &quot;c:/php-5.6.8/ext&quot;
+extension = php_mysql.dll
+</pre></div>
+
+
+<p>Enable intl extension</p>
+<div class="highlight"><pre>extension = php_intl.dll
+</pre></div>
+
+
+<p>To make <code>intl</code> really works, the following files which sit in the PHP directory</p>
+<ul>
+<li>icudt54.dll</li>
+<li>icuio54.dll</li>
+<li>iculx54.dll</li>
+<li>icutu54.dll</li>
+<li>icuin54.dll</li>
+<li>icule54.dll</li>
+<li>icutest54.dll</li>
+<li>icuuc54.dll</li>
+</ul>
+<p>Should be copied to the bin path of Apache, or one of the path in system environment variant <code>PATH</code>.</p>
+<p>Add following line to the conf file of apache to enable php.</p>
+<div class="highlight"><pre>LoadModule php5_module &quot;c:/php-5.6.8/php5apache2_4.dll&quot;
+AddHandler application/x-httpd-php .php
+# configure the path to php.ini
+PHPIniDir &quot;C:/php-5.6.8&quot;
+</pre></div>
+
+
+<p>Add index.php to DirectoryIndex</p>
+<div class="highlight"><pre>DirectoryIndex index.html index.php
+</pre></div>
+
+
+<p>Create a simple .php file for test.</p>
+<div class="highlight"><pre><span class="cp">&lt;?php</span> <span class="nb">phpinfo</span><span class="p">()</span> <span class="cp">?&gt;</span>
+</pre></div>
+
+
+<h2>MediaWiki</h2>
+<p>Download MediaWiki 1.24.2 from http://www.mediawiki.org/wiki/Download</p>
+<p>Add following line to the conf file of Apache.</p>
+<div class="highlight"><pre># MediaWiki
+Alias &quot;/wiki&quot; &quot;d:/www/mediawiki-1.24.2&quot;
+<span class="nt">&lt;Directory</span> <span class="err">&quot;d:/www/mediawiki-1.24.2&quot;</span><span class="nt">&gt;</span>
+    ScriptInterpreterSource Registry-Strict
+    Options +ExecCGI +FollowSymLinks
+    DirectoryIndex index.php index.html
+    AllowOverride Limit FileInfo Indexes Options
+    Require all granted
+<span class="nt">&lt;/Directory&gt;</span>
+<span class="nt">&lt;Directory</span> <span class="err">&quot;d:/www/mediawiki-1.24.2/images&quot;</span><span class="nt">&gt;</span>
+   # Ignore .htaccess files
+   AllowOverride None
+
+   # Serve HTML as plaintext, don&#39;t execute SHTML
+   AddType text/plain .html .htm .shtml .php
+
+   # Don&#39;t run arbitrary PHP code.
+   php_admin_flag engine off
+
+   # If you&#39;ve other scripting languages, disable them too.
+<span class="nt">&lt;/Directory&gt;</span>
+</pre></div>
+
+
+<p>Run</p>
+<div class="highlight"><pre>http://localhost/wiki/mw-config/index.php
+</pre></div></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2015-04-24T10:33:00+08:00" pubdate>Fri, 24 Apr 2015</time>  <span class="categories">
+    <a class='category' href='http://blog.debao.me/category/tool.html'>tool</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="http://blog.debao.me/tag/.html"></a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
 </div>
 <aside class="sidebar">
   <section>
@@ -98,6 +170,15 @@
       </li>
       <li class="post">
           <a href="http://blog.debao.me/2015/04/install-bugzilla-on-windows/">Install Bugzilla on Windows</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/zh/2015/04/obligations-of-the-lgpl/">使用LGPL授权的Qt开发商用程序的注意事项</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2015/04/hello-pelican/">Hello Pelican</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2013/12/openssl-and-qt/">"Notes on OpenSSL and Qt"</a>
       </li>
     </ul>
   </section>
@@ -157,7 +238,7 @@
 </aside>    </div>
   </div>
   <footer role="contentinfo"><p>
-    Copyright &copy;  2015  Debao Zhang &mdash;
+    Copyright &copy;  2012&ndash;2015  Debao Zhang &mdash;
   <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
 </p></footer>
   <script src="http://blog.debao.me/theme/js/modernizr-2.0.js"></script>
@@ -165,6 +246,9 @@
   <script src="http://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
   <script type="text/javascript">
     var disqus_shortname = 'github800';
+    var disqus_identifier = '/2015/04/install-mediawiki-on-windows/';
+    var disqus_url = 'http://blog.debao.me/2015/04/install-mediawiki-on-windows/';
+    var disqus_title = 'Install MediaWiki on Windows';
     (function() {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
       dsq.src = "//" + disqus_shortname + '.disqus.com/embed.js';
