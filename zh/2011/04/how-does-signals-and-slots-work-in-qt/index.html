@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>用ISO C++实现自己的信号槽(Qt另类学习) &mdash; 1+1=10</title>
+  <meta name="author" content="Debao Zhang">
+
+  <link href="http://blog.debao.me/atom.xml" type="application/atom+xml" rel="alternate"
+        title="1+1=10 Atom Feed" />
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="http://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="http://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+  <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+  <link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="http://blog.debao.me/">1+1=10</a></h1>
+    <h2>Debao's Blog...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="http://blog.debao.me/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+
+<ul class="main-navigation">
+      <li >
+        <a href="http://blog.debao.me/category/python.html">Python</a>
+      </li>
+      <li class="active">
+        <a href="http://blog.debao.me/category/qt.html">Qt</a>
+      </li>
+      <li >
+        <a href="http://blog.debao.me/category/tool.html">Tool</a>
+      </li>
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">用ISO C++实现自己的信号槽(Qt另类学习)</h1>
+    <p class="meta">
+<time datetime="2011-04-30T15:02:00+08:00" pubdate>2011-04-30(周六)</time>    </p>
+</header>
+
+  <div class="entry-content"><p>有网友抱怨：</p>
+<blockquote>
+<p>哪个大牛能帮帮我，讲解一下信号槽机制的底层实现？
+不要那种源码的解析，只要清楚的讲讲是怎么发送信号，怎么去选择相应的槽，再做出反应。也就是类似于一个信号槽的相应流程。。。求解啊！！！
+看了源码，真的是一头雾水。。。撞墙的心都有了~~~~ </p>
+</blockquote>
+<p><strong>本文使用 ISO C++ 一步一步实现了一个极度简化的信号与槽的系统 (整个程序4个文件共121行代码) 。希望能有助于刚进入Qt世界的C++用户理解Qt最核心的信号槽与元对象系统是如何工作的。</strong></p>
+<p>另：你可能会对 <a href="http://blog.debao.me/zh/2010/11/from-cpp-to-qt/">从 C++ 到 Qt</a>   一文感兴趣</p>
+<p>注：Qt5 已经引入一种全新的信号与槽的语法：信号可以和普通的函数、类的普通成员函数、lambda函数连接（而不再局限于信号函数和槽函数）。</p>
+<h2>Qt信号与槽</h2>
+<p>GUI程序中，当我们我们点击一个按钮时，我们会期待我们自定义的某个函数被调用。对此，较老的工具集(toolkits)都是通过回调函数(callback)来实现的，Qt的神奇之处就在于，它使用信号(signal)与槽(slot)的技术来取代了回调。</p>
+<p>在继续之前，我们先看一眼最最常用的 connnect 函数：</p>
+<div class="highlight"><pre><span class="n">connect</span><span class="p">(</span><span class="n">btn</span><span class="p">,</span> <span class="s">&quot;2clicked()&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="s">&quot;1onBtnClicked()&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>可能你会觉得稍有点眼生，因为为了清楚起见，我没有直接使用大家很熟悉的SIGNAL和SLOT两个宏，宏定义如下：</p>
+<div class="highlight"><pre><span class="cp"># define SLOT(a)     &quot;1&quot;#a</span>
+<span class="cp"># define SIGNAL(a)   &quot;2&quot;#a</span>
+</pre></div>
+
+
+<p>程序运行时，connect借助两个字符串，即可将信号与槽的关联建立起来，那么，它是如果做到的呢？C++的经验可以告诉我们：</p>
+<ul>
+<li>类中应该保存有信号和槽的字符串信息</li>
+<li>字符串和信号槽函数要关联</li>
+</ul>
+<p>而这，就是通过神奇的元对象系统所实现的（Qt的元对象系统预处理器叫做moc，对文件预处理之后生成一个moc_xxx.cpp文件，然后和其他文件一块编译即可）。</p>
+<p>接下来，我们不妨尝试用纯C++来实现自己的元对象系统(我们需要有一个自己的预处理器，本文中用双手来代替了，预处理生成的文件是db_xxx.cpp)。</p>
+<p>继续之前，我们可以先看一下我们最终的类定义</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">Object</span>    
+<span class="p">{</span>    
+    <span class="n">DB_OBJECT</span>  
+<span class="k">public</span><span class="o">:</span>    
+    <span class="n">Object</span><span class="p">();</span>    
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">Object</span><span class="p">();</span>    
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">db_connect</span><span class="p">(</span><span class="n">Object</span> <span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="p">,</span> <span class="n">Object</span> <span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="p">);</span>    
+    <span class="kt">void</span> <span class="nf">testSignal</span><span class="p">();</span>    
+<span class="nl">db_signals</span><span class="p">:</span>    
+    <span class="kt">void</span> <span class="n">sig1</span><span class="p">();</span>    
+<span class="k">public</span> <span class="nl">db_slots</span><span class="p">:</span>    
+    <span class="kt">void</span> <span class="n">slot1</span><span class="p">();</span>    
+<span class="k">friend</span> <span class="k">class</span> <span class="nc">MetaObject</span><span class="p">;</span>    
+<span class="k">private</span><span class="o">:</span>    
+     <span class="n">ConnectionMap</span> <span class="n">connections</span><span class="p">;</span>    
+<span class="p">};</span>
+</pre></div>
+
+
+<h2>引入元对象系统</h2>
+<p>首先定义自己的信号和槽</p>
+<ul>
+<li>
+<p>为了和普通成员进行区别(以使得预处理器可以知道如何提取信息)，我们需要创造一些"关键字"</p>
+<ul>
+<li>db_signals</li>
+<li>db_slots<div class="highlight"><pre><span class="k">class</span> <span class="nc">Object</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">Object</span><span class="p">();</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">Object</span><span class="p">();</span>
+<span class="nl">db_signals</span><span class="p">:</span>
+    <span class="kt">void</span> <span class="n">sig1</span><span class="p">();</span>
+<span class="k">public</span> <span class="nl">db_slots</span><span class="p">:</span>
+    <span class="kt">void</span> <span class="n">slot1</span><span class="p">();</span>
+<span class="p">};</span>
+</pre></div>
+
+
+</li>
+</ul>
+</li>
+<li>
+<p>通过自己的预处理器，将信息提取取来，放置到一个单独的文件中（比如db_object.cpp）:</p>
+</li>
+<li>
+<p>规则很简单，将信号和槽的名字提取出来，放到字符串中。可以有多个信号或槽，按顺序"sig1\nsig2\n"</p>
+<div class="highlight"><pre><span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">sig_names</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;sig1</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">slts_names</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;slot1</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+
+
+</li>
+<li>
+<p>这些信号和槽的信息，如何才能与类建立关联，如何被访问呢？</p>
+</li>
+</ul>
+<p>我们可以定义一个类，来存放信息：</p>
+<div class="highlight"><pre><span class="k">struct</span> <span class="n">MetaObject</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">sig_names</span><span class="p">;</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">slts_names</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>然后将其作为一个Object的静态成员(注意哦，这就是我们的元对象啦 )：</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">Object</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="n">MetaObject</span> <span class="n">meta</span><span class="p">;</span>
+<span class="p">...</span>
+</pre></div>
+
+
+<p>这样一来，我们的预处理器可以生成这样的 db_object.cpp 文件：</p>
+<div class="highlight"><pre><span class="cp">#include &quot;object.h&quot;</span>
+
+<span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">sig_names</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;sig1</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">slts_names</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;slot1</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="n">MetaObject</span> <span class="n">Object</span><span class="o">::</span><span class="n">meta</span> <span class="o">=</span> <span class="p">{</span><span class="n">sig_names</span><span class="p">,</span> <span class="n">slts_names</span><span class="p">};</span>
+</pre></div>
+
+
+<p>信息提取的问题解决了：可是，还有一个严重问题，我们定义的关键字 C++ 编译器不认识啊，怎么办？</p>
+<p>呵呵，好办，通过定义一下宏，问题是不是解决了：</p>
+<div class="highlight"><pre><span class="cp"># define db_slots</span>
+<span class="cp"># define db_signals protected</span>
+</pre></div>
+
+
+<h2>建立信号槽链接</h2>
+<p>我们的最终目的就是：当信号被触发的时候，能找到并触发相应的槽。所以有了信号和槽的信息，我们就可以建立信号和槽的连接了。我们通过 db_connect 将信号和槽的对应关系保存到一个 mutlimap 中：</p>
+<div class="highlight"><pre><span class="k">struct</span> <span class="n">Connection</span>
+<span class="p">{</span>
+    <span class="n">Object</span> <span class="o">*</span> <span class="n">receiver</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">method</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">Object</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="p">...</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="n">db_connect</span><span class="p">(</span><span class="n">Object</span><span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">,</span> <span class="n">Object</span><span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">);</span>
+<span class="p">...</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">multimap</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">Connection</span><span class="o">&gt;</span> <span class="n">connections</span><span class="p">;</span>
+</pre></div>
+
+
+<p>上面应该不需要什么解释了，我们直接看看db_connect该怎么写：</p>
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">Object</span><span class="o">::</span><span class="n">db_connect</span><span class="p">(</span><span class="n">Object</span><span class="o">*</span> <span class="n">sender</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">sig</span><span class="p">,</span> <span class="n">Object</span><span class="o">*</span> <span class="n">receiver</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">slt</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">sig_idx</span> <span class="o">=</span> <span class="n">find_string</span><span class="p">(</span><span class="n">sender</span><span class="o">-&gt;</span><span class="n">meta</span><span class="p">.</span><span class="n">sig_names</span><span class="p">,</span> <span class="n">sig</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">slt_idx</span> <span class="o">=</span> <span class="n">find_string</span><span class="p">(</span><span class="n">receiver</span><span class="o">-&gt;</span><span class="n">meta</span><span class="p">.</span><span class="n">slts_names</span><span class="p">,</span> <span class="n">slt</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">sig_idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">||</span> <span class="n">slt_idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">perror</span><span class="p">(</span><span class="s">&quot;signal or slot not found!&quot;</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">Connection</span> <span class="n">c</span> <span class="o">=</span> <span class="p">{</span><span class="n">receiver</span><span class="p">,</span> <span class="n">slt_idx</span><span class="p">};</span>
+        <span class="n">sender</span><span class="o">-&gt;</span><span class="n">connections</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">Connection</span><span class="o">&gt;</span><span class="p">(</span><span class="n">sig_idx</span><span class="p">,</span> <span class="n">c</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>首先从元对象信息中查找信号和槽的名字是否存在，如果存在，则将信号的索引和接收者的信息存入信号发送者的的一个map中。如果信号或槽无效，就什么都不用做了。</p>
+<p>我们这儿定义了一个find_string函数，就是个简单的字符串查找(此处就不列出了)。</p>
+<h2>信号的激活</h2>
+<p>连接信息有了，我们看看信号到底是怎么发出的。</p>
+<p>在 Qt 中，我们都知道用 emit 来发射信号：</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">Object</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">void</span> <span class="n">testSignal</span><span class="p">()</span>
+<span class="p">...</span>
+<span class="p">};</span>
+
+<span class="kt">void</span> <span class="n">Object</span><span class="o">::</span><span class="n">testSignal</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">db_emit</span> <span class="n">sig1</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>这儿 db_emit 是神马东西？C++编译器不认识啊，没关系，看仔细喽，加一行就行了</p>
+<div class="highlight"><pre>#define db_emit
+</pre></div>
+
+
+<p>从前面我的Object定义中可以看到，所谓的信号或槽，都只是普普通通的C++类的成员函数。既然是成员函数，就需要函数定义：</p>
+<ul>
+<li>槽函数：由于它包含我们需要的功能代码，我们都会想到在 object.cpp 文件中去定义它，不存在问题。</li>
+<li>信号函数：它的函数体不需要自己编写。那么它在哪儿呢？这就是本节的内容了</li>
+</ul>
+<p>信号函数由我们的"预处理器"来生成，也就是它要定义在我们的 db_object.cpp 文件中：</p>
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">Object</span><span class="o">::</span><span class="n">sig1</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">MetaObject</span><span class="o">::</span><span class="n">active</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>我们预处理源文件时，就知道它是第几个信号。所以根据它的索引去调用和它关联的槽即可。具体工作交给了MetaObject类：</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">Object</span><span class="p">;</span>
+<span class="k">struct</span> <span class="n">MetaObject</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">sig_names</span><span class="p">;</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">slts_names</span><span class="p">;</span>
+
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">active</span><span class="p">(</span><span class="n">Object</span> <span class="o">*</span> <span class="n">sender</span><span class="p">,</span> <span class="kt">int</span> <span class="n">idx</span><span class="p">);</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>这个函数该怎么写呢：思路很简单</p>
+<ul>
+<li>从前面的保存连接的map中，找出与该信号关联的对象和槽</li>
+<li>调用该对象这个槽<div class="highlight"><pre><span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">multimap</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">Connection</span><span class="o">&gt;</span> <span class="n">ConnectionMap</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">multimap</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">Connection</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">ConnectionMapIt</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="n">MetaObject</span><span class="o">::</span><span class="n">active</span><span class="p">(</span><span class="n">Object</span><span class="o">*</span> <span class="n">sender</span><span class="p">,</span> <span class="kt">int</span> <span class="n">idx</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">ConnectionMapIt</span> <span class="n">it</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">ConnectionMapIt</span><span class="p">,</span> <span class="n">ConnectionMapIt</span><span class="o">&gt;</span> <span class="n">ret</span><span class="p">;</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">sender</span><span class="o">-&gt;</span><span class="n">connections</span><span class="p">.</span><span class="n">equal_range</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">it</span><span class="o">=</span><span class="n">ret</span><span class="p">.</span><span class="n">first</span><span class="p">;</span> <span class="n">it</span><span class="o">!=</span><span class="n">ret</span><span class="p">.</span><span class="n">second</span><span class="p">;</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Connection</span> <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">).</span><span class="n">second</span><span class="p">;</span>
+        <span class="c1">//c.receiver-&gt;metacall(c.method);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+</li>
+</ul>
+<h2>补遗：</h2>
+<h3>槽的调用</h3>
+<p>这个最后一个关键问题了，槽函数如何根据一个索引值进行调用。</p>
+<ul>
+<li>直接调用槽函数我们都知道了，就一个普通函数</li>
+<li>可现在通过索引调用了，那么我们必须定义一个接口函数<div class="highlight"><pre><span class="k">class</span> <span class="nc">Object</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">metacall</span><span class="p">(</span><span class="kt">int</span> <span class="n">idx</span><span class="p">);</span>
+<span class="p">...</span>
+</pre></div>
+
+
+</li>
+</ul>
+<p>该函数如何实现呢？这个又回到我们的元对象预处理过程中了，因为在预处理的过程，我们能将槽的索引和槽的调用关联起来。</p>
+<p>所以，在预处理生成的文件(db_object.cpp)中，我们很容易生成其定义：</p>
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">Object</span><span class="o">::</span><span class="n">metacall</span><span class="p">(</span><span class="kt">int</span> <span class="n">idx</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="mi">0</span><span class="o">:</span>
+            <span class="n">slot1</span><span class="p">();</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="k">default</span><span class="o">:</span>
+            <span class="k">break</span><span class="p">;</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>至此，我们已经实现的一个简化的自己的信号与槽的程序。下面我们总体上看看程序的所有代码：
+全家福</p>
+<ul>
+<li>
+<p>类定义文件 object.h</p>
+<div class="highlight"><pre><span class="cp">#ifndef DB_OBJECT  </span>
+<span class="cp">#define DB_OBJECT  </span>
+<span class="cp">#include &lt;map&gt;  </span>
+<span class="cp"># define db_slots  </span>
+<span class="cp"># define db_signals protected  </span>
+<span class="cp"># define db_emit  </span>
+<span class="k">class</span> <span class="nc">Object</span><span class="p">;</span>  
+<span class="k">struct</span> <span class="n">MetaObject</span>  
+<span class="p">{</span>  
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">sig_names</span><span class="p">;</span>  
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">slts_names</span><span class="p">;</span>  
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">active</span><span class="p">(</span><span class="n">Object</span> <span class="o">*</span> <span class="n">sender</span><span class="p">,</span> <span class="kt">int</span> <span class="n">idx</span><span class="p">);</span>  
+<span class="p">};</span>  
+<span class="k">struct</span> <span class="n">Connection</span>  
+<span class="p">{</span>  
+    <span class="n">Object</span> <span class="o">*</span> <span class="n">receiver</span><span class="p">;</span>  
+    <span class="kt">int</span> <span class="n">method</span><span class="p">;</span>  
+<span class="p">};</span>  
+<span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">multimap</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">Connection</span><span class="o">&gt;</span> <span class="n">ConnectionMap</span><span class="p">;</span>  
+<span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">multimap</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">Connection</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">ConnectionMapIt</span><span class="p">;</span>  
+<span class="k">class</span> <span class="nc">Object</span>  
+<span class="p">{</span>  
+    <span class="k">static</span> <span class="n">MetaObject</span> <span class="n">meta</span><span class="p">;</span>  
+    <span class="kt">void</span> <span class="nf">metacall</span><span class="p">(</span><span class="kt">int</span> <span class="n">idx</span><span class="p">);</span>  
+<span class="k">public</span><span class="o">:</span>  
+    <span class="n">Object</span><span class="p">();</span>  
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">Object</span><span class="p">();</span>  
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">db_connect</span><span class="p">(</span><span class="n">Object</span><span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">,</span> <span class="n">Object</span><span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">);</span>  
+    <span class="kt">void</span> <span class="nf">testSignal</span><span class="p">();</span>  
+<span class="nl">db_signals</span><span class="p">:</span>  
+    <span class="kt">void</span> <span class="n">sig1</span><span class="p">();</span>  
+<span class="k">public</span> <span class="nl">db_slots</span><span class="p">:</span>  
+    <span class="kt">void</span> <span class="n">slot1</span><span class="p">();</span>  
+<span class="k">friend</span> <span class="k">class</span> <span class="nc">MetaObject</span><span class="p">;</span>  
+<span class="k">private</span><span class="o">:</span>  
+     <span class="n">ConnectionMap</span> <span class="n">connections</span><span class="p">;</span>  
+<span class="p">};</span>  
+<span class="cp">#endif</span>
+</pre></div>
+
+
+</li>
+<li>
+<p>类实现文件 object.cpp</p>
+<div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;  </span>
+<span class="cp">#include &lt;string.h&gt;  </span>
+<span class="cp">#include &quot;object.h&quot;  </span>
+<span class="n">Object</span><span class="o">::</span><span class="n">Object</span><span class="p">()</span>  
+<span class="p">{</span>  
+<span class="p">}</span>  
+<span class="n">Object</span><span class="o">::~</span><span class="n">Object</span><span class="p">()</span>  
+<span class="p">{</span>  
+<span class="p">}</span>  
+<span class="k">static</span> <span class="kt">int</span> <span class="n">find_string</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">str</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">substr</span><span class="p">)</span>  
+<span class="p">{</span>  
+    <span class="k">if</span> <span class="p">(</span><span class="n">strlen</span><span class="p">(</span><span class="n">str</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">strlen</span><span class="p">(</span><span class="n">substr</span><span class="p">))</span>  
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>  
+    <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>  
+    <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">substr</span><span class="p">);</span>  
+    <span class="kt">bool</span> <span class="n">start</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>  
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">str</span><span class="p">;</span>  
+    <span class="k">while</span> <span class="p">(</span><span class="o">*</span><span class="n">pos</span><span class="p">)</span> <span class="p">{</span>  
+        <span class="k">if</span> <span class="p">(</span><span class="n">start</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">strncmp</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">substr</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">pos</span><span class="p">[</span><span class="n">len</span><span class="p">]</span><span class="o">==</span><span class="sc">&#39;\n&#39;</span><span class="p">)</span>  
+            <span class="k">return</span> <span class="n">idx</span><span class="p">;</span>  
+        <span class="n">start</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>  
+        <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">pos</span> <span class="o">==</span> <span class="sc">&#39;\n&#39;</span><span class="p">)</span> <span class="p">{</span>  
+            <span class="n">idx</span><span class="o">++</span><span class="p">;</span>  
+            <span class="n">start</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>  
+        <span class="p">}</span>  
+        <span class="n">pos</span><span class="o">++</span><span class="p">;</span>  
+    <span class="p">}</span>  
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>  
+<span class="p">}</span>  
+<span class="kt">void</span> <span class="n">Object</span><span class="o">::</span><span class="n">db_connect</span><span class="p">(</span><span class="n">Object</span><span class="o">*</span> <span class="n">sender</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">sig</span><span class="p">,</span> <span class="n">Object</span><span class="o">*</span> <span class="n">receiver</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">slt</span><span class="p">)</span>  
+<span class="p">{</span>  
+    <span class="kt">int</span> <span class="n">sig_idx</span> <span class="o">=</span> <span class="n">find_string</span><span class="p">(</span><span class="n">sender</span><span class="o">-&gt;</span><span class="n">meta</span><span class="p">.</span><span class="n">sig_names</span><span class="p">,</span> <span class="n">sig</span><span class="p">);</span>  
+    <span class="kt">int</span> <span class="n">slt_idx</span> <span class="o">=</span> <span class="n">find_string</span><span class="p">(</span><span class="n">receiver</span><span class="o">-&gt;</span><span class="n">meta</span><span class="p">.</span><span class="n">slts_names</span><span class="p">,</span> <span class="n">slt</span><span class="p">);</span>  
+    <span class="k">if</span> <span class="p">(</span><span class="n">sig_idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">||</span> <span class="n">slt_idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>  
+        <span class="n">perror</span><span class="p">(</span><span class="s">&quot;signal or slot not found!&quot;</span><span class="p">);</span>  
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>  
+        <span class="n">Connection</span> <span class="n">c</span> <span class="o">=</span> <span class="p">{</span><span class="n">receiver</span><span class="p">,</span> <span class="n">slt_idx</span><span class="p">};</span>  
+        <span class="n">sender</span><span class="o">-&gt;</span><span class="n">connections</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">Connection</span><span class="o">&gt;</span><span class="p">(</span><span class="n">sig_idx</span><span class="p">,</span> <span class="n">c</span><span class="p">));</span>  
+    <span class="p">}</span>  
+<span class="p">}</span>  
+<span class="kt">void</span> <span class="n">Object</span><span class="o">::</span><span class="n">slot1</span><span class="p">()</span>  
+<span class="p">{</span>  
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello dbzhang800!&quot;</span><span class="p">);</span>  
+<span class="p">}</span>  
+<span class="kt">void</span> <span class="n">MetaObject</span><span class="o">::</span><span class="n">active</span><span class="p">(</span><span class="n">Object</span><span class="o">*</span> <span class="n">sender</span><span class="p">,</span> <span class="kt">int</span> <span class="n">idx</span><span class="p">)</span>  
+<span class="p">{</span>  
+    <span class="n">ConnectionMapIt</span> <span class="n">it</span><span class="p">;</span>  
+    <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">ConnectionMapIt</span><span class="p">,</span> <span class="n">ConnectionMapIt</span><span class="o">&gt;</span> <span class="n">ret</span><span class="p">;</span>  
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">sender</span><span class="o">-&gt;</span><span class="n">connections</span><span class="p">.</span><span class="n">equal_range</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>  
+    <span class="k">for</span> <span class="p">(</span><span class="n">it</span><span class="o">=</span><span class="n">ret</span><span class="p">.</span><span class="n">first</span><span class="p">;</span> <span class="n">it</span><span class="o">!=</span><span class="n">ret</span><span class="p">.</span><span class="n">second</span><span class="p">;</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span> <span class="p">{</span>  
+        <span class="n">Connection</span> <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">).</span><span class="n">second</span><span class="p">;</span>  
+        <span class="n">c</span><span class="p">.</span><span class="n">receiver</span><span class="o">-&gt;</span><span class="n">metacall</span><span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="n">method</span><span class="p">);</span>  
+    <span class="p">}</span>  
+<span class="p">}</span>  
+<span class="kt">void</span> <span class="n">Object</span><span class="o">::</span><span class="n">testSignal</span><span class="p">()</span>  
+<span class="p">{</span>  
+    <span class="n">db_emit</span> <span class="n">sig1</span><span class="p">();</span>  
+<span class="p">}</span>
+</pre></div>
+
+
+</li>
+<li>
+<p>我们自己的预处理需要生成这样一个文件 db_object.cpp</p>
+</li>
+<li>
+<p>注意看这个文件：其实内容非常简单</p>
+<ul>
+<li>将信号和槽的信息存放到字符串中 ==&gt;按顺序排放，所以有了索引值</li>
+<li>信号发射 其实就是 信号函数==&gt; 信号的索引</li>
+<li>metacall 其实就是 槽的索引==&gt; 槽函数<div class="highlight"><pre><span class="cp">#include &quot;object.h&quot;  </span>
+<span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">sig_names</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;sig1</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>  
+<span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">slts_names</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;slot1</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>  
+<span class="n">MetaObject</span> <span class="n">Object</span><span class="o">::</span><span class="n">meta</span> <span class="o">=</span> <span class="p">{</span><span class="n">sig_names</span><span class="p">,</span> <span class="n">slts_names</span><span class="p">};</span>  
+<span class="kt">void</span> <span class="n">Object</span><span class="o">::</span><span class="n">sig1</span><span class="p">()</span>  
+<span class="p">{</span>  
+    <span class="n">MetaObject</span><span class="o">::</span><span class="n">active</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>  
+<span class="p">}</span>  
+<span class="kt">void</span> <span class="n">Object</span><span class="o">::</span><span class="n">metacall</span><span class="p">(</span><span class="kt">int</span> <span class="n">idx</span><span class="p">)</span>  
+<span class="p">{</span>  
+    <span class="k">switch</span> <span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="p">{</span>  
+        <span class="k">case</span> <span class="mi">0</span><span class="o">:</span>  
+            <span class="n">slot1</span><span class="p">();</span>  
+            <span class="k">break</span><span class="p">;</span>  
+        <span class="k">default</span><span class="o">:</span>  
+            <span class="k">break</span><span class="p">;</span>  
+    <span class="p">};</span>  
+<span class="p">}</span>
+</pre></div>
+
+
+</li>
+</ul>
+</li>
+<li>
+<p>最后，我们可以写一个小小的例子main.cpp ：</p>
+<div class="highlight"><pre><span class="cp">#include &quot;object.h&quot;  </span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>  
+<span class="p">{</span>  
+    <span class="n">Object</span> <span class="n">obj1</span><span class="p">,</span> <span class="n">obj2</span><span class="p">;</span>  
+    <span class="n">Object</span><span class="o">::</span><span class="n">db_connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj1</span><span class="p">,</span> <span class="s">&quot;sig1&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">obj2</span><span class="p">,</span> <span class="s">&quot;slot1&quot;</span><span class="p">);</span>  
+    <span class="n">obj1</span><span class="p">.</span><span class="n">testSignal</span><span class="p">();</span>  
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;;</span>  
+<span class="p">}</span>
+</pre></div>
+
+
+</li>
+<li>
+<p>程序的编译就不用多说了，用你熟悉的msvc或者g++</p>
+<div class="highlight"><pre>cl main.cpp object.cpp db_object.cpp -o dbzhang800
+g++ main.cpp object.cpp db_object.cpp -o dbzhang800
+</pre></div>
+
+
+</li>
+</ul>
+<h2>零零散散，写在后面</h2>
+<p>我不确定是不是已经元对象系统和信号槽最基本的概念表达清楚了。反正我想，如果你对Qt感兴趣，相对Qt的信号和槽进一步的了解，但是目前尚对阅读Qt的源码觉得无比恐怖，本文可能会对你有帮助。</p>
+<p>文中将东西精简到我个人能做到的极限了，所以有很多很多没提到的东西：</p>
+<h3>Q_OBJECT</h3>
+<p>用Qt，我们都知道这个宏，可是我们前面压根没提。因为我怕打乱思路，这儿补上吧。我的前面的代码可以替换为：</p>
+<div class="highlight"><pre><span class="cp"># define DB_OBJECT static MetaObject meta; void metacall(int idx);</span>
+
+<span class="k">class</span> <span class="nc">Object</span>
+<span class="p">{</span>
+   <span class="n">DB_OBJECT</span>
+</pre></div>
+
+
+<p>DB_OBJECT 还可以作为一个标记：如果我们写好了自己的类似于Qt中的moc的预处理器，如何判断一个文件是否需要预处理来生成 db_object.cpp 文件呢？此时就可以根据类定义中是否有宏来判断。</p>
+<p>题外：  为什么添加宏后会容易遇到链接错误？你能看到原因么？因为它展开后就是类的成员，可是其定义要通过预处理进行生成。如果你没有运行预处理器，也就没有 db_object.cpp 这种文件，肯定要出错了。</p>
+<h3>Connection</h3>
+<p>我们前面在Connection只保存了接收者的指针和槽的索引，我们可以保存更多一点的信息的：可以看看Qt保存了哪些东西</p>
+<div class="highlight"><pre><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">Connection</span> <span class="o">*</span><span class="n">c</span> <span class="o">=</span> <span class="k">new</span> <span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">Connection</span><span class="p">;</span> 
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">sender</span> <span class="o">=</span> <span class="n">s</span><span class="p">;</span> 
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">receiver</span> <span class="o">=</span> <span class="n">r</span><span class="p">;</span> 
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">method</span> <span class="o">=</span> <span class="n">method_index</span><span class="p">;</span> 
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">connectionType</span> <span class="o">=</span> <span class="n">type</span><span class="p">;</span> 
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">argumentTypes</span> <span class="o">=</span> <span class="n">types</span><span class="p">;</span> 
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">nextConnectionList</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</pre></div>
+
+
+<p>应该很容易看懂，不做解释了。</p>
+<p>Qt中信号和槽主要有直接连接和队列连接两种方式，我们这儿只提到了前者，后者和Qt的事件系统搅和在一起。只要搞清楚了Qt事件系统，就会发现和直接连接没有什么区别了。
+其他</p>
+<h3>信号和槽的参数</h3>
+<p>这个，例子中举的都是信号和槽都是无参数的例子。加上参数，尽管概念上没变化，但复杂度就大大提高了。所以本文对此不想涉及，也没必要吧，直接去看Qt的源码吧。</p>
+<h3>信号和信号连接</h3>
+<p>信号和槽一样，都可以被调用，本例进行扩展也很容易，需要metacall那个函数，以及信号和槽要加个区别的标记(回到最前面不妨看看Qt的SLOT和SIGNAL究竟是神马东西)。</p>
+<h3>派生</h3>
+<p>本文中只涉及到一个类，如何在该类的基础上进行派生呢？ 个人能力有限，例子中没考虑这个问题。</p>
+<p>...</p>
+<p>好了，忙到下午终于把昨天冒出来的这个想法付诸实施了，希望五一之后，生活会精彩一点。dbzhang800 2011.04.30</p>
+<blockquote>
+<p>注：本文最早发布在CSDN，相关内容以后会逐步转移到blog.debao.me中。dbzhang800 2015.04.29</p>
+</blockquote></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2011-04-30T15:02:00+08:00" pubdate>2011-04-30(周六)</time>  <span class="categories">
+    <a class='category' href='http://blog.debao.me/category/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="http://blog.debao.me/tag/qt4.html">Qt4</a>,    <a class="category" href="http://blog.debao.me/tag/c.html">C++</a>,    <a class="category" href="http://blog.debao.me/tag/zhong-wen.html">中文</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="http://blog.debao.me/2015/04/install-mediawiki-on-windows/">Install MediaWiki on Windows</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2015/04/install-bugzilla-on-windows/">Install Bugzilla on Windows</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/zh/2015/04/obligations-of-the-lgpl/">使用LGPL授权的Qt开发商用程序的注意事项</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2015/04/hello-pelican/">Hello Pelican</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2013/12/openssl-and-qt/">"Notes on OpenSSL and Qt"</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="http://blog.debao.me/category/python.html">python</a></li>
+        <li><a href="http://blog.debao.me/category/qt.html">Qt</a></li>
+        <li><a href="http://blog.debao.me/category/tool.html">tool</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="http://blog.debao.me/tag/.html"></a>,    <a href="http://blog.debao.me/tag/qt4.html">Qt4</a>,    <a href="http://blog.debao.me/tag/zhong-wen.html">中文</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/c.html">C++</a>,    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
+
+
+
+  <section>
+    <h1>GitHub Repos</h1>
+    <ul id="gh_repos">
+      <li class="loading">Status updating...</li>
+    </ul>
+    <script type="text/javascript">
+      $.domReady(function(){
+          if (!window.jXHR){
+              var jxhr = document.createElement('script');
+              jxhr.type = 'text/javascript';
+              jxhr.src = 'http://blog.debao.me/theme/js/jXHR.js';
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(jxhr, s);
+          }
+
+          github.showRepos({
+              user: 'dbzhang800',
+              count: 5,
+              skip_forks: true,
+              target: '#gh_repos'
+          });
+      });
+    </script>
+    <script src="http://blog.debao.me/theme/js/github.js" type="text/javascript"> </script>
+  </section>
+
+    <section>
+        <h1>Blogroll</h1>
+        <ul>
+            <li><a href="http://getpelican.com/" target="_blank">Pelican</a></li>
+            <li><a href="http://python.org/" target="_blank">Python.org</a></li>
+            <li><a href="http://jinja.pocoo.org/" target="_blank">Jinja2</a></li>
+            <li><a href="http://github.com" target="_blank">Github</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2015  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="http://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="http://blog.debao.me/theme/js/ender.js"></script>
+  <script src="http://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var disqus_shortname = 'github800';
+    var disqus_identifier = '/zh/2011/04/how-does-signals-and-slots-work-in-qt/';
+    var disqus_url = 'http://blog.debao.me/zh/2011/04/how-does-signals-and-slots-work-in-qt/';
+    var disqus_title = '用ISO C++实现自己的信号槽(Qt另类学习)';
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = "//" + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+  </script>
+</body>
+</html>

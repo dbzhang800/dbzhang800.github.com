@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>1+1=10</title><link href="http://blog.debao.me/" rel="alternate"></link><link href="http://blog.debao.me/atom.xml" rel="self"></link><id>http://blog.debao.me/</id><updated>2015-04-24T10:33:00+08:00</updated><entry><title>Install MediaWiki on Windows</title><link href="http://blog.debao.me/2015/04/install-mediawiki-on-windows/" rel="alternate"></link><updated>2015-04-24T10:33:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2015-04-24:2015/04/install-mediawiki-on-windows/</id><summary type="html">&lt;p&gt;MediaWiki + Apache + php + MySQL&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>1+1=10</title><link href="http://blog.debao.me/" rel="alternate"></link><link href="http://blog.debao.me/atom.xml" rel="self"></link><id>http://blog.debao.me/</id><updated>2015-04-28T00:00:00+08:00</updated><entry><title>Install MediaWiki on Windows</title><link href="http://blog.debao.me/2015/04/install-mediawiki-on-windows/" rel="alternate"></link><updated>2015-04-24T10:33:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2015-04-24:2015/04/install-mediawiki-on-windows/</id><summary type="html">&lt;p&gt;MediaWiki + Apache + php + MySQL&lt;/p&gt;
 &lt;h2&gt;MySQL&lt;/h2&gt;
 &lt;p&gt;Download and install the msi installer of MySQL 5.6 from http://dev.mysql.com/downloads/installer/&lt;/p&gt;
 &lt;h2&gt;Apache&lt;/h2&gt;
@@ -2155,4 +2155,981 @@ pagination_dir:
 &lt;li&gt;&lt;a href="http://www.moncefbelyamani.com/how-to-install-and-configure-octopress-on-a-mac/"&gt;http://www.moncefbelyamani.com/how-to-install-and-configure-octopress-on-a-mac/&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://shanewfx.github.com/blog/2012/02/16/bulid-blog-by-octopress/"&gt;http://shanewfx.github.com/blog/2012/02/16/bulid-blog-by-octopress/&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://daringfireball.net/projects/markdown/syntax"&gt;http://daringfireball.net/projects/markdown/syntax&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</summary></entry></feed>
+&lt;/ul&gt;</summary></entry><entry><title>VirtualBox的网络设置</title><link href="http://blog.debao.me/zh/2011/11/networking-settings-in-virtualbox/" rel="alternate"></link><updated>2015-04-28T00:00:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2011-11-20:zh/2011/11/networking-settings-in-virtualbox/</id><summary type="html">&lt;p&gt;VirtualBox 可以为每一个Guest分配多达8个网卡(界面上只显示了4个，其他需要通过VBoxManager modifyvm进行配置)，每个网卡的连接方式可以选为下列之一：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Not attached&lt;/li&gt;
+&lt;li&gt;NAT&lt;/li&gt;
+&lt;li&gt;NAT Network&lt;/li&gt;
+&lt;li&gt;Bridged Adapter&lt;/li&gt;
+&lt;li&gt;Internal Network&lt;/li&gt;
+&lt;li&gt;Host-only Adapter&lt;/li&gt;
+&lt;li&gt;Generic Driver&lt;/li&gt;
+&lt;/ul&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;Not attached&lt;/th&gt;
+&lt;th&gt;NAT&lt;/th&gt;
+&lt;th&gt;NAT Network&lt;/th&gt;
+&lt;th&gt;Bridged Adapter&lt;/th&gt;
+&lt;th&gt;Internal Network&lt;/th&gt;
+&lt;th&gt;Host-only Adapter&lt;/th&gt;
+&lt;th&gt;Generic Driver&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Guest-&amp;gt;Host&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;√&lt;/td&gt;
+&lt;td&gt;√&lt;/td&gt;
+&lt;td&gt;√&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;√&lt;/td&gt;
+&lt;td&gt;?&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Host-&amp;gt;Guest&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;√&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;√&lt;/td&gt;
+&lt;td&gt;?&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Guest&amp;lt;-&amp;gt;Other Guest&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;√&lt;/td&gt;
+&lt;td&gt;√&lt;/td&gt;
+&lt;td&gt;√&lt;/td&gt;
+&lt;td&gt;√&lt;/td&gt;
+&lt;td&gt;?&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Guest-&amp;gt;Other Host&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;√&lt;/td&gt;
+&lt;td&gt;√&lt;/td&gt;
+&lt;td&gt;√&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;?&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Other Host-&amp;gt;Guest&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;√&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;×&lt;/td&gt;
+&lt;td&gt;?&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;以下假定Host位于一个192.168.1.0/24 的局域网中。&lt;/p&gt;
+&lt;h2&gt;Not attached (未指定)&lt;/h2&gt;
+&lt;p&gt;在该模式下，Guest的网卡存在，但是没有有效网络连接。在选项卡中，如果&lt;code&gt;Cable Connected&lt;/code&gt;被选中，那么Guest会试图连接网路，但最终也会报告：受限制或无连接。&lt;/p&gt;
+&lt;h2&gt;NAT (网络地址转换)&lt;/h2&gt;
+&lt;p&gt;这个是虚拟机的默认模式。对于“Client”类型的Guest，该模式在大部分情况下都能很好地工作。
+当Guest启动时，它通常使用DHCP获取一个IP地址。VirtualBox 响应DHCP请求并为其指定一个IP地址(10.0.2.15)，网关地址(10.0.2.2)。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Host&lt;/th&gt;
+&lt;th&gt;192.168.1.3&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;10.0.2.2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Guest1&lt;/td&gt;
+&lt;td&gt;10.0.2.15&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Guest2&lt;/td&gt;
+&lt;td&gt;10.0.2.15&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;10.0.2.15&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;但由于Guest连接的是VirtualBox内部的私有网络，使得guest对其他guest, host以及网络上的其他计算机都是不可见的。为了使其某些端口对外部可见，需要使用端口转发(port forwarding)。&lt;/p&gt;
+&lt;h2&gt;NAT Network (NAT网络)&lt;/h2&gt;
+&lt;p&gt;和NAT类似基本一样，只是所有的Guest都在同一个NAT网络内，彼此间可以通讯。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Host&lt;/th&gt;
+&lt;th&gt;192.168.1.3&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;10.0.2.2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Guest1&lt;/td&gt;
+&lt;td&gt;10.0.2.15&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Guest2&lt;/td&gt;
+&lt;td&gt;10.0.2.16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;10.0.2.*&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;需要先通过VirtualBox设置一个NAT网络(网络IP段，端口转发等都在此处可以设置)，而后在各个guest的网络设置中才能选择该模式。&lt;/p&gt;
+&lt;h2&gt;Bridged Adapter (桥接网卡)&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Host&lt;/th&gt;
+&lt;th&gt;192.168.1.3&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Guest1&lt;/td&gt;
+&lt;td&gt;192.168.1.4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Guest2&lt;/td&gt;
+&lt;td&gt;192.168.1.5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;192.168.1.*&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;它可以满足虚拟机中更高级的网络需求，比如运行servers等。它通过host的网卡，直接连入到host网络中。因此，虚拟机能被分配到一个中独立的IP，所有网络功能完全和在网络中的真实机器一样。&lt;/p&gt;
+&lt;p&gt;缺点：需要占用局域网中的IP地址。&lt;/p&gt;
+&lt;h2&gt;Internal Network (内部网络)&lt;/h2&gt;
+&lt;p&gt;用来创建guest的完全隔离的网络，对host以及外部的计算机不可见。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Host&lt;/th&gt;
+&lt;th&gt;192.168.1.3&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Guest1&lt;/td&gt;
+&lt;td&gt;169.254.75.244&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Guest2&lt;/td&gt;
+&lt;td&gt;169.254.75.245&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;169.254.&lt;em&gt;.&lt;/em&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ul&gt;
+&lt;li&gt;在该模式下，VirtualBox 不提供DHCP/Name service 等服务。&lt;/li&gt;
+&lt;li&gt;多个Internal Network 是可能的（需要使用VBoxManager modifyvm命令）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Host-only Adapter (仅主机适配器)&lt;/h2&gt;
+&lt;p&gt;类似 Internal Network，但是所有的guest位于一个 &lt;code&gt;vboxnet0&lt;/code&gt;的网络中且提供DHCP服务。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Host&lt;/th&gt;
+&lt;th&gt;192.168.1.3&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;192.168.56.1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Guest1&lt;/td&gt;
+&lt;td&gt;192.168.56.101&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Guest2&lt;/td&gt;
+&lt;td&gt;192.168.56.102&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;192.168.56.*&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ul&gt;
+&lt;li&gt;VirtualBox在Host中模拟出一个虚拟网卡(类似于loopback)，所有的guest都连接到该网卡上。&lt;/li&gt;
+&lt;li&gt;Host和guest之间都可以互相访问，其他主机不能访问该网络，guest也不能访问其他主机。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;据说该模式非常强，通过配置可以实现前面所有的模式的功能（但是我不知道怎么弄）。&lt;/p&gt;
+&lt;h2&gt;Generic Driver (通用驱动)&lt;/h2&gt;
+&lt;p&gt;极少使用的模式所共享的网络接口&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;UDP Tunnel&lt;/li&gt;
+&lt;li&gt;VDE networking&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;参考&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://www.virtualbox.org/manual/ch06.html"&gt;Chapter 6. Virtual networking&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://blogs.oracle.com/fatbloke/entry/networking_in_virtualbox1"&gt;Networking in VirtualBox&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://penpenguanguan.com/997.html"&gt;快速理解VirtualBox的四种网络连接方式&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</summary><category term="中文"></category></entry><entry><title>用ISO C++实现自己的信号槽(Qt另类学习)</title><link href="http://blog.debao.me/zh/2011/04/how-does-signals-and-slots-work-in-qt/" rel="alternate"></link><updated>2011-04-30T15:02:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2011-04-30:zh/2011/04/how-does-signals-and-slots-work-in-qt/</id><summary type="html">&lt;p&gt;有网友抱怨：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;哪个大牛能帮帮我，讲解一下信号槽机制的底层实现？
+不要那种源码的解析，只要清楚的讲讲是怎么发送信号，怎么去选择相应的槽，再做出反应。也就是类似于一个信号槽的相应流程。。。求解啊！！！
+看了源码，真的是一头雾水。。。撞墙的心都有了~~~~ &lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;本文使用 ISO C++ 一步一步实现了一个极度简化的信号与槽的系统 (整个程序4个文件共121行代码) 。希望能有助于刚进入Qt世界的C++用户理解Qt最核心的信号槽与元对象系统是如何工作的。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;另：你可能会对 &lt;a href="http://blog.debao.me/zh/2010/11/from-cpp-to-qt/"&gt;从 C++ 到 Qt&lt;/a&gt;   一文感兴趣&lt;/p&gt;
+&lt;p&gt;注：Qt5 已经引入一种全新的信号与槽的语法：信号可以和普通的函数、类的普通成员函数、lambda函数连接（而不再局限于信号函数和槽函数）。&lt;/p&gt;
+&lt;h2&gt;Qt信号与槽&lt;/h2&gt;
+&lt;p&gt;GUI程序中，当我们我们点击一个按钮时，我们会期待我们自定义的某个函数被调用。对此，较老的工具集(toolkits)都是通过回调函数(callback)来实现的，Qt的神奇之处就在于，它使用信号(signal)与槽(slot)的技术来取代了回调。&lt;/p&gt;
+&lt;p&gt;在继续之前，我们先看一眼最最常用的 connnect 函数：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;btn&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;2clicked()&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;1onBtnClicked()&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;可能你会觉得稍有点眼生，因为为了清楚起见，我没有直接使用大家很熟悉的SIGNAL和SLOT两个宏，宏定义如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;# define SLOT(a)     &amp;quot;1&amp;quot;#a&lt;/span&gt;
+&lt;span class="cp"&gt;# define SIGNAL(a)   &amp;quot;2&amp;quot;#a&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;程序运行时，connect借助两个字符串，即可将信号与槽的关联建立起来，那么，它是如果做到的呢？C++的经验可以告诉我们：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;类中应该保存有信号和槽的字符串信息&lt;/li&gt;
+&lt;li&gt;字符串和信号槽函数要关联&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;而这，就是通过神奇的元对象系统所实现的（Qt的元对象系统预处理器叫做moc，对文件预处理之后生成一个moc_xxx.cpp文件，然后和其他文件一块编译即可）。&lt;/p&gt;
+&lt;p&gt;接下来，我们不妨尝试用纯C++来实现自己的元对象系统(我们需要有一个自己的预处理器，本文中用双手来代替了，预处理生成的文件是db_xxx.cpp)。&lt;/p&gt;
+&lt;p&gt;继续之前，我们可以先看一下我们最终的类定义&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Object&lt;/span&gt;    
+&lt;span class="p"&gt;{&lt;/span&gt;    
+    &lt;span class="n"&gt;DB_OBJECT&lt;/span&gt;  
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;    
+    &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;    
+    &lt;span class="k"&gt;virtual&lt;/span&gt; &lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;    
+    &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;db_connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Object&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;    
+    &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;testSignal&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;    
+&lt;span class="nl"&gt;db_signals&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;    
+    &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;sig1&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;    
+&lt;span class="k"&gt;public&lt;/span&gt; &lt;span class="nl"&gt;db_slots&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;    
+    &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;slot1&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;    
+&lt;span class="k"&gt;friend&lt;/span&gt; &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;MetaObject&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;    
+&lt;span class="k"&gt;private&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;    
+     &lt;span class="n"&gt;ConnectionMap&lt;/span&gt; &lt;span class="n"&gt;connections&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;    
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;引入元对象系统&lt;/h2&gt;
+&lt;p&gt;首先定义自己的信号和槽&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;为了和普通成员进行区别(以使得预处理器可以知道如何提取信息)，我们需要创造一些"关键字"&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;db_signals&lt;/li&gt;
+&lt;li&gt;db_slots&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Object&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    &lt;span class="k"&gt;virtual&lt;/span&gt; &lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;span class="nl"&gt;db_signals&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;sig1&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;span class="k"&gt;public&lt;/span&gt; &lt;span class="nl"&gt;db_slots&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;slot1&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;通过自己的预处理器，将信息提取取来，放置到一个单独的文件中（比如db_object.cpp）:&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;规则很简单，将信号和槽的名字提取出来，放到字符串中。可以有多个信号或槽，按顺序"sig1\nsig2\n"&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="n"&gt;sig_names&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;sig1&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="n"&gt;slts_names&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;slot1&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;这些信号和槽的信息，如何才能与类建立关联，如何被访问呢？&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;我们可以定义一个类，来存放信息：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;MetaObject&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;sig_names&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;slts_names&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;然后将其作为一个Object的静态成员(注意哦，这就是我们的元对象啦 )：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Object&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="n"&gt;MetaObject&lt;/span&gt; &lt;span class="n"&gt;meta&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这样一来，我们的预处理器可以生成这样的 db_object.cpp 文件：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;quot;object.h&amp;quot;&lt;/span&gt;
+
+&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="n"&gt;sig_names&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;sig1&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="n"&gt;slts_names&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;slot1&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;MetaObject&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;meta&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;sig_names&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;slts_names&lt;/span&gt;&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;信息提取的问题解决了：可是，还有一个严重问题，我们定义的关键字 C++ 编译器不认识啊，怎么办？&lt;/p&gt;
+&lt;p&gt;呵呵，好办，通过定义一下宏，问题是不是解决了：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;# define db_slots&lt;/span&gt;
+&lt;span class="cp"&gt;# define db_signals protected&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;建立信号槽链接&lt;/h2&gt;
+&lt;p&gt;我们的最终目的就是：当信号被触发的时候，能找到并触发相应的槽。所以有了信号和槽的信息，我们就可以建立信号和槽的连接了。我们通过 db_connect 将信号和槽的对应关系保存到一个 mutlimap 中：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;Connection&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;Object&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;receiver&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;method&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Object&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="p"&gt;...&lt;/span&gt;
+    &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;db_connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;...&lt;/span&gt;
+&lt;span class="k"&gt;private&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;multimap&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Connection&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;connections&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;上面应该不需要什么解释了，我们直接看看db_connect该怎么写：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;db_connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;sender&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;sig&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;receiver&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;slt&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;sig_idx&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;find_string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sender&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;meta&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sig_names&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;sig&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;slt_idx&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;find_string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;receiver&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;meta&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;slts_names&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;slt&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sig_idx&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="n"&gt;slt_idx&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="n"&gt;perror&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;signal or slot not found!&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="n"&gt;Connection&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;receiver&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;slt_idx&lt;/span&gt;&lt;span class="p"&gt;};&lt;/span&gt;
+        &lt;span class="n"&gt;sender&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;connections&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;insert&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;pair&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Connection&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sig_idx&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;首先从元对象信息中查找信号和槽的名字是否存在，如果存在，则将信号的索引和接收者的信息存入信号发送者的的一个map中。如果信号或槽无效，就什么都不用做了。&lt;/p&gt;
+&lt;p&gt;我们这儿定义了一个find_string函数，就是个简单的字符串查找(此处就不列出了)。&lt;/p&gt;
+&lt;h2&gt;信号的激活&lt;/h2&gt;
+&lt;p&gt;连接信息有了，我们看看信号到底是怎么发出的。&lt;/p&gt;
+&lt;p&gt;在 Qt 中，我们都知道用 emit 来发射信号：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Object&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;testSignal&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;...&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;testSignal&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;db_emit&lt;/span&gt; &lt;span class="n"&gt;sig1&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这儿 db_emit 是神马东西？C++编译器不认识啊，没关系，看仔细喽，加一行就行了&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;#define db_emit
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;从前面我的Object定义中可以看到，所谓的信号或槽，都只是普普通通的C++类的成员函数。既然是成员函数，就需要函数定义：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;槽函数：由于它包含我们需要的功能代码，我们都会想到在 object.cpp 文件中去定义它，不存在问题。&lt;/li&gt;
+&lt;li&gt;信号函数：它的函数体不需要自己编写。那么它在哪儿呢？这就是本节的内容了&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;信号函数由我们的"预处理器"来生成，也就是它要定义在我们的 db_object.cpp 文件中：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;sig1&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;MetaObject&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;active&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;我们预处理源文件时，就知道它是第几个信号。所以根据它的索引去调用和它关联的槽即可。具体工作交给了MetaObject类：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;MetaObject&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;sig_names&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;slts_names&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;active&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Object&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;sender&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;idx&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这个函数该怎么写呢：思路很简单&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;从前面的保存连接的map中，找出与该信号关联的对象和槽&lt;/li&gt;
+&lt;li&gt;调用该对象这个槽&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;typedef&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;multimap&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Connection&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;ConnectionMap&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;typedef&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;multimap&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Connection&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;::&lt;/span&gt;&lt;span class="n"&gt;iterator&lt;/span&gt; &lt;span class="n"&gt;ConnectionMapIt&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;MetaObject&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;active&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;sender&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;idx&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;ConnectionMapIt&lt;/span&gt; &lt;span class="n"&gt;it&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;pair&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;ConnectionMapIt&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ConnectionMapIt&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;ret&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;ret&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sender&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;connections&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;equal_range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;idx&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;it&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;ret&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;first&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;it&lt;/span&gt;&lt;span class="o"&gt;!=&lt;/span&gt;&lt;span class="n"&gt;ret&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;second&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="n"&gt;it&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="n"&gt;Connection&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;it&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;second&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="c1"&gt;//c.receiver-&amp;gt;metacall(c.method);&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;补遗：&lt;/h2&gt;
+&lt;h3&gt;槽的调用&lt;/h3&gt;
+&lt;p&gt;这个最后一个关键问题了，槽函数如何根据一个索引值进行调用。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;直接调用槽函数我们都知道了，就一个普通函数&lt;/li&gt;
+&lt;li&gt;可现在通过索引调用了，那么我们必须定义一个接口函数&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Object&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;metacall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;idx&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;该函数如何实现呢？这个又回到我们的元对象预处理过程中了，因为在预处理的过程，我们能将槽的索引和槽的调用关联起来。&lt;/p&gt;
+&lt;p&gt;所以，在预处理生成的文件(db_object.cpp)中，我们很容易生成其定义：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;metacall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;idx&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;switch&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;idx&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;slot1&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+            &lt;span class="k"&gt;break&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="k"&gt;default&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;break&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;};&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;至此，我们已经实现的一个简化的自己的信号与槽的程序。下面我们总体上看看程序的所有代码：
+全家福&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;类定义文件 object.h&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#ifndef DB_OBJECT  &lt;/span&gt;
+&lt;span class="cp"&gt;#define DB_OBJECT  &lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;lt;map&amp;gt;  &lt;/span&gt;
+&lt;span class="cp"&gt;# define db_slots  &lt;/span&gt;
+&lt;span class="cp"&gt;# define db_signals protected  &lt;/span&gt;
+&lt;span class="cp"&gt;# define db_emit  &lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;MetaObject&lt;/span&gt;  
+&lt;span class="p"&gt;{&lt;/span&gt;  
+    &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;sig_names&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+    &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;slts_names&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+    &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;active&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Object&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;sender&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;idx&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;  
+&lt;span class="p"&gt;};&lt;/span&gt;  
+&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;Connection&lt;/span&gt;  
+&lt;span class="p"&gt;{&lt;/span&gt;  
+    &lt;span class="n"&gt;Object&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;receiver&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;method&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+&lt;span class="p"&gt;};&lt;/span&gt;  
+&lt;span class="k"&gt;typedef&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;multimap&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Connection&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;ConnectionMap&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+&lt;span class="k"&gt;typedef&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;multimap&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Connection&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;::&lt;/span&gt;&lt;span class="n"&gt;iterator&lt;/span&gt; &lt;span class="n"&gt;ConnectionMapIt&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Object&lt;/span&gt;  
+&lt;span class="p"&gt;{&lt;/span&gt;  
+    &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="n"&gt;MetaObject&lt;/span&gt; &lt;span class="n"&gt;meta&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+    &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;metacall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;idx&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;  
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;  
+    &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;  
+    &lt;span class="k"&gt;virtual&lt;/span&gt; &lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;  
+    &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;db_connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;  
+    &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;testSignal&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;  
+&lt;span class="nl"&gt;db_signals&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  
+    &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;sig1&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;  
+&lt;span class="k"&gt;public&lt;/span&gt; &lt;span class="nl"&gt;db_slots&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  
+    &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;slot1&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;  
+&lt;span class="k"&gt;friend&lt;/span&gt; &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;MetaObject&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+&lt;span class="k"&gt;private&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;  
+     &lt;span class="n"&gt;ConnectionMap&lt;/span&gt; &lt;span class="n"&gt;connections&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+&lt;span class="p"&gt;};&lt;/span&gt;  
+&lt;span class="cp"&gt;#endif&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;类实现文件 object.cpp&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;  &lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;lt;string.h&amp;gt;  &lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;quot;object.h&amp;quot;  &lt;/span&gt;
+&lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;  
+&lt;span class="p"&gt;{&lt;/span&gt;  
+&lt;span class="p"&gt;}&lt;/span&gt;  
+&lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::~&lt;/span&gt;&lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;  
+&lt;span class="p"&gt;{&lt;/span&gt;  
+&lt;span class="p"&gt;}&lt;/span&gt;  
+&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;find_string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;str&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  
+&lt;span class="p"&gt;{&lt;/span&gt;  
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;strlen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;str&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;strlen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;  
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;idx&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;len&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;strlen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;  
+    &lt;span class="kt"&gt;bool&lt;/span&gt; &lt;span class="n"&gt;start&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;true&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+    &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;pos&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;str&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+    &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;pos&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;  
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="n"&gt;strncmp&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pos&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;len&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;pos&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;len&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="sc"&gt;&amp;#39;\n&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;idx&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+        &lt;span class="n"&gt;start&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;false&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;pos&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="sc"&gt;&amp;#39;\n&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;  
+            &lt;span class="n"&gt;idx&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+            &lt;span class="n"&gt;start&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;true&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+        &lt;span class="p"&gt;}&lt;/span&gt;  
+        &lt;span class="n"&gt;pos&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+    &lt;span class="p"&gt;}&lt;/span&gt;  
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+&lt;span class="p"&gt;}&lt;/span&gt;  
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;db_connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;sender&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;sig&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;receiver&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;slt&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  
+&lt;span class="p"&gt;{&lt;/span&gt;  
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;sig_idx&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;find_string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sender&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;meta&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sig_names&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;sig&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;  
+    &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;slt_idx&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;find_string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;receiver&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;meta&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;slts_names&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;slt&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;  
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sig_idx&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="n"&gt;slt_idx&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;  
+        &lt;span class="n"&gt;perror&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;signal or slot not found!&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;  
+    &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;  
+        &lt;span class="n"&gt;Connection&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;receiver&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;slt_idx&lt;/span&gt;&lt;span class="p"&gt;};&lt;/span&gt;  
+        &lt;span class="n"&gt;sender&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;connections&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;insert&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;pair&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Connection&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sig_idx&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;  
+    &lt;span class="p"&gt;}&lt;/span&gt;  
+&lt;span class="p"&gt;}&lt;/span&gt;  
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;slot1&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;  
+&lt;span class="p"&gt;{&lt;/span&gt;  
+    &lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;hello dbzhang800!&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;  
+&lt;span class="p"&gt;}&lt;/span&gt;  
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;MetaObject&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;active&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;sender&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;idx&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  
+&lt;span class="p"&gt;{&lt;/span&gt;  
+    &lt;span class="n"&gt;ConnectionMapIt&lt;/span&gt; &lt;span class="n"&gt;it&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;pair&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;ConnectionMapIt&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ConnectionMapIt&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;ret&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+    &lt;span class="n"&gt;ret&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sender&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;connections&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;equal_range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;idx&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;  
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;it&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;ret&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;first&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;it&lt;/span&gt;&lt;span class="o"&gt;!=&lt;/span&gt;&lt;span class="n"&gt;ret&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;second&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="n"&gt;it&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;  
+        &lt;span class="n"&gt;Connection&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;it&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;second&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+        &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;receiver&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;metacall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;method&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;  
+    &lt;span class="p"&gt;}&lt;/span&gt;  
+&lt;span class="p"&gt;}&lt;/span&gt;  
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;testSignal&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;  
+&lt;span class="p"&gt;{&lt;/span&gt;  
+    &lt;span class="n"&gt;db_emit&lt;/span&gt; &lt;span class="n"&gt;sig1&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;  
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;我们自己的预处理需要生成这样一个文件 db_object.cpp&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;注意看这个文件：其实内容非常简单&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;将信号和槽的信息存放到字符串中 ==&amp;gt;按顺序排放，所以有了索引值&lt;/li&gt;
+&lt;li&gt;信号发射 其实就是 信号函数==&amp;gt; 信号的索引&lt;/li&gt;
+&lt;li&gt;metacall 其实就是 槽的索引==&amp;gt; 槽函数&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;quot;object.h&amp;quot;  &lt;/span&gt;
+&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="n"&gt;sig_names&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;sig1&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="n"&gt;slts_names&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;slot1&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+&lt;span class="n"&gt;MetaObject&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;meta&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;sig_names&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;slts_names&lt;/span&gt;&lt;span class="p"&gt;};&lt;/span&gt;  
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;sig1&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;  
+&lt;span class="p"&gt;{&lt;/span&gt;  
+    &lt;span class="n"&gt;MetaObject&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;active&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;  
+&lt;span class="p"&gt;}&lt;/span&gt;  
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;metacall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;idx&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  
+&lt;span class="p"&gt;{&lt;/span&gt;  
+    &lt;span class="k"&gt;switch&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;idx&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;  
+        &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;  
+            &lt;span class="n"&gt;slot1&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;  
+            &lt;span class="k"&gt;break&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+        &lt;span class="k"&gt;default&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;  
+            &lt;span class="k"&gt;break&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+    &lt;span class="p"&gt;};&lt;/span&gt;  
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;最后，我们可以写一个小小的例子main.cpp ：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;quot;object.h&amp;quot;  &lt;/span&gt;
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;  
+&lt;span class="p"&gt;{&lt;/span&gt;  
+    &lt;span class="n"&gt;Object&lt;/span&gt; &lt;span class="n"&gt;obj1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;obj2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;  
+    &lt;span class="n"&gt;Object&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;db_connect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;obj1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;sig1&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;obj2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;slot1&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;  
+    &lt;span class="n"&gt;obj1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;testSignal&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;  
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;;&lt;/span&gt;  
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;程序的编译就不用多说了，用你熟悉的msvc或者g++&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;cl main.cpp object.cpp db_object.cpp -o dbzhang800
+g++ main.cpp object.cpp db_object.cpp -o dbzhang800
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;零零散散，写在后面&lt;/h2&gt;
+&lt;p&gt;我不确定是不是已经元对象系统和信号槽最基本的概念表达清楚了。反正我想，如果你对Qt感兴趣，相对Qt的信号和槽进一步的了解，但是目前尚对阅读Qt的源码觉得无比恐怖，本文可能会对你有帮助。&lt;/p&gt;
+&lt;p&gt;文中将东西精简到我个人能做到的极限了，所以有很多很多没提到的东西：&lt;/p&gt;
+&lt;h3&gt;Q_OBJECT&lt;/h3&gt;
+&lt;p&gt;用Qt，我们都知道这个宏，可是我们前面压根没提。因为我怕打乱思路，这儿补上吧。我的前面的代码可以替换为：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;# define DB_OBJECT static MetaObject meta; void metacall(int idx);&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Object&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+   &lt;span class="n"&gt;DB_OBJECT&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;DB_OBJECT 还可以作为一个标记：如果我们写好了自己的类似于Qt中的moc的预处理器，如何判断一个文件是否需要预处理来生成 db_object.cpp 文件呢？此时就可以根据类定义中是否有宏来判断。&lt;/p&gt;
+&lt;p&gt;题外：  为什么添加宏后会容易遇到链接错误？你能看到原因么？因为它展开后就是类的成员，可是其定义要通过预处理进行生成。如果你没有运行预处理器，也就没有 db_object.cpp 这种文件，肯定要出错了。&lt;/p&gt;
+&lt;h3&gt;Connection&lt;/h3&gt;
+&lt;p&gt;我们前面在Connection只保存了接收者的指针和槽的索引，我们可以保存更多一点的信息的：可以看看Qt保存了哪些东西&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;QObjectPrivate&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Connection&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;new&lt;/span&gt; &lt;span class="n"&gt;QObjectPrivate&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Connection&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; 
+    &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;sender&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;s&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; 
+    &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;receiver&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; 
+    &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;method&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;method_index&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; 
+    &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;connectionType&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;type&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; 
+    &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;argumentTypes&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;types&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; 
+    &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;nextConnectionList&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;应该很容易看懂，不做解释了。&lt;/p&gt;
+&lt;p&gt;Qt中信号和槽主要有直接连接和队列连接两种方式，我们这儿只提到了前者，后者和Qt的事件系统搅和在一起。只要搞清楚了Qt事件系统，就会发现和直接连接没有什么区别了。
+其他&lt;/p&gt;
+&lt;h3&gt;信号和槽的参数&lt;/h3&gt;
+&lt;p&gt;这个，例子中举的都是信号和槽都是无参数的例子。加上参数，尽管概念上没变化，但复杂度就大大提高了。所以本文对此不想涉及，也没必要吧，直接去看Qt的源码吧。&lt;/p&gt;
+&lt;h3&gt;信号和信号连接&lt;/h3&gt;
+&lt;p&gt;信号和槽一样，都可以被调用，本例进行扩展也很容易，需要metacall那个函数，以及信号和槽要加个区别的标记(回到最前面不妨看看Qt的SLOT和SIGNAL究竟是神马东西)。&lt;/p&gt;
+&lt;h3&gt;派生&lt;/h3&gt;
+&lt;p&gt;本文中只涉及到一个类，如何在该类的基础上进行派生呢？ 个人能力有限，例子中没考虑这个问题。&lt;/p&gt;
+&lt;p&gt;...&lt;/p&gt;
+&lt;p&gt;好了，忙到下午终于把昨天冒出来的这个想法付诸实施了，希望五一之后，生活会精彩一点。dbzhang800 2011.04.30&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注：本文最早发布在CSDN，相关内容以后会逐步转移到blog.debao.me中。dbzhang800 2015.04.29&lt;/p&gt;
+&lt;/blockquote&gt;</summary><category term="Qt4"></category><category term="C++"></category><category term="中文"></category></entry><entry><title>从C++到Qt</title><link href="http://blog.debao.me/zh/2010/11/from-cpp-to-qt/" rel="alternate"></link><updated>2010-11-05T16:35:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2010-11-05:zh/2010/11/from-cpp-to-qt/</id><summary type="html">&lt;blockquote&gt;
+&lt;p&gt;原文发布在&lt;a href="http://hi.baidu.com/dbzhang800/item/7ee28d10522e91eb9913d648"&gt;百度空间&lt;/a&gt;，但由于百度空间屡次改版，越改越差，以至于有关闭可能，故而转移到此 http://blog.debao.me&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Qt 是 C++ 的库，Qt 在 ansi C++ 的基础上进行了一点扩展。&lt;/p&gt;
+&lt;p&gt;但国内似乎比较浮躁，学Qt的很多连基本的C++如何编译似乎都不太清楚。&lt;strong&gt;本文舍弃IDE或qmake、cmake等工具的束缚，尝试通过几个例子，一步一步从标准 C++ 的编译过渡到 Qt 的编译。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;本文涉及的都是最基本的东西，或许可以说，只要你用C++ Qt，不管是通过哪种工具(qmake、cmake、boost.build、qtcreator、vs2008、Eclipse、...)，本文的内容都是需要理解的(尽管真正写程序时，我们都不会直接用C++编译器来编译Qt程序)。&lt;/p&gt;
+&lt;p&gt;如果你对命令行比较恐惧，或许愿意先看看我原来整理的这个 &lt;a href="http://wiki.ubuntu.org.cn/Gcchowto"&gt;GCC新手入门&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;例子一：简单的控制台程序&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;p&gt;一个很简单的例子，没用到Qt扩展：(也就是说，这是一个普通的C++程序)&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;QtCore/QCoreApplication&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;lt;QtCore/QDebug&amp;gt;&lt;/span&gt;
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;QCoreApplication&lt;/span&gt; &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;qDebug&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;hello qt!&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exec&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;我们都知道，编译一个C++的程序，无非是 编译预处理，编译、链接&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;编译预处理器：头文件路径 和 必要的宏&lt;/li&gt;
+&lt;li&gt;编译器：一些编译参数&lt;/li&gt;
+&lt;li&gt;链接器：一些链接参数 和 要链接的库&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;g++&lt;/h3&gt;
+&lt;p&gt;简单一行命令，即可生成 main.exe (linux下，则生成可执行程序 main)&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;g++ main.cpp -DQT_CORE_LIB -Ie:\Qt\4.7.0\include -o main -Le:\Qt\4.7.0\lib -lQtCore4
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;单行命令，很简单：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;-I 指定头文件路径&lt;/li&gt;
+&lt;li&gt;-L 指定库文件路径&lt;/li&gt;
+&lt;li&gt;-l 指定需要链接的库&lt;/li&gt;
+&lt;li&gt;-D 定义必要的宏(其实对这个小程序，这个宏也没必要用)&lt;/li&gt;
+&lt;li&gt;-o 指定生成的可执行文件名&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;cl&lt;/h3&gt;
+&lt;p&gt;简单一行命令，即可生成 main.exe&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;cl main.cpp -ID:/Qt/4.7.0/include -DQT_CORE_LIB -Femain -link -LIBPATH:D:/Qt/4.7.0/lib QtCore4.lib
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;依然很简单&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;-I 头文件路径&lt;/li&gt;
+&lt;li&gt;-D 定义必要的宏&lt;/li&gt;
+&lt;li&gt;-Fe 指定可执行程序文件名&lt;/li&gt;
+&lt;li&gt;-link 后面是链接器参数&lt;ul&gt;
+&lt;li&gt;-LIBPATH 库文件路径&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;例子二：简单的GUI程序&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;p&gt;这次稍微复杂一点，不是单一的控制台程序，而是一个简单的GUI程序&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;main.cpp&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;QtGui/QApplication&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;quot;widget.h&amp;quot;&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;QApplication&lt;/span&gt; &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;Widget&lt;/span&gt; &lt;span class="n"&gt;w&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;w&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exec&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;widget.h&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;QtGui/QWidget&amp;gt;&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Widget&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="k"&gt;public&lt;/span&gt; &lt;span class="n"&gt;QWidget&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;Widget&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;QWidget&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;parent&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;widget.cpp&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;quot;widget.h&amp;quot;&lt;/span&gt;
+
+&lt;span class="n"&gt;Widget&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Widget&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;QWidget&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;parent&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;QWidget&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;parent&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;同样，这个程序未使用Qt的扩展，直接用C++的编译器编译：&lt;/p&gt;
+&lt;h3&gt;g++&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;g++ main.cpp widget.cpp -DQT_CORE_LIB -DQT_GUI_LIB -Ie:\Qt\4.7.0-beta2\include -o main -Le:\Qt\4.7.0-beta2\lib -lQtCore4 -lQtGui4
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;因为我们使用了QtGui模块，所以和前面相比：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;增加了 -DQT_GUI_LIB 和 -lQtGui4&lt;/li&gt;
+&lt;li&gt;多了一个文件 widget.cpp&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;注意: Windows下&lt;/p&gt;
+&lt;p&gt;如果在非windows平台下，这条命令就可以了。但windows下，你知道的：分console和windows两个链接子系统，而且入口函数分 main 和 WinMain 。&lt;/p&gt;
+&lt;p&gt;这条命令，编译出的 main.exe 会弹出控制台。要想不要控制台，则使用下面的命令：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;g++ main.cpp widget.cpp -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -Ie:\Qt\4.7.0-beta2\include -o main -Le:\Qt\4.7.0-beta2\lib -lQtCore4 -lQtGui4 -lqtmain -Wl,-subsystem,windows
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;多了两个选项：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;qtmain 该库中一个WinMain 函数，它会调用我们的代码的main函数。即对编译器来说：入口函数的名字变了&lt;/li&gt;
+&lt;li&gt;-Wl,-subsystem,windows 你知道的，链接windows子系统&lt;/li&gt;
+&lt;li&gt;对与MinGW来说，此处多了一个宏 QT_NEEDS_QMAIN，这个东西很有意思。在Qt Windows下链接子系统与入口函数(终结版) 中我们详细提到了这个。(在此处，不过你可以忽略它，不会出错，而且也不会有可感觉到的差异)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;cl&lt;/h3&gt;
+&lt;p&gt;同windows下的g++基本一样，带控制台：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;cl main.cpp widget.cpp -ID:/Qt/4.7.0/include -DQT_CORE_LIB -DQT_GUI_LIB -Femain -link -LIBPATH:D:/Qt/4.7.0/lib QtCore4.lib QtGui4.lib
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;不带控制台：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;cl main.cpp widget.cpp -ID:/Qt/4.7.0/include -DQT_CORE_LIB -DQT_GUI_LIB -Femain /MD -link -LIBPATH:D:/Qt/4.7.0/lib -subsystem:windows qtmain.lib QtCore4.lib QtGui4.lib
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;分析同上：指定链接子系统，启用WinMain入口函数&lt;/p&gt;
+&lt;h3&gt;多文件的程序如何管理&lt;/h3&gt;
+&lt;p&gt;直接调用编译器有什么坏处呢？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;参数多啊，每次手动输入，难免出错。（例子中我们用的参数已经尽可能少了，可能都还是让你眼晕了）。&lt;/li&gt;
+&lt;li&gt;其次呢，很重要的一点，每次只要一个文件修改，所有东西都要重新编译。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;改变这种状况的办法，传统的就是写 Makefile，然后编译时只需要输入 make 就行了，他会判断哪些文件被改动需要重新编译。&lt;/p&gt;
+&lt;p&gt;另外就是VS等一些IDE自己提供的功能。下面简单看一下本例子对应makefile文件：&lt;/p&gt;
+&lt;p&gt;mingw32-make的Makefile文件&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;CPPFLAGS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; -DQT_CORE_LIB -DQT_GUI_LIB -Ie:&lt;span class="se"&gt;\Q&lt;/span&gt;t&lt;span class="se"&gt;\4&lt;/span&gt;.7.0&lt;span class="se"&gt;\i&lt;/span&gt;nclude
+&lt;span class="nv"&gt;LDFLAGS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; -Le:&lt;span class="se"&gt;\Q&lt;/span&gt;t&lt;span class="se"&gt;\4&lt;/span&gt;.7.0&lt;span class="se"&gt;\l&lt;/span&gt;ib -lQtCore4 -lQtGui4 -lqtmain -Wl,-subsystem,windows
+
+&lt;span class="nv"&gt;objects&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; main.o widget.o
+&lt;span class="nv"&gt;dest&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; main
+
+&lt;span class="nf"&gt;$(dest) &lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="k"&gt;$(&lt;/span&gt;&lt;span class="nv"&gt;objects&lt;/span&gt;&lt;span class="k"&gt;)&lt;/span&gt;
+    g++ -o &lt;span class="nv"&gt;$@&lt;/span&gt; &lt;span class="k"&gt;$(&lt;/span&gt;objects&lt;span class="k"&gt;)&lt;/span&gt; &lt;span class="k"&gt;$(&lt;/span&gt;LDFLAGS&lt;span class="k"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;nmake的Makefile文件&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;CPPFLAGS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; -ID:/Qt/4.7.0/include -DQT_CORE_LIB -DQT_GUI_LIB -MD
+&lt;span class="nv"&gt;LDFLAGS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; -LIBPATH:D:/Qt/4.7.0/lib -subsystem:windows qtmain.lib QtCore4.lib QtGui4.lib
+&lt;span class="nv"&gt;objects&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; main.obj widget.obj
+&lt;span class="nv"&gt;dest&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; main.exe
+&lt;span class="nf"&gt;$(dest) &lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="k"&gt;$(&lt;/span&gt;&lt;span class="nv"&gt;objects&lt;/span&gt;&lt;span class="k"&gt;)&lt;/span&gt;
+    link &lt;span class="k"&gt;$(&lt;/span&gt;objects&lt;span class="k"&gt;)&lt;/span&gt; &lt;span class="k"&gt;$(&lt;/span&gt;LDFLAGS&lt;span class="k"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;对此不做介绍，因为Makefile编写也是一门学问。相当难写，所有才有qmake、cmake这些工具来帮我们生成Makefile文件&lt;/p&gt;
+&lt;h2&gt;例子三：引入moc&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;p&gt;Qt 对 C++ 的扩展主要是3个方面：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;元对象系统，包含Q_OBJECT宏的文件(.h, .cpp等)需要 moc 预处理&lt;/li&gt;
+&lt;li&gt;资源系统，.qrc 文件 需要 rcc 进行预处理&lt;/li&gt;
+&lt;li&gt;界面系统，.ui 文件 需要 uic 进行预处理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这3者之中，元对象系统最复杂，也是 Qt 程序中重要的。其他两个你都可以不要，唯独这个不要就有点不像话了(没它还叫Qt程序么？像我们前面写的，只不过是普通的C++程序)&lt;/p&gt;
+&lt;p&gt;废话少说，看例子：（修改前面的widget.h，加入Q_OBJECT）&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;QtGui/QWidget&amp;gt;&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Widget&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="k"&gt;public&lt;/span&gt; &lt;span class="n"&gt;QWidget&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+   &lt;span class="n"&gt;Q_OBJECT&lt;/span&gt;
+   &lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+   &lt;span class="n"&gt;Widget&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;QWidget&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;parent&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;如何编译这个程序呢？例子二中的命令还能用吗？不妨试试：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;哇，输出好丰富啊！&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;来自 g++ 的问候：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="x"&gt;main.o:main.cpp:(.text&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;_ZN6WidgetD1Ev&lt;/span&gt;&lt;span class="x"&gt;[Widget::~Widget()]+0xb): undefined reference to `vtable for Widget&amp;#39;&lt;/span&gt;
+&lt;span class="x"&gt;main.o:main.cpp:(.text&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;_ZN6WidgetD1Ev&lt;/span&gt;&lt;span class="x"&gt;[Widget::~Widget()]+0x15): undefined reference to `vtable for Widget&amp;#39;&lt;/span&gt;
+&lt;span class="x"&gt;widget.o:widget.cpp:(.text+0x39): undefined reference to `vtable for Widget&amp;#39;&lt;/span&gt;
+&lt;span class="x"&gt;widget.o:widget.cpp:(.text+0x43): undefined reference to `vtable for Widget&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;来自 cl 的问候：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;widget.obj : error LNK2001: 无法解析的外部符号 &amp;quot;public: virtual struct QMetaObject const * __thiscall Widget::metaObject(void)const &amp;quot; (?metaObject@Widget@@UBEPBUQMetaObject@@XZ)
+widget.obj : error LNK2001: 无法解析的外部符号 &amp;quot;public: virtual void * __thiscall Widget::qt_metacast(char const *)&amp;quot; (?qt_metacast@Widget@@UAEPAXPBD@Z)
+widget.obj : error LNK2001: 无法解析的外部符号 &amp;quot;public: virtual int __thiscall Widget::qt_metacall(enum QMetaObject::Call,int,void * *)&amp;quot; (?qt_metacall@Widget@@UAEHW4Call@QMetaObject@@HPAPAX@Z)发生了什么？
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;添加一个宏后，发生了什么？我们看看编译器将宏展开后是什么样子的：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;QtGui/QWidget&amp;gt;&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Widget&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="k"&gt;public&lt;/span&gt; &lt;span class="n"&gt;QWidget&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;QMetaObject&lt;/span&gt; &lt;span class="n"&gt;staticMetaObject&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;virtual&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;QMetaObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;metaObject&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;virtual&lt;/span&gt; &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nf"&gt;qt_metacast&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;virtual&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;qt_metacall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;QMetaObject&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Call&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="p"&gt;...&lt;/span&gt;
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;Widget&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;QWidget&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;parent&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;一下子多出来这么多函数，而且还没有函数体，不出错才怪。如何生成函数体呢？这正是moc所做的：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;moc widget.h -o moc_widget.cpp
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这样一来，这些函数都在 moc_widget.cpp 被实现了，只要我们将该文件一块编译链接就行了&lt;/p&gt;
+&lt;p&gt;对g++来说，在例子二的基础上，直接添加一个 moc_widget.cpp 文件，然后一切正常了：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;g++ main.cpp widget.cpp moc_widget.cpp -DQT_CORE_LIB -DQT_GUI_LIB -Ie:\Qt\4.7.0-beta2\include -o main -Le:\Qt\4.7.0-beta2\lib -lQtCore4 -lQtGui4
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;对 cl 编译器，同样只要添加一个 moc_widget.cpp 即可。&lt;/p&gt;
+&lt;h2&gt;例子四，rcc和uic&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;p&gt;有点糟蹋这个名字了，本节中不讲例子（因为 rcc 和 uic 概念比较简单）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;如果我们用了资源，那么需要一个 xxx.qrc 文件，这个文件呢，C++ 编译器不认识，于是&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;rcc xxx.qrc -o qrc_xxx.cpp
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果我们用了designer设计的界面 .ui。C++ 编译器不认识这个文件，于是&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;uic xxx.ui -o ui_xxx.h
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这样一来，我们得到是就全是 .h 和 .cpp 的文件了，剩下的工作，你知道的，交给 C++ 编译器就行了。&lt;/p&gt;
+&lt;h2&gt;其他&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;p&gt;现在来看这个图：是不是很简单了？&lt;/p&gt;
+&lt;p&gt;&lt;img alt="From C++ to Qt" src="http://blog.debao.me/images/from-cpp-to-qt-build.jpg" /&gt;&lt;/p&gt;
+&lt;h2&gt;2015更新&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;p&gt;对Qt5用户，本文基本适用，只需注意&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Qt4中gui在Qt5中主要分成了Qt5Gui、Qt5Widget等几个库。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Qt4&lt;/th&gt;
+&lt;th&gt;Qt5&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;QtCore4&lt;/td&gt;
+&lt;td&gt;Qt5Core&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;QtGui4&lt;/td&gt;
+&lt;td&gt;Qt5Gui Qt5Widget&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ul&gt;
+&lt;li&gt;头文件 QtGui/QWidget 等需要变成 QtWidgets/QWidget&lt;/li&gt;
+&lt;/ul&gt;</summary><category term="Qt4"></category><category term="C++"></category><category term="中文"></category></entry></feed>

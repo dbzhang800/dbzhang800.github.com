@@ -214,6 +214,142 @@ public: \
     <a rel="full-article" href="http://blog.debao.me/2012/08/setup-and-configure-my-octopress-blog/">Read On &crarr;</a>
   </footer>
   		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="http://blog.debao.me/zh/2011/11/networking-settings-in-virtualbox/">VirtualBox的网络设置</a>
+      </h1>
+    <p class="meta">
+<time datetime="2011-11-20T16:25:00+08:00" pubdate>2011-11-20(周日)</time>    </p>
+</header>
+
+  <div class="entry-content"><p>VirtualBox 可以为每一个Guest分配多达8个网卡(界面上只显示了4个，其他需要通过VBoxManager modifyvm进行配置)，每个网卡的连接方式可以选为下列之一：</p>
+<ul>
+<li>Not attached</li>
+<li>NAT</li>
+<li>NAT Network</li>
+<li>Bridged Adapter</li>
+<li>Internal Network</li>
+<li>Host-only Adapter</li>
+<li>Generic Driver</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Not attached</th>
+<th>NAT</th>
+<th>NAT Network</th>
+<th>Bridged Adapter</th>
+<th>Internal Network</th>
+<th>Host-only Adapter</th>
+<th>Generic Driver</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Guest-&gt;Host</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>×</td>
+<td>√</td>
+<td>?</td>
+</tr>
+<tr>
+<td>Host-&gt;Guest</td>
+<td>×</td>
+<td>×</td>
+<td>×</td>
+<td>√</td>
+<td>×</td>
+<td>√</td>
+<td>?</td>
+</tr>
+<tr>
+<td>Guest&lt;-&gt;Other Guest</td>
+<td>×</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>?</td>
+</tr>
+<tr>
+<td>Guest-&gt;Other Host</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>×</td>
+<td>×</td>
+<td>?</td>
+</tr>
+<tr>
+<td>Other Host-&gt;Guest</td>
+<td>×</td>
+<td>×</td>
+<td>×</td>
+<td>√</td>
+<td>×</td>
+<td>×</td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
+<p>以下假定Host位于一个192.168.1.0/24 ...</p></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/zh/2011/11/networking-settings-in-virtualbox/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="http://blog.debao.me/zh/2011/04/how-does-signals-and-slots-work-in-qt/">用ISO C++实现自己的信号槽(Qt另类学习)</a>
+      </h1>
+    <p class="meta">
+<time datetime="2011-04-30T15:02:00+08:00" pubdate>2011-04-30(周六)</time>    </p>
+</header>
+
+  <div class="entry-content"><p>有网友抱怨：</p>
+<blockquote>
+<p>哪个大牛能帮帮我，讲解一下信号槽机制的底层实现？
+不要那种源码的解析，只要清楚的讲讲是怎么发送信号，怎么去选择相应的槽，再做出反应。也就是类似于一个信号槽的相应流程。。。求解啊！！！
+看了源码，真的是一头雾水。。。撞墙的心都有了~~~~ </p>
+</blockquote>
+<p><strong>本文使用 ISO C++ 一步一步实现了一个极度简化的信号与槽的系统 (整个程序4个文件共121行代码) 。希望能有助于刚进入Qt世界的C++用户理解Qt最核心的信号槽与元对象系统是如何工作的。</strong></p>
+<p>另：你可能会对 <a href="http://blog.debao.me/zh/2010/11/from-cpp-to-qt/">从 C++ 到 Qt</a>   一文感兴趣</p>
+<p>注：Qt5 已经引入一种全新的信号与槽的语法：信号可以和普通的函数、类的普通成员函数、lambda函数连接（而不再局限于信号函数和槽函数）。</p>
+<h2>Qt信号与槽</h2>
+<p>GUI程序中，当我们我们点击一个按钮时，我们会期待我们自定义的某个函数被调用。对此，较老的工具集(toolkits)都是通过回调函数(callback)来实现的，Qt的神奇之处就在于，它使用信号(signal)与槽(slot)的技术来取代了回调。</p>
+<p>在继续之前 ...</p></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/zh/2011/04/how-does-signals-and-slots-work-in-qt/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="http://blog.debao.me/zh/2010/11/from-cpp-to-qt/">从C++到Qt</a>
+      </h1>
+    <p class="meta">
+<time datetime="2010-11-05T16:35:00+08:00" pubdate>2010-11-05(周五)</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>原文发布在<a href="http://hi.baidu.com/dbzhang800/item/7ee28d10522e91eb9913d648">百度空间</a>，但由于百度空间屡次改版，越改越差，以至于有关闭可能，故而转移到此 http://blog.debao.me</p>
+</blockquote>
+<p>Qt 是 C++ 的库，Qt 在 ansi C++ 的基础上进行了一点扩展。</p>
+<p>但国内似乎比较浮躁，学Qt的很多连基本的C++如何编译似乎都不太清楚。<strong>本文舍弃IDE或qmake、cmake等工具的束缚，尝试通过几个例子，一步一步从标准 C++ 的编译过渡到 Qt 的编译。</strong></p>
+<p>本文涉及的都是最基本的东西，或许可以说，只要你用C++ Qt，不管是通过哪种工具(qmake、cmake、boost.build、qtcreator、vs2008、Eclipse、...)，本文的内容都是需要理解的(尽管真正写程序时，我们都不会直接用C++编译器来编译Qt程序)。</p>
+<p>如果你对命令行比较恐惧，或许愿意先看看我原来整理的这个 <a href="http://wiki.ubuntu.org.cn/Gcchowto">GCC新手入门</a></p>
+<h2>例子一 ...</h2></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/zh/2010/11/from-cpp-to-qt/">Read On &crarr;</a>
+  </footer>
+  		</article>
 <div class="pagination">
 
     <a class="next" href="http://blog.debao.me/index.html">Newer &rarr;</a>
@@ -253,7 +389,7 @@ public: \
 
   <section>
   <h1>Tags</h1>
-    <a href="http://blog.debao.me/tag/.html"></a>,    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/zhong-wen.html">中文</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
+    <a href="http://blog.debao.me/tag/.html"></a>,    <a href="http://blog.debao.me/tag/qt4.html">Qt4</a>,    <a href="http://blog.debao.me/tag/zhong-wen.html">中文</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/c.html">C++</a>,    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
 
 
 
@@ -296,7 +432,7 @@ public: \
 </aside>    </div>
   </div>
   <footer role="contentinfo"><p>
-    Copyright &copy;  2012&ndash;2015  Debao Zhang &mdash;
+    Copyright &copy;  2010&ndash;2015  Debao Zhang &mdash;
   <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
 </p></footer>
   <script src="http://blog.debao.me/theme/js/modernizr-2.0.js"></script>
