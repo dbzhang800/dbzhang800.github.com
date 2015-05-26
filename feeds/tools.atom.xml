@@ -1,5 +1,784 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>1+1=10</title><link href="http://blog.debao.me/" rel="alternate"></link><link href="http://blog.debao.me/feeds/tools.atom.xml" rel="self"></link><id>http://blog.debao.me/</id><updated>2015-04-28T00:00:00+08:00</updated><entry><title>Install MediaWiki on Windows</title><link href="http://blog.debao.me/2015/04/install-mediawiki-on-windows/" rel="alternate"></link><updated>2015-04-24T10:33:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2015-04-24:2015/04/install-mediawiki-on-windows/</id><summary type="html">&lt;p&gt;MediaWiki + Apache + php + MySQL&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>1+1=10</title><link href="http://blog.debao.me/" rel="alternate"></link><link href="http://blog.debao.me/feeds/tools.atom.xml" rel="self"></link><id>http://blog.debao.me/</id><updated>2015-06-22T15:27:00+08:00</updated><entry><title>Joomla!笔记2</title><link href="http://blog.debao.me/zh/2015/06/notes-on-joomla-part2/" rel="alternate"></link><updated>2015-06-22T15:27:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2015-06-22:zh/2015/06/notes-on-joomla-part2/</id><summary type="html">&lt;h2&gt;隐藏Joomla相关信息&lt;/h2&gt;
+&lt;p&gt;为了避免被攻击，我们可能不想让别人知道自己使用的是Joomla!。&lt;/p&gt;
+&lt;h3&gt;网站URL...&lt;/h3&gt;
+&lt;p&gt;Joomla后台提供了一定的SEO设置功能，使得我们能将&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;http://example.com/index.php?option=com_content&amp;amp;view=article&amp;amp;id=3&amp;amp;Itemid=117
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;变成&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;http://example.com/aaaa/bbb.html
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这种样子。但是其他人仍然能通过原始形式进行访问。比如通过下面的URL访问登录界面&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;http://example.com/component/users
+http://example.com/?option=com_users
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;JoomSEF 和 sh404SEF 似乎能解决这种问题（没有试过，以后慢慢看）。&lt;/p&gt;
+&lt;h3&gt;meta generator&lt;/h3&gt;
+&lt;p&gt;Joomla! 建的网站，源码中会包含类似下面的meta信息&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;meta&lt;/span&gt; &lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;generator&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;content=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Joomla! - Open Source Content Management - Version 3.3.5&amp;quot;&lt;/span&gt; &lt;span class="nt"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;尽管版本号可以在后台site的全局设置隐藏，但是&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;meta&lt;/span&gt; &lt;span class="na"&gt;name=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;generator&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;content=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Joomla! - Open Source Content Management&amp;quot;&lt;/span&gt; &lt;span class="nt"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;可能仍不是我们希望看到的。那么如何解决呢？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;首先，我们需要找到它是那儿生成的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;打开文件 libraries/joomla/document/html/renderer/head.php，在104行左右可以看到&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="x"&gt;// Don&amp;#39;t add empty generators&lt;/span&gt;
+&lt;span class="x"&gt;$generator = $document-&amp;gt;getGenerator();&lt;/span&gt;
+
+&lt;span class="x"&gt;if ($generator)&lt;/span&gt;
+&lt;span class="x"&gt;{&lt;/span&gt;
+&lt;span class="x"&gt;    $buffer .= $tab . &amp;#39;&amp;lt;meta name=&amp;quot;generator&amp;quot; content=&amp;quot;&amp;#39; . htmlspecialchars($generator) . &amp;#39;&amp;quot; /&amp;gt;&amp;#39; . $lnEnd;&lt;/span&gt;
+&lt;span class="x"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;找到症结，解决就不难了。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;解决方法&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;我们可以直接将其删除或注释掉，或者在模板的index.php文件中将其定义为空&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;&amp;lt;?php&lt;/span&gt; &lt;span class="nv"&gt;$this&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="na"&gt;setGenerator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt; &lt;span class="cp"&gt;?&amp;gt;&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这两种方式都需要手动对代码动刀，有没有干这种事情的扩展呢？？&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;插件&lt;/th&gt;
+&lt;th&gt;...&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href="http://www.richeyweb.com/development/joomla-plugins/61-byebyegenerator"&gt;ByeByeGenerator&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href="http://www.aimy-extensions.com/joomla/no-generator.html"&gt;Aimy No Generator&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2&gt;后台网址&lt;/h2&gt;
+&lt;p&gt;直接输入 http://example.com/administrator 即可打开后台登陆界面，这也会潜在的风险。&lt;/p&gt;
+&lt;p&gt;有组件可以阻止这种访问，通过设置该路径的访问用户名密码，或者网址后面加上一个预设的Key，比如&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;http://example.com/administrator?passkey
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;插件&lt;/th&gt;
+&lt;th&gt;...&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;AdminExile&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;jSecure&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Admin Tools&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3&gt;参考&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://forum.joomla.org/viewtopic.php?t=703972"&gt;Remove &amp;lt;meta name="generator"&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;https://dwebxperts.wordpress.com/2013/01/09/joomla-remove-meta-generator-tag/&lt;/li&gt;
+&lt;li&gt;http://www.vincenzocaserta.it/en/blog-vincenzo-caserta-en/blog/447-rename-joomla-meta-name-generator.html&lt;/li&gt;
+&lt;li&gt;http://stackoverflow.com/questions/11949893/joomla-forbid-direct-access-to-components-and-modules&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/Htaccess_examples_%28security%29&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/Preconfigured_htaccess&lt;/li&gt;
+&lt;li&gt;http://www.artio.net/joomsef/documentation&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;网站维护相关插件&lt;/h2&gt;
+&lt;h3&gt;Akeeba Backup备份网站&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;备份&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;首先需要安装 Akeeba Backup 这一扩展。 Akeeba Backup 还是很容易操作的，默认配置下，直接点击“立即备份”即可。&lt;/p&gt;
+&lt;p&gt;多数配置参数也不需要都搞清楚，估计设置一下备份文件的存放位置，以及哪些文件或数据表除外就差不多了。备份格式默认是Akeeba自创的JPA格式，也可以选择更通用的zip格式，推荐前者，后者某些时候会有问题。&lt;/p&gt;
+&lt;p&gt;而后可以把备份文件保下载保存在云端或者其他地方。（可以通过Akeeba Backup管理界面下载，或者通过其他途径比如FTP等下载，推荐后者）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;恢复和迁移&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;方法一：&lt;/p&gt;
+&lt;p&gt;首先：需要解压备份文件，zip格式工具比较多，JPA的话，需要用&lt;a href="https://www.akeebabackup.com/download/akeeba-extract-wizard.html"&gt;Akeeba eXtract Wizard&lt;/a&gt;进行解压。&lt;/p&gt;
+&lt;p&gt;而后，将解压后的文件移动到网站目录下。在浏览器中执行 http://example.com/installation/index.php 就触发了恢复操作。&lt;/p&gt;
+&lt;p&gt;如果迁移网站的话，需要设置新的MySQL的连接信息。&lt;/p&gt;
+&lt;p&gt;方法二：&lt;/p&gt;
+&lt;p&gt;使用&lt;a href="https://www.akeebabackup.com/download/akeeba-kickstart.html"&gt;Akeeba Kickstart&lt;/a&gt; 这一个php脚本。&lt;/p&gt;
+&lt;p&gt;将该php文件和网站备份文件一块放到网站目录下，在浏览器中执行 http://example.com/kickstart.php 就触发了恢复操作。&lt;/p&gt;
+&lt;h3&gt;网站关闭&lt;/h3&gt;
+&lt;p&gt;Joomla!后台全局设置中有“网站关闭”选项，一些模板比如helix也提供有comingsoon选项。&lt;/p&gt;
+&lt;p&gt;一些扩展提供网站关闭时页面的设置。还有一些扩展比如 &lt;a href="http://extensions.joomla.org/extensions/extension/miscellaneous/offline/offline"&gt;Offline&lt;/a&gt;可以供关闭时测试网站使用。&lt;/p&gt;
+&lt;h3&gt;参考&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;https://www.akeebabackup.com/documentation/quick-start-guide.html&lt;/li&gt;
+&lt;/ul&gt;</summary><category term="Joomla"></category></entry><entry><title>Joomla!扩展笔记</title><link href="http://blog.debao.me/zh/2015/06/notes-on-joomla-extension/" rel="alternate"></link><updated>2015-06-18T15:57:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2015-06-18:zh/2015/06/notes-on-joomla-extension/</id><summary type="html">&lt;p&gt;Joomla! 的扩展分：组件、模块、插件、模板&lt;/p&gt;
+&lt;p&gt;简单了解一下&lt;/p&gt;
+&lt;h2&gt;组件(Component)&lt;/h2&gt;
+&lt;p&gt;组件是Joomla!的一种扩展，是Joomla!的主要功能单元。大部分组件都包含administrator和site两部分，它们分别装在Joomla!根目录下的 administrator/components 和 components目录中。&lt;/p&gt;
+&lt;p&gt;当用户通过类似如下的&lt;code&gt;http://example.com/index.php?option=com_&amp;lt;name&amp;gt;&lt;/code&gt;的url请求页面时，Joomla!平台将试图加载组件文件&lt;code&gt;components/com_&amp;lt;name&amp;gt;/&amp;lt;name&amp;gt;.php&lt;/code&gt;。在该文件中，可以决定：直接返回HTML代码，还是使用模型-视图-控制器(MVC)模式。&lt;/p&gt;
+&lt;p&gt;组件的控制流程见 &lt;a href="https://docs.joomla.org/Component_Program_Flow"&gt;Component_Program_Flow&lt;/a&gt; 。&lt;/p&gt;
+&lt;h3&gt;Old-Flat-Model(直接返回HTML代码)&lt;/h3&gt;
+&lt;p&gt;假定我们创建一个名为 hello 的组件，在网站components目录下创建 com_hello 子目录，在该目录下创建一个 hello.php 的文件，该文件内输入&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    Hello from my first component.
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;而后创建一个空的 hello.xml 文件。这样，一个简单的组件就完成了，在 扩展=》扩展管理器=》检测 中点击检测按钮。即可发现该组件。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;com_hello\
+    |--  hello.php 
+    \--  hello.xml 
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;组件后台&lt;/h4&gt;
+&lt;p&gt;在网站 administrator/components/com_hello目录下创建 hello.php 文件，内容简单包含&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    Hello administratation from my first component.
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;该页面通过 &lt;code&gt;administrator/index.php?option=com_hello&lt;/code&gt; 访问&lt;/p&gt;
+&lt;h4&gt;安装包&lt;/h4&gt;
+&lt;p&gt;如果不是直接放置在网站目录下让jommla!去检测，而是直接制作安装包&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;com_hello\
+    |--  site\
+    |      |-- hello.php 
+    |
+    |--  admin\
+    |      |-- hello.php 
+    |
+    \--  hello.xml 
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;关键的是一个名为 hello.xml 的文件，内容大致如下&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;utf-8&amp;quot;?&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;extension&lt;/span&gt; &lt;span class="na"&gt;type=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;component&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;version=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;3.2.0&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;name&amp;gt;&lt;/span&gt;hello&lt;span class="nt"&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;version&amp;gt;&lt;/span&gt;0.0.2&lt;span class="nt"&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;files&lt;/span&gt; &lt;span class="na"&gt;folder=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;site&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;filename&amp;gt;&lt;/span&gt;hello.php&lt;span class="nt"&gt;&amp;lt;/filename&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;/files&amp;gt;&lt;/span&gt;
+
+    &lt;span class="nt"&gt;&amp;lt;administration&amp;gt;&lt;/span&gt;
+        &lt;span class="nt"&gt;&amp;lt;menu&amp;gt;&lt;/span&gt;hello&lt;span class="nt"&gt;&amp;lt;/menu&amp;gt;&lt;/span&gt;
+        &lt;span class="nt"&gt;&amp;lt;files&lt;/span&gt; &lt;span class="na"&gt;folder=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;admin&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+            &lt;span class="nt"&gt;&amp;lt;filename&amp;gt;&lt;/span&gt;hello.php&lt;span class="nt"&gt;&amp;lt;/filename&amp;gt;&lt;/span&gt;
+        &lt;span class="nt"&gt;&amp;lt;/files&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;/administration&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/extension&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;注：一般子目录下都会放置一个空的index.html的文件，以避免用户看到目录下内容。&lt;/p&gt;
+&lt;p&gt;关于该xml文件的信息，见&lt;a href="https://docs.joomla.org/Manifest_files"&gt;Manifest_files&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;MVC模式&lt;/h3&gt;
+&lt;p&gt;Joomla!3 第三方组件通常都分为三部分：模型、视图、控制器。
+基本结构：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;com_mycomponent\
+    |--  mycomponent.php 
+    |--  controller.php
+    |--  views\
+    |       |--  mycomponent\
+    |       |       |-- view.html.php
+    |       |       |-- tmpl\
+    |       |             |-- default.php
+    |...
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;现在网上的例子基本上都是 JControllerLegacy/JViewLegacy/JModelLegal，它们都加了Legal，说明有更新的和推荐的替代品：
+JControllerBase/JViewBase/JModelBase。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;url&lt;/th&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;index.php?option=com_&amp;lt;name&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Joomla!将加载 &lt;code&gt;components/com_&amp;lt;name&amp;gt;/&amp;lt;name&amp;gt;.php&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;index.php?option=com_&amp;lt;name&amp;gt;&amp;amp;view=&amp;lt;myview&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Joomla!会导入&lt;code&gt;components/com_&amp;lt;name&amp;gt;/views/&amp;lt;myview&amp;gt;/view.html.php&lt;/code&gt;，默认&lt;code&gt;&amp;lt;name&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;index.php?option=com_&amp;lt;name&amp;gt;[&amp;amp;task=&amp;lt;mytask&amp;gt;]&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;默认Task是display&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;index.php?option=com_&amp;lt;name&amp;gt;&amp;amp;format=pdf&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;默认Format是html&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;东西太多了，本文跳过&lt;/p&gt;
+&lt;h3&gt;参考&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;https://docs.joomla.org/Portal:Component_Development&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/Absolute_Basics_of_How_a_Component_Functions&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/J3.x:Developing_a_MVC_Component/Developing_a_Basic_Component&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/J3.x:Developing_a_MVC_Component/Adding_a_view_to_the_site_part&lt;/li&gt;
+&lt;li&gt;...&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;模块(Module)&lt;/h2&gt;
+&lt;p&gt;模块用来在页面的某部位添加一些内容。在典型的页面中，它们通常是围绕组件的方盒子，比如Login Form等。&lt;/p&gt;
+&lt;p&gt;简单的组件通常包含4个文件&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mod_mymodule\
+    |--  mod_mymodule.php 
+    |--  mod_mymodule.xml 
+    |--  helper.php
+    |--  tmpl\
+    |      |-- default.php
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;code&gt;mod_mymodule.php&lt;/code&gt; 是模块的入口，&lt;code&gt;mod_mymodule.xml&lt;/code&gt;包含安装信息以及配置参数信息等。&lt;/p&gt;
+&lt;h3&gt;参考&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;https://docs.joomla.org/Portal:Module_Development&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/J3.x:Creating_a_simple_module/Developing_a_Basic_Module&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;插件(Plugin)&lt;/h2&gt;
+&lt;p&gt;插件是Joomla!的一种扩展，它提供与事件相关联的函数功能。Joomla提供了一套核心的插件事件，但是其他扩展也可以发射(fire)
+自定义事件。当某一个特定事件发生时，所有与该事件关联的插件函数都会被依次调用。Joomla插件架构遵循观察者模式。&lt;/p&gt;
+&lt;p&gt;子类化 JPlugin&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;&amp;lt;?php&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;plg&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;PluginGroup&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;PluginName&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;extends&lt;/span&gt; &lt;span class="nx"&gt;JPlugin&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+     &lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="err"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nf"&gt;EventName&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+     &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="k"&gt;true&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+     &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="cp"&gt;?&amp;gt;&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;而后 创建一个安装文件&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;utf-8&amp;quot;?&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;extension&lt;/span&gt; &lt;span class="na"&gt;version=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;3.1&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;type=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;plugin&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;group=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;system&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;name&amp;gt;&lt;/span&gt;plg_system_example&lt;span class="nt"&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.0.0&lt;span class="nt"&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;files&amp;gt;&lt;/span&gt;
+        &lt;span class="nt"&gt;&amp;lt;filename&lt;/span&gt; &lt;span class="na"&gt;plugin=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;example&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;example.php&lt;span class="nt"&gt;&amp;lt;/filename&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;/files&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;config&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;/config&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/extension&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;里面关键的是extension 中的group属性，以及 files 中的 filename。&lt;/p&gt;
+&lt;h3&gt;参考&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;https://docs.joomla.org/Portal:Plugin_Development&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/Administration_of_a_Plugin_in_Joomla&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/Creating_a_Plugin_for_Joomla&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/Plugin_Developer_Overview&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/Plugin/Events&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;模板(Template)&lt;/h2&gt;
+&lt;h3&gt;参考&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;https://docs.joomla.org/Portal:Template_Development&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/Understanding_Joomla!_templates&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;语言包(language package)&lt;/h2&gt;
+&lt;p&gt;只关注非核心扩展的语言包。&lt;/p&gt;
+&lt;p&gt;在Joomla!1.5之前，通过安装文件中的languages元素进行安装&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;languages&lt;/span&gt; &lt;span class="na"&gt;folder=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;lang&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;language&lt;/span&gt; &lt;span class="na"&gt;tag=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;zh-CN&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;zh-CN.com_example.ini&lt;span class="nt"&gt;&amp;lt;/language&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/languages&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这将会把扩展的语言文件安装进Joomla!的核心语言文件存放位置：Joomla根目录下的language或administrator/language。&lt;/p&gt;
+&lt;p&gt;该做法在3.x中仍然被支持，但推荐将语言文件和扩展的其他文件直接放一块，目录结构有一定要求&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;files&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;filename&lt;/span&gt; &lt;span class="na"&gt;plugin=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;example&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;example.php&lt;span class="nt"&gt;&amp;lt;/filename&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;folder&amp;gt;&lt;/span&gt;language&lt;span class="nt"&gt;&amp;lt;/folder&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/files&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;注意：语言文件保存成不带BOM的UTF8格式&lt;/p&gt;
+&lt;h3&gt;参考&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;https://docs.joomla.org/Making_a_Language_Pack_for_Joomla_3.x&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/Creating_language_packs_for_extensions_in_Joomla_2.5&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/J2.5:Making_non-core_language_packs&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/Specification_of_language_files&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/Creating_a_language_definition_file&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;其他&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;https://docs.joomla.org/Manifest_files&lt;/li&gt;
+&lt;/ul&gt;</summary><category term="Joomla"></category></entry><entry><title>Joomla!笔记</title><link href="http://blog.debao.me/zh/2015/06/notes-on-joomla/" rel="alternate"></link><updated>2015-06-04T13:50:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2015-06-04:zh/2015/06/notes-on-joomla/</id><summary type="html">&lt;h2&gt;问题&lt;/h2&gt;
+&lt;h3&gt;googleapis.com 加载问题&lt;/h3&gt;
+&lt;p&gt;不少扩展都使用了 googleapis.com 中的 fonts 和 jQuery ，而google的服务在国内无法访问。需要换成360提供的镜像 http://libs.useso.com/  &lt;/p&gt;
+&lt;p&gt;NoNumber ReReplacer 比较好的解决这个问题。&lt;/p&gt;
+&lt;p&gt;创建两条规则：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用 ajax.useso.com 替换 ajax.googleapis.com&lt;/li&gt;
+&lt;li&gt;用 fonts.useso.com 替换 fonts.googleapis.com&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果模板用的 https 而不是 http。 用 http://fonts.useso.com 替换 https://fonts.googleapis.com&lt;/p&gt;
+&lt;p&gt;一些扩展比如 K2 也提供了选项，可以选择用本地的，还是远程的。&lt;/p&gt;
+&lt;h3&gt;twitter，facebook链接等&lt;/h3&gt;
+&lt;p&gt;这些东西在国内无法访问，一般是模板提供的，需要在模板的设置中去除。&lt;/p&gt;
+&lt;h3&gt;调整Menu的顺序&lt;/h3&gt;
+&lt;p&gt;直接拖动前面的竖着的3个点的图标即可。&lt;/p&gt;
+&lt;h3&gt;module的位置&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;自定义Module的位置：在Module的Position属性处，可以一个自定义的字符串作为位置名；而后
+在文章中&lt;code&gt;{loadposition myModulePosition}&lt;/code&gt; 或模板中，可以直接使用该位置。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;预览模板中Module的位置：首先在模板管理器的选项中，启用预览；而后在网站网址后面加&lt;code&gt;?tp=1&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;百度地图&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;http://api.map.baidu.com/lbsapi/creatmap/index.html&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;扩展&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;名字&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Admin Tools&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;jSecure&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href="https://www.akeebabackup.com/products/akeeba-backup.html"&gt;Akeeba Backup&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Backup, restore and transfer your site in a snap!&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href="https://www.nonumber.nl/extensions/emailprotector"&gt;Email Protector&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Safely cloak email addresses in Joomla!&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href="https://dj-extensions.com/dj-imageslider"&gt;DJ Image Slider&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href="https://www.nonumber.nl/extensions/rereplacer"&gt;ReReplacer&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Advanced search and replace for Joomla!&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href="http://getk2.org/"&gt;K2&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;The powerful content extension for Joomla!&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href="http://www.joomshaper.com/joomla-extensions/sp-page-builder-free"&gt;SP Page Builder&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;SP Page Builder is an Intuitive Drag and Drop Builder component suited for everyone.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Tabs&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href="http://www.joomshaper.com/joomla-extensions/sp-tab"&gt;Sp Tab&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href="http://www.joomshaper.com/joomla-extensions/quick-contact"&gt;SP Quick Contact&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;joombig slider effects with navigation images&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href="http://www.xingzai.org/extensions/baidu-map-module-for-joomla.html"&gt;Baidu Map&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href="http://www.richeyweb.com/development/joomla-plugins/121-system-offline"&gt;Offline&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;test Guest functionality when site is offline&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href="http://www.joomlashowroom.com/products/site-lock"&gt;Site Lock&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ul&gt;
+&lt;li&gt;http://extensions.joomla.org/&lt;/li&gt;
+&lt;li&gt;http://extensions.joomla.org/category/official-extensions&lt;/li&gt;
+&lt;li&gt;http://www.joomshaper.com/joomla-extensions&lt;/li&gt;
+&lt;li&gt;https://www.nonumber.nl/extensions/&lt;/li&gt;
+&lt;li&gt;https://dj-extensions.com/extensions&lt;/li&gt;
+&lt;li&gt;https://www.rsjoomla.com/joomla-extensions.html&lt;/li&gt;
+&lt;li&gt;http://www.joomlaserviceprovider.com/extensions/joomla&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;模板&lt;/h2&gt;
+&lt;p&gt;Framework: Helix T3 ...&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;http://www.joomshaper.com/joomla-templates&lt;/li&gt;
+&lt;li&gt;http://www.joomlart.com/joomla/templates&lt;/li&gt;
+&lt;li&gt;http://yootheme.com/themes/joomla &lt;/li&gt;
+&lt;li&gt;http://www.rockettheme.com/joomla/templates&lt;/li&gt;
+&lt;li&gt;https://www.gavick.com/joomla-templates&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;http://www.templatemonster.com/joomla-templates.php&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;http://www.joomlabamboo.com/joomla-templates/&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;http://joomlatemplates.me/&lt;/li&gt;
+&lt;li&gt;http://thegrue.org/joomla/templates/&lt;/li&gt;
+&lt;li&gt;http://www.freshjoomlatemplates.com/&lt;/li&gt;
+&lt;li&gt;......&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;可能比较重要的链接&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;https://docs.joomla.org/Copying_a_Joomla_website&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/How_do_you_recover_or_reset_your_admin_password%3F&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;https://docs.joomla.org/Taking_the_website_temporarily_offline&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;https://docs.joomla.org/Developers&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;入门教程&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;http://www.inmotionhosting.com/support/edu/joomla-3&lt;/li&gt;
+&lt;li&gt;https://docs.joomla.org/J3.x:Creating_a_simple_module/Developing_a_Basic_Module&lt;/li&gt;
+&lt;/ul&gt;</summary><category term="Joomla"></category></entry><entry><title>Notes on MySQL</title><link href="http://blog.debao.me/2015/04/notes-on-mysql/" rel="alternate"></link><updated>2015-04-25T13:33:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2015-04-25:2015/04/notes-on-mysql/</id><summary type="html">&lt;h2&gt;MySQL vs mysql&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;MySQL ==&amp;gt; the entire MySQL package&lt;ul&gt;
+&lt;li&gt;The MySQL server (mysqld)&lt;/li&gt;
+&lt;li&gt;MySQL client programs&lt;/li&gt;
+&lt;li&gt;MySQL client library&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;mysql ==&amp;gt; a client program of the MySQL package&lt;ul&gt;
+&lt;li&gt;The MySQL Command-Line Tool&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Connecting to server&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;shell&amp;gt; mysql -h host -u user -p
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;If mysqld is running on the same machine:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;shell&amp;gt; mysql -u user -p
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;If mysqld is running on the same machine and permit anonymous users.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;shell&amp;gt; mysql
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Disconnecting from server&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; quit;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Note, semicolon of this command can be omitted.&lt;/p&gt;
+&lt;h2&gt;Entering Queries&lt;/h2&gt;
+&lt;p&gt;We can do some query operations even without any database to work with.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; select version(), current_date, (4+1)*5, user();
++-------------------------+--------------+---------+----------------+
+| version()               | current_date | (4+1)*5 | user()         |
++-------------------------+--------------+---------+----------------+
+| 5.5.43-0ubuntu0.14.04.1 | 2015-04-05   |      25 | root@localhost |
++-------------------------+--------------+---------+----------------+
+1 row in set (0.00 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Type &lt;code&gt;\c&lt;/code&gt; if we want to cancel current command.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; select user() \c
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Meaning of prompts&lt;/h3&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Prompt&lt;/th&gt;
+&lt;th&gt;Meaning&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;mysql&amp;gt;&lt;/td&gt;
+&lt;td&gt;Ready for new command.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;-&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Waiting for next line of multiple-line command.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;'&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Waiting for next line, waiting for completion of a string that began with a single quote (').&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;"&lt;/code&gt;&amp;gt;&lt;/td&gt;
+&lt;td&gt;Waiting for next line, waiting for completion of a string that began with a double quote (").&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;`&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Waiting for next line, waiting for completion of an identifier that began with a backtick (`).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;/*&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Waiting for next line, waiting for completion of a comment that began with &lt;code&gt;/*&lt;/code&gt;.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2&gt;Creating and Selecting a Database&lt;/h2&gt;
+&lt;p&gt;Creating a database called db_debao&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; create database db_debao;
+Query OK, 1 row affected (0.05 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;View databases&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| db_debao           |
+| mysql              |
+| performance_schema |
++--------------------+
+4 rows in set (0.00 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Create a database does not select it for use, so we must make it the current
+database explicitly.(Note, semicolon of this command can be omitted.)&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; use db_debao
+Database changed
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;To find out which database currently used&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; select database();
++------------+
+| database() |
++------------+
+| db_debao   |
++------------+
+1 row in set (0.00 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;strong&gt;Important Note&lt;/strong&gt;, this database is created by the root and will not be accessible to any other user unless permitted by the root.
+The following command will create a new user call "test" on localhost with the password "password".&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; grant all on db_debao.* to test@localhost identified by &amp;quot;password&amp;quot;;
+Query OK, 0 rows affected (1.79 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Create a Table&lt;/h2&gt;
+&lt;p&gt;List tables in current database&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; show tables;
+Empty set (0.00 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Create a table called &lt;code&gt;pet&lt;/code&gt; with three columns: name, sex, birth&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; create table pet (name varchar(20), sex char(1), birth DATE);
+Query OK, 0 rows affected (0.19 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;View tables now&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; show tables;
++--------------------+
+| Tables_in_db_debao |
++--------------------+
+| pet                |
++--------------------+
+1 row in set (0.00 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;code&gt;describe&lt;/code&gt; can be called at any time to view table column names and types.    &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; describe pet;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| name  | varchar(20) | YES  |     | NULL    |       |
+| sex   | char(1)     | YES  |     | NULL    |       |
+| birth | date        | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Loading Data into a Table&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;load_data&lt;/code&gt; and &lt;code&gt;insert&lt;/code&gt; can be used for this task.&lt;/p&gt;
+&lt;p&gt;Create a plain text file called pet_raw_txt:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;at1    f       2015-01-01
+cat2    m       2015-02-02
+cat3    \N      2015-03-03
+cat4    f       \N
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Try load this file:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; load data local infile &amp;#39;~/pet_raw.txt&amp;#39; into table pet;
+ERROR 1148 (42000): The used command is not allowed with this MySQL version
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;How to fix this? Add the &lt;code&gt;--local-infile=1&lt;/code&gt; option when start mysql&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;mysql --local-infile&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;  -u root -p
+mysql&amp;gt; use db_debao
+mysql&amp;gt; load data &lt;span class="nb"&gt;local &lt;/span&gt;infile &lt;span class="s1"&gt;&amp;#39;~/pet_raw.txt&amp;#39;&lt;/span&gt; into table pet&lt;span class="p"&gt;;&lt;/span&gt;
+Query OK, &lt;span class="m"&gt;4&lt;/span&gt; rows affected &lt;span class="o"&gt;(&lt;/span&gt;0.06 sec&lt;span class="o"&gt;)&lt;/span&gt;
+Records: &lt;span class="m"&gt;4&lt;/span&gt;  Deleted: &lt;span class="m"&gt;0&lt;/span&gt;  Skipped: &lt;span class="m"&gt;0&lt;/span&gt;  Warnings: 0
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;If we use insert instead of load data&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; insert into pet values (&amp;#39;dog1&amp;#39;, &amp;#39;f&amp;#39;, &amp;#39;2015-04-01&amp;#39;);
+Query OK, 1 row affected (0.11 sec)
+mysql&amp;gt; insert into pet values (&amp;#39;dog2&amp;#39;, &amp;#39;f&amp;#39;, NULL);
+Query OK, 1 row affected (0.05 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;If we want to empty the table pet:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; delete from pet;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Retrieving Information from a Table&lt;/h2&gt;
+&lt;p&gt;Selecting all data&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; select * from pet;
++------+------+------------+
+| name | sex  | birth      |
++------+------+------------+
+| cat1 | f    | 2015-01-01 |
+| cat2 | m    | 2015-02-02 |
+| cat3 | NULL | 2015-03-03 |
+| cat4 | f    | NULL       |
+| dog1 | f    | 2015-04-01 |
+| dog2 | f    | NULL       |
++------+------+------------+
+6 rows in set (1.13 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;If we want to change something, &lt;code&gt;update&lt;/code&gt; can be used.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; update pet set birth = &amp;#39;2015-04-02&amp;#39; where name = &amp;#39;dog2&amp;#39;;
+Query OK, 1 row affected (0.08 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Selecting particular rows:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; select * from pet where birth &amp;gt;= &amp;#39;2015-03-01&amp;#39;;
++------+------+------------+
+| name | sex  | birth      |
++------+------+------------+
+| cat3 | NULL | 2015-03-03 |
+| dog1 | f    | 2015-04-01 |
+| dog2 | f    | 2015-04-02 |
++------+------+------------+
+3 rows in set (0.02 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Selecting particular columns:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; select name, birth from pet;
++------+------------+
+| name | birth      |
++------+------------+
+| cat1 | 2015-01-01 |
+| cat2 | 2015-02-02 |
+| cat3 | 2015-03-03 |
+| cat4 | NULL       |
+| dog1 | 2015-04-01 |
+| dog2 | 2015-04-02 |
++------+------------+
+6 rows in set (0.00 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Pattern Matching:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; select name, birth from pet where name like &amp;#39;cat%&amp;#39;;
++------+------------+
+| name | birth      |
++------+------------+
+| cat1 | 2015-01-01 |
+| cat2 | 2015-02-02 |
+| cat3 | 2015-03-03 |
+| cat4 | NULL       |
++------+------------+
+4 rows in set (0.00 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Sorting rows: (order by)&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mysql&amp;gt; select name, birth from pet order by birth;
++------+------------+
+| name | birth      |
++------+------------+
+| cat4 | NULL       |
+| cat1 | 2015-01-01 |
+| cat2 | 2015-02-02 |
+| cat3 | 2015-03-03 |
+| dog1 | 2015-04-01 |
+| dog2 | 2015-04-02 |
++------+------------+
+6 rows in set (0.00 sec)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Reference&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;http://dev.mysql.com/doc/refman/5.6/en/index.html&lt;/li&gt;
+&lt;li&gt;http://www.webdevelopersnotes.com/tutorials/sql/mysql_database_introduction_mysql_beginners_tutorial.php3&lt;/li&gt;
+&lt;/ul&gt;</summary><category term=""></category></entry><entry><title>Install MediaWiki on Windows</title><link href="http://blog.debao.me/2015/04/install-mediawiki-on-windows/" rel="alternate"></link><updated>2015-04-24T10:33:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2015-04-24:2015/04/install-mediawiki-on-windows/</id><summary type="html">&lt;p&gt;MediaWiki + Apache + php + MySQL&lt;/p&gt;
 &lt;h2&gt;MySQL&lt;/h2&gt;
 &lt;p&gt;Download and install the msi installer of MySQL 5.6 from http://dev.mysql.com/downloads/installer/&lt;/p&gt;
 &lt;h2&gt;Apache&lt;/h2&gt;
@@ -719,12 +1498,13 @@ pagination_dir:
 &lt;p&gt;用 Listen 指定要绑定的端口号&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;可以指定具体的IP&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;可以用多条命令指定多个端口号&lt;/p&gt;
-&lt;p&gt;Listen 80
+&lt;li&gt;可以用多条命令指定多个端口号&lt;div class="highlight"&gt;&lt;pre&gt;Listen 80
 Listen 127.0.0.1:8080
 Listen 10.0.2.15:8081
-Listen [fe80::222:5fff:feb9:82d0]:8888&lt;/p&gt;
+Listen [fe80::222:5fff:feb9:82d0]:8888
+&lt;/pre&gt;&lt;/div&gt;
+
+
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;不同的IP和端口组合可以用来做虚拟主机，这需要通过VirtualHost进一步配置(必须先用Listen设置监听地址)&lt;/p&gt;
@@ -961,4 +1741,62 @@ AddHandler cgi-script .py
 &lt;li&gt;http://lamp.linux.gov.cn/Apache/ApacheMenu/urlmapping.html&lt;/li&gt;
 &lt;li&gt;http://lamp.linux.gov.cn/Apache/ApacheMenu/urlmapping.html&lt;/li&gt;
 &lt;li&gt;http://docstore.mik.ua/orelly/linux/apache/ch01_01.htm&lt;/li&gt;
-&lt;/ul&gt;</summary></entry></feed>
+&lt;/ul&gt;</summary></entry><entry><title>Mercurial小记</title><link href="http://blog.debao.me/2010/09/mercurial-note/" rel="alternate"></link><updated>2010-09-28T06:58:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2010-09-28:2010/09/mercurial-note/</id><summary type="html">&lt;p&gt;Mercurial 是一个分布式的源代码&lt;/p&gt;
+&lt;h2&gt;配置文件&lt;/h2&gt;
+&lt;p&gt;位于：&lt;code&gt;~/.hgrc&lt;/code&gt; 或 &lt;code&gt;%USERPROFILE%\Mercurial.ini&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;首先配置用户名(注意格式，这样，google code等会为我们将email地址隐藏掉)：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;[ui]&lt;/span&gt;
+&lt;span class="na"&gt;username&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;John Doe &amp;lt;john@example.com&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;记住用户名和密码：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;[auth]&lt;/span&gt;
+&lt;span class="na"&gt;example.prefix&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;https://hg.example.net/&lt;/span&gt;
+&lt;span class="na"&gt;example.username&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;foo&lt;/span&gt;
+&lt;span class="na"&gt;example.password&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;bar&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;操作&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;Mercurial&lt;/th&gt;
+&lt;th&gt;Subversion&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;仓库克隆&lt;/td&gt;
+&lt;td&gt;hg clone url dir&lt;/td&gt;
+&lt;td&gt;svn co url dir&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;创建&lt;/td&gt;
+&lt;td&gt;hg init&lt;/td&gt;
+&lt;td&gt;svnadmin create dir&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;提交到远端&lt;/td&gt;
+&lt;td&gt;hg commit &lt;BR/&gt; hg push&lt;/td&gt;
+&lt;td&gt;svn commit&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;更新&lt;/td&gt;
+&lt;td&gt;hg pull &lt;BR/&gt; hg update&lt;/td&gt;
+&lt;td&gt;svn update&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;获取版本号&lt;/td&gt;
+&lt;td&gt;hg -q id &lt;BR/&gt; hg parent&lt;/td&gt;
+&lt;td&gt;svnversion -n&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2&gt;参考&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;http://mercurial.selenic.com/wiki/QuickStart&lt;/li&gt;
+&lt;li&gt;http://mercurial.selenic.com/wiki/FAQ&lt;/li&gt;
+&lt;/ul&gt;</summary><category term=""></category></entry></feed>

@@ -23,10 +23,6 @@
   <link href="http://blog.debao.me/theme/css/main.css" media="screen, projection"
         rel="stylesheet" type="text/css">
 
-  <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic"
-        rel="stylesheet" type="text/css">
-  <link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic"
-        rel="stylesheet" type="text/css">
 </head>
 
 <body>
@@ -53,6 +49,94 @@
   <div id="main">
     <div id="content">
 <div class="blog-index">
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-1/">"How to use QThread in the right way (Part 1)"</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-08-05T17:34:00+08:00" pubdate>Mon, 05 Aug 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><h2>A short history</h2>
+<p>Long long ago, <strong>subclass QThread and reimplement its run() function</strong> is the only recommended way of using QThread. This is rather intuitive and easy to used. But when SLOTS and Qt event loop are used in the worker thread, some users <a href="http://blog.qt.digia.com/blog/2010/06/17/youre-doing-it-wrong/">do it wrong</a>. So Bradley T ...</p></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-1/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="http://blog.debao.me/2013/07/left-shift-operator-overloading-for-qdebug/">"left shift operator overloading for QDebug()"</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-07-16T10:04:00+08:00" pubdate>Tue, 16 Jul 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><p>Consider that we have create a custom type:</p>
+<div class="highlight"><pre><span class="k">struct</span> <span class="n">Point</span>
+<span class="p">{</span>
+<span class="n">Point</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span><span class="p">)</span><span class="o">:</span><span class="n">x</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">y</span><span class="p">(</span><span class="n">y</span><span class="p">){}</span>
+<span class="kt">int</span> <span class="n">x</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>If we want to make it work with qDebug(), we need to implement a streaming operator:</p>
+<div class="highlight"><pre><span class="n">QDebug</span> <span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">QDebug</span> <span class="n">dbg</span><span class="p">,</span> <span class="k">const</span> <span class="n">Point</span> <span class="o">&amp;</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+
+
+<p>But, wait ...</p>
+<p>When we ...</p></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/2013/07/left-shift-operator-overloading-for-qdebug/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="http://blog.debao.me/2013/07/link-confilict-between-sdl-and-qt-under-windows/">"Link Confilict between SDL and Qt under Windows"</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-07-09T09:22:00+08:00" pubdate>Tue, 09 Jul 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><p>Someone complain that, when using SDL and Qt in the same project under Windows, the linker will generate link error.</p>
+<blockquote>
+<p>SDLmain.lib(SDL_win32_main.obj):-1: error: LNK2005: _WinMain@16 already defined in qtmaind.lib(qtmain_win.obj)</p>
+</blockquote>
+<p>What happened behined this?</p>
+<div class="highlight"><pre><span class="cp">#include &lt;QApplication&gt;</span>
+<span class="cp">#include &lt;SDL.h&gt;</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char ...</span></pre></div></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/2013/07/link-confilict-between-sdl-and-qt-under-windows/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="http://blog.debao.me/2013/07/redirect-current-processs-stdout-to-a-widget-such-as-qtextedit/">"Redirect current process's stdout to a Widget such as QTextEdit"</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-07-05T17:26:00+08:00" pubdate>Fri, 05 Jul 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><p>Note: </p>
+<ul>
+<li>Source code can be got from https://github.com/dbzhang800/StdoutRedirector</li>
+<li>This class can only be used in Qt5, as QWindowsPipeReader which is introduced in Qt5.0 is used.</li>
+</ul>
+<h2>Implementation</h2>
+<h3>Windows</h3>
+<ul>
+<li>Normally, we need to create pipe with CreatePipe(), then attach stdout to it's write end with SetStdHandle ...</li></ul></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/2013/07/redirect-current-processs-stdout-to-a-widget-such-as-qtextedit/">Read On &crarr;</a>
+  </footer>
+  		</article>
   		<article>
 <header>
       <h1 class="entry-title">
@@ -196,179 +280,6 @@ public: \
     <a rel="full-article" href="http://blog.debao.me/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test/">Read On &crarr;</a>
   </footer>
   		</article>
-  		<article>
-<header>
-      <h1 class="entry-title">
-        <a href="http://blog.debao.me/2012/08/setup-and-configure-my-octopress-blog/">"Setup and Configure My Octopress Blog"</a>
-      </h1>
-    <p class="meta">
-<time datetime="2012-08-27T21:44:00+08:00" pubdate>Mon, 27 Aug 2012</time>    </p>
-</header>
-
-  <div class="entry-content"><p>I am using Mac OS X 10.8, Ubuntu 12.10 and Windows Vista at present. I want to have a simple blog which can be coutrolled by myself …</p>
-<h2>Install Ruby 1.9.3</h2>
-<p>Octopress depends on Ruby 1.9.2 or newer.</p>
-<h3>Mac X 10.8</h3>
-<p>The Ruby provided ...</p></div>
-  <footer>
-    <a rel="full-article" href="http://blog.debao.me/2012/08/setup-and-configure-my-octopress-blog/">Read On &crarr;</a>
-  </footer>
-  		</article>
-  		<article>
-<header>
-      <h1 class="entry-title">
-        <a href="http://blog.debao.me/zh/2011/11/networking-settings-in-virtualbox/">VirtualBox的网络设置</a>
-      </h1>
-    <p class="meta">
-<time datetime="2011-11-20T16:25:00+08:00" pubdate>2011-11-20(周日)</time>    </p>
-</header>
-
-  <div class="entry-content"><p>VirtualBox 可以为每一个Guest分配多达8个网卡(界面上只显示了4个，其他需要通过VBoxManager modifyvm进行配置)，每个网卡的连接方式可以选为下列之一：</p>
-<ul>
-<li>Not attached</li>
-<li>NAT</li>
-<li>NAT Network</li>
-<li>Bridged Adapter</li>
-<li>Internal Network</li>
-<li>Host-only Adapter</li>
-<li>Generic Driver</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>Not attached</th>
-<th>NAT</th>
-<th>NAT Network</th>
-<th>Bridged Adapter</th>
-<th>Internal Network</th>
-<th>Host-only Adapter</th>
-<th>Generic Driver</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Guest-&gt;Host</td>
-<td>×</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-<td>×</td>
-<td>√</td>
-<td>?</td>
-</tr>
-<tr>
-<td>Host-&gt;Guest</td>
-<td>×</td>
-<td>×</td>
-<td>×</td>
-<td>√</td>
-<td>×</td>
-<td>√</td>
-<td>?</td>
-</tr>
-<tr>
-<td>Guest&lt;-&gt;Other Guest</td>
-<td>×</td>
-<td>×</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-<td>?</td>
-</tr>
-<tr>
-<td>Guest-&gt;Other Host</td>
-<td>×</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-<td>×</td>
-<td>×</td>
-<td>?</td>
-</tr>
-<tr>
-<td>Other Host-&gt;Guest</td>
-<td>×</td>
-<td>×</td>
-<td>×</td>
-<td>√</td>
-<td>×</td>
-<td>×</td>
-<td>?</td>
-</tr>
-</tbody>
-</table>
-<p>以下假定Host位于一个192.168.1.0/24 ...</p></div>
-  <footer>
-    <a rel="full-article" href="http://blog.debao.me/zh/2011/11/networking-settings-in-virtualbox/">Read On &crarr;</a>
-  </footer>
-  		</article>
-  		<article>
-<header>
-      <h1 class="entry-title">
-        <a href="http://blog.debao.me/zh/2011/10/apache-config-basic/">Apache配置入门笔记</a>
-      </h1>
-    <p class="meta">
-<time datetime="2011-10-23T17:32:00+08:00" pubdate>2011-10-23(周日)</time>    </p>
-</header>
-
-  <div class="entry-content"><blockquote>
-<p>随便记录一下，不求严谨，但求无原则性错误。-- DebaoZhang 20111023</p>
-</blockquote>
-<p>Apache是一个http服务器，在无连接的时候，它除了监听配置文件中指定的IP地址和TCP端口号外不做任何工作；当一个请求出现在一个有效的端口时，Apache接受HTTP请求并分析其头部，然后它根据配置文件中设定的规则，做出某种合适的动作。</p>
-<p>Apache通过一个配置文件进行设置</p>
-<ul>
-<li>配置文件是编译期被指定的(通常叫 httpd.conf)</li>
-<li>
-<p>两个例子：</p>
-<ul>
-<li>C:\Program Files\Apache Software Foundation\Apache2.2\conf\httpd.conf</li>
-<li>/etc/apache2/apache2.conf</li>
-</ul>
-</li>
-<li>
-<p>可以通过命令行参数 -f 指定</p>
-</li>
-<li>配置文件内通过include可以包含其他的配置文件</li>
-</ul>
-<h2>绑定端口与虚拟主机</h2>
-<p>用 Listen 指定要绑定的端口号</p>
-<ul>
-<li>可以指定具体的IP</li>
-<li>
-<p>可以用多条命令指定多个端口号</p>
-<p>Listen 80
-Listen 127.0.0.1 ...</p></li></ul></div>
-  <footer>
-    <a rel="full-article" href="http://blog.debao.me/zh/2011/10/apache-config-basic/">Read On &crarr;</a>
-  </footer>
-  		</article>
-  		<article>
-<header>
-      <h1 class="entry-title">
-        <a href="http://blog.debao.me/zh/2011/04/how-does-signals-and-slots-work-in-qt/">用ISO C++实现自己的信号槽(Qt另类学习)</a>
-      </h1>
-    <p class="meta">
-<time datetime="2011-04-30T15:02:00+08:00" pubdate>2011-04-30(周六)</time>    </p>
-</header>
-
-  <div class="entry-content"><p>有网友抱怨：</p>
-<blockquote>
-<p>哪个大牛能帮帮我，讲解一下信号槽机制的底层实现？
-不要那种源码的解析，只要清楚的讲讲是怎么发送信号，怎么去选择相应的槽，再做出反应。也就是类似于一个信号槽的相应流程。。。求解啊！！！
-看了源码，真的是一头雾水。。。撞墙的心都有了~~~~ </p>
-</blockquote>
-<p><strong>本文使用 ISO C++ 一步一步实现了一个极度简化的信号与槽的系统 (整个程序4个文件共121行代码) 。希望能有助于刚进入Qt世界的C++用户理解Qt最核心的信号槽与元对象系统是如何工作的。</strong></p>
-<p>另：你可能会对 <a href="http://blog.debao.me/zh/2010/11/from-cpp-to-qt/">从 C++ 到 Qt</a>   一文感兴趣</p>
-<p>注：Qt5 已经引入一种全新的信号与槽的语法：信号可以和普通的函数、类的普通成员函数、lambda函数连接（而不再局限于信号函数和槽函数）。</p>
-<h2>Qt信号与槽</h2>
-<p>GUI程序中，当我们我们点击一个按钮时，我们会期待我们自定义的某个函数被调用。对此，较老的工具集(toolkits)都是通过回调函数(callback)来实现的，Qt的神奇之处就在于，它使用信号(signal)与槽(slot)的技术来取代了回调。</p>
-<p>在继续之前 ...</p></div>
-  <footer>
-    <a rel="full-article" href="http://blog.debao.me/zh/2011/04/how-does-signals-and-slots-work-in-qt/">Read On &crarr;</a>
-  </footer>
-  		</article>
 <div class="pagination">
     <a class="prev" href="http://blog.debao.me/index3.html">&larr; Older</a>
 
@@ -380,19 +291,19 @@ Listen 127.0.0.1 ...</p></li></ul></div>
     <h1>Recent Posts</h1>
     <ul id="recent_posts">
       <li class="post">
+          <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla-part2/">Joomla!笔记2</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla-extension/">Joomla!扩展笔记</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla/">Joomla!笔记</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2015/04/notes-on-mysql/">Notes on MySQL</a>
+      </li>
+      <li class="post">
           <a href="http://blog.debao.me/2015/04/install-mediawiki-on-windows/">Install MediaWiki on Windows</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/2015/04/install-bugzilla-on-windows/">Install Bugzilla on Windows</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/zh/2015/04/obligations-of-the-lgpl/">使用LGPL授权的Qt开发商用程序的注意事项</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/2015/04/hello-pelican/">Hello Pelican</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/2013/12/openssl-and-qt/">"Notes on OpenSSL and Qt"</a>
       </li>
     </ul>
   </section>
@@ -409,7 +320,7 @@ Listen 127.0.0.1 ...</p></li></ul></div>
 
   <section>
   <h1>Tags</h1>
-    <a href="http://blog.debao.me/tag/.html"></a>,    <a href="http://blog.debao.me/tag/qt4.html">Qt4</a>,    <a href="http://blog.debao.me/tag/zhong-wen.html">中文</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/c.html">C++</a>,    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
+    <a href="http://blog.debao.me/tag/.html"></a>,    <a href="http://blog.debao.me/tag/qt4.html">Qt4</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/c.html">C++</a>,    <a href="http://blog.debao.me/tag/joomla.html">Joomla</a>,    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
 
 
 

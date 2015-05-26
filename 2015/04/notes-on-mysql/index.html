@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Notes on MySQL &mdash; 1+1=10</title>
+  <meta name="author" content="Debao Zhang">
+
+  <link href="http://blog.debao.me/atom.xml" type="application/atom+xml" rel="alternate"
+        title="1+1=10 Atom Feed" />
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="http://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="http://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="http://blog.debao.me/">1+1=10</a></h1>
+    <h2>Debao's Blog...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="http://blog.debao.me/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+
+<ul class="main-navigation">
+      <li >
+        <a href="http://blog.debao.me/category/python.html">Python</a>
+      </li>
+      <li >
+        <a href="http://blog.debao.me/category/qt.html">Qt</a>
+      </li>
+      <li class="active">
+        <a href="http://blog.debao.me/category/tools.html">Tools</a>
+      </li>
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Notes on MySQL</h1>
+    <p class="meta">
+<time datetime="2015-04-25T13:33:00+08:00" pubdate>Sat, 25 Apr 2015</time>    </p>
+</header>
+
+  <div class="entry-content"><h2>MySQL vs mysql</h2>
+<ul>
+<li>MySQL ==&gt; the entire MySQL package<ul>
+<li>The MySQL server (mysqld)</li>
+<li>MySQL client programs</li>
+<li>MySQL client library</li>
+</ul>
+</li>
+<li>mysql ==&gt; a client program of the MySQL package<ul>
+<li>The MySQL Command-Line Tool</li>
+</ul>
+</li>
+</ul>
+<h2>Connecting to server</h2>
+<div class="highlight"><pre>shell&gt; mysql -h host -u user -p
+</pre></div>
+
+
+<p>If mysqld is running on the same machine:</p>
+<div class="highlight"><pre>shell&gt; mysql -u user -p
+</pre></div>
+
+
+<p>If mysqld is running on the same machine and permit anonymous users.</p>
+<div class="highlight"><pre>shell&gt; mysql
+</pre></div>
+
+
+<h3>Disconnecting from server</h3>
+<div class="highlight"><pre>mysql&gt; quit;
+</pre></div>
+
+
+<p>Note, semicolon of this command can be omitted.</p>
+<h2>Entering Queries</h2>
+<p>We can do some query operations even without any database to work with.</p>
+<div class="highlight"><pre>mysql&gt; select version(), current_date, (4+1)*5, user();
++-------------------------+--------------+---------+----------------+
+| version()               | current_date | (4+1)*5 | user()         |
++-------------------------+--------------+---------+----------------+
+| 5.5.43-0ubuntu0.14.04.1 | 2015-04-05   |      25 | root@localhost |
++-------------------------+--------------+---------+----------------+
+1 row in set (0.00 sec)
+</pre></div>
+
+
+<p>Type <code>\c</code> if we want to cancel current command.</p>
+<div class="highlight"><pre>mysql&gt; select user() \c
+</pre></div>
+
+
+<h3>Meaning of prompts</h3>
+<table>
+<thead>
+<tr>
+<th>Prompt</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mysql&gt;</td>
+<td>Ready for new command.</td>
+</tr>
+<tr>
+<td><code>-&gt;</code></td>
+<td>Waiting for next line of multiple-line command.</td>
+</tr>
+<tr>
+<td><code>'&gt;</code></td>
+<td>Waiting for next line, waiting for completion of a string that began with a single quote (').</td>
+</tr>
+<tr>
+<td><code>"</code>&gt;</td>
+<td>Waiting for next line, waiting for completion of a string that began with a double quote (").</td>
+</tr>
+<tr>
+<td><code>`&gt;</code></td>
+<td>Waiting for next line, waiting for completion of an identifier that began with a backtick (`).</td>
+</tr>
+<tr>
+<td><code>/*&gt;</code></td>
+<td>Waiting for next line, waiting for completion of a comment that began with <code>/*</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2>Creating and Selecting a Database</h2>
+<p>Creating a database called db_debao</p>
+<div class="highlight"><pre>mysql&gt; create database db_debao;
+Query OK, 1 row affected (0.05 sec)
+</pre></div>
+
+
+<p>View databases</p>
+<div class="highlight"><pre>mysql&gt; show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| db_debao           |
+| mysql              |
+| performance_schema |
++--------------------+
+4 rows in set (0.00 sec)
+</pre></div>
+
+
+<p>Create a database does not select it for use, so we must make it the current
+database explicitly.(Note, semicolon of this command can be omitted.)</p>
+<div class="highlight"><pre>mysql&gt; use db_debao
+Database changed
+</pre></div>
+
+
+<p>To find out which database currently used</p>
+<div class="highlight"><pre>mysql&gt; select database();
++------------+
+| database() |
++------------+
+| db_debao   |
++------------+
+1 row in set (0.00 sec)
+</pre></div>
+
+
+<p><strong>Important Note</strong>, this database is created by the root and will not be accessible to any other user unless permitted by the root.
+The following command will create a new user call "test" on localhost with the password "password".</p>
+<div class="highlight"><pre>mysql&gt; grant all on db_debao.* to test@localhost identified by &quot;password&quot;;
+Query OK, 0 rows affected (1.79 sec)
+</pre></div>
+
+
+<h2>Create a Table</h2>
+<p>List tables in current database</p>
+<div class="highlight"><pre>mysql&gt; show tables;
+Empty set (0.00 sec)
+</pre></div>
+
+
+<p>Create a table called <code>pet</code> with three columns: name, sex, birth</p>
+<div class="highlight"><pre>mysql&gt; create table pet (name varchar(20), sex char(1), birth DATE);
+Query OK, 0 rows affected (0.19 sec)
+</pre></div>
+
+
+<p>View tables now</p>
+<div class="highlight"><pre>mysql&gt; show tables;
++--------------------+
+| Tables_in_db_debao |
++--------------------+
+| pet                |
++--------------------+
+1 row in set (0.00 sec)
+</pre></div>
+
+
+<p><code>describe</code> can be called at any time to view table column names and types.    </p>
+<div class="highlight"><pre>mysql&gt; describe pet;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| name  | varchar(20) | YES  |     | NULL    |       |
+| sex   | char(1)     | YES  |     | NULL    |       |
+| birth | date        | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+</pre></div>
+
+
+<h2>Loading Data into a Table</h2>
+<p>The <code>load_data</code> and <code>insert</code> can be used for this task.</p>
+<p>Create a plain text file called pet_raw_txt:</p>
+<div class="highlight"><pre>at1    f       2015-01-01
+cat2    m       2015-02-02
+cat3    \N      2015-03-03
+cat4    f       \N
+</pre></div>
+
+
+<p>Try load this file:</p>
+<div class="highlight"><pre>mysql&gt; load data local infile &#39;~/pet_raw.txt&#39; into table pet;
+ERROR 1148 (42000): The used command is not allowed with this MySQL version
+</pre></div>
+
+
+<p>How to fix this? Add the <code>--local-infile=1</code> option when start mysql</p>
+<div class="highlight"><pre><span class="nv">$ </span>mysql --local-infile<span class="o">=</span><span class="m">1</span>  -u root -p
+mysql&gt; use db_debao
+mysql&gt; load data <span class="nb">local </span>infile <span class="s1">&#39;~/pet_raw.txt&#39;</span> into table pet<span class="p">;</span>
+Query OK, <span class="m">4</span> rows affected <span class="o">(</span>0.06 sec<span class="o">)</span>
+Records: <span class="m">4</span>  Deleted: <span class="m">0</span>  Skipped: <span class="m">0</span>  Warnings: 0
+</pre></div>
+
+
+<p>If we use insert instead of load data</p>
+<div class="highlight"><pre>mysql&gt; insert into pet values (&#39;dog1&#39;, &#39;f&#39;, &#39;2015-04-01&#39;);
+Query OK, 1 row affected (0.11 sec)
+mysql&gt; insert into pet values (&#39;dog2&#39;, &#39;f&#39;, NULL);
+Query OK, 1 row affected (0.05 sec)
+</pre></div>
+
+
+<p>If we want to empty the table pet:</p>
+<div class="highlight"><pre>mysql&gt; delete from pet;
+</pre></div>
+
+
+<h2>Retrieving Information from a Table</h2>
+<p>Selecting all data</p>
+<div class="highlight"><pre>mysql&gt; select * from pet;
++------+------+------------+
+| name | sex  | birth      |
++------+------+------------+
+| cat1 | f    | 2015-01-01 |
+| cat2 | m    | 2015-02-02 |
+| cat3 | NULL | 2015-03-03 |
+| cat4 | f    | NULL       |
+| dog1 | f    | 2015-04-01 |
+| dog2 | f    | NULL       |
++------+------+------------+
+6 rows in set (1.13 sec)
+</pre></div>
+
+
+<p>If we want to change something, <code>update</code> can be used.</p>
+<div class="highlight"><pre>mysql&gt; update pet set birth = &#39;2015-04-02&#39; where name = &#39;dog2&#39;;
+Query OK, 1 row affected (0.08 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+</pre></div>
+
+
+<p>Selecting particular rows:</p>
+<div class="highlight"><pre>mysql&gt; select * from pet where birth &gt;= &#39;2015-03-01&#39;;
++------+------+------------+
+| name | sex  | birth      |
++------+------+------------+
+| cat3 | NULL | 2015-03-03 |
+| dog1 | f    | 2015-04-01 |
+| dog2 | f    | 2015-04-02 |
++------+------+------------+
+3 rows in set (0.02 sec)
+</pre></div>
+
+
+<p>Selecting particular columns:</p>
+<div class="highlight"><pre>mysql&gt; select name, birth from pet;
++------+------------+
+| name | birth      |
++------+------------+
+| cat1 | 2015-01-01 |
+| cat2 | 2015-02-02 |
+| cat3 | 2015-03-03 |
+| cat4 | NULL       |
+| dog1 | 2015-04-01 |
+| dog2 | 2015-04-02 |
++------+------------+
+6 rows in set (0.00 sec)
+</pre></div>
+
+
+<p>Pattern Matching:</p>
+<div class="highlight"><pre>mysql&gt; select name, birth from pet where name like &#39;cat%&#39;;
++------+------------+
+| name | birth      |
++------+------------+
+| cat1 | 2015-01-01 |
+| cat2 | 2015-02-02 |
+| cat3 | 2015-03-03 |
+| cat4 | NULL       |
++------+------------+
+4 rows in set (0.00 sec)
+</pre></div>
+
+
+<p>Sorting rows: (order by)</p>
+<div class="highlight"><pre>mysql&gt; select name, birth from pet order by birth;
++------+------------+
+| name | birth      |
++------+------------+
+| cat4 | NULL       |
+| cat1 | 2015-01-01 |
+| cat2 | 2015-02-02 |
+| cat3 | 2015-03-03 |
+| dog1 | 2015-04-01 |
+| dog2 | 2015-04-02 |
++------+------------+
+6 rows in set (0.00 sec)
+</pre></div>
+
+
+<h2>Reference</h2>
+<ul>
+<li>http://dev.mysql.com/doc/refman/5.6/en/index.html</li>
+<li>http://www.webdevelopersnotes.com/tutorials/sql/mysql_database_introduction_mysql_beginners_tutorial.php3</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2015-04-25T13:33:00+08:00" pubdate>Sat, 25 Apr 2015</time>  <span class="categories">
+    <a class='category' href='http://blog.debao.me/category/tools.html'>tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="http://blog.debao.me/tag/.html"></a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla-part2/">Joomla!笔记2</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla-extension/">Joomla!扩展笔记</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla/">Joomla!笔记</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2015/04/notes-on-mysql/">Notes on MySQL</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2015/04/install-mediawiki-on-windows/">Install MediaWiki on Windows</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="http://blog.debao.me/category/python.html">python</a></li>
+        <li><a href="http://blog.debao.me/category/qt.html">Qt</a></li>
+        <li><a href="http://blog.debao.me/category/tools.html">tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="http://blog.debao.me/tag/.html"></a>,    <a href="http://blog.debao.me/tag/qt4.html">Qt4</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/c.html">C++</a>,    <a href="http://blog.debao.me/tag/joomla.html">Joomla</a>,    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
+
+
+
+  <section>
+    <h1>GitHub Repos</h1>
+    <ul id="gh_repos">
+      <li class="loading">Status updating...</li>
+    </ul>
+    <script type="text/javascript">
+      $.domReady(function(){
+          if (!window.jXHR){
+              var jxhr = document.createElement('script');
+              jxhr.type = 'text/javascript';
+              jxhr.src = 'http://blog.debao.me/theme/js/jXHR.js';
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(jxhr, s);
+          }
+
+          github.showRepos({
+              user: 'dbzhang800',
+              count: 5,
+              skip_forks: true,
+              target: '#gh_repos'
+          });
+      });
+    </script>
+    <script src="http://blog.debao.me/theme/js/github.js" type="text/javascript"> </script>
+  </section>
+
+    <section>
+        <h1>Blogroll</h1>
+        <ul>
+            <li><a href="http://getpelican.com/" target="_blank">Pelican</a></li>
+            <li><a href="http://python.org/" target="_blank">Python.org</a></li>
+            <li><a href="http://jinja.pocoo.org/" target="_blank">Jinja2</a></li>
+            <li><a href="http://github.com" target="_blank">Github</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2015  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="http://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="http://blog.debao.me/theme/js/ender.js"></script>
+  <script src="http://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var disqus_shortname = 'github800';
+    var disqus_identifier = '/2015/04/notes-on-mysql/';
+    var disqus_url = 'http://blog.debao.me/2015/04/notes-on-mysql/';
+    var disqus_title = 'Notes on MySQL';
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = "//" + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+  </script>
+</body>
+</html>

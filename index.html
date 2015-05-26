@@ -23,10 +23,6 @@
   <link href="http://blog.debao.me/theme/css/main.css" media="screen, projection"
         rel="stylesheet" type="text/css">
 
-  <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic"
-        rel="stylesheet" type="text/css">
-  <link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic"
-        rel="stylesheet" type="text/css">
 </head>
 
 <body>
@@ -53,6 +49,118 @@
   <div id="main">
     <div id="content">
 <div class="blog-index">
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla-part2/">Joomla!笔记2</a>
+      </h1>
+    <p class="meta">
+<time datetime="2015-06-22T15:27:00+08:00" pubdate>2015-06-22(周一)</time>    </p>
+</header>
+
+  <div class="entry-content"><h2>隐藏Joomla相关信息</h2>
+<p>为了避免被攻击，我们可能不想让别人知道自己使用的是Joomla!。</p>
+<h3>网站URL...</h3>
+<p>Joomla后台提供了一定的SEO设置功能，使得我们能将</p>
+<div class="highlight"><pre>http://example.com/index.php?option=com_content&amp;view=article&amp;id=3&amp;Itemid=117
+</pre></div>
+
+
+<p>变成</p>
+<div class="highlight"><pre>http://example.com/aaaa/bbb.html
+</pre></div>
+
+
+<p>这种样子。但是其他人仍然能通过原始形式进行访问。比如通过下面的URL访问登录界面</p>
+<div class="highlight"><pre>http://example.com/component/users
+http://example.com/?option=com_users
+</pre></div>
+
+
+<p>JoomSEF 和 sh404SEF 似乎能解决这种问题（没有试过，以后慢慢看）。</p>
+<h3>meta generator</h3>
+<p>Joomla! 建的网站，源码中会包含类似下面的meta信息 ...</p></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/zh/2015/06/notes-on-joomla-part2/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla-extension/">Joomla!扩展笔记</a>
+      </h1>
+    <p class="meta">
+<time datetime="2015-06-18T15:57:00+08:00" pubdate>2015-06-18(周四)</time>    </p>
+</header>
+
+  <div class="entry-content"><p>Joomla! 的扩展分：组件、模块、插件、模板</p>
+<p>简单了解一下</p>
+<h2>组件(Component)</h2>
+<p>组件是Joomla!的一种扩展，是Joomla!的主要功能单元。大部分组件都包含administrator和site两部分，它们分别装在Joomla!根目录下的 administrator/components 和 components目录中。</p>
+<p>当用户通过类似如下的<code>http://example.com/index.php?option=com_&lt;name&gt;</code>的url请求页面时，Joomla!平台将试图加载组件文件<code>components/com_&lt;name&gt;/&lt;name&gt;.php</code>。在该文件中，可以决定：直接返回HTML代码，还是使用模型-视图-控制器(MVC)模式。</p>
+<p>组件的控制流程见 <a href="https://docs.joomla.org/Component_Program_Flow">Component_Program_Flow</a> 。</p>
+<h3>Old-Flat-Model(直接返回HTML代码)</h3>
+<p>假定我们创建一个名为 hello 的组件 ...</p></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/zh/2015/06/notes-on-joomla-extension/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla/">Joomla!笔记</a>
+      </h1>
+    <p class="meta">
+<time datetime="2015-06-04T13:50:00+08:00" pubdate>2015-06-04(周四)</time>    </p>
+</header>
+
+  <div class="entry-content"><h2>问题</h2>
+<h3>googleapis.com 加载问题</h3>
+<p>不少扩展都使用了 googleapis.com 中的 fonts 和 jQuery ，而google的服务在国内无法访问。需要换成360提供的镜像 http://libs.useso.com/  </p>
+<p>NoNumber ReReplacer 比较好的解决这个问题。</p>
+<p>创建两条规则：</p>
+<ul>
+<li>用 ajax.useso.com 替换 ajax.googleapis.com</li>
+<li>用 fonts.useso.com 替换 fonts.googleapis.com</li>
+</ul>
+<p>如果模板用的 https 而不是 http。 用 http://fonts.useso.com 替换 https://fonts.googleapis ...</p></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/zh/2015/06/notes-on-joomla/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="http://blog.debao.me/2015/04/notes-on-mysql/">Notes on MySQL</a>
+      </h1>
+    <p class="meta">
+<time datetime="2015-04-25T13:33:00+08:00" pubdate>Sat, 25 Apr 2015</time>    </p>
+</header>
+
+  <div class="entry-content"><h2>MySQL vs mysql</h2>
+<ul>
+<li>MySQL ==&gt; the entire MySQL package<ul>
+<li>The MySQL server (mysqld)</li>
+<li>MySQL client programs</li>
+<li>MySQL client library</li>
+</ul>
+</li>
+<li>mysql ==&gt; a client program of the MySQL package<ul>
+<li>The MySQL Command-Line Tool</li>
+</ul>
+</li>
+</ul>
+<h2>Connecting to server</h2>
+<div class="highlight"><pre>shell&gt; mysql -h host -u user -p
+</pre></div>
+
+
+<p>If mysqld is running on the same machine:</p>
+<div class="highlight"><pre>shell&gt; mysql ...</pre></div></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/2015/04/notes-on-mysql/">Read On &crarr;</a>
+  </footer>
+  		</article>
   		<article>
 <header>
       <h1 class="entry-title">
@@ -193,94 +301,6 @@
     <a rel="full-article" href="http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-2/">Read On &crarr;</a>
   </footer>
   		</article>
-  		<article>
-<header>
-      <h1 class="entry-title">
-        <a href="http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-1/">"How to use QThread in the right way (Part 1)"</a>
-      </h1>
-    <p class="meta">
-<time datetime="2013-08-05T17:34:00+08:00" pubdate>Mon, 05 Aug 2013</time>    </p>
-</header>
-
-  <div class="entry-content"><h2>A short history</h2>
-<p>Long long ago, <strong>subclass QThread and reimplement its run() function</strong> is the only recommended way of using QThread. This is rather intuitive and easy to used. But when SLOTS and Qt event loop are used in the worker thread, some users <a href="http://blog.qt.digia.com/blog/2010/06/17/youre-doing-it-wrong/">do it wrong</a>. So Bradley T ...</p></div>
-  <footer>
-    <a rel="full-article" href="http://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-1/">Read On &crarr;</a>
-  </footer>
-  		</article>
-  		<article>
-<header>
-      <h1 class="entry-title">
-        <a href="http://blog.debao.me/2013/07/left-shift-operator-overloading-for-qdebug/">"left shift operator overloading for QDebug()"</a>
-      </h1>
-    <p class="meta">
-<time datetime="2013-07-16T10:04:00+08:00" pubdate>Tue, 16 Jul 2013</time>    </p>
-</header>
-
-  <div class="entry-content"><p>Consider that we have create a custom type:</p>
-<div class="highlight"><pre><span class="k">struct</span> <span class="n">Point</span>
-<span class="p">{</span>
-<span class="n">Point</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span><span class="p">)</span><span class="o">:</span><span class="n">x</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">y</span><span class="p">(</span><span class="n">y</span><span class="p">){}</span>
-<span class="kt">int</span> <span class="n">x</span><span class="p">;</span>
-<span class="kt">int</span> <span class="n">y</span><span class="p">;</span>
-<span class="p">};</span>
-</pre></div>
-
-
-<p>If we want to make it work with qDebug(), we need to implement a streaming operator:</p>
-<div class="highlight"><pre><span class="n">QDebug</span> <span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">QDebug</span> <span class="n">dbg</span><span class="p">,</span> <span class="k">const</span> <span class="n">Point</span> <span class="o">&amp;</span><span class="n">p</span><span class="p">)</span>
-</pre></div>
-
-
-<p>But, wait ...</p>
-<p>When we ...</p></div>
-  <footer>
-    <a rel="full-article" href="http://blog.debao.me/2013/07/left-shift-operator-overloading-for-qdebug/">Read On &crarr;</a>
-  </footer>
-  		</article>
-  		<article>
-<header>
-      <h1 class="entry-title">
-        <a href="http://blog.debao.me/2013/07/link-confilict-between-sdl-and-qt-under-windows/">"Link Confilict between SDL and Qt under Windows"</a>
-      </h1>
-    <p class="meta">
-<time datetime="2013-07-09T09:22:00+08:00" pubdate>Tue, 09 Jul 2013</time>    </p>
-</header>
-
-  <div class="entry-content"><p>Someone complain that, when using SDL and Qt in the same project under Windows, the linker will generate link error.</p>
-<blockquote>
-<p>SDLmain.lib(SDL_win32_main.obj):-1: error: LNK2005: _WinMain@16 already defined in qtmaind.lib(qtmain_win.obj)</p>
-</blockquote>
-<p>What happened behined this?</p>
-<div class="highlight"><pre><span class="cp">#include &lt;QApplication&gt;</span>
-<span class="cp">#include &lt;SDL.h&gt;</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char ...</span></pre></div></div>
-  <footer>
-    <a rel="full-article" href="http://blog.debao.me/2013/07/link-confilict-between-sdl-and-qt-under-windows/">Read On &crarr;</a>
-  </footer>
-  		</article>
-  		<article>
-<header>
-      <h1 class="entry-title">
-        <a href="http://blog.debao.me/2013/07/redirect-current-processs-stdout-to-a-widget-such-as-qtextedit/">"Redirect current process's stdout to a Widget such as QTextEdit"</a>
-      </h1>
-    <p class="meta">
-<time datetime="2013-07-05T17:26:00+08:00" pubdate>Fri, 05 Jul 2013</time>    </p>
-</header>
-
-  <div class="entry-content"><p>Note: </p>
-<ul>
-<li>Source code can be got from https://github.com/dbzhang800/StdoutRedirector</li>
-<li>This class can only be used in Qt5, as QWindowsPipeReader which is introduced in Qt5.0 is used.</li>
-</ul>
-<h2>Implementation</h2>
-<h3>Windows</h3>
-<ul>
-<li>Normally, we need to create pipe with CreatePipe(), then attach stdout to it's write end with SetStdHandle ...</li></ul></div>
-  <footer>
-    <a rel="full-article" href="http://blog.debao.me/2013/07/redirect-current-processs-stdout-to-a-widget-such-as-qtextedit/">Read On &crarr;</a>
-  </footer>
-  		</article>
 <div class="pagination">
     <a class="prev" href="http://blog.debao.me/index2.html">&larr; Older</a>
 
@@ -291,19 +311,19 @@
     <h1>Recent Posts</h1>
     <ul id="recent_posts">
       <li class="post">
+          <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla-part2/">Joomla!笔记2</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla-extension/">Joomla!扩展笔记</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla/">Joomla!笔记</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2015/04/notes-on-mysql/">Notes on MySQL</a>
+      </li>
+      <li class="post">
           <a href="http://blog.debao.me/2015/04/install-mediawiki-on-windows/">Install MediaWiki on Windows</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/2015/04/install-bugzilla-on-windows/">Install Bugzilla on Windows</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/zh/2015/04/obligations-of-the-lgpl/">使用LGPL授权的Qt开发商用程序的注意事项</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/2015/04/hello-pelican/">Hello Pelican</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/2013/12/openssl-and-qt/">"Notes on OpenSSL and Qt"</a>
       </li>
     </ul>
   </section>
@@ -320,7 +340,7 @@
 
   <section>
   <h1>Tags</h1>
-    <a href="http://blog.debao.me/tag/.html"></a>,    <a href="http://blog.debao.me/tag/qt4.html">Qt4</a>,    <a href="http://blog.debao.me/tag/zhong-wen.html">中文</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/c.html">C++</a>,    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
+    <a href="http://blog.debao.me/tag/.html"></a>,    <a href="http://blog.debao.me/tag/qt4.html">Qt4</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/c.html">C++</a>,    <a href="http://blog.debao.me/tag/joomla.html">Joomla</a>,    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
 
 
 

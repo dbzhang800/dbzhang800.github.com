@@ -25,10 +25,6 @@
   <link href="http://blog.debao.me/theme/css/main.css" media="screen, projection"
         rel="stylesheet" type="text/css">
 
-  <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic"
-        rel="stylesheet" type="text/css">
-  <link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic"
-        rel="stylesheet" type="text/css">
 </head>
 
 <body>
@@ -85,12 +81,13 @@
 <p>用 Listen 指定要绑定的端口号</p>
 <ul>
 <li>可以指定具体的IP</li>
-<li>
-<p>可以用多条命令指定多个端口号</p>
-<p>Listen 80
+<li>可以用多条命令指定多个端口号<div class="highlight"><pre>Listen 80
 Listen 127.0.0.1:8080
 Listen 10.0.2.15:8081
-Listen [fe80::222:5fff:feb9:82d0]:8888</p>
+Listen [fe80::222:5fff:feb9:82d0]:8888
+</pre></div>
+
+
 </li>
 </ul>
 <p>不同的IP和端口组合可以用来做虚拟主机，这需要通过VirtualHost进一步配置(必须先用Listen设置监听地址)</p>
@@ -352,19 +349,19 @@ AddHandler cgi-script .py
     <h1>Recent Posts</h1>
     <ul id="recent_posts">
       <li class="post">
+          <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla-part2/">Joomla!笔记2</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla-extension/">Joomla!扩展笔记</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/zh/2015/06/notes-on-joomla/">Joomla!笔记</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2015/04/notes-on-mysql/">Notes on MySQL</a>
+      </li>
+      <li class="post">
           <a href="http://blog.debao.me/2015/04/install-mediawiki-on-windows/">Install MediaWiki on Windows</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/2015/04/install-bugzilla-on-windows/">Install Bugzilla on Windows</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/zh/2015/04/obligations-of-the-lgpl/">使用LGPL授权的Qt开发商用程序的注意事项</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/2015/04/hello-pelican/">Hello Pelican</a>
-      </li>
-      <li class="post">
-          <a href="http://blog.debao.me/2013/12/openssl-and-qt/">"Notes on OpenSSL and Qt"</a>
       </li>
     </ul>
   </section>
@@ -381,7 +378,7 @@ AddHandler cgi-script .py
 
   <section>
   <h1>Tags</h1>
-    <a href="http://blog.debao.me/tag/.html"></a>,    <a href="http://blog.debao.me/tag/qt4.html">Qt4</a>,    <a href="http://blog.debao.me/tag/zhong-wen.html">中文</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/c.html">C++</a>,    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
+    <a href="http://blog.debao.me/tag/.html"></a>,    <a href="http://blog.debao.me/tag/qt4.html">Qt4</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/c.html">C++</a>,    <a href="http://blog.debao.me/tag/joomla.html">Joomla</a>,    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
 
 
 

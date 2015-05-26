@@ -4,7 +4,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Install Bugzilla on Windows &mdash; 1+1=10</title>
+  <title>Mercurial小记 &mdash; 1+1=10</title>
   <meta name="author" content="Debao Zhang">
 
   <link href="http://blog.debao.me/atom.xml" type="application/atom+xml" rel="alternate"
@@ -53,112 +53,69 @@
 <div>
   <article class="hentry" role="article">
 <header>
-      <h1 class="entry-title">Install Bugzilla on Windows</h1>
+      <h1 class="entry-title">Mercurial小记</h1>
     <p class="meta">
-<time datetime="2015-04-23T10:11:00+08:00" pubdate>Thu, 23 Apr 2015</time>    </p>
+<time datetime="2010-09-28T06:58:00+08:00" pubdate>Tue, 28 Sep 2010</time>    </p>
 </header>
 
-  <div class="entry-content"><p>According to the <a href="http://bugzilla.readthedocs.org/en/5.0/installing/windows.html">documentation</a> of Bugzilla 5.0, the following applications should be installed first:</p>
+  <div class="entry-content"><p>Mercurial 是一个分布式的源代码</p>
+<h2>配置文件</h2>
+<p>位于：<code>~/.hgrc</code> 或 <code>%USERPROFILE%\Mercurial.ini</code></p>
+<p>首先配置用户名(注意格式，这样，google code等会为我们将email地址隐藏掉)：</p>
+<div class="highlight"><pre><span class="k">[ui]</span>
+<span class="na">username</span> <span class="o">=</span> <span class="s">John Doe &lt;john@example.com&gt;</span>
+</pre></div>
+
+
+<p>记住用户名和密码：</p>
+<div class="highlight"><pre><span class="k">[auth]</span>
+<span class="na">example.prefix</span> <span class="o">=</span> <span class="s">https://hg.example.net/</span>
+<span class="na">example.username</span> <span class="o">=</span> <span class="s">foo</span>
+<span class="na">example.password</span> <span class="o">=</span> <span class="s">bar</span>
+</pre></div>
+
+
+<h2>操作</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Mercurial</th>
+<th>Subversion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>仓库克隆</td>
+<td>hg clone url dir</td>
+<td>svn co url dir</td>
+</tr>
+<tr>
+<td>创建</td>
+<td>hg init</td>
+<td>svnadmin create dir</td>
+</tr>
+<tr>
+<td>提交到远端</td>
+<td>hg commit <BR/> hg push</td>
+<td>svn commit</td>
+</tr>
+<tr>
+<td>更新</td>
+<td>hg pull <BR/> hg update</td>
+<td>svn update</td>
+</tr>
+<tr>
+<td>获取版本号</td>
+<td>hg -q id <BR/> hg parent</td>
+<td>svnversion -n</td>
+</tr>
+</tbody>
+</table>
+<h2>参考</h2>
 <ul>
-<li>ActiveState Perl 5.18.2 (5.12.4 or higher)</li>
-<li>Apache 2.4 (2.2.x or higher)</li>
-<li>MySql 5.6 (5.0.15 or higher)</li>
-</ul>
-<h2>Download Bugzilla</h2>
-<div class="highlight"><pre>git clone --branch 5.0 https://git.mozilla.org/bugzilla/bugzilla bugzilla
-</pre></div>
-
-
-<p>or (when 5.0 is released)</p>
-<div class="highlight"><pre>git clone --branch bugzilla-5.0-stable https://git.mozilla.org/bugzilla/bugzilla bugzilla
-</pre></div>
-
-
-<h2>Install required perl modules</h2>
-<div class="highlight"><pre>ppm install CGI.pm Digest-SHA TimeDate DateTime DateTime-TimeZone DBI Template-Toolkit Email-Sender Email-MIME URI List-MoreUtils Math-Random-ISAAC File-Slurp JSON-XS Win32 Win32-API DBD-mysql DateTime::TimeZone::Local::Win32
-</pre></div>
-
-
-<p>Note, Don't forget <code>DateTime::TimeZone::Local::Win32</code>, otherwise, following error will occur when we try to use bugzilla.</p>
-<p>The following modules are needed if want to use bugzilla to sent mails through smtp.</p>
-<div class="highlight"><pre>ppm install Authen-SASL Net-SMTP-SSL
-</pre></div>
-
-
-<blockquote>
-<p>Cannot determine local time zone   </p>
-</blockquote>
-<h2>MySQL Configuration</h2>
-<h3>Add a user</h3>
-<p>Connect to mysqld</p>
-<div class="highlight"><pre>mysql -u root -p
-</pre></div>
-
-
-<p>Then add a new user call <strong>bugs</strong></p>
-<div class="highlight"><pre>GRANT SELECT, INSERT,
-UPDATE, DELETE, INDEX, ALTER, CREATE, LOCK TABLES,
-CREATE TEMPORARY TABLES, DROP, REFERENCES ON bugs.*
-TO bugs@localhost IDENTIFIED BY &#39;mypassword&#39;;
-
-FLUSH PRIVILEGES;
-</pre></div>
-
-
-<h3>Configuration File</h3>
-<p>On my system, the conf file is at <code>C:\ProgramData\MySQL\MySQL Server 5.6\my.ini</code></p>
-<p>Add following lines</p>
-<div class="highlight"><pre><span class="k">[mysqld]</span>
-<span class="c1"># Allow packets up to 16M</span>
-<span class="na">max_allowed_packet</span><span class="o">=</span><span class="s">16M</span>
-<span class="c1"># Allow small words in full-text indexes</span>
-<span class="na">ft_min_word_len</span><span class="o">=</span><span class="s">2</span>
-</pre></div>
-
-
-<h2>Apache Configuration</h2>
-<ul>
-<li>Enable CGI Support by uncommenting following line</li>
-</ul>
-<div class="highlight"><pre>    AddHandler cgi-script .cgi
-</pre></div>
-
-
-<ul>
-<li>Config Bugzilla</li>
-</ul>
-<div class="highlight"><pre>    Alias &quot;/bugzilla&quot; &quot;d:/www/Bugzilla&quot;
-    <span class="nt">&lt;Directory</span> <span class="err">&quot;d:/www/Bugzilla&quot;</span><span class="nt">&gt;</span>
-        ScriptInterpreterSource Registry-Strict
-        Options +ExecCGI +FollowSymLinks
-        DirectoryIndex index.cgi index.html
-        AllowOverride Limit FileInfo Indexes Options
-        Require all granted
-    <span class="nt">&lt;/Directory&gt;</span>
-</pre></div>
-
-
-<p>Note: </p>
-<blockquote>
-<p>In order for ScriptInterpreterSource Registry-Strict to work, create a key HKEY_CLASSES_ROOT.cgi\Shell\ExecCGI\Command with the default value of the full path of perl.exe with a -T parameter. For example C:\Perl64\bin\perl.exe -T.</p>
-</blockquote>
-<h2>checksetup.pl</h2>
-<ul>
-<li>Run checksetup.pl to generate <code>localconfig</code> file.</li>
-</ul>
-<p>Edit the <code>localconfig</code> file, in our case, only <code>$db_pass</code> is needed.</p>
-<ul>
-<li>Run checksetup.pl again</li>
-</ul>
-<p>Database tables will be created.</p>
-<p>Administrator account (user name and password) will be created at the same time.</p>
-<h2>OK</h2>
-<p><code>http://127.0.0.1/bugzilla</code> should works now.</p>
-<h2>Links</h2>
-<ul>
-<li>http://bugzilla.readthedocs.org/en/5.0/installing/windows.html</li>
-<li>http://search.cpan.org/dist/DateTime-TimeZone/lib/DateTime/TimeZone.pm</li>
-<li>http://www.cnblogs.com/mr-wid/archive/2013/05/09/3068229.html</li>
+<li>http://mercurial.selenic.com/wiki/QuickStart</li>
+<li>http://mercurial.selenic.com/wiki/FAQ</li>
 </ul></div>
     <footer>
 <p class="meta">
@@ -167,7 +124,7 @@ FLUSH PRIVILEGES;
         Debao Zhang
     </span>
   </span>
-<time datetime="2015-04-23T10:11:00+08:00" pubdate>Thu, 23 Apr 2015</time>  <span class="categories">
+<time datetime="2010-09-28T06:58:00+08:00" pubdate>Tue, 28 Sep 2010</time>  <span class="categories">
     <a class='category' href='http://blog.debao.me/category/tools.html'>tools</a>
   </span>
   <span class="categories">
@@ -266,9 +223,9 @@ FLUSH PRIVILEGES;
   <script src="http://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
   <script type="text/javascript">
     var disqus_shortname = 'github800';
-    var disqus_identifier = '/2015/04/install-bugzilla-on-windows/';
-    var disqus_url = 'http://blog.debao.me/2015/04/install-bugzilla-on-windows/';
-    var disqus_title = 'Install Bugzilla on Windows';
+    var disqus_identifier = '/2010/09/mercurial-note/';
+    var disqus_url = 'http://blog.debao.me/2010/09/mercurial-note/';
+    var disqus_title = 'Mercurial小记';
     (function() {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
       dsq.src = "//" + disqus_shortname + '.disqus.com/embed.js';

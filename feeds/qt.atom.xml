@@ -81,7 +81,7 @@
 &lt;li&gt;
 &lt;p&gt;http://bbs.csdn.net/topics/350224093&lt;/p&gt;
 &lt;/li&gt;
-&lt;/ul&gt;</summary><category term="中文"></category></entry><entry><title>"Notes on OpenSSL and Qt"</title><link href="http://blog.debao.me/2013/12/openssl-and-qt/" rel="alternate"></link><updated>2013-12-06T16:55:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2013-12-06:2013/12/openssl-and-qt/</id><summary type="html">&lt;ul&gt;
+&lt;/ul&gt;</summary></entry><entry><title>"Notes on OpenSSL and Qt"</title><link href="http://blog.debao.me/2013/12/openssl-and-qt/" rel="alternate"></link><updated>2013-12-06T16:55:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2013-12-06:2013/12/openssl-and-qt/</id><summary type="html">&lt;ul&gt;
 &lt;li&gt;Libraries name of openssl?&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;The "library" portion of OpenSSL consists of two libraries.&lt;/p&gt;
@@ -1996,7 +1996,7 @@ g++ main.cpp object.cpp db_object.cpp -o dbzhang800
 &lt;p&gt;好了，忙到下午终于把昨天冒出来的这个想法付诸实施了，希望五一之后，生活会精彩一点。dbzhang800 2011.04.30&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;注：本文最早发布在CSDN，相关内容以后会逐步转移到blog.debao.me中。dbzhang800 2015.04.29&lt;/p&gt;
-&lt;/blockquote&gt;</summary><category term="Qt4"></category><category term="C++"></category><category term="中文"></category></entry><entry><title>从C++到Qt</title><link href="http://blog.debao.me/zh/2010/11/from-cpp-to-qt/" rel="alternate"></link><updated>2010-11-05T16:35:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2010-11-05:zh/2010/11/from-cpp-to-qt/</id><summary type="html">&lt;blockquote&gt;
+&lt;/blockquote&gt;</summary><category term="Qt4"></category><category term="C++"></category></entry><entry><title>从C++到Qt</title><link href="http://blog.debao.me/zh/2010/11/from-cpp-to-qt/" rel="alternate"></link><updated>2010-11-05T16:35:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2010-11-05:zh/2010/11/from-cpp-to-qt/</id><summary type="html">&lt;blockquote&gt;
 &lt;p&gt;原文发布在&lt;a href="http://hi.baidu.com/dbzhang800/item/7ee28d10522e91eb9913d648"&gt;百度空间&lt;/a&gt;，但由于百度空间屡次改版，越改越差，以至于有关闭可能，故而转移到此 http://blog.debao.me&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;Qt 是 C++ 的库，Qt 在 ansi C++ 的基础上进行了一点扩展。&lt;/p&gt;
@@ -2279,4 +2279,4 @@ widget.obj : error LNK2001: 无法解析的外部符号 &amp;quot;public: virtua
 &lt;/table&gt;
 &lt;ul&gt;
 &lt;li&gt;头文件 QtGui/QWidget 等需要变成 QtWidgets/QWidget&lt;/li&gt;
-&lt;/ul&gt;</summary><category term="Qt4"></category><category term="C++"></category><category term="中文"></category></entry></feed>
+&lt;/ul&gt;</summary><category term="Qt4"></category><category term="C++"></category></entry></feed>
