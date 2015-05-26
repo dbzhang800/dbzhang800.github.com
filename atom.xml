@@ -2390,7 +2390,7 @@ pagination_dir:
 &lt;li&gt;&lt;a href="http://www.virtualbox.org/manual/ch06.html"&gt;Chapter 6. Virtual networking&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://blogs.oracle.com/fatbloke/entry/networking_in_virtualbox1"&gt;Networking in VirtualBox&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://penpenguanguan.com/997.html"&gt;快速理解VirtualBox的四种网络连接方式&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</summary><category term="中文"></category></entry><entry><title>Apache配置入门笔记</title><link href="http://blog.debao.me/zh/2011/10/apache-config-basic/" rel="alternate"></link><updated>2011-10-23T17:32:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2011-10-23:zh/2011/10/apache-config-basic/</id><summary type="html">&lt;blockquote&gt;
+&lt;/ul&gt;</summary></entry><entry><title>Apache配置入门笔记</title><link href="http://blog.debao.me/zh/2011/10/apache-config-basic/" rel="alternate"></link><updated>2011-10-23T17:32:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2011-10-23:zh/2011/10/apache-config-basic/</id><summary type="html">&lt;blockquote&gt;
 &lt;p&gt;随便记录一下，不求严谨，但求无原则性错误。-- DebaoZhang 20111023&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;Apache是一个http服务器，在无连接的时候，它除了监听配置文件中指定的IP地址和TCP端口号外不做任何工作；当一个请求出现在一个有效的端口时，Apache接受HTTP请求并分析其头部，然后它根据配置文件中设定的规则，做出某种合适的动作。&lt;/p&gt;
@@ -2655,7 +2655,7 @@ AddHandler cgi-script .py
 &lt;li&gt;http://lamp.linux.gov.cn/Apache/ApacheMenu/urlmapping.html&lt;/li&gt;
 &lt;li&gt;http://lamp.linux.gov.cn/Apache/ApacheMenu/urlmapping.html&lt;/li&gt;
 &lt;li&gt;http://docstore.mik.ua/orelly/linux/apache/ch01_01.htm&lt;/li&gt;
-&lt;/ul&gt;</summary><category term="中文"></category></entry><entry><title>用ISO C++实现自己的信号槽(Qt另类学习)</title><link href="http://blog.debao.me/zh/2011/04/how-does-signals-and-slots-work-in-qt/" rel="alternate"></link><updated>2011-04-30T15:02:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2011-04-30:zh/2011/04/how-does-signals-and-slots-work-in-qt/</id><summary type="html">&lt;p&gt;有网友抱怨：&lt;/p&gt;
+&lt;/ul&gt;</summary></entry><entry><title>用ISO C++实现自己的信号槽(Qt另类学习)</title><link href="http://blog.debao.me/zh/2011/04/how-does-signals-and-slots-work-in-qt/" rel="alternate"></link><updated>2011-04-30T15:02:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2011-04-30:zh/2011/04/how-does-signals-and-slots-work-in-qt/</id><summary type="html">&lt;p&gt;有网友抱怨：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;哪个大牛能帮帮我，讲解一下信号槽机制的底层实现？
 不要那种源码的解析，只要清楚的讲讲是怎么发送信号，怎么去选择相应的槽，再做出反应。也就是类似于一个信号槽的相应流程。。。求解啊！！！
