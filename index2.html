@@ -307,6 +307,46 @@ public: \
   		<article>
 <header>
       <h1 class="entry-title">
+        <a href="http://blog.debao.me/zh/2011/10/apache-config-basic/">Apache配置入门笔记</a>
+      </h1>
+    <p class="meta">
+<time datetime="2011-10-23T17:32:00+08:00" pubdate>2011-10-23(周日)</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>随便记录一下，不求严谨，但求无原则性错误。-- DebaoZhang 20111023</p>
+</blockquote>
+<p>Apache是一个http服务器，在无连接的时候，它除了监听配置文件中指定的IP地址和TCP端口号外不做任何工作；当一个请求出现在一个有效的端口时，Apache接受HTTP请求并分析其头部，然后它根据配置文件中设定的规则，做出某种合适的动作。</p>
+<p>Apache通过一个配置文件进行设置</p>
+<ul>
+<li>配置文件是编译期被指定的(通常叫 httpd.conf)</li>
+<li>
+<p>两个例子：</p>
+<ul>
+<li>C:\Program Files\Apache Software Foundation\Apache2.2\conf\httpd.conf</li>
+<li>/etc/apache2/apache2.conf</li>
+</ul>
+</li>
+<li>
+<p>可以通过命令行参数 -f 指定</p>
+</li>
+<li>配置文件内通过include可以包含其他的配置文件</li>
+</ul>
+<h2>绑定端口与虚拟主机</h2>
+<p>用 Listen 指定要绑定的端口号</p>
+<ul>
+<li>可以指定具体的IP</li>
+<li>
+<p>可以用多条命令指定多个端口号</p>
+<p>Listen 80
+Listen 127.0.0.1 ...</p></li></ul></div>
+  <footer>
+    <a rel="full-article" href="http://blog.debao.me/zh/2011/10/apache-config-basic/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
         <a href="http://blog.debao.me/zh/2011/04/how-does-signals-and-slots-work-in-qt/">用ISO C++实现自己的信号槽(Qt另类学习)</a>
       </h1>
     <p class="meta">
@@ -329,28 +369,8 @@ public: \
     <a rel="full-article" href="http://blog.debao.me/zh/2011/04/how-does-signals-and-slots-work-in-qt/">Read On &crarr;</a>
   </footer>
   		</article>
-  		<article>
-<header>
-      <h1 class="entry-title">
-        <a href="http://blog.debao.me/zh/2010/11/from-cpp-to-qt/">从C++到Qt</a>
-      </h1>
-    <p class="meta">
-<time datetime="2010-11-05T16:35:00+08:00" pubdate>2010-11-05(周五)</time>    </p>
-</header>
-
-  <div class="entry-content"><blockquote>
-<p>原文发布在<a href="http://hi.baidu.com/dbzhang800/item/7ee28d10522e91eb9913d648">百度空间</a>，但由于百度空间屡次改版，越改越差，以至于有关闭可能，故而转移到此 http://blog.debao.me</p>
-</blockquote>
-<p>Qt 是 C++ 的库，Qt 在 ansi C++ 的基础上进行了一点扩展。</p>
-<p>但国内似乎比较浮躁，学Qt的很多连基本的C++如何编译似乎都不太清楚。<strong>本文舍弃IDE或qmake、cmake等工具的束缚，尝试通过几个例子，一步一步从标准 C++ 的编译过渡到 Qt 的编译。</strong></p>
-<p>本文涉及的都是最基本的东西，或许可以说，只要你用C++ Qt，不管是通过哪种工具(qmake、cmake、boost.build、qtcreator、vs2008、Eclipse、...)，本文的内容都是需要理解的(尽管真正写程序时，我们都不会直接用C++编译器来编译Qt程序)。</p>
-<p>如果你对命令行比较恐惧，或许愿意先看看我原来整理的这个 <a href="http://wiki.ubuntu.org.cn/Gcchowto">GCC新手入门</a></p>
-<h2>例子一 ...</h2></div>
-  <footer>
-    <a rel="full-article" href="http://blog.debao.me/zh/2010/11/from-cpp-to-qt/">Read On &crarr;</a>
-  </footer>
-  		</article>
 <div class="pagination">
+    <a class="prev" href="http://blog.debao.me/index3.html">&larr; Older</a>
 
     <a class="next" href="http://blog.debao.me/index.html">Newer &rarr;</a>
   <br />

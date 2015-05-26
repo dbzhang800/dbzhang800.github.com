@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Apache配置入门笔记 &mdash; 1+1=10</title>
+  <meta name="author" content="Debao Zhang">
+
+  <link href="http://blog.debao.me/atom.xml" type="application/atom+xml" rel="alternate"
+        title="1+1=10 Atom Feed" />
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="http://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="http://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+  <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+  <link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="http://blog.debao.me/">1+1=10</a></h1>
+    <h2>Debao's Blog...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="http://blog.debao.me/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+
+<ul class="main-navigation">
+      <li >
+        <a href="http://blog.debao.me/category/python.html">Python</a>
+      </li>
+      <li >
+        <a href="http://blog.debao.me/category/qt.html">Qt</a>
+      </li>
+      <li class="active">
+        <a href="http://blog.debao.me/category/tool.html">Tool</a>
+      </li>
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Apache配置入门笔记</h1>
+    <p class="meta">
+<time datetime="2011-10-23T17:32:00+08:00" pubdate>2011-10-23(周日)</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>随便记录一下，不求严谨，但求无原则性错误。-- DebaoZhang 20111023</p>
+</blockquote>
+<p>Apache是一个http服务器，在无连接的时候，它除了监听配置文件中指定的IP地址和TCP端口号外不做任何工作；当一个请求出现在一个有效的端口时，Apache接受HTTP请求并分析其头部，然后它根据配置文件中设定的规则，做出某种合适的动作。</p>
+<p>Apache通过一个配置文件进行设置</p>
+<ul>
+<li>配置文件是编译期被指定的(通常叫 httpd.conf)</li>
+<li>
+<p>两个例子：</p>
+<ul>
+<li>C:\Program Files\Apache Software Foundation\Apache2.2\conf\httpd.conf</li>
+<li>/etc/apache2/apache2.conf</li>
+</ul>
+</li>
+<li>
+<p>可以通过命令行参数 -f 指定</p>
+</li>
+<li>配置文件内通过include可以包含其他的配置文件</li>
+</ul>
+<h2>绑定端口与虚拟主机</h2>
+<p>用 Listen 指定要绑定的端口号</p>
+<ul>
+<li>可以指定具体的IP</li>
+<li>
+<p>可以用多条命令指定多个端口号</p>
+<p>Listen 80
+Listen 127.0.0.1:8080
+Listen 10.0.2.15:8081
+Listen [fe80::222:5fff:feb9:82d0]:8888</p>
+</li>
+</ul>
+<p>不同的IP和端口组合可以用来做虚拟主机，这需要通过VirtualHost进一步配置(必须先用Listen设置监听地址)</p>
+<div class="highlight"><pre><span class="nt">&lt;VirtualHost</span> <span class="err">127.0.0.1:8080</span><span class="nt">&gt;</span>
+...
+<span class="nt">&lt;/VirtualHost&gt;</span>
+<span class="nt">&lt;VirtualHost</span> <span class="err">10.0.2.15:8081</span><span class="nt">&gt;</span>
+ServerNname host.example.com
+...
+<span class="nt">&lt;/VirtualHost&gt;</span>
+<span class="nt">&lt;VirtualHost</span> <span class="err">10.0.2.15:8081</span><span class="nt">&gt;</span>
+ServerNname host.example2.com
+...
+<span class="nt">&lt;/VirtualHost&gt;</span>
+</pre></div>
+
+
+<p>虚拟主机可以基于</p>
+<ul>
+<li>IP地址</li>
+<li>端口号</li>
+<li>域名(通过HTTP请求header中的Host字段)</li>
+</ul>
+<h2>路径转换？</h2>
+<p>我们在浏览器中打交道的是一堆url：</p>
+<div class="highlight"><pre>http://www.example.com/index.html
+http://www.example.com/faq.html?#question10
+http://www.example.com:8080/cgi-bin/draw.cgi?type=rect
+http://user:pass@www.example.com/
+</pre></div>
+
+
+<p>浏览器通过GET或POST想服务器发送请求</p>
+<div class="highlight"><pre><span class="err">GET /index.html HTTP/1.1 Host:www.example.com</span>
+</pre></div>
+
+
+<p>服务器此时需要根据这个路径发送一个合适的文件给浏览器。</p>
+<ul>
+<li>如果请求的是磁盘上的静态文件，此时需要的是到磁盘文件系统的映射</li>
+<li>如果请求的是动态生成的文件，仍需要能找到脚本或程序才行</li>
+</ul>
+<h3>DocumentRoot</h3>
+<p>比如，前面请求的 /index.html 对应磁盘的哪个文件。则需要DocumentRoot指定一个目录作为根目录。</p>
+<p>比如：</p>
+<div class="highlight"><pre>DocumentRoot /var/www
+</pre></div>
+
+
+<p>或</p>
+<div class="highlight"><pre>DocumentRoot &quot;C:/Program Files/Apache Software Foundation/Apache2.2/htdocs&quot;
+</pre></div>
+
+
+<ul>
+<li>注：结尾不再加一个斜杠</li>
+<li>每一个虚拟主机也都该指定自己的DocumentRoot</li>
+</ul>
+<p>还有一个ServerRoot的东西，是用来配置服务器的配置文件、日志文件等所在目录的，与这儿没什么关系。</p>
+<h3>Alias?</h3>
+<p>可能还需要访问位于DocumentRoot之外的文件</p>
+<div class="highlight"><pre>Alias /docs /var/web
+</pre></div>
+
+
+<p>这样一来，http://www.exemaple.com/docs/... 被映射到该目录</p>
+<p>还有一个ScriptAlias，功能类似，只是其内容均被视为脚本。</p>
+<div class="highlight"><pre>ScriptAlias /cgi-bin/ &quot;C:/Program Files/Apache Software Foundation/Apache2.2/cgi-bin/&quot;
+</pre></div>
+
+
+<p>这两个命令还有两个对应的支持正则匹配的版本</p>
+<ul>
+<li>AliasMatch</li>
+<li>ScriptAliasMatch</li>
+</ul>
+<h3>其他</h3>
+<p>比如：</p>
+<ul>
+<li>linux 可以使用soft link方式（并在Option中设置FollowSymLinks）</li>
+<li>使用mod_userdir模块的UserDir指令</li>
+<li>使用重定向功能 Redirct</li>
+<li>...</li>
+</ul>
+<p>当然实在不存在的东西，只能404错误了</p>
+<h2>文件和目录设置</h2>
+<p>对目录的单独设置是通过Directory进行的</p>
+<div class="highlight"><pre><span class="nt">&lt;Directory</span> <span class="err">/var/web/dir1</span><span class="nt">&gt;</span>
+Options +Indexes
+<span class="nt">&lt;/Directory&gt;</span>
+</pre></div>
+
+
+<p>对文件的单独设置是通过Files进行</p>
+<div class="highlight"><pre><span class="nt">&lt;Files</span> <span class="err">private.html</span><span class="nt">&gt;</span>
+Order allow,deny
+Deny from all
+<span class="nt">&lt;/Files&gt;</span>
+</pre></div>
+
+
+<p>在路径上，尽管它们都可以接受shell风格通配符，但更复杂的匹配则需要使用相应的支持正则的版本</p>
+<ul>
+<li>DirectoryMatch</li>
+<li>FilesMath</li>
+</ul>
+<h3>.htaccess</h3>
+<p>可以通过在目录下放置一个.htaccess文件对该目录进行控制。</p>
+<p>主配置文件内的：</p>
+<div class="highlight"><pre><span class="nt">&lt;Directory</span> <span class="err">/www/htdocs/example</span><span class="nt">&gt;</span>
+AddType text/example .exm
+<span class="nt">&lt;/Directory&gt;</span>
+</pre></div>
+
+
+<p>等价于在该目录下的.htaccess文件中放入：</p>
+<div class="highlight"><pre>AddType text/example .exm
+</pre></div>
+
+
+<p>但这个不建议被使用(除非没有主配置文件的设置权限)了。</p>
+<ul>
+<li>.htaccess 文件的名字可以改成其他的，通过 AccessFileName指令</li>
+<li>该文件内可以使用哪些指令，可通过AllowOverride进行设置</li>
+<li>AllowOverride 设置为None(默认值是All) 可完全禁止 .htaccess的使用</li>
+<li>这个文件与授权控制无关！！</li>
+</ul>
+<h3>Location</h3>
+<p>与前面的Directory和Files针对的磁盘文件路径不同，Location设置的是URL地址中路径部分。</p>
+<p>比如：</p>
+<div class="highlight"><pre><span class="nt">&lt;Location</span> <span class="err">/private</span><span class="nt">&gt;</span>
+Order Allow,Deny
+Deny from all
+<span class="nt">&lt;/Location&gt;</span>
+</pre></div>
+
+
+<p>将禁止访问http://www.example.com/private123等所有以 /private 开头的路径</p>
+<h2>认证与授权</h2>
+<p>这个东西会3组模块(真的比较繁...，使用LoadModule加载):</p>
+<p>首先设置认证类型（使用AuthType指令，目前只支持两种？）</p>
+<ul>
+<li>Basic</li>
+<li>Digest</li>
+<li>...</li>
+</ul>
+<p>根据认证类型选择认证支持模块(通过AuthBasicProvider或AuthDigestProvider)设置，提供密码等验证信息</p>
+<ul>
+<li>
+<p>AuthBasicProvider</p>
+<ul>
+<li>file (默认值)</li>
+<li>dbm</li>
+<li>dbd</li>
+<li>...</li>
+</ul>
+</li>
+<li>
+<p>AuthDigestProvider</p>
+<ul>
+<li>file</li>
+<li>dbm</li>
+</ul>
+</li>
+</ul>
+<p>设置授权支持模块(参考Require指令?)，意图是：如何使用前面的密码信息？</p>
+<h3>简单例子</h3>
+<div class="highlight"><pre>AuthType Basic
+AuthName &quot;From Example.com&quot;
+#AuthBasicProvider file
+AuthUserFile /usr/apache2/passwd/passwords
+Require user debao
+</pre></div>
+
+
+<ul>
+<li>AuthType 选择basic认证方式</li>
+<li>AuthName 是用户看到的信息(同一个name的浏览器也可以自动处理)</li>
+<li>AuthBasicProvider 选择 file，这是默认值</li>
+<li>AuthUserFile 设置密码文件</li>
+<li>Require user 控制密码文件中哪些用户可以通过授权(使用Require valid-user可是使得所有密码正确的用户通过授权)</li>
+</ul>
+<p>密码文件通过htpasswd来生成，对于digest方式，则需要使用htdigest来生成密码文件。</p>
+<h3>Deny Allow</h3>
+<p>这二者可以提供简单的基于IP地址的访问控制</p>
+<div class="highlight"><pre>Order deny,allow
+Deny from all
+Allow from 192.168.0.2
+</pre></div>
+
+
+<h3>文件类型</h3>
+<p>当浏览器请求一个文件时，服务器一般都需要同时提供mime信息</p>
+<ul>
+<li>TypesConfig 指令指定一个包含扩展名和mime对应关系的文件</li>
+<li>使用 AddType 指令添加新的对应关系</li>
+<li>MimeMagicFile 指定一个包含文件开头的魔串和mime对应关系的文件</li>
+<li>DefaultType 指定默认类型</li>
+</ul>
+<p>对于纯文本文件，如果让服务器提供编码信息。AddDefaultCharset指令可以做到，不过这会覆盖html等文件自身提供的编码信息。
+CGI</p>
+<p>使用 ScriptAlias指令可以设置cgi目录</p>
+<div class="highlight"><pre>ScriptAlias /cgi-bin/ /usr/local/apache2/cgi-bin/
+</pre></div>
+
+
+<p>如果在该目录之外的以某种后缀结尾(.py)的文件作为脚本，则需要使用</p>
+<div class="highlight"><pre><span class="nt">&lt;Directory</span> <span class="err">/home/*/public_html</span><span class="nt">&gt;</span>
+Options +ExecCGI
+AddHandler cgi-script .py
+<span class="nt">&lt;/Directory&gt;</span>
+</pre></div>
+
+
+<p>首先是Options中允许CGI脚本执行，然后使用AddHandler设置。</p>
+<p>如果某个目录下全是cgi脚本，则可以使用</p>
+<div class="highlight"><pre>SetHandler cgi-script
+</pre></div>
+
+
+<h3>wsgi</h3>
+<p>对于python来说，CGI方式应该不怎么使用了吧。主要是wsgi这种方式了。</p>
+<ul>
+<li>下载 wsgi ： http://code.google.com/p/modwsgi/</li>
+<li>在apache配置文件中使用</li>
+</ul>
+<div class="highlight"><pre>    LoadModule wsgi_module modules/mod_wsgi.so
+    WSGIScriptAlias /wiki &quot;F:/Moin/mywiki/moin.wsgi&quot;
+</pre></div>
+
+
+<h2>参考</h2>
+<ul>
+<li>http://lamp.linux.gov.cn/Apache/ApacheMenu/urlmapping.html</li>
+<li>http://lamp.linux.gov.cn/Apache/ApacheMenu/urlmapping.html</li>
+<li>http://docstore.mik.ua/orelly/linux/apache/ch01_01.htm</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2011-10-23T17:32:00+08:00" pubdate>2011-10-23(周日)</time>  <span class="categories">
+    <a class='category' href='http://blog.debao.me/category/tool.html'>tool</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="http://blog.debao.me/tag/zhong-wen.html">中文</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="http://blog.debao.me/2015/04/install-mediawiki-on-windows/">Install MediaWiki on Windows</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2015/04/install-bugzilla-on-windows/">Install Bugzilla on Windows</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/zh/2015/04/obligations-of-the-lgpl/">使用LGPL授权的Qt开发商用程序的注意事项</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2015/04/hello-pelican/">Hello Pelican</a>
+      </li>
+      <li class="post">
+          <a href="http://blog.debao.me/2013/12/openssl-and-qt/">"Notes on OpenSSL and Qt"</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="http://blog.debao.me/category/python.html">python</a></li>
+        <li><a href="http://blog.debao.me/category/qt.html">Qt</a></li>
+        <li><a href="http://blog.debao.me/category/tool.html">tool</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="http://blog.debao.me/tag/.html"></a>,    <a href="http://blog.debao.me/tag/qt4.html">Qt4</a>,    <a href="http://blog.debao.me/tag/zhong-wen.html">中文</a>,    <a href="http://blog.debao.me/tag/qt-macros.html">Qt-Macros</a>,    <a href="http://blog.debao.me/tag/c.html">C++</a>,    <a href="http://blog.debao.me/tag/sdl.html">SDL</a>,    <a href="http://blog.debao.me/tag/qthread.html">QThread</a>  </section>
+
+
+
+  <section>
+    <h1>GitHub Repos</h1>
+    <ul id="gh_repos">
+      <li class="loading">Status updating...</li>
+    </ul>
+    <script type="text/javascript">
+      $.domReady(function(){
+          if (!window.jXHR){
+              var jxhr = document.createElement('script');
+              jxhr.type = 'text/javascript';
+              jxhr.src = 'http://blog.debao.me/theme/js/jXHR.js';
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(jxhr, s);
+          }
+
+          github.showRepos({
+              user: 'dbzhang800',
+              count: 5,
+              skip_forks: true,
+              target: '#gh_repos'
+          });
+      });
+    </script>
+    <script src="http://blog.debao.me/theme/js/github.js" type="text/javascript"> </script>
+  </section>
+
+    <section>
+        <h1>Blogroll</h1>
+        <ul>
+            <li><a href="http://getpelican.com/" target="_blank">Pelican</a></li>
+            <li><a href="http://python.org/" target="_blank">Python.org</a></li>
+            <li><a href="http://jinja.pocoo.org/" target="_blank">Jinja2</a></li>
+            <li><a href="http://github.com" target="_blank">Github</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2015  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="http://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="http://blog.debao.me/theme/js/ender.js"></script>
+  <script src="http://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var disqus_shortname = 'github800';
+    var disqus_identifier = '/zh/2011/10/apache-config-basic/';
+    var disqus_url = 'http://blog.debao.me/zh/2011/10/apache-config-basic/';
+    var disqus_title = 'Apache配置入门笔记';
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = "//" + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+  </script>
+</body>
+</html>

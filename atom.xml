@@ -2390,6 +2390,271 @@ pagination_dir:
 &lt;li&gt;&lt;a href="http://www.virtualbox.org/manual/ch06.html"&gt;Chapter 6. Virtual networking&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://blogs.oracle.com/fatbloke/entry/networking_in_virtualbox1"&gt;Networking in VirtualBox&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://penpenguanguan.com/997.html"&gt;快速理解VirtualBox的四种网络连接方式&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</summary><category term="中文"></category></entry><entry><title>Apache配置入门笔记</title><link href="http://blog.debao.me/zh/2011/10/apache-config-basic/" rel="alternate"></link><updated>2011-10-23T17:32:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2011-10-23:zh/2011/10/apache-config-basic/</id><summary type="html">&lt;blockquote&gt;
+&lt;p&gt;随便记录一下，不求严谨，但求无原则性错误。-- DebaoZhang 20111023&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Apache是一个http服务器，在无连接的时候，它除了监听配置文件中指定的IP地址和TCP端口号外不做任何工作；当一个请求出现在一个有效的端口时，Apache接受HTTP请求并分析其头部，然后它根据配置文件中设定的规则，做出某种合适的动作。&lt;/p&gt;
+&lt;p&gt;Apache通过一个配置文件进行设置&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;配置文件是编译期被指定的(通常叫 httpd.conf)&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;两个例子：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;C:\Program Files\Apache Software Foundation\Apache2.2\conf\httpd.conf&lt;/li&gt;
+&lt;li&gt;/etc/apache2/apache2.conf&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;可以通过命令行参数 -f 指定&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;配置文件内通过include可以包含其他的配置文件&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;绑定端口与虚拟主机&lt;/h2&gt;
+&lt;p&gt;用 Listen 指定要绑定的端口号&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;可以指定具体的IP&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;可以用多条命令指定多个端口号&lt;/p&gt;
+&lt;p&gt;Listen 80
+Listen 127.0.0.1:8080
+Listen 10.0.2.15:8081
+Listen [fe80::222:5fff:feb9:82d0]:8888&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;不同的IP和端口组合可以用来做虚拟主机，这需要通过VirtualHost进一步配置(必须先用Listen设置监听地址)&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;VirtualHost&lt;/span&gt; &lt;span class="err"&gt;127.0.0.1:8080&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+...
+&lt;span class="nt"&gt;&amp;lt;/VirtualHost&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;VirtualHost&lt;/span&gt; &lt;span class="err"&gt;10.0.2.15:8081&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+ServerNname host.example.com
+...
+&lt;span class="nt"&gt;&amp;lt;/VirtualHost&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;VirtualHost&lt;/span&gt; &lt;span class="err"&gt;10.0.2.15:8081&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+ServerNname host.example2.com
+...
+&lt;span class="nt"&gt;&amp;lt;/VirtualHost&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;虚拟主机可以基于&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;IP地址&lt;/li&gt;
+&lt;li&gt;端口号&lt;/li&gt;
+&lt;li&gt;域名(通过HTTP请求header中的Host字段)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;路径转换？&lt;/h2&gt;
+&lt;p&gt;我们在浏览器中打交道的是一堆url：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;http://www.example.com/index.html
+http://www.example.com/faq.html?#question10
+http://www.example.com:8080/cgi-bin/draw.cgi?type=rect
+http://user:pass@www.example.com/
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;浏览器通过GET或POST想服务器发送请求&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="err"&gt;GET /index.html HTTP/1.1 Host:www.example.com&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;服务器此时需要根据这个路径发送一个合适的文件给浏览器。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果请求的是磁盘上的静态文件，此时需要的是到磁盘文件系统的映射&lt;/li&gt;
+&lt;li&gt;如果请求的是动态生成的文件，仍需要能找到脚本或程序才行&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;DocumentRoot&lt;/h3&gt;
+&lt;p&gt;比如，前面请求的 /index.html 对应磁盘的哪个文件。则需要DocumentRoot指定一个目录作为根目录。&lt;/p&gt;
+&lt;p&gt;比如：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;DocumentRoot /var/www
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;或&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;DocumentRoot &amp;quot;C:/Program Files/Apache Software Foundation/Apache2.2/htdocs&amp;quot;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;注：结尾不再加一个斜杠&lt;/li&gt;
+&lt;li&gt;每一个虚拟主机也都该指定自己的DocumentRoot&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;还有一个ServerRoot的东西，是用来配置服务器的配置文件、日志文件等所在目录的，与这儿没什么关系。&lt;/p&gt;
+&lt;h3&gt;Alias?&lt;/h3&gt;
+&lt;p&gt;可能还需要访问位于DocumentRoot之外的文件&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Alias /docs /var/web
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这样一来，http://www.exemaple.com/docs/... 被映射到该目录&lt;/p&gt;
+&lt;p&gt;还有一个ScriptAlias，功能类似，只是其内容均被视为脚本。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;ScriptAlias /cgi-bin/ &amp;quot;C:/Program Files/Apache Software Foundation/Apache2.2/cgi-bin/&amp;quot;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这两个命令还有两个对应的支持正则匹配的版本&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;AliasMatch&lt;/li&gt;
+&lt;li&gt;ScriptAliasMatch&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;其他&lt;/h3&gt;
+&lt;p&gt;比如：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;linux 可以使用soft link方式（并在Option中设置FollowSymLinks）&lt;/li&gt;
+&lt;li&gt;使用mod_userdir模块的UserDir指令&lt;/li&gt;
+&lt;li&gt;使用重定向功能 Redirct&lt;/li&gt;
+&lt;li&gt;...&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当然实在不存在的东西，只能404错误了&lt;/p&gt;
+&lt;h2&gt;文件和目录设置&lt;/h2&gt;
+&lt;p&gt;对目录的单独设置是通过Directory进行的&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class="err"&gt;/var/web/dir1&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+Options +Indexes
+&lt;span class="nt"&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;对文件的单独设置是通过Files进行&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;Files&lt;/span&gt; &lt;span class="err"&gt;private.html&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+Order allow,deny
+Deny from all
+&lt;span class="nt"&gt;&amp;lt;/Files&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;在路径上，尽管它们都可以接受shell风格通配符，但更复杂的匹配则需要使用相应的支持正则的版本&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;DirectoryMatch&lt;/li&gt;
+&lt;li&gt;FilesMath&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;.htaccess&lt;/h3&gt;
+&lt;p&gt;可以通过在目录下放置一个.htaccess文件对该目录进行控制。&lt;/p&gt;
+&lt;p&gt;主配置文件内的：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class="err"&gt;/www/htdocs/example&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+AddType text/example .exm
+&lt;span class="nt"&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;等价于在该目录下的.htaccess文件中放入：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;AddType text/example .exm
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;但这个不建议被使用(除非没有主配置文件的设置权限)了。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;.htaccess 文件的名字可以改成其他的，通过 AccessFileName指令&lt;/li&gt;
+&lt;li&gt;该文件内可以使用哪些指令，可通过AllowOverride进行设置&lt;/li&gt;
+&lt;li&gt;AllowOverride 设置为None(默认值是All) 可完全禁止 .htaccess的使用&lt;/li&gt;
+&lt;li&gt;这个文件与授权控制无关！！&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Location&lt;/h3&gt;
+&lt;p&gt;与前面的Directory和Files针对的磁盘文件路径不同，Location设置的是URL地址中路径部分。&lt;/p&gt;
+&lt;p&gt;比如：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;Location&lt;/span&gt; &lt;span class="err"&gt;/private&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+Order Allow,Deny
+Deny from all
+&lt;span class="nt"&gt;&amp;lt;/Location&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;将禁止访问http://www.example.com/private123等所有以 /private 开头的路径&lt;/p&gt;
+&lt;h2&gt;认证与授权&lt;/h2&gt;
+&lt;p&gt;这个东西会3组模块(真的比较繁...，使用LoadModule加载):&lt;/p&gt;
+&lt;p&gt;首先设置认证类型（使用AuthType指令，目前只支持两种？）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Basic&lt;/li&gt;
+&lt;li&gt;Digest&lt;/li&gt;
+&lt;li&gt;...&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;根据认证类型选择认证支持模块(通过AuthBasicProvider或AuthDigestProvider)设置，提供密码等验证信息&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;AuthBasicProvider&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;file (默认值)&lt;/li&gt;
+&lt;li&gt;dbm&lt;/li&gt;
+&lt;li&gt;dbd&lt;/li&gt;
+&lt;li&gt;...&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;AuthDigestProvider&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;file&lt;/li&gt;
+&lt;li&gt;dbm&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;设置授权支持模块(参考Require指令?)，意图是：如何使用前面的密码信息？&lt;/p&gt;
+&lt;h3&gt;简单例子&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;AuthType Basic
+AuthName &amp;quot;From Example.com&amp;quot;
+#AuthBasicProvider file
+AuthUserFile /usr/apache2/passwd/passwords
+Require user debao
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;AuthType 选择basic认证方式&lt;/li&gt;
+&lt;li&gt;AuthName 是用户看到的信息(同一个name的浏览器也可以自动处理)&lt;/li&gt;
+&lt;li&gt;AuthBasicProvider 选择 file，这是默认值&lt;/li&gt;
+&lt;li&gt;AuthUserFile 设置密码文件&lt;/li&gt;
+&lt;li&gt;Require user 控制密码文件中哪些用户可以通过授权(使用Require valid-user可是使得所有密码正确的用户通过授权)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;密码文件通过htpasswd来生成，对于digest方式，则需要使用htdigest来生成密码文件。&lt;/p&gt;
+&lt;h3&gt;Deny Allow&lt;/h3&gt;
+&lt;p&gt;这二者可以提供简单的基于IP地址的访问控制&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Order deny,allow
+Deny from all
+Allow from 192.168.0.2
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;文件类型&lt;/h3&gt;
+&lt;p&gt;当浏览器请求一个文件时，服务器一般都需要同时提供mime信息&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;TypesConfig 指令指定一个包含扩展名和mime对应关系的文件&lt;/li&gt;
+&lt;li&gt;使用 AddType 指令添加新的对应关系&lt;/li&gt;
+&lt;li&gt;MimeMagicFile 指定一个包含文件开头的魔串和mime对应关系的文件&lt;/li&gt;
+&lt;li&gt;DefaultType 指定默认类型&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;对于纯文本文件，如果让服务器提供编码信息。AddDefaultCharset指令可以做到，不过这会覆盖html等文件自身提供的编码信息。
+CGI&lt;/p&gt;
+&lt;p&gt;使用 ScriptAlias指令可以设置cgi目录&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;ScriptAlias /cgi-bin/ /usr/local/apache2/cgi-bin/
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;如果在该目录之外的以某种后缀结尾(.py)的文件作为脚本，则需要使用&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class="err"&gt;/home/*/public_html&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+Options +ExecCGI
+AddHandler cgi-script .py
+&lt;span class="nt"&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;首先是Options中允许CGI脚本执行，然后使用AddHandler设置。&lt;/p&gt;
+&lt;p&gt;如果某个目录下全是cgi脚本，则可以使用&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;SetHandler cgi-script
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;wsgi&lt;/h3&gt;
+&lt;p&gt;对于python来说，CGI方式应该不怎么使用了吧。主要是wsgi这种方式了。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;下载 wsgi ： http://code.google.com/p/modwsgi/&lt;/li&gt;
+&lt;li&gt;在apache配置文件中使用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    LoadModule wsgi_module modules/mod_wsgi.so
+    WSGIScriptAlias /wiki &amp;quot;F:/Moin/mywiki/moin.wsgi&amp;quot;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;参考&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;http://lamp.linux.gov.cn/Apache/ApacheMenu/urlmapping.html&lt;/li&gt;
+&lt;li&gt;http://lamp.linux.gov.cn/Apache/ApacheMenu/urlmapping.html&lt;/li&gt;
+&lt;li&gt;http://docstore.mik.ua/orelly/linux/apache/ch01_01.htm&lt;/li&gt;
 &lt;/ul&gt;</summary><category term="中文"></category></entry><entry><title>用ISO C++实现自己的信号槽(Qt另类学习)</title><link href="http://blog.debao.me/zh/2011/04/how-does-signals-and-slots-work-in-qt/" rel="alternate"></link><updated>2011-04-30T15:02:00+08:00</updated><author><name>Debao Zhang</name></author><id>tag:blog.debao.me,2011-04-30:zh/2011/04/how-does-signals-and-slots-work-in-qt/</id><summary type="html">&lt;p&gt;有网友抱怨：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;哪个大牛能帮帮我，讲解一下信号槽机制的底层实现？
