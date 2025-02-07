@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>ARM开发环境小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/ee.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">ARM开发环境小记</h1>
+    <p class="meta">
+<time datetime="2024-04-20T22:04:00+08:00" pubdate>Sat 20 April 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>接前面<a href="https://blog.debao.me/2024/04/notes-on-stm32/">STM32小记</a>，继续学习ARM开发环境。</p>
+<blockquote>
+<p>东西似乎比较杂，简单搜集记录一下。以免忘了....</p>
+</blockquote>
+<h2 id="keil-mdk-arm">Keil MDK-ARM</h2>
+<blockquote>
+<p>关注一下它的编译器，armcc已经太老了，使用armclang。</p>
+</blockquote>
+<p>Keil ，取自其创始人的名字，德国人，发音 /kɑɪl/ - 其中 "kɑɪ" 发音类似于英语单词 "kite"。似乎在国内 /keɪl/或/ki:l/ 也能接受？ </p>
+<p>Keil MDK-ARM 是一个强大的微控制器开发环境，专为 ARM Cortex-M 微处理器设计。它提供了包括 µVision IDE、编译器、调试器和必要的中间件组件。具有高级的代码编辑功能、项目管理工具和强大的调试功能。它也支持 RTOS（实时操作系统）和提供了广泛的中间件库。</p>
+<ul>
+<li>1982年，Keil Elektronic GmbH在德国成立，专注于8051微处理器的开发工具。</li>
+<li>1990年代末，随着ARM架构兴起，Keil开始开发面向ARM的编译器和调试工具。</li>
+<li>2005年，ARM公司收购了Keil。</li>
+<li>Keil MDK-ARM：随着 ARM 微控制器的普及，Keil 发布了 Microcontroller Development Kit (MDK)，专为 ARM Cortex-M 和 Cortex-R 系列设计。</li>
+<li>2014年：Keil MDK-ARM 版本5发布，引入了许多新功能和改进，包括对 ARM Cortex-M 内核的全面支持，以及全新的软件包管理功能。</li>
+</ul>
+<p>注意：Keil 有4套东西</p>
+<ul>
+<li>Keil MDK：Keil for ARM，Keil MDK-ARM，用于ARM微处理器</li>
+<li>Keil PK51：Keil C51, 用于 8051微处理器</li>
+<li>Keil PK166：Keil C166，用于 XC16x, C16x, ST10微处理器</li>
+<li>Keil DK251：Keil C251，用于 C251微处理器</li>
+</ul>
+<p>不用于商业开发的话，<strong>Keil MDK社区版本</strong> 可以免费使用，社区版之前叫做MDK Lite版本。</p>
+<h3 id="keil-mdk">keil MDK 编译器</h3>
+<ul>
+<li>ARM Compiler 5：armcc</li>
+<li>ARM Compiler 6：armclang</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>Keil MDK 版本</th>
+<th>默认编译器</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2016年5月</td>
+<td>5.22</td>
+<td>ARM Compiler 5</td>
+<td><strong>首次引入</strong> ARM Compiler 6，但非默认</td>
+</tr>
+<tr>
+<td>2017年6月</td>
+<td>5.24</td>
+<td>ARM Compiler 5</td>
+<td>强烈推荐迁移到 ARM Compiler 6</td>
+</tr>
+<tr>
+<td>2018年</td>
+<td>5.25</td>
+<td>ARM Compiler 6</td>
+<td>ARM Compiler 6 成为<strong>默认</strong>编译器</td>
+</tr>
+<tr>
+<td>2022年</td>
+<td>5.34</td>
+<td>ARM Compiler 6</td>
+<td>不再包含 ARM Compiler 5，需要手动配置</td>
+</tr>
+</tbody>
+</table>
+<h2 id="gun-gcc">Gun GCC工具链</h2>
+<blockquote>
+<p>STM32CubeIDE是一个专用于STM32的免费的开发环境，它使用的时GUN GCC工具链。在其安装目录下 STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gun-tools-for-stm32.... 下面，可以看到<strong>arm-none-eabi</strong> 字样。</p>
+</blockquote>
+<p>用于ARM的GCC工具链，2014年之前是Sourcery GCC，2010起 Linaro成立后提供 GCC工具链下载，后来由ARM官方提供GCC工具链下载。</p>
+<h3 id="arm">ARM官网</h3>
+<p>在ARM官网，我们可以看到其为4种target在不同的操作系统下都提供了GUN交叉编译工具链。这4种target列成表格如下：</p>
+<table>
+<thead>
+<tr>
+<th>Target Triple</th>
+<th>架构</th>
+<th>系统</th>
+<th>ABI</th>
+<th>浮点支持</th>
+<th>主要用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>arm-none-eabi</code></td>
+<td>AArch32</td>
+<td>Bare-metal</td>
+<td>EABI</td>
+<td>硬件/软件（可选）</td>
+<td>嵌入式系统（如微控制器）</td>
+</tr>
+<tr>
+<td><code>arm-none-linux-gnueabihf</code></td>
+<td>AArch32</td>
+<td>GNU/Linux</td>
+<td>GNU EABI with hard-float</td>
+<td>硬件浮点</td>
+<td>嵌入式Linux系统，需要硬件浮点支持</td>
+</tr>
+<tr>
+<td><code>aarch64-none-elf</code></td>
+<td>AArch64</td>
+<td>Bare-metal</td>
+<td>ELF</td>
+<td>硬件浮点</td>
+<td>高性能嵌入式系统，无操作系统</td>
+</tr>
+<tr>
+<td><code>aarch64-none-linux-gnu</code></td>
+<td>AArch64</td>
+<td>GNU/Linux</td>
+<td>GNU</td>
+<td>硬件浮点</td>
+<td>服务器或高端嵌入式系统运行Linux</td>
+</tr>
+</tbody>
+</table>
+<p>注意：</p>
+<ul>
+<li>aarch64都支持硬件浮点，所以ABI无需体现浮点特性。</li>
+<li>aarch32用于嵌入式Linux系统时，需要硬件浮点支持。ABI种的hf代表硬件浮点(Hard Float)。</li>
+</ul>
+<p>软件包名字（以Window下为例），挺长的(当前2024年4月）：</p>
+<ul>
+<li>arm-gnu-toolchain-13.2.rel1-mingw-w64-i686-arm-none-eabi.zip</li>
+<li>arm-gnu-toolchain-13.2.rel1-mingw-w64-i686-arm-none-linux-gnueabihf.zip</li>
+<li>arm-gnu-toolchain-13.2.rel1-mingw-w64-i686-aarch64-none-elf.zip</li>
+<li>arm-gnu-toolchain-13.2.rel1-mingw-w64-i686-aarch64-none-linux-gnu.zip</li>
+</ul>
+<h3 id="ubuntu">Ubuntu</h3>
+<p>Ubuntu官方仓库提供如下软件包：</p>
+<ul>
+<li>gcc-arm-linux-gnueabi</li>
+<li>gcc-arm-linux-gnueabihf</li>
+<li>gcc-arm-none-eabi</li>
+<li>gcc-aarch64-linux-gnu</li>
+</ul>
+<p>对应target分别为（可查看其gcc对应的名字，比如arm-linux-guneabi-gcc）：</p>
+<ul>
+<li>arm-linux-guneabi</li>
+<li>arm-linux-gnueabihf</li>
+<li>arm-none-eabi</li>
+<li>aarch64-linux-gnu</li>
+</ul>
+<blockquote>
+<p>由于Arm GNU Toolchain releases已经在ARM官网提供，PPA <a href="https://launchpad.net/gcc-arm-embedded">GNU Arm Embedded Toolchain in Launchpad</a> 已经不再使用。Ubuntu仓库和Arm官方用的应该是一样的</p>
+</blockquote>
+<p>arm-none-eabi对应源码包（ubuntu24.04)：</p>
+<ul>
+<li>gcc-arm-none-eabi_13.2.rel1.orig.tar.bz2</li>
+</ul>
+<p>地址：</p>
+<ul>
+<li>http://hk.archive.ubuntu.com/ubuntu/pool/universe/g/gcc-arm-none-eabi/</li>
+<li>http://old-releases.ubuntu.com/ubuntu/pool/universe/g/gcc-arm-none-eabi/</li>
+</ul>
+<h3 id="linaro">Linaro</h3>
+<p>Linaro 是一个非盈利组织，成立于 2010 年，专注于开发开源软件项目，特别是那些运行在基于 ARM 架构的设备上的项目。Linaro 的目标是提升 ARM 生态系统的软件质量、提高开发效率以及优化相关软件性能，以便更好地支持和利用 ARM 处理器的特性。</p>
+<p>二进制包只提供到GCC7.5，时间也截止到2019年。（后面应该都是转到了ARM官方的GCC工具链）</p>
+<ul>
+<li>aarch64-elf        </li>
+<li>aarch64-linux-gnu        </li>
+<li>aarch64_be-elf        </li>
+<li>aarch64_be-linux-gnu        </li>
+<li>arm-eabi        </li>
+<li>arm-linux-gnueabi        </li>
+<li>arm-linux-gnueabihf        </li>
+<li>armeb-eabi        </li>
+<li>armeb-linux-gnueabi    </li>
+<li>armeb-linux-gnueabihf</li>
+<li>armv8l-linux-gnueabihf</li>
+</ul>
+<h3 id="target-triple">Target Triple</h3>
+<blockquote>
+<p>没有统一的规定，一般来说，这个前缀代表TARGET平台：比如 CPU-PLATFORM-OS 组合，或 <code>arch [-vendor] [-os] [-(gnu)eabi]</code> 等</p>
+</blockquote>
+<p>基本格式如下（注意，没有严格标准！！！）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">arch</span><span class="o">-[</span><span class="n">vendor</span><span class="o">]-[</span><span class="n">os</span><span class="o">]-</span><span class="n">api</span>
+</code></pre></div></td></tr></table></div>
+
+<p>说明：</p>
+<ul>
+<li>arch：代表目标的体系架构。即想要编译的代码将运行在哪种类型的处理器上。例如，arm、aarch64、x86等。</li>
+<li>vendor：可选部分。指的是工具链供应商，这可以是任何组织或个人。不指定vendor，通常意味着没有特定的供应商，工具链是通用的。</li>
+<li>os：也是可选部分。指定目标操作系统。这有助于工具链生成适应特定操作系统的代码，例如针对其系统调用、库函数等。none表示没有操作系统，这通常用于裸机（bare-metal）编程</li>
+<li>api：对ARM来说，eabi，guneabihf, guneabi 等。其中，带gnu表示有linux系统，使用glibc库；不带gnu的是裸机，使用newlib库。</li>
+</ul>
+<p>在从源码构建GCC交叉工具链时，在configure时可以指定build, host与target：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>configure --build=xxxx --host=xxx  --target=xxxx
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>如果build、host、target 三者一样，叫做native</li>
+<li>如果build与host一样，但与target不一样，叫做cross（交叉编译）。如果target指定为foo-bar，那么生成gcc则命名为 <code>foo-bar-gcc</code></li>
+</ul>
+<blockquote>
+<p>另外，有时会创建各种链接，比如飞思卡尔的gcc工具链：<code>arm-fsl-linux-gnueabi-*</code>，有时会创建<code>arm-none-linux-guneabi-*</code> 或 <code>arm-linux-*</code> 来指向它。</p>
+</blockquote>
+<h3 id="_1">历史</h3>
+<h4 id="sourcery-g-lite-arm-none-linux-gnueabi">Sourcery G++ Lite （arm-none-linux-gnueabi）</h4>
+<blockquote>
+<p>网上不少中文资料都指向这个东西，但是官网似乎很隐蔽，原来它时间线：</p>
+</blockquote>
+<ul>
+<li>由Codesourcery 公司开发</li>
+<li>公司被Mentor收购</li>
+<li>终止该项目开发</li>
+<li>Mentor被Siemens 收购</li>
+</ul>
+<p>arm-none-linux-gnueabi是Codesourcery公司基于GCC推出的ARM交叉编译工具。包括</p>
+<ul>
+<li>GNU C 和 C++编译器</li>
+<li>GNU 汇编和链接器</li>
+<li>C 和 C++运行库</li>
+<li>GNU 调试器</li>
+</ul>
+<p>可用于交叉编译ARM系统中各个环节的代码，包括裸机程序、u-boot、Linux kernel、filesystem和应用程序。它提供有Linux、Windows下的预编译二进制。</p>
+<p>比如Linux下预编译包，其软件包命名如下：</p>
+<ul>
+<li>arm-2006q1-6-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2</li>
+<li>arm-2009q3-67-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 </li>
+<li>arm-2010q1-202-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2</li>
+<li>arm-2010.09-50-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 </li>
+<li>arm-2014.05-29-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2</li>
+</ul>
+<p>软件包的日期在2010年命名上稍有区别，应该和Codesourcery被Mentor收购有关。</p>
+<p>2014.05-29 是该工具包最后一个版本，工具包内个软件的版本信息如下：</p>
+<ul>
+<li>GCC 4.8.3</li>
+<li>GNU二进制工具 2.24.51</li>
+<li>GDB 7.7.50</li>
+<li>GNU C库 2.18</li>
+<li>Linux内核头文件 3.13</li>
+</ul>
+<h2 id="iar-embedded-workbench">IAR Embedded Workbench</h2>
+<blockquote>
+<p>先放上，以免忘了。</p>
+</blockquote>
+<p>IAR Embedded Workbench 是一个集成开发环境和工具链，支持包括 STM32 在内的多种 ARM Cortex-M 微控制器。它以其编译器优化技术和高效的代码生成而闻名。提供了高级的代码优化功能，包括对代码大小和执行速度的优化，以及全面的调试工具。</p>
+<blockquote>
+<p>IAR Embedded Workbench 使用的编译器通常被称为 IAR C/C++ Compiler。这个编译器是 IAR Systems 提供的，专门为嵌入式系统的开发设计。IAR C/C++ Compiler 针对多种微处理器架构提供优化，支持包括 ARM、AVR、MSP430、RX、RISC-V、8051 等多种流行的微控制器。</p>
+</blockquote>
+<h2 id="llvm">LLVM工具链</h2>
+<p>先放上：</p>
+<ul>
+<li><a href="https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases">Releases · ARM-software/LLVM-embedded-toolchain-for-Arm · GitHub</a></li>
+<li><a href="https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm">GitHub - ARM-software/LLVM-embedded-toolchain-for-Arm: A project dedicated to building LLVM toolchain for 32-bit Arm embedded targets.</a></li>
+</ul>
+<h2 id="arduino">Arduino</h2>
+<p>Arduino  /ɑːrˈdwiːnoʊ/ 是一个开源电子原型平台，由硬件（物理编程板）和软件（Arduino IDE）两部分组成。它是设计用来让艺术家、设计师、爱好者和任何对创造互动对象或环境感兴趣的人更容易接入到电子和编程世界中。</p>
+<h3 id="arduido-ide">Arduido IDE</h3>
+<p>Arduino IDE 使用的编译器依赖于目标硬件平台。对于基于不同微控制器的开发板，Arduino IDE 使用不同的工具链来处理代码的编译和上传。</p>
+<ul>
+<li>对于基于AVR的Arduino开发版（Arguino Uno, Mega等），Arduino IDE 使用 arv-gcc编译器。</li>
+</ul>
+<ul>
+<li>对于基于ARM的Arduibo 开发版(Arduino Due, Zero, MKR等)，Arduino IDE使用 arm-none-eabi-gcc编译器</li>
+</ul>
+<h2 id="_2">库</h2>
+<blockquote>
+<p>在 ARM Cortex-M 微控制器开发中，有 CMSIS、SPL、HAL 和 LL 不同的个东西。</p>
+</blockquote>
+<p>CMSIS 是 ARM主导的，<strong>而SPL(STM32标准库）、HAL和LL是ST主导的，用于STM32</strong>*。</p>
+<table>
+<thead>
+<tr>
+<th><strong>特性</strong></th>
+<th><strong>CMSIS</strong></th>
+<th><strong>SPL</strong></th>
+<th><strong>HAL</strong></th>
+<th><strong>LL</strong> (Low-Layer)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>定义</strong></td>
+<td>ARM 提供的标准化软件接口，简化 Cortex-M 系列微控制器的开发。</td>
+<td>STMicroelectronics 提供的标准外设库，用于 STM32 微控制器。</td>
+<td>STMicroelectronics 提供的硬件抽象层库，用于 STM32 微控制器。</td>
+<td>STMicroelectronics 提供的低层次硬件接口库，用于 STM32 微控制器。</td>
+</tr>
+<tr>
+<td><strong>标准化</strong></td>
+<td>提供一致的接口，适用于不同厂商的 Cortex-M 微控制器。</td>
+<td>针对 STM32 系列微控制器，提供一致的外设接口。</td>
+<td>针对 STM32 系列微控制器，提供一致的外设接口。</td>
+<td>针对 STM32 系列微控制器，提供一致的外设接口。</td>
+</tr>
+<tr>
+<td><strong>组件化</strong></td>
+<td>包括 CMSIS-Core、CMSIS-DSP、CMSIS-RTOS、CMSIS-Driver 等多个组件。</td>
+<td>包含各类外设驱动函数。</td>
+<td>包含各类外设驱动函数。</td>
+<td>包含各类外设驱动函数。</td>
+</tr>
+<tr>
+<td><strong>抽象层级</strong></td>
+<td>低级：直接访问 Cortex-M 内核和基本外设寄存器。</td>
+<td>中级：提供对 STM32 外设的高级抽象。</td>
+<td>高级：提供对 STM32 外设的高级抽象。</td>
+<td>低级：提供对 STM32 外设的直接访问。</td>
+</tr>
+<tr>
+<td><strong>代码可读性</strong></td>
+<td>需要对 Cortex-M 内核有较深理解。</td>
+<td>提供较为简洁的 API，适合快速开发。</td>
+<td>提供较为简洁的 API，适合快速开发。</td>
+<td>代码量较大，适合需要精细控制的场景。</td>
+</tr>
+<tr>
+<td><strong>性能优化</strong></td>
+<td>提供优化的 DSP 和 RTOS 支持。</td>
+<td>性能较高，但抽象层次较低。</td>
+<td>易于使用，但可能在某些情况下性能不如 LL。</td>
+<td>性能高，适合对时间和资源要求严格的应用。</td>
+</tr>
+<tr>
+<td><strong>适用场景</strong></td>
+<td>- 系统初始化、异常处理、内核寄存器操作。                                 - 高性能计算（CMSIS-DSP）。 <br/>- RTOS 开发（CMSIS-RTOS）。</td>
+<td>- STM32 微控制器的基本外设配置和操作。</td>
+<td>- STM32 微控制器的基本外设配置和操作。</td>
+<td>- 需要高性能和精细控制的嵌入式应用。</td>
+</tr>
+<tr>
+<td><strong>集成工具</strong></td>
+<td>与 ARM 的开发工具链紧密集成。</td>
+<td>与 STM32 标准库和开发工具链紧密集成。</td>
+<td>与 STM32CubeMX 工具紧密集成，可自动生成初始化代码。</td>
+<td>与 STM32CubeMX 工具紧密集成，可自动生成初始化代码。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cmsis">CMSIS</h3>
+<p>CMSIS (Cortex Microcontroller Software Interface Standard)</p>
+<p>CMSIS 是由 ARM 提供的一个软件接口标准，旨在使软件复用、可移植性和开发效率最大化。CMSIS 定义了一系列与硬件无关的接口，使得开发者可以编写与特定微控制器无关的应用软件。</p>
+<h3 id="hal-hardware-abstraction-layer">HAL (Hardware Abstraction Layer)</h3>
+<p>HAL 是“硬件抽象层”的英文缩写，通常由微控制器制造商提供，用于简化直接通过寄存器访问硬件资源的复杂性。HAL 为应用程序和硬件设备之间提供了一个抽象的接口，使得应用程序可以不依赖于底层硬件的具体实现。</p>
+<h3 id="ll-low-layer">LL (Low Layer)</h3>
+<p>LL 是“低层”（Low Layer）的简称，也是由微控制器制造商提供的库，它提供了比 HAL 更接近硬件的抽象层。LL 库允许更精细的硬件控制，并且通常比 HAL 更为高效，但使用起来比 HAL 更复杂。</p>
+<h3 id="spl-standard-peripheral-library">SPL (Standard Peripheral Library)</h3>
+<p>ST 标准外设库（Standard Peripheral Library），通常简称为 SPL，是由 STMicroelectronics 提供的一套用于 STM32 微控制器的硬件抽象层（HAL）库。它为用户提供了一组函数，用于配置和控制 STM32 微控制器的各种外设，如 GPIO、USART、SPI、I2C、ADC 等。</p>
+<p><strong>尽管STM32Cube HAL 库是 ST 推出的新一代库，SPL 仍然在一些老旧项目和特定需求中被广泛使用！</strong></p>
+<h2 id="_3">参考</h2>
+<ul>
+<li>https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads</li>
+<li><a href="https://www.keil.com/product/">Keil Product Overview</a></li>
+<li>https://wiki.st.com/stm32mcu/wiki/STM32CubeIDE</li>
+<li><a href="https://releases.linaro.org/components/toolchain/binaries/">Linaro Releases</a></li>
+<li>https://web.archive.org/web/20160410104337/https://community.freescale.com/thread/313490#comment-354077</li>
+<li><a href="https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm">GitHub - ARM-software/LLVM-embedded-toolchain-for-Arm: A project dedicated to building LLVM toolchain for 32-bit Arm embedded targets.</a></li>
+<li><a href="https://launchpad.net/gcc-arm-embedded">GNU Arm Embedded Toolchain in Launchpad</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-04-20T22:04:00+08:00" pubdate>Sat 20 April 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/ee.html'>EE</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/arm.html">arm</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

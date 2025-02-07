@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>基于GitHub Actions 的 Self Hosted Runner 搭建小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">基于GitHub Actions 的 Self Hosted Runner 搭建小记</h1>
+    <p class="meta">
+<time datetime="2023-11-13T12:38:00+08:00" pubdate>Mon 13 November 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>如何在自己电脑中搭建Runners，以便于让Github Actions来调用？个人觉得很有意义的东西，但是网上相关介绍很少，看来要么是太简单了，要么是不实用</p>
+</blockquote>
+<p>先准备两台主机，一台Windows10，一台Ubuntu22.04，不需要公网IP（Runner主动连接GitHub，所以主机在NAT内部，没有公网IP是没问题的）。</p>
+<h2 id="_1">按文档走</h2>
+<p>官方有详细文档 <a href="https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners">Adding self-hosted runners - GitHub Docs</a> ，只需要照着走一遍...</p>
+<h3 id="_2">创建仓库</h3>
+<p>创建一个 private 仓库（public仓库会暴露个人搭建的 Runner，不安全）</p>
+<p>仓库名：dbzhang800/test-self-hosted-runner</p>
+<h3 id="_3">设置仓库</h3>
+<p>依次点击：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Settings =&gt; Actions =&gt; Runners =&gt; New self-hosted runner
+</code></pre></div></td></tr></table></div>
+
+<p>在这儿，可以选择Runner运行的系统：</p>
+<ul>
+<li>macOS</li>
+<li>Linux</li>
+<li>Windows</li>
+</ul>
+<p>选中后，它在页面上会给出对应平台所需要的操作指令（很详细，照做即可），主要做两件事情：</p>
+<ul>
+<li>下载并解压 Runner 程序： actions-runner-xxxx.tar.gz</li>
+<li>解压后执行config脚本</li>
+</ul>
+<h3 id="ubunturunner">Ubuntu下安装配置Runner</h3>
+<blockquote>
+<p>手边是台Ubuntu22.04主机，先用它试试看。</p>
+</blockquote>
+<p>按Github给出的指令，逐条输入。</p>
+<p>首先，下载当前最新版的actions-runner-xxxx.tar.gz程序，并解压</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">$</span><span class="w"> </span><span class="n">mkdir</span><span class="w"> </span><span class="n">actions</span><span class="o">-</span><span class="n">runner</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">cd</span><span class="w"> </span><span class="n">actions</span><span class="o">-</span><span class="n">runner</span>
+<span class="o">$</span><span class="w"> </span><span class="n">curl</span><span class="w"> </span><span class="o">-</span><span class="n">o</span><span class="w"> </span><span class="n">actions</span><span class="o">-</span><span class="n">runner</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">x64</span><span class="o">-</span><span class="mf">2.311</span><span class="o">.</span><span class="mf">0.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span><span class="w"> </span><span class="o">-</span><span class="n">L</span><span class="w"> </span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">actions</span><span class="o">/</span><span class="n">runner</span><span class="o">/</span><span class="n">releases</span><span class="o">/</span><span class="n">download</span><span class="o">/</span><span class="n">v2</span><span class="o">.</span><span class="mf">311.0</span><span class="o">/</span><span class="n">actions</span><span class="o">-</span><span class="n">runner</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">x64</span><span class="o">-</span><span class="mf">2.311</span><span class="o">.</span><span class="mf">0.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+<span class="o">$</span><span class="w"> </span><span class="n">tar</span><span class="w"> </span><span class="n">xzf</span><span class="w"> </span><span class="o">./</span><span class="n">actions</span><span class="o">-</span><span class="n">runner</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">x64</span><span class="o">-</span><span class="mf">2.311</span><span class="o">.</span><span class="mf">0.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</code></pre></div></td></tr></table></div>
+
+<p>然后，执行config脚本进行配置</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>./config.sh<span class="w"> </span>--url<span class="w"> </span>https://github.com/dbzhang800/test-self-hosted-runner<span class="w"> </span>--token<span class="w"> </span>******
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>配置过程中，它会连接到GitHub，并会提示输入Runner group名字（默认即可），Runner名字（我叫它db-ubuntu2204)，工作文件夹名字（默认<code>_work</code>)。</p>
+</blockquote>
+<p>配置完成后，在仓库的Setttings中即可看到自己的Runner，如下图所示（Offline状态）：</p>
+<p><img alt="github-self-hosted-runner-dbubuntu2204" src="https://blog.debao.me/images/github-self-hosted-runner-dbubuntu2204.png"></p>
+<p>要激活它，只需要运行如下命令（变为Idle状态）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>./run.sh
+</code></pre></div></td></tr></table></div>
+
+<h3 id="windowsrunner">Windows下安装配置Runner</h3>
+<p>流程和上面一样，按官方建议，使用管理员权限，并将目录设置为C:\actions-runner。</p>
+<blockquote>
+<p>配置过程中，它会连接到GitHub，并会提示输入Runner group名字（默认即可），Runner名字（我叫它db-windows10)，工作文件夹名字（默认<code>_work</code>)。</p>
+</blockquote>
+<p>配置完成后，在仓库的Setttings中即可看到自己的Runner，如下图所示（Offline状态）：</p>
+<p><img alt="github-self-hosted-runner-dbwindows10" src="https://blog.debao.me/images/github-self-hosted-runner-dbwindows10.png"></p>
+<p>执行如下命令，激活它</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>./run.cmd
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_4">测试</h3>
+<p>在Github后台，可以看到Runner处于Idle状态，在Runner控制台，可以看到如下输出</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="mf">2023</span><span class="o">-</span><span class="mf">11</span><span class="o">-</span><span class="mf">13</span><span class="w"> </span><span class="mf">06</span><span class="p">:</span><span class="mf">49</span><span class="p">:</span><span class="mf">30</span><span class="n">Z</span><span class="p">:</span><span class="w"> </span><span class="kr">List</span><span class="n">ening</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="n">Jobs</span>
+</code></pre></div></td></tr></table></div>
+
+<p>表明Runner配置成功。要证明其工作，还是需要在仓库中添加workflow....</p>
+<h2 id="workflowrunnerubuntu">workflow使用自己的Runner(Ubuntu)</h2>
+<p>在开始创建的仓库中，添加workflow文件：<code>.github/workflows/self-hosted-ubuntu.yml</code></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">Self</span><span class="w"> </span><span class="n">Hosted</span><span class="w"> </span><span class="n">Runners</span><span class="w"> </span><span class="n">Test</span>
+
+<span class="n">on</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">push</span><span class="p">]</span>
+
+<span class="n">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="n">build</span><span class="p">:</span>
+
+<span class="w">    </span><span class="n">runs</span><span class="o">-</span><span class="n">on</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="bp">self</span><span class="o">-</span><span class="n">hosted</span><span class="p">,</span><span class="w"> </span><span class="n">Linux</span><span class="p">]</span>
+
+<span class="w">    </span><span class="n">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">uses</span><span class="p">:</span><span class="w"> </span><span class="n">actions</span><span class="o">/</span><span class="n">checkout</span><span class="nd">@v3</span>
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">Display</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n">version</span>
+<span class="w">        </span><span class="n">run</span><span class="p">:</span><span class="w"> </span><span class="n">python</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="s2">&quot;import sys; print(sys.version)&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>考虑到连接Github速度实在太慢，只试试代码拉取，并执行系统python的命令。</p>
+<p>我的Windows和Linux上都安装有Python3.x，且在环境变量PATH中。</p>
+</blockquote>
+<h3 id="_5">测试结果</h3>
+<p>网速还是太感人了，连一个actions都没下载成功：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Action</span><span class="w"> </span><span class="s1">&#39;https://api.github.com/repos/actions/checkout/tarball/f43a0e5ff2bd294095638e18286ca9a3d1956744&#39;</span><span class="w"> </span><span class="n">download</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="n">timed</span><span class="w"> </span><span class="n">out</span><span class="o">.</span><span class="w"> </span><span class="n">Error</span><span class="p">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">request</span><span class="w"> </span><span class="n">was</span><span class="w"> </span><span class="n">canceled</span><span class="w"> </span><span class="n">due</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">configured</span><span class="w"> </span><span class="n">HttpClient</span><span class="o">.</span><span class="n">Timeout</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="n">seconds</span><span class="w"> </span><span class="n">elapsing</span><span class="o">.</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>不管怎样，流程反正是通了。看来在国内也只能做这种demo了，没有使用性。要跑完流程，看来需要找台国外的主机试试...</p>
+</blockquote>
+<p><strong>不过反复尝试三次，Linux下面总算跑通一次</strong> 。</p>
+<h2 id="workflowrunnerwindows">workflow使用自己的Runner（Windows）</h2>
+<p>同Linux下一样，创建一个使用与Windows下runner的workflow文件：<code>.github/workflows/self-hosted-ubuntu.yml</code></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">Self</span><span class="w"> </span><span class="n">Hosted</span><span class="w"> </span><span class="n">Runners</span><span class="w"> </span><span class="n">Test</span><span class="w"> </span><span class="n">Windows</span>
+
+<span class="n">on</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="n">push</span><span class="p">]</span>
+
+<span class="n">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="n">build</span><span class="p">:</span>
+
+<span class="w">    </span><span class="n">runs</span><span class="o">-</span><span class="n">on</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="bp">self</span><span class="o">-</span><span class="n">hosted</span><span class="p">,</span><span class="w"> </span><span class="n">Windows</span><span class="p">]</span>
+
+<span class="w">    </span><span class="n">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">uses</span><span class="p">:</span><span class="w"> </span><span class="n">actions</span><span class="o">/</span><span class="n">checkout</span><span class="nd">@v3</span>
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">Display</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n">version</span>
+<span class="w">        </span><span class="n">run</span><span class="p">:</span><span class="w"> </span><span class="n">python</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="s2">&quot;import sys; print(sys.version)&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_6">权限问题</h3>
+<p>上面的workflow遇到如下权限问题：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Run</span><span class="w"> </span><span class="n">python</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="s2">&quot;import sys; print(sys.version)&quot;</span>
+<span class="o">.</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">File</span><span class="w"> </span><span class="n">C</span><span class="p">:</span><span class="w">\</span><span class="n">actions</span><span class="o">-</span><span class="n">runner</span><span class="w">\</span><span class="n">_work</span><span class="w">\</span><span class="n">_temp</span><span class="w">\</span><span class="mi">04</span><span class="n">a4a880</span><span class="o">-</span><span class="n">b37a</span><span class="o">-</span><span class="mi">4</span><span class="n">c97</span><span class="o">-</span><span class="n">bc6b</span><span class="o">-</span><span class="n">f0a76e18e7b5</span><span class="o">.</span><span class="n">ps1</span><span class="w"> </span><span class="n">cannot</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">loaded</span><span class="w"> </span><span class="n">because</span><span class="w"> </span><span class="n">running</span><span class="w"> </span><span class="n">script</span>
+<span class="n">s</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="n">disabled</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">system</span><span class="o">.</span><span class="w"> </span><span class="n">For</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="n">information</span><span class="p">,</span><span class="w"> </span><span class="n">see</span><span class="w"> </span><span class="n">about_Execution_Policies</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">https</span><span class="p">:</span><span class="o">/</span><span class="n">go</span><span class="o">.</span><span class="n">microsoft</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">fwlink</span><span class="o">/</span><span class="err">?</span><span class="n">Lin</span>
+<span class="n">kID</span><span class="o">=</span><span class="mf">135170.</span>
+<span class="n">At</span><span class="w"> </span><span class="n">line</span><span class="p">:</span><span class="mi">1</span><span class="w"> </span><span class="n">char</span><span class="p">:</span><span class="mi">3</span>
+<span class="o">+</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="s1">&#39;C:</span><span class="se">\a</span><span class="s1">ctions-runner\_work\_temp</span><span class="se">\04</span><span class="s1">a4a880-b37a-4c97-bc6b-f0a76e18e7b5 ...</span>
+<span class="o">+</span><span class="w">   </span><span class="o">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="w">    </span><span class="o">+</span><span class="w"> </span><span class="n">CategoryInfo</span><span class="w">          </span><span class="p">:</span><span class="w"> </span><span class="n">SecurityError</span><span class="p">:</span><span class="w"> </span><span class="p">(:)</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="n">PSSecurityException</span>
+<span class="w">    </span><span class="o">+</span><span class="w"> </span><span class="n">FullyQualifiedErrorId</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">UnauthorizedAccess</span>
+<span class="nb">Error</span><span class="p">:</span><span class="w"> </span><span class="n">Process</span><span class="w"> </span><span class="n">completed</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">exit</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="mf">1.</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>因为runner运行在Windows10上面，而不是Windows Server上，二者默认的执行策略不同。</p>
+<ul>
+<li><strong>Restricted</strong>（适用于 Windows 客户端）。</li>
+<li><strong>RemoteSigned</strong>（适用于 Windows 服务器）。</li>
+</ul>
+</blockquote>
+<p>解决方案：在PowerShell中执行</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Set-ExecutionPolicy RemoteSigned
+</code></pre></div></td></tr></table></div>
+
+<p>作用：允许本地运行未签名的脚本，但是通过网络传输的脚本必须经过数字签名。</p>
+<h2 id="demo">demo完成</h2>
+<p>最终结果如下：</p>
+<p><img alt="github-self-hosted-runner-result" src="https://blog.debao.me/images/github-self-hosted-runner-result.png"></p>
+<h2 id="_7">参考</h2>
+<ul>
+<li><a href="https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners">Adding self-hosted runners - GitHub Docs</a></li>
+<li>https://jessicadeen.com/posts/2020/github-actions-self-hosted-runner/</li>
+<li><a href="https://github.com/orgs/community/discussions/25107">Which IPs do I need to allow for a self-hosted runner? · community · Discussion #25107 (github.com)</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-11-13T12:38:00+08:00" pubdate>Mon 13 November 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/github.html">github</a>,    <a class="category" href="https://blog.debao.me/tags/ci.html">CI</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

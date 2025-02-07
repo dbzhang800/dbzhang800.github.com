@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>聚焦离子束FIB小记（二） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/sem.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">聚焦离子束FIB小记（二）</h1>
+    <p class="meta">
+<time datetime="2024-11-23T10:45:00+08:00" pubdate>Sat 23 November 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>接<a href="https://blog.debao.me/2024/11/notes-on-focused-ion-beams-part-1/">聚焦离子束FIB小记（一）</a>，继续了解FIB</p>
+</blockquote>
+<h2 id="fib">什么是FIB仪器？</h2>
+<blockquote>
+<p>FIB：聚焦离子束（Focused Ion Beam）</p>
+</blockquote>
+<p>FIB 聚焦离子束（Focused Ion Beam）仪器通过一束能量通常在 2 keV 至 30 keV 的高度聚焦离子束扫描样品表面，实现纳米尺度的材料改性。该技术依赖于高能初级离子与目标原子之间的弹性核碰撞，将能量转移给样品原子，从而导致这些原子的位移，甚至从样品中被移除。<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<p>聚焦离子束系统（FIB 系统）是一种利用离子束对样品进行观察和加工的仪器。也就是说，在观察样品表面的同时，可以对样品的特定区域进行局部铣削和沉积。该系统应用于扫描电子显微镜（SEM）和透射电子显微镜（TEM）样品的制备、半导体器件的电路修改，以及金属、软材料和经过固定处理的生物样品的微形态加工。<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
+<p>聚焦离子束（FIB）柱是一种光学仪器，用于在真空腔室中将加速的离子束聚焦并扫描样品表面。该柱体主要有两个用途：1) 通过收集入射离子与样品表面相互作用产生的二次电子（SE），形成扫描离子图像。2) 局部溅射材料表面，直接制造任意的纳米结构。<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">4</a></sup></p>
+<p>聚焦离子束（Focused Ion Beam，简称 FIB）是一种技术，主要应用于半导体行业、材料科学，并且在生物领域的应用也日益增多，通常用于材料的特定位置分析、沉积和去除。FIB设备是一种科学仪器，其外观类似于扫描电子显微镜（SEM）。然而，不同于SEM使用聚焦的电子束来对样品成像，FIB设备使用的是聚焦的离子束。FIB还可以与电子束柱和离子束柱组合在一个系统中，允许使用电子束或离子束对同一特征进行研究和分析。然而，需要注意的是，FIB不应与使用聚焦离子束进行直接写入光刻（例如质子束写入）混淆。这些通常是完全不同的系统，材料的改性通过其他机制实现。<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></p>
+<blockquote>
+<p>看完后，还是不知道FIB包括哪些东西。聚焦离子束直写 算不算 FIB？？</p>
+</blockquote>
+<h3 id="ibl-dw">IBL-DW</h3>
+<blockquote>
+<p>IBL：离子束光刻（Ion Beam Lithography）</p>
+</blockquote>
+<p>广义的术语IBL可用于描述两种不同风格的离子束加工方式：</p>
+<ul>
+<li>投影式离子束光刻（Projection IBL）：其特点是使用较宽的离子束，通过某种掩模板对样品或晶圆进行辐照，模板上的图像会被缩小投影到目标表面上。</li>
+<li>直写式离子束光刻（Direct-Write IBL）：采用高度聚焦的离子束形成扫描式离子探针，其位置和时序由图案发生器（Pattern Generator）控制。</li>
+</ul>
+<h2 id="fib_1">FIB 系统结构</h2>
+<p>所有的FIB设备都包含以下主要组件：</p>
+<ul>
+<li>离子源（Ion Source）</li>
+<li>离子光学系统（ion optics）：包括束聚焦、束整形和引导柱（beam focusing, beam shaping, and steer-ing column）</li>
+<li>样品台（sample stage）</li>
+<li>扫描控制电子设备（scan control electronics）</li>
+<li>软件（software）</li>
+<li>可装载附件的样品腔室（sample chamber with additional options）</li>
+</ul>
+<p>借用 JEOL<sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup> 一张图：</p>
+<p><img alt="fib system" src="https://blog.debao.me/images/sem/fibsystem_01.jpg"></p>
+<h3 id="_1">离子源</h3>
+<p>依据fit4nano<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup>内容，先给出一个表：</p>
+<table>
+<thead>
+<tr>
+<th><strong>离子源</strong></th>
+<th><strong>离子种类</strong></th>
+<th><strong>亮度</strong> (Am⁻²sr⁻¹V⁻¹)</th>
+<th><strong>最小能散</strong> (eV)</th>
+<th><strong>最大束流</strong> (nA)</th>
+<th><strong>横向分辨率(FWHM)</strong> (nm)</th>
+<th><strong>关键应用</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LMIS/LMAIS</strong></td>
+<td>Li, Si, <strong>Ga</strong>, Ge, In, Sn, Sb, Au, Pb, Bi, ...</td>
+<td>~10⁶</td>
+<td>2–40</td>
+<td>100</td>
+<td>2–2.8</td>
+<td>表面图案化与截面制备、体积成像、局部掺杂与离子注入、二次离子质谱（SIMS）、掩模光刻、离子推进器</td>
+</tr>
+<tr>
+<td><strong>ILIS</strong></td>
+<td>EMI⁺, BMI⁺, BF₄⁻, I⁻, ...</td>
+<td>~5×10⁶</td>
+<td>7–10</td>
+<td>0.75</td>
+<td>50–30,000</td>
+<td>离子推进器、反应离子刻蚀、二次离子质谱（SIMS）</td>
+</tr>
+<tr>
+<td><strong>PFIB</strong></td>
+<td><strong>Xe</strong>, Ar, Kr, N, O, ...</td>
+<td>~10³</td>
+<td>7–10</td>
+<td><strong>2500</strong></td>
+<td>20–100</td>
+<td>高速溅射、体积成像、气态元素注入</td>
+</tr>
+<tr>
+<td><strong>GFIS</strong></td>
+<td><strong>He⁺</strong>, Ne⁺</td>
+<td><strong>~4×10⁹</strong></td>
+<td>0.25–1</td>
+<td>0.15</td>
+<td><strong>0.5</strong> / 4.0</td>
+<td>高分辨率成像与纳米结构制造、掩模修复、气态元素注入</td>
+</tr>
+<tr>
+<td><strong>LoTIS/MOTIS</strong></td>
+<td>Li, Cs, Cr, Rb</td>
+<td>~2–4×10⁵</td>
+<td>0.2–2</td>
+<td>25</td>
+<td>4.9</td>
+<td>二次离子质谱（SIMS）、离子注入</td>
+</tr>
+<tr>
+<td><strong>NAISH</strong></td>
+<td>q⁺, Arq⁺</td>
+<td>~4×10⁵</td>
+<td>0.9–2.3</td>
+<td>0.2–20</td>
+<td>~2000</td>
+<td>用作 SEM 的离子源、质子束加工</td>
+</tr>
+</tbody>
+</table>
+<p>东西有点多，借用网络上一张图<sup id="fnref:11"><a class="footnote-ref" href="#fn:11">5</a></sup>，先简单关注：</p>
+<p><img alt="LMIS vs GFIS" src="https://blog.debao.me/images/sem/fib_lmis_gfis.png"></p>
+<ul>
+<li>【<strong>LMIS</strong>】液态金属离子源（Liquid Metal Ion Source）：Ga⁺液态金属离子源是最常见、成熟且广泛使用的离子源，适用于高精度应用。</li>
+<li>【<strong>GFIS</strong>】气体离子源（Gas Field-Ionization Source）：用于高分辨率应用，如氦离子显微镜（HIM）。</li>
+<li>【<strong>PFIB</strong>】等离子体离子源（Plasma Focus Ion Beam Source）：适用于高束流电流需求的应用，例如大规模材料去除。</li>
+</ul>
+<p>以后再去了解：</p>
+<ul>
+<li>【<strong>ILIS</strong>】离子液体离子源 (Ionic Liquid Ion Source)：利用离子液体提取离子，可生成单离子或簇离子，用于离子推进器、反应离子刻蚀（RIE）、SIMS。</li>
+<li>【<strong>LoTIS</strong>】低温离子源 (Low Temperature Ion Source)：，通过冷却技术减少能量分散，产生轻质离子（如 Li⁺、Cs⁺），用于 SIMS 和精确离子注入。</li>
+<li>【<strong>MOTIS</strong>】磁光阱离子源 (Magneto-Optical Trap Ion Source)：，通过磁光阱冷却原子后电离，生成超低能量分散离子束，用于量子技术、SIMS 和功能材料加工。</li>
+<li>【<strong>NAISH</strong>】高强度纳米孔离子源 (Nano Aperture Ion Source at High Intensity)：通过纳米孔径提取高亮度离子束，用于 SEM 离子源和质子束加工。</li>
+</ul>
+<h4 id="lmis">LMIS 离子源</h4>
+<p>继续借用一下 JEOL<sup id="fnref3:2"><a class="footnote-ref" href="#fn:2">2</a></sup>的图：</p>
+<p><img alt="LMIS" src="https://blog.debao.me/images/sem/fibsystem_02.jpg"></p>
+<p>Osray<sup id="fnref2:5"><a class="footnote-ref" href="#fn:5">4</a></sup>的图：</p>
+<p><img alt="osray" src="https://blog.debao.me/images/sem/fib_lmis_taylor_cone.jpg"></p>
+<p>以及 MyScope.training<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">6</a></sup>中的图：</p>
+<p><img alt="LMIS" src="https://blog.debao.me/images/sem/fib_lmis.png"></p>
+<p>通过用灯丝对离子源中的金属（通常为 Ga）进行短暂加热，储存罐中的 Ga 金属熔化并润湿 W 针的针尖。在针尖处，液态 Ga 在表面张力的作用下形成球形。当在提取电极上施加几千伏的负电压时，在针尖处形成强电场，液态 Ga 在电场的作用下被吸引，形成锥形（泰勒锥，Taylor cone）。电场在锥尖处进一步集中，电离的 Ga 离子从锥尖释放出去。</p>
+<h4 id="gfis">GFIS 离子源</h4>
+<p>KNI<sup id="fnref:8"><a class="footnote-ref" href="#fn:8">7</a></sup>的这张图：</p>
+<p><img alt="GFIS" src="https://blog.debao.me/images/sem/fib_gfis.png"></p>
+<p>基本原理：</p>
+<ul>
+<li><strong>气体离子化</strong>：GFIS 使用惰性气体（如氦或氖）作为离子源。气体被引入到尖端非常细小的金属针（通常为钨）的周围。通过施加高电压，在针尖产生极强的电场（局部场强可达 10⁹ V/m），使得气体原子在针尖处被电离，生成离子。</li>
+<li><strong>泰勒锥形成</strong>：在强电场作用下，针尖处的气体原子被吸引并形成一个稳定的离子发射区域，类似于“泰勒锥”（Taylor cone）的形状。离子从最尖锐的部位发射出来。</li>
+<li><strong>离子束加速与聚焦</strong>：电场进一步加速离子束，并通过静电透镜系统将离子束聚焦到一个极小的点，形成直径仅为亚纳米尺度的离子束。</li>
+</ul>
+<h4 id="plasma-fib">Plasma FIB</h4>
+<p>先找个示意图，来源<sup id="fnref:9"><a class="footnote-ref" href="#fn:9">8</a></sup>：
+<img alt="pfib" src="https://blog.debao.me/images/sem/fib_pfib.png"></p>
+<p>基本原理：</p>
+<ul>
+<li><strong>气体电离</strong>：惰性气体（如氙气）被引入等离子体腔，在高频射频电磁场（ICP）或微波场（ECR）的作用下电离，形成高密度的等离子体。等离子体中包含电子、离子和中性原子，其中离子是形成离子束的关键。</li>
+<li><strong>离子提取</strong>：在提取电极处施加高电压，正离子（如 Xe⁺）从等离子体中被加速提取出来，形成初步的离子束。</li>
+<li><strong>离子聚焦</strong>：提取的离子束通过静电或磁透镜进一步聚焦，形成高亮度、高电流密度的离子束流。</li>
+<li><strong>束流调节</strong>：通过一系列光阑和偏转器对离子束进行调整，使其束斑直径、能量和电流符合加工要求。</li>
+</ul>
+<p>特点：</p>
+<ul>
+<li><strong>多离子种类</strong>：PFIB 可使用多种离子气体（如 Xe, Ar, O, N），适用于不同材料的加工需求。<strong>氙（Xe）</strong> 是最常用的离子，因其质量较大，具有高溅射率和化学惰性。</li>
+<li><strong>高材料去除率</strong>：相较于传统的液态金属离子源（LMIS），PFIB 的电流更高（可达数百 μA？），适合大面积材料去除和快速加工。</li>
+<li><strong>离子束直径较大</strong>：PFIB 的束斑直径通常较 LMIS 大，适合大尺度加工，但在纳米级别的精细加工中可能有一定限制。</li>
+<li><strong>束流均匀性</strong>：PFIB 的离子束在横截面上可能有“束尾”，即离子束边缘的电流密度较低，这在精细加工如 TEM 样品制备中会增加复杂性。</li>
+</ul>
+<h3 id="_2">离子光学镜筒</h3>
+<p>找个示意图，图片来源<sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup>：</p>
+<p><img alt="ion column" src="https://blog.debao.me/images/sem/fib_ion_optics.png"></p>
+<p>图片来源<sup id="fnref4:2"><a class="footnote-ref" href="#fn:2">2</a></sup>：</p>
+<p><img alt="ion column" src="https://blog.debao.me/images/sem/fibsystem_03.jpg"></p>
+<p>图片来源<sup id="fnref3:5"><a class="footnote-ref" href="#fn:5">4</a></sup>：</p>
+<p><img alt="ion column" src="https://blog.debao.me/images/sem/fib_schema.jpg"></p>
+<p>从示意图中可以看出，用的都是静电透镜和静电偏转器。不用于电子光学设备，主要使用磁透镜。</p>
+<h4 id="_3">不使用磁透镜原因？</h4>
+<blockquote>
+<p>离子比电子重很多，同样能量下速度比电子慢，相对论效应压根不用考虑了。这点省心。</p>
+</blockquote>
+<p>原因很清楚，简单放上电子光学中对于短磁透镜的一些结论<sup id="fnref:20"><a class="footnote-ref" href="#fn:20">9</a></sup>：</p>
+<ol>
+<li>磁透镜是聚焦透镜，无论线圈中电流方向如何</li>
+<li>磁透镜会聚能力与轴上磁场积分成正比，磁场越强，会聚能力越强</li>
+<li>磁透镜的聚焦能力与电压成反比，带电粒子轴向速度越快，受力时间越短，聚焦能力越弱</li>
+<li>磁透镜的聚焦能力与带电粒子的荷质比有关。<strong>质量越大，聚焦力越弱</strong>。</li>
+<li>磁透镜存在像转角，它与线圈中电流方向有关。</li>
+</ol>
+<h3 id="_4">离子与物质作用</h3>
+<blockquote>
+<p>离子与物质的相互作用，机制比电子和物质的相互作用，要复杂。先找几个示意图放上。</p>
+</blockquote>
+<p>借用一张图<sup id="fnref:21"><a class="footnote-ref" href="#fn:21">11</a></sup>:</p>
+<p><img alt="ion matter interaction" src="https://blog.debao.me/images/sem/ion_matter_interaction.jpg"></p>
+<p>再借用一张图<sup id="fnref:10"><a class="footnote-ref" href="#fn:10">10</a></sup>:</p>
+<p><img alt="fib" src="https://blog.debao.me/images/sem/fib_functions.png"></p>
+<h2 id="_5">参考</h2>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>https://fit4nano.eu/roadmap-for-focused-ion-beam-fib-technologies/&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>https://www.jeol.com/words/semterms/20121024.041159.php#gsc.tab=0&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref4:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>https://en.wikipedia.org/wiki/Focused_ion_beam&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:5">
+<p>https://www.orsayphysics.com/what-is-fib&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:5" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:5" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:11">
+<p>https://link.springer.com/chapter/10.1007/978-3-031-14244-4_3&#160;<a class="footnote-backref" href="#fnref:11" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:4">
+<p>https://myscope.training/FIB_SEM_and_FIB_columns&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+<li id="fn:8">
+<p>https://www.youtube.com/watch?v=Zh21tp3aPEw&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+</li>
+<li id="fn:9">
+<p>https://www.researchgate.net/publication/272010582_Advances_in_source_technology_for_focused_ion_beam_instruments&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+</li>
+<li id="fn:20">
+<p>姚宗熙《物理电子学》 西安交通大学&#160;<a class="footnote-backref" href="#fnref:20" title="Jump back to footnote 9 in the text">&#8617;</a></p>
+</li>
+<li id="fn:10">
+<p>https://www.slideshare.net/slideshow/ion-beam-lithographypptx/252276338#10&#160;<a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 10 in the text">&#8617;</a></p>
+</li>
+<li id="fn:21">
+<p>https://www.sciencedirect.com/science/article/pii/S0001868622000446&#160;<a class="footnote-backref" href="#fnref:21" title="Jump back to footnote 11 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-11-23T10:45:00+08:00" pubdate>Sat 23 November 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/sem.html'>SEM</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/sem.html">SEM</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

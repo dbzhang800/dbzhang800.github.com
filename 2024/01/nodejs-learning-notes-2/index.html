@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Node.js 学习笔记（二） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/javascript.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Node.js 学习笔记（二）</h1>
+    <p class="meta">
+<time datetime="2024-01-27T23:16:00+08:00" pubdate>Sat 27 January 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>接前面</p>
+<ul>
+<li><a href="https://blog.debao.me/2024/01/javascript-learning-notes-4/">JavaScript基础学习</a></li>
+<li><a href="https://blog.debao.me/2024/01/nodejs-learning-notes-1/">Node.js学习笔记（一）</a>：Node.js是什么，如何安装，如何简单使用，工作目录与脚本所在目录获取</li>
+</ul>
+<p>通过和python对比的方式，继续了解 Node.js。</p>
+<p>先学习在nodejs下如何使用命令行参数、环境变量、标准输入、标准输出、标准出错、信号处理以及程序返回值，而后看看如何将js脚本程序打包成可执行程序。</p>
+<h2 id="_1">控制台程序</h2>
+<p>既然 node.js 能用于编写控制台程序，那么就可以直接和Python、C、C++ 等语言进行直接对照。</p>
+<p>不妨先列个表格，找找感觉：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>Node.js</th>
+<th>Python</th>
+<th>C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>标准输入</strong></td>
+<td><code>process.stdin.on('data', (d) =&gt; console.log(d));</code></td>
+<td><code>d = input()</code></td>
+<td><code>scanf("%s", d);</code></td>
+</tr>
+<tr>
+<td><strong>标准输出</strong></td>
+<td><code>console.log("Hello 1+1=10!");</code></td>
+<td><code>print("Hello 1+1=10!")</code></td>
+<td><code>printf("Hello 1+1=10!\n");</code></td>
+</tr>
+<tr>
+<td><strong>标准出错</strong></td>
+<td><code>console.error("Error!");</code></td>
+<td><code>print("Error!", file=sys.stderr)</code></td>
+<td><code>fprintf(stderr, "Error!\n");</code></td>
+</tr>
+<tr>
+<td><strong>命令行参数</strong></td>
+<td><code>console.log(process.argv.slice(2));</code></td>
+<td><code>print(sys.argv[1:])</code></td>
+<td><code>int main(int argc, char *argv[]) { ... }</code></td>
+</tr>
+<tr>
+<td><strong>环境变量读取</strong></td>
+<td><code>console.log(process.env.MY_VAR);</code></td>
+<td><code>print(os.environ['MY_VAR'])</code></td>
+<td><code>char* myVar = getenv("MY_VAR");</code></td>
+</tr>
+<tr>
+<td>**信号处理 **</td>
+<td><code>process.on('SIGINT', handler)</code></td>
+<td><code>signal.signal(signal.SIGINT, handler)</code></td>
+<td><code>signal(SIGINT, handler);</code></td>
+</tr>
+<tr>
+<td><strong>程序返回值</strong></td>
+<td><code>process.exit(112);</code></td>
+<td><code>exit(112)</code></td>
+<td><code>return 112;</code> (在 <code>main</code> 函数中)</td>
+</tr>
+</tbody>
+</table>
+<p>从表格中看到，在对标准输入stdin的处理上，Node.js和其他语言差异最大，当然可以理解，这个和Node.js是异步架构有关。</p>
+<p>注意，本文测试环境如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>node -v
+v20.10.0
+</code></pre></div></td></tr></table></div>
+
+<p>另外，本文只关注esm，不关注cjs。简单起见，后缀名都用.mjs。</p>
+<h3 id="1-">例子1 - 命令行参数</h3>
+<blockquote>
+<p>很奇怪，官方手册提到，需要<code>import process from 'node:process'</code>，网络上其他地方也有<code>import process from 'process'</code>写法，尽管上面都可以工作，但是我的测试结果是不需要import。</p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mf">2</span><span class="p">);</span>
+
+<span class="c1">// Check if any arguments were passed</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;No arguments provided.&quot;</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Arguments:&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">args</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">arg</span><span class="p">,</span><span class="w"> </span><span class="nx">index</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="si">}</span><span class="sb">. </span><span class="si">${</span><span class="nx">arg</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>node<span class="w"> </span>.<span class="se">\m</span>ytest.mjs<span class="w">  </span>a<span class="w"> </span>b<span class="w"> </span>c
+Arguments:
+<span class="m">1</span>.<span class="w"> </span>a
+<span class="m">2</span>.<span class="w"> </span>b
+<span class="m">3</span>.<span class="w"> </span>c
+$<span class="w"> </span>node<span class="w"> </span>.<span class="se">\m</span>ytest.mjs
+No<span class="w"> </span>arguments<span class="w"> </span>provided.
+</code></pre></div></td></tr></table></div>
+
+<h3 id="2-">例子2-  标准输入</h3>
+<blockquote>
+<p>当使用 <code>process.stdin</code> 时，它表示正在监听标准输入流（stdin）。Node.js 将会一直等待输入，因此程序不会自动退出。</p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// Read data from standard input</span>
+<span class="nx">process</span><span class="p">.</span><span class="nx">stdin</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">data</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">data</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">trim</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Write input data to standard output</span>
+<span class="w">    </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`You entered: </span><span class="si">${</span><span class="nx">input</span><span class="si">}</span><span class="sb">\n`</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// Prompt the user for input</span>
+<span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">&#39;Please enter some content:\n&#39;</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>node<span class="w"> </span>.<span class="se">\m</span>ytest.mjs
+Please<span class="w"> </span>enter<span class="w"> </span>some<span class="w"> </span>content:
+Hello<span class="w"> </span><span class="m">1</span>+1<span class="o">=</span><span class="m">10</span>
+You<span class="w"> </span>entered:<span class="w"> </span>Hello<span class="w"> </span><span class="m">1</span>+1<span class="o">=</span><span class="m">10</span>
+Hello<span class="w"> </span>dbzhang800
+You<span class="w"> </span>entered:<span class="w"> </span>Hello<span class="w"> </span>dbzhang800
+</code></pre></div></td></tr></table></div>
+
+<h3 id="3-">例子3- 标准输出和标准出错</h3>
+<blockquote>
+<p>这个东西简单直接，和其他语言没有明显差异。</p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;This is stdout\n&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// Output: This is stdout</span>
+<span class="nx">process</span><span class="p">.</span><span class="nx">stderr</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;This is stderr\n&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// Output: This is stderr</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;This is stdout&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// Output: This is stdout</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&quot;This is stderr&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// Output: This is stderr</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="4-">例子4- 环境变量</h3>
+<blockquote>
+<p>这个代码也直接</p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">myEnvVar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">MY_ENV_VARIABLE</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myEnvVar</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>不过设置环境变量，在不同环境下风格各异，其中一个：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">MY_ENV_VARIABLE</span><span class="o">=</span>hello<span class="w"> </span>node<span class="w"> </span>src/mytest.mjs
+</code></pre></div></td></tr></table></div>
+
+<p>但在powershell下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">$env:MY_ENV_VARIABLE</span><span class="p">=</span><span class="s2">&quot;hello&quot;</span>
+<span class="n">node</span> <span class="n">src</span><span class="p">/</span><span class="n">mytest</span><span class="p">.</span><span class="n">mjs</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="5-">例子5- 信号处理</h3>
+<blockquote>
+<p>比想象的要简单很多。作为测试，我们同时监听了stdin，不然程序没等我们触发信号就已经直接退出了。</p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">process</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;SIGINT&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Received SIGINT signal. Exiting...&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mf">0</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">process</span><span class="p">.</span><span class="nx">stdin</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// do nothing</span>
+<span class="p">});</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Press Ctrl+C to send a SIGINT signal.&#39;</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">node</span><span class="w"> </span><span class="o">.</span>\<span class="n">mytest</span><span class="o">.</span><span class="n">mjs</span>
+<span class="n">Press</span><span class="w"> </span><span class="n">Ctrl</span><span class="o">+</span><span class="n">C</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">send</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">SIGINT</span><span class="w"> </span><span class="k">signal</span><span class="o">.</span>
+<span class="o">&lt;</span><span class="n">Ctrl</span><span class="o">+</span><span class="n">C</span><span class="o">&gt;</span>
+<span class="n">Received</span><span class="w"> </span><span class="n">SIGINT</span><span class="w"> </span><span class="k">signal</span><span class="o">.</span><span class="w"> </span><span class="n">Exiting</span><span class="o">...</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="6-">例子6- 返回值</h3>
+<p>直接使用exit是可以的</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Hello 1+1=10, exit code is 112&quot;</span><span class="p">);</span>
+
+<span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mf">112</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>不过和环境变量类似，在控制台下，如何查看这个值，没有标准的东西</p>
+<ul>
+<li>一般：<code>echo $?</code></li>
+<li>Windows命令行：<code>echo %ERRORLEVEL%</code></li>
+<li>powershell：<code>$LASTEXITCODE</code></li>
+</ul>
+<p>也可以，在退出前，先设置好</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">process</span><span class="p">.</span><span class="nx">exitCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">112</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Hello 1+1=10, exit code is 112&quot;</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_2">打包</h2>
+<p>了解控制台程序编写基础，已经可以用nodejs写一个简单的程序了。那么，如何打包成一个exe，以便于在没有开发环境的机台上运行？</p>
+<blockquote>
+<p>感觉这个和Python差不多，打包方案有很多，坑也很多。</p>
+</blockquote>
+<p>有多个第三方工具，用于将Node.js运行时、依赖以及脚本捆绑在一起，以实现：将Node.js应用程序编译成单个可执行文件的命令行工具。简单试试看：</p>
+<ul>
+<li>pkg：失败</li>
+<li>nexe：失败</li>
+<li>electron：主要是GUI吧，未测试</li>
+<li>SEA!!：官方出品，使用复杂。至少可以用</li>
+<li>...</li>
+</ul>
+<p>测试过程如下：</p>
+<h3 id="pkg">pkg</h3>
+<p>pkg官方仓库已经设置标记为只读，并说明它已经废弃：</p>
+<blockquote>
+<p><code>pkg</code> has been deprecated with <code>5.8.1</code> as the last release. There are a number of successful forked versions of <code>pkg</code> already with various feature additions. Further, we’re excited about Node.js 21’s support for <a href="https://nodejs.org/api/single-executable-applications.html">single executable applications</a>. Thank you for the support and contributions over the years. The repository will remain open and archived.</p>
+</blockquote>
+<ul>
+<li>https://github.com/vercel/pkg</li>
+</ul>
+<p>全局安装</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>pkg
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_3">尝试使用</h4>
+<p>直接敲命令：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pkg<span class="w"> </span>mytest.mjs<span class="w"> </span>--output<span class="w"> </span>mytest.exe
+</code></pre></div></td></tr></table></div>
+
+<p>结果，报错</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>pkg<span class="w"> </span>.<span class="se">\m</span>ytest.mjs<span class="w"> </span>--output<span class="w"> </span>mytest.exe
+&gt;<span class="w"> </span>pkg@5.8.1
+&gt;<span class="w"> </span>Targets<span class="w"> </span>not<span class="w"> </span>specified.<span class="w"> </span>Assuming:
+<span class="w">  </span>node20-win-x64
+&gt;<span class="w"> </span>Error!<span class="w"> </span>No<span class="w"> </span>available<span class="w"> </span>node<span class="w"> </span>version<span class="w"> </span>satisfies<span class="w"> </span><span class="s1">&#39;node20&#39;</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="nexe">nexe</h3>
+<ul>
+<li>https://github.com/nexe/nexe</li>
+</ul>
+<p>安装</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>nexe
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_4">尝试使用</h4>
+<p>直接敲命令：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>npx<span class="w"> </span>nexe<span class="w"> </span>-i<span class="w"> </span>.<span class="se">\m</span>ytest.mjs<span class="w"> </span>-o<span class="w"> </span>mytest.exe
+</code></pre></div></td></tr></table></div>
+
+<p>结果，报错</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">npx</span><span class="w"> </span><span class="nv">nexe</span><span class="w"> </span><span class="o">-</span><span class="nv">i</span><span class="w"> </span>.\<span class="nv">mytest</span>.<span class="nv">mjs</span><span class="w"> </span><span class="o">-</span><span class="nv">o</span><span class="w"> </span><span class="nv">mytest</span>.<span class="nv">exe</span>
+
+<span class="nv">Error</span>:<span class="w"> </span><span class="nv">Entry</span><span class="w"> </span><span class="nv">file</span><span class="w"> </span><span class="s2">&quot;.\mytest.mjs&quot;</span><span class="w"> </span><span class="nv">not</span><span class="w"> </span><span class="nv">found</span><span class="o">!</span>
+
+<span class="nv">See</span><span class="w"> </span><span class="nv">nexe</span><span class="w"> </span><span class="o">-</span><span class="nv">h</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">usage</span>..
+</code></pre></div></td></tr></table></div>
+
+<h3 id="sea-single-executable-applications">SEA（ single executable applications）</h3>
+<ul>
+<li>先准备配置文件：sea-config.json</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;main&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mytest.mjs&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;output&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sea-prep.blob&quot;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>将要打包的js程序生成一个blob，用于注入到最终的程序中</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>node --experimental-sea-config sea-config.json
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>拷贝 node 可执行程序到当前文件夹下，并重命名为我们要的名字，在powershell下，可以用</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>node -e &quot;require(&#39;fs&#39;).copyFileSync(process.execPath, &#39;mytest.exe&#39;)&quot; 
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>将前面的blob注入到这个exe中</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>npx postject mytest.exe NODE_SEA_BLOB sea-prep.blob `
+    --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2 
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>运行一下（可以运行，只不过有提示信息）：</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>.\<span class="nv">mytest</span>.<span class="nv">exe</span>
+<span class="nv">Hello</span><span class="w"> </span><span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="o">=</span><span class="mi">10</span>
+<span class="ss">(</span><span class="nv">node</span>:<span class="mi">22752</span><span class="ss">)</span><span class="w"> </span><span class="nv">ExperimentalWarning</span>:<span class="w"> </span><span class="nv">Single</span><span class="w"> </span><span class="nv">executable</span><span class="w"> </span><span class="nv">application</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">an</span><span class="w"> </span><span class="nv">experimental</span><span class="w"> </span><span class="nv">feature</span><span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="nv">might</span><span class="w"> </span><span class="nv">change</span><span class="w"> </span><span class="nv">at</span><span class="w"> </span><span class="nv">any</span><span class="w"> </span><span class="nv">time</span>
+<span class="ss">(</span><span class="nv">Use</span><span class="w"> </span>`<span class="nv">mytest</span><span class="w"> </span><span class="o">--</span><span class="nv">trace</span><span class="o">-</span><span class="nv">warnings</span><span class="w"> </span>...`<span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="nv">where</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">warning</span><span class="w"> </span><span class="nv">was</span><span class="w"> </span><span class="nv">created</span><span class="ss">)</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_5">参考</h2>
+<ul>
+<li>https://nodejs.org/api/process.html</li>
+<li>https://nodejs.org/docs/latest-v20.x/api/single-executable-applications.html</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-01-27T23:16:00+08:00" pubdate>Sat 27 January 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/javascript.html'>JavaScript</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/nodejs.html">nodejs</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

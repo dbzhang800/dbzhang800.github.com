@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Qt与Python的绑定历史回顾 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Qt与Python的绑定历史回顾</h1>
+    <p class="meta">
+<time datetime="2024-11-19T23:22:00+08:00" pubdate>Tue 19 November 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>老生常谈，简单聊聊 PyQt、PySide、PythonQt 都是什么东西...</p>
+</blockquote>
+<p>如果只有两个的话，估计大家更容易理解</p>
+<ul>
+<li>PyQt：为Python程序添加C++ Qt库支持</li>
+<li>PythonQt：为C++ Qt程序添加Python脚本支持</li>
+</ul>
+<p>但为什么多了一个PySide？其实这个是给像我这样——不喜欢盗版，也不喜欢GPL协议——的个人或小公司的福利。当然还希望有钱的公司还是要多支持Qt商业版本，便于其良性发展。</p>
+<h2 id="_1">对比</h2>
+<p>先简单列个表</p>
+<table>
+<thead>
+<tr>
+<th><strong>特性/维度</strong></th>
+<th><strong>PyQt</strong></th>
+<th><strong>PySide (Qt for Python)</strong></th>
+<th><strong>PythonQt</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>开发者</strong></td>
+<td>Riverbank Computing</td>
+<td>The Qt Company</td>
+<td>MeVis Medical Solutions</td>
+</tr>
+<tr>
+<td><strong>最初发布</strong></td>
+<td>1990年代后期</td>
+<td>2009年（最初版本），2018年重新作为“Qt for Python”发布</td>
+<td>2008年左右</td>
+</tr>
+<tr>
+<td><strong>许可</strong></td>
+<td><strong>GPL</strong> 和商业许可</td>
+<td>LGPL和商业许可</td>
+<td>LGPL</td>
+</tr>
+<tr>
+<td><strong>功能</strong></td>
+<td>完整支持Qt框架</td>
+<td>完整支持Qt框架</td>
+<td>功能有限，主要用于嵌入式Python解释器</td>
+</tr>
+<tr>
+<td><strong>工具</strong></td>
+<td>SIP</td>
+<td>Shiboken</td>
+<td>qtscriptgenerator</td>
+</tr>
+<tr>
+<td><strong>文档和教程</strong></td>
+<td>丰富的文档和教程</td>
+<td>官方文档逐渐完善，紧跟Qt官方文档</td>
+<td>文档较少，资源有限</td>
+</tr>
+<tr>
+<td><strong>生态</strong></td>
+<td>历史悠久，社区活跃</td>
+<td>逐渐吸引更多用户</td>
+<td>小众，主要在特定领域有使用</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pyqt">PyQt</h2>
+<ul>
+<li><a href="https://www.riverbankcomputing.com/software/pyqt/">https://www.riverbankcomputing.com/software/pyqt/</a></li>
+<li><a href="https://en.wikipedia.org/wiki/PyQt">https://en.wikipedia.org/wiki/PyQt</a></li>
+<li><a href="https://github.com/Python-SIP/sip">https://github.com/Python-SIP/sip</a></li>
+</ul>
+<p>PyQt由Riverbank Computing公司开发，最早版本发布于1998年，历史悠久，社区活跃。</p>
+<p>为了完成C++库到Python的绑定，该公司开发了SIP工具，这个工具本身采用BSD授权。</p>
+<p>注意：PyQt 采用 GPL 和 商业 双重授权，不支持LGPL。要商用的话，需要先购买授权！ </p>
+<h2 id="pyside">PySide</h2>
+<p>在Qt支持LGPL之后，因为PyQt不采用LGPL，所有才有了采用LGPL新的项目：PySide。</p>
+<ul>
+<li><a href="https://www.qt.io/qt-for-python">https://www.qt.io/qt-for-python</a></li>
+<li><a href="https://wiki.qt.io/Qt_for_Python">https://wiki.qt.io/Qt_for_Python</a></li>
+<li><a href="https://en.wikipedia.org/wiki/PySide">https://en.wikipedia.org/wiki/PySide</a></li>
+<li><a href="https://code.qt.io/cgit/pyside/pyside-setup.git/">https://code.qt.io/cgit/pyside/pyside-setup.git/</a></li>
+</ul>
+<blockquote>
+<p>2009年，我从wxpython转向Qt，就是因为Qt和PySide先后增加了LGPL授权。不过我想不通：
+自从和Nokia分家后，Qt官方一直在C++ Qt中淡化LGPL，为什么这时会选择在Qt5.12时复活PySide这一和PyQt高度重合的项目。</p>
+</blockquote>
+<h3 id="_2">诞生与死亡</h3>
+<p>2008年，Nokia 收购Qt，立即着手给Qt（4.5）增加 LGPL 授权。但是此时PyQt的开发商，不同意同步增加LGPL授权，于是乎，为了推广Qt，当时财大气粗的Nokia MeeGo计算机小组，赞助位于巴西的OpenBossa INdT(Nokia Technology Institute)小组开发采用 LGPL 协议的新的Python绑定，这边有了 PySide。</p>
+<p>2009年8月18日，LGPL版本的PySide发布（最初采用Boost的python库进行C++到python的封装，后来改为自己的shiboken）。</p>
+<p>2011年8月22日，因为Nokia与微软结盟开发手机操作系统，使得Nokia与Intel联合研发的MeeGo系统遭受重创。进而PySide缺少资金来源（开始发公告，并躺平等死）。</p>
+<h3 id="_3">重生</h3>
+<p>2015年，Christian Tismer开始将PySide从Qt4移植到Qt5。取名PySide2。</p>
+<p>2018年，Qt5.12发布时，Qt官方正式同步发布PySide2，商业推广名字 Qt for Python。</p>
+<p>2020年，发布PySide6，版本号命名上开始和Qt主版本号一致。</p>
+<h2 id="pythonqt">PythonQt</h2>
+<ul>
+<li><a href="https://mevislab.github.io/pythonqt/">https://mevislab.github.io/pythonqt/</a></li>
+<li><a href="https://github.com/MeVisLab/pythonqt">https://github.com/MeVisLab/pythonqt</a></li>
+</ul>
+<p>PythonQt 的开发始于2006年，由MeVis Medical Solutions开发。它与PyQt定位不同，设计初衷是为嵌入到C++ Qt应用程序中，以便于为其提供脚本支持。</p>
+<p>它使用Qt官方的<a href="https://code.qt.io/cgit/qt-labs/qtscriptgenerator.git/">qtscriptgenerator</a>，这是QtScript的生成器，随着QtScript被放弃(Qml/QJSEngine取代)已经不再活跃。</p>
+<blockquote>
+<p>MeVis Medical Solutions AG 是一家专注于医疗成像软件的公司，总部位于德国。
+该公司致力于为医疗领域提供先进的图像处理和可视化解决方案，特别是在帮助医疗专业人员进行诊断、手术规划和治疗监控方面。</p>
+</blockquote>
+<p>这个项目还活着，但是不活跃，因为它能做的事情，PySide/PyQt也能做，只是不如它轻便一点。</p>
+<h2 id="_4">参考</h2>
+<p>暂时放这儿</p>
+<ul>
+<li><a href="https://www.kdab.com/creating-python-bindings-for-qt-libraries/">https://www.kdab.com/creating-python-bindings-for-qt-libraries/</a></li>
+<li><a href="https://doc.qt.io/qtforpython/shiboken6/typesystem_manipulating_objects.html#inject-code">https://doc.qt.io/qtforpython/shiboken6/typesystem_manipulating_objects.html#inject-code</a></li>
+<li><a href="https://blog.csdn.net/dbzhang800/article/details/6714261">https://blog.csdn.net/dbzhang800/article/details/6714261</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-11-19T23:22:00+08:00" pubdate>Tue 19 November 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a class="category" href="https://blog.debao.me/tags/python.html">python</a>,    <a class="category" href="https://blog.debao.me/tags/pyside.html">pyside</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

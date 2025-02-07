@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>C++与Windows下的UTF-8支持杂谈 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/c.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">C++与Windows下的UTF-8支持杂谈</h1>
+    <p class="meta">
+<time datetime="2024-12-22T00:10:00+08:00" pubdate>Sun 22 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>随着C++23开始涉足UTF-8源码字符集，以及Windows开始转向UTF-8。C++总算有解决编码问题的苗头了...</p>
+</blockquote>
+<h2 id="_1">问题，由来已久</h2>
+<p>我喜欢用这个例子，因为代码中的中文的存在，要想代码通用（跨平台），这几行代码的问题可以列一罗筐：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">mystr</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;老老实实的学问，来不得半点马虎&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">mystr</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span>
+</code></pre></div></td></tr></table></div>
+
+<p>西方老外明显没有中日韩群众的感同身受，不过<code>Beman Dawes</code>指出：即使是下面这样简单的代码，C++都无法保证其通用性：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>由于个人只关注Windows和Linux两个平台，也只涉及MSVC和GCC两种编译器，也基本上被折腾的想吐：</p>
+<ul>
+<li><a href="https://blog.debao.me/2024/01/exploring-cpp-character-types/">C++中字符问题极为复杂</a></li>
+<li><a href="https://blog.csdn.net/dbzhang800/article/details/7540905">Qt要实现的字符跨平台很痛苦</a></li>
+</ul>
+<h2 id="c23-utf-8">C++23 与 UTF-8</h2>
+<p>在C++11引入 <code>u8"...."</code>字面量，C++20引入 <code>char8_t</code> 之后</p>
+<p>C++23 开始：Support for UTF-8 as a portable source file encoding，详见<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2295r6.pdf">P2295R6</a></p>
+<p>简单地说，从1998年C++标准化，直到二十五年后，才开始解决源码字符集这一基本问题。</p>
+<h2 id="msvc-utf-8">MSVC 与 UTF-8</h2>
+<p>MSVC对UTF-8支持有两个阶段：</p>
+<p><strong>MSVC2010（UTF-8基本可用）</strong></p>
+<ul>
+<li>引入了 <code>#pragma execution_character_set("utf-8")</code> 支持执行字符集</li>
+<li>支持带BOM的 utf-8 源码字符集</li>
+</ul>
+<p><strong>MSVC2015 Update1（UTF-8可用）</strong></p>
+<ul>
+<li>引入了 <code>/source-charset:utf-8</code> 与 <code>/execution-charset:utf-8</code></li>
+<li>或者更简单的 <code>/utf-8</code> 选项</li>
+</ul>
+<p>但是这也只是解决了窄字符串的执行字符集问题，Windows下API使用UTF-16，而其他平台下使用UTF-8，还是一个大问题</p>
+<h2 id="window-api-utf-8">Window API 与 UTF-8</h2>
+<p>我们知道，Win32 API 通常同时支持 <code>-A</code> 和 <code>-W</code> 两种变体。</p>
+<ul>
+<li><code>-A</code> 变体识别系统上配置的 ANSI 代码页，并支持 <code>char*</code>，而</li>
+<li><code>-W</code> 变体则在 UTF-16 编码下工作，支持 WCHAR。</li>
+</ul>
+<p>长期以来，Windows 一直强调使用 "Unicode" 的 <code>-W</code> 变体，而不是 <code>-A</code> API。（这和其他系统下使用窄字符串UTF8不兼容，编写跨平台代码会很头疼）</p>
+<p>然而，最近的版本开始使用 ANSI 代码页和 <code>-A</code> API 来为应用程序引入 UTF-8 支持。如果 ANSI 代码页配置为 UTF-8，那么 <code>-A</code> API 通常会以 UTF-8 操作。这种模式的好处在于，能够支持使用 <code>-A</code> API 构建的现有代码，无需进行代码更改。</p>
+<p>看起来，Windows以后可能推荐直接使用<code>-A</code>的API。</p>
+<p>注意设置CodePage为 CP_UTF8，对Win32程序来说，注意设置 manifest 文件</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;</span>
+<span class="nt">&lt;assembly</span><span class="w"> </span><span class="na">manifestVersion=</span><span class="s">&quot;1.0&quot;</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;urn:schemas-microsoft-com:asm.v1&quot;</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;assemblyIdentity</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;win32&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;...&quot;</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;6.0.0.0&quot;</span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;application&gt;</span>
+<span class="w">    </span><span class="nt">&lt;windowsSettings&gt;</span>
+<span class="w">      </span><span class="nt">&lt;activeCodePage</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://schemas.microsoft.com/SMI/2019/WindowsSettings&quot;</span><span class="nt">&gt;</span>UTF-8<span class="nt">&lt;/activeCodePage&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/windowsSettings&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/application&gt;</span>
+<span class="nt">&lt;/assembly&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="utf-8">关于UTF-8</h2>
+<p>UTF-8由肯·汤普森（Ken Thompson）和罗布·派克（Rob Pike）于1992年设计。他们的目标是：</p>
+<ul>
+<li><strong>兼容性</strong>：与ASCII完全兼容（ASCII的字符直接映射为单字节的UTF-8编码）。</li>
+<li><strong>灵活性</strong>：支持所有Unicode字符。</li>
+<li><strong>效率</strong>：对常用字符（如英文字母、数字）使用较少的存储空间。</li>
+<li><strong>无字节序问题</strong>：UTF-8以字节为单位编码，不依赖于字节序（大端或小端）。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>字节数</th>
+<th>Unicode 范围</th>
+<th>二进制格式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 字节</td>
+<td>U+0000 ~ U+007F</td>
+<td>0xxxxxxx</td>
+</tr>
+<tr>
+<td>2 字节</td>
+<td>U+0080 ~ U+07FF</td>
+<td>110xxxxx 10xxxxxx</td>
+</tr>
+<tr>
+<td>3 字节</td>
+<td>U+0800 ~ U+FFFF</td>
+<td>1110xxxx 10xxxxxx 10xxxxxx</td>
+</tr>
+<tr>
+<td>4 字节</td>
+<td>U+10000 ~ U+10FFFF</td>
+<td>11110xxx 10xxxxxx 10xxxxxx 10xxxxxx</td>
+</tr>
+</tbody>
+</table>
+<p>注意：在UTF-8被首次定义时（RFC 2279），它的设计目标是能够编码到整个<strong>31位</strong>的空间（即支持码点范围为 U+000000 到 U+7FFFFFFF）。因此，UTF-8最初允许最大6个字节来表示一个字符。</p>
+<p>但是 Unicode标准（从版本3.1开始）将码点范围限制在 U+0000 到 U+10FFFF（使用21位空间），这意味着最多需要4个字节就能编码所有Unicode字符。</p>
+<p>这个改动与UTF-16的设计限制密切相关（如果哪一天字符不够用了，废掉UTF-16，只保留UTF-32和UTF-8就行了，那时UTF-8可以恢复成6字节）。</p>
+<h2 id="_2">参考</h2>
+<ul>
+<li>https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2295r6.pdf</li>
+<li>https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page</li>
+<li>https://learn.microsoft.com/en-us/cpp/build/reference/utf-8-set-source-and-executable-character-sets-to-utf-8?view=msvc-170</li>
+<li>https://en.wikipedia.org/wiki/UTF-8</li>
+<li></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-12-22T00:10:00+08:00" pubdate>Sun 22 December 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/c.html'>C++</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/c.html">c++</a>,    <a class="category" href="https://blog.debao.me/tags/qt.html">qt</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

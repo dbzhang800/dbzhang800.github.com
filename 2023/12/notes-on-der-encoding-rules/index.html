@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>DER编码规则小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">DER编码规则小记</h1>
+    <p class="meta">
+<time datetime="2023-12-13T19:09:00+08:00" pubdate>Wed 13 December 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><p><strong>X.690</strong>定义了ASN.1的编码格式，包括BER、CER、DER。另外 ASN.1的编码格式还有 XER、JER 等。</p>
+<ul>
+<li>BER：Basic Encoding Rules</li>
+<li>CER：Canonical Encoding Rules</li>
+<li>DER：Distinguished Encoding Rules</li>
+</ul>
+<p>DER是BER的子集，本文只关注DER。</p>
+<h2 id="_1">规则</h2>
+<p>DER 指定了用于编码 ASN.1 数据结构的部分自描述和自定界协议。 每个数据元素都将被编码为类型标识符、长度描述、实际数据元素。 这些类型的编码通常称为类型type-长度length-值value (TLV) 编码。 然而，在 DER 的术语中，它是标识符identifier-长度length-内容content。</p>
+<ul>
+<li>Identifier：Type</li>
+<li>Length：Length</li>
+<li>Contents：Value</li>
+</ul>
+<h3 id="identifer">标识符Identifer</h3>
+<p>标识符占一个(Short form)或多个字节(Long form)。</p>
+<p><img alt="der-identifier" src="https://blog.debao.me/images/der-identifier.png"></p>
+<p>标识符有四类（Class），本文关注Universal：</p>
+<ul>
+<li>Universal：0，Native to ASN.1</li>
+<li>Application：1</li>
+<li>Context-specific：2</li>
+<li>Private：3</li>
+</ul>
+<p>值类型有两种（P/C）：</p>
+<ul>
+<li>Primitive：Content直接是值</li>
+<li>Constructed：Content包含多个其他编码值</li>
+</ul>
+<p>ANS.1定义的一些type：</p>
+<ul>
+<li>BOOLEAN：1</li>
+<li>INTEGER：2</li>
+<li><strong>BIT STRING</strong>：3</li>
+<li>OCTET STRING：4</li>
+<li>NULL：5</li>
+<li><strong>OBJECT IDENTIFIER</strong>：6</li>
+<li>OBJECT Descriptor：7</li>
+<li>EXTERNAL：8</li>
+<li>REAL：9</li>
+<li>UTF8String：12</li>
+<li><strong>SEQUENCE</strong>，SEQUENCE OF：16</li>
+<li>SET，SET OF：17</li>
+<li>DATE：31</li>
+<li>...</li>
+</ul>
+<p>Type大于30时，标识符1个字节不够用，需要使用long form。</p>
+<h3 id="_2">长度</h3>
+<p>DER不使用Indefinite，故只需要考虑Definite格式。它又分为short和long两种。</p>
+<p><img alt="der-length" src="https://blog.debao.me/images/der-length.png"></p>
+<h3 id="_3">内容规则</h3>
+<h4 id="object-identifier">对象标识符 <strong>OBJECT IDENTIFIER</strong></h4>
+<ul>
+<li>OID 的前两个节点编码为单个字节。 第一个节点乘以小数 40，结果将添加到第二个节点的值。</li>
+<li>小于或等于 127 的节点值按一个字节进行编码。</li>
+<li>大于或等于 128 的节点值按多个字节进行编码。 最左侧字节的第 7 位设置为 1。 每个字节的 0 到 6 位包含编码值。</li>
+</ul>
+<h4 id="bit-string">BIT STRING</h4>
+<p><strong>BIT STRING</strong>  TLV 三元组的 <strong>“值”</strong> 字段包含一个前导字节，该字节指定内容最后一个字节中剩余未使用的位数。</p>
+<p><img alt="位字符串数据类型的 der 编码" src="https://blog.debao.me/images/der-tlv-bitstring.png"></p>
+<p>再上面的示例中， <strong>“长度L”</strong> 字段为“0x03”，因为后面跟着三个内容字节。“ <strong>值</strong>V ”字段的前导字节设置为“0x04，因为最后一个内容字节中有四个未使用的位。 每个未使用的位都由字母 x 表示。</p>
+<p>注：图片来自：https://learn.microsoft.com/zh-cn/windows/win32/seccertenroll/about-bit-string</p>
+<h4 id="integer">INTEGER</h4>
+<p>如果整数为正数，但高阶位设置为 1，则需要将0x00作为前导字符添加到内容中，以指示数字不是负数。</p>
+<h2 id="der">解码DER</h2>
+<p>python中好多支持der编解码的库，比如</p>
+<ul>
+<li>https://pypi.org/project/asn1crypto/</li>
+<li>https://pypi.org/project/asn1tools/</li>
+<li>https://pypi.org/project/asn1/</li>
+<li>https://pypi.org/project/pyasn1/</li>
+<li>https://github.com/wiml/derlite</li>
+</ul>
+<p>简单起见，我们按照DER的规则，自己写写，看能否解读RSA的公钥文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="k">def</span> <span class="nf">parse_der</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="c1">#print(f&#39;Parsing: {data.hex(&quot; &quot;)}, Length: {len(data)}\n&#39;)</span>
+    <span class="c1"># parse tag and length</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">length</span> <span class="o">&amp;</span> <span class="mh">0x80</span><span class="p">:</span>
+        <span class="n">length_bytes</span> <span class="o">=</span> <span class="n">length</span> <span class="o">&amp;</span> <span class="mh">0x7F</span>
+        <span class="n">length_value</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&gt;</span><span class="si">{</span><span class="n">length_bytes</span><span class="si">}</span><span class="s1">B&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">2</span><span class="o">+</span><span class="n">length_bytes</span><span class="p">])</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">byte</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="p">(</span><span class="n">length_bytes</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">byte</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">length_value</span><span class="p">)])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">length_bytes</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">contents</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="o">+</span><span class="n">length_bytes</span> <span class="p">:</span> <span class="mi">2</span><span class="o">+</span><span class="n">length_bytes</span><span class="o">+</span><span class="n">length</span><span class="p">]</span>
+    <span class="n">total_length</span> <span class="o">=</span> <span class="n">length</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">length_bytes</span>
+
+
+    <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="mh">0x01</span><span class="p">:</span>  <span class="c1"># Boolean</span>
+        <span class="k">return</span> <span class="n">tag</span><span class="p">,</span> <span class="n">total_length</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">contents</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="mh">0x02</span><span class="p">:</span>  <span class="c1"># Integer</span>
+        <span class="k">return</span> <span class="n">tag</span><span class="p">,</span> <span class="n">total_length</span><span class="p">,</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="s1">&#39;big&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="mh">0x03</span><span class="p">:</span>  <span class="c1"># BitString</span>
+        <span class="k">return</span> <span class="n">tag</span><span class="p">,</span> <span class="n">total_length</span><span class="p">,</span> <span class="n">contents</span><span class="o">.</span><span class="n">hex</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="mh">0x04</span><span class="p">:</span>  <span class="c1"># OctetString</span>
+        <span class="k">return</span> <span class="n">tag</span><span class="p">,</span> <span class="n">total_length</span><span class="p">,</span> <span class="n">contents</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="mh">0x05</span><span class="p">:</span>  <span class="c1"># Null</span>
+        <span class="k">return</span> <span class="n">tag</span><span class="p">,</span> <span class="n">total_length</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="mh">0x06</span><span class="p">:</span>  <span class="c1"># ObjectIdentifier</span>
+        <span class="n">oid_bytes</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&gt;</span><span class="si">{</span><span class="n">length</span><span class="si">}</span><span class="s1">B&#39;</span><span class="p">,</span> <span class="n">contents</span><span class="p">)</span>
+        <span class="n">first_byte</span> <span class="o">=</span> <span class="n">oid_bytes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">40</span>
+        <span class="n">second_byte</span> <span class="o">=</span> <span class="n">oid_bytes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="mi">40</span>
+        <span class="n">oid</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">first_byte</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">second_byte</span><span class="p">)]</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">oid_bytes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="o">*</span> <span class="mi">128</span> <span class="o">+</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="mh">0x7F</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="mh">0x80</span><span class="p">:</span>
+                <span class="n">oid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">tag</span><span class="p">,</span> <span class="n">total_length</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">oid</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="mh">0x30</span> <span class="ow">or</span> <span class="n">tag</span> <span class="o">==</span> <span class="mh">0x31</span><span class="p">:</span>  <span class="c1"># Sequence or Set</span>
+        <span class="c1"># 0x30: tag 0x10 with P/C=1</span>
+        <span class="c1"># 0x31: tag 0x11 with P/C=1</span>
+        <span class="n">parsed_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">sub_tag</span><span class="p">,</span> <span class="n">sub_length</span><span class="p">,</span> <span class="n">item</span> <span class="o">=</span> <span class="n">parse_der</span><span class="p">(</span><span class="n">contents</span><span class="p">[</span><span class="n">index</span><span class="p">:])</span>
+            <span class="n">parsed_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">index</span> <span class="o">+=</span> <span class="n">sub_length</span>
+
+        <span class="k">return</span> <span class="n">tag</span><span class="p">,</span> <span class="n">total_length</span><span class="p">,</span> <span class="n">parsed_data</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown tag: </span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tag</span><span class="p">,</span> <span class="n">total_length</span><span class="p">,</span> <span class="kc">None</span>
+
+<span class="n">base64_data</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;&#39;-----BEGIN PUBLIC KEY-----</span>
+<span class="s1">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2Wk4/RZTlV2Wp28mMlzG</span>
+<span class="s1">EvCJtYUKlK1BD1bzGl4dS41dQuLjkmgV6QnLcOgpfJCF8CPuS4rVBCZ0jG0VuY6A</span>
+<span class="s1">ZU+cBsY74LY+WDQt6GJCktgFmDoQ81onmA+SYS5yIhVJMo4KCbn88HXt201iWPJK</span>
+<span class="s1">bla+EduA1CustJxDb+vkqylomceW0YZmBkyfFJ5v5VYqql7BD/Roa9tU/rYssE67</span>
+<span class="s1">gnIfMRDyzWfATOKgPmERVEO4RPkwtH4NIHmTDN6NgZixrnRXuY+tc46JPvPI8mhM</span>
+<span class="s1">Kq62A5wHVWmJkzayFH4cMPogIVAJocxh0Sct4jqIVA8FJOVoUzsUyZU/ct1fNU8p</span>
+<span class="s1">bwIDAQAB</span>
+<span class="s1">-----END PUBLIC KEY-----&#39;&#39;&#39;</span>
+<span class="c1"># remove header and footer with regex</span>
+<span class="n">base64_data</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">rb</span><span class="s1">&#39;----[A-Z ]+----&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">base64_data</span><span class="p">)</span>
+<span class="n">der_data</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">base64_data</span><span class="p">)</span>
+
+<span class="n">parsed_data</span> <span class="o">=</span> <span class="n">parse_der</span><span class="p">(</span><span class="n">der_data</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parsed_data</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>[[&#39;1.2.840.113549.1.1.1&#39;, None], &#39;00 30 82 01 0a 02 82 01 01 00 d9 69 38 fd 16 53 95 5d 96 a7 6f 26 32 5c c6 12 f0 89 b5 85 0a 94 ad 41 0f 56 f3 1a 5e 1d 4b 8d 5d 42 e2 e3 92 68 15 e9 09 cb 70 e8 29 7c 90 85 f0 23 ee 4b 8a d5 04 26 74 8c 6d 15 b9 8e 80 65 4f 9c 06 c6 3b e0 b6 3e 58 34 2d e8 62 42 92 d8 05 98 3a 10 f3 5a 27 98 0f 92 61 2e 72 22 15 49 32 8e 0a 09 b9 fc f0 75 ed db 4d 62 58 f2 4a 6e 56 be 11 db 80 d4 2b ac b4 9c 43 6f eb e4 ab 29 68 99 c7 96 d1 86 66 06 4c 9f 14 9e 6f e5 56 2a aa 5e c1 0f f4 68 6b db 54 fe b6 2c b0 4e bb 82 72 1f 31 10 f2 cd 67 c0 4c e2 a0 3e 61 11 54 43 b8 44 f9 30 b4 7e 0d 20 79 93 0c de 8d 81 98 b1 ae 74 57 b9 8f ad 73 8e 89 3e f3 c8 f2 68 4c 2a ae b6 03 9c 07 55 69 89 93 36 b2 14 7e 1c 30 fa 20 21 50 09 a1 cc 61 d1 27 2d e2 3a 88 54 0f 05 24 e5 68 53 3b 14 c9 95 3f 72 dd 5f 35 4f 29 6f 02 03 01 00 01&#39;]
+</code></pre></div></td></tr></table></div>
+
+<p>对比一下openssl的输出<code>openssl rsa -pubin -in rsa_2048.pub -text</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code>Public-Key: (2048 bit)
+Modulus:
+    00:d9:69:38:fd:16:53:95:5d:96:a7:6f:26:32:5c:
+    c6:12:f0:89:b5:85:0a:94:ad:41:0f:56:f3:1a:5e:
+    1d:4b:8d:5d:42:e2:e3:92:68:15:e9:09:cb:70:e8:
+    29:7c:90:85:f0:23:ee:4b:8a:d5:04:26:74:8c:6d:
+    15:b9:8e:80:65:4f:9c:06:c6:3b:e0:b6:3e:58:34:
+    2d:e8:62:42:92:d8:05:98:3a:10:f3:5a:27:98:0f:
+    92:61:2e:72:22:15:49:32:8e:0a:09:b9:fc:f0:75:
+    ed:db:4d:62:58:f2:4a:6e:56:be:11:db:80:d4:2b:
+    ac:b4:9c:43:6f:eb:e4:ab:29:68:99:c7:96:d1:86:
+    66:06:4c:9f:14:9e:6f:e5:56:2a:aa:5e:c1:0f:f4:
+    68:6b:db:54:fe:b6:2c:b0:4e:bb:82:72:1f:31:10:
+    f2:cd:67:c0:4c:e2:a0:3e:61:11:54:43:b8:44:f9:
+    30:b4:7e:0d:20:79:93:0c:de:8d:81:98:b1:ae:74:
+    57:b9:8f:ad:73:8e:89:3e:f3:c8:f2:68:4c:2a:ae:
+    b6:03:9c:07:55:69:89:93:36:b2:14:7e:1c:30:fa:
+    20:21:50:09:a1:cc:61:d1:27:2d:e2:3a:88:54:0f:
+    05:24:e5:68:53:3b:14:c9:95:3f:72:dd:5f:35:4f:
+    29:6f
+Exponent: 65537 (0x10001)
+</code></pre></div></td></tr></table></div>
+
+<p>仔细比较一下，可发现，Modulus和Exponent都包在 BIT STRING 输出里面了，但是是混在一块的。看来需要基于OID<code>1.2.840.113549.1.1.1</code>继续解读 BIT STRING 才行。</p>
+<p>另注意，此处Modulus有前导字符0（因为下一个字符D9，最高位为1），也可以通过<code>openssl rsa -modulus</code>来查看具体的模值：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl rsa -pubin  -in rsa_2048.pub -modulus
+Modulus=D96938FD1653955D96A76F26325CC612F089B5850A94AD410F56F31A5E1D4B8D5D42E2E3926815E909CB70E8297C9085F023EE4B8AD50426748C6D15B98E80654F9C06C63BE0B63E58342DE8624292D805983A10F35A27980F92612E72221549328E0A09B9FCF075EDDB4D6258F24A6E56BE11DB80D42BACB49C436FEBE4AB296899C796D18666064C9F149E6FE5562AAA5EC10FF4686BDB54FEB62CB04EBB82721F3110F2CD67C04CE2A03E61115443B844F930B47E0D2079930CDE8D8198B1AE7457B98FAD738E893EF3C8F2684C2AAEB6039C075569899336B2147E1C30FA20215009A1CC61D1272DE23A88540F0524E568533B14C9953F72DD5F354F296F
+</code></pre></div></td></tr></table></div>
+
+<p>猜想对不对？可以用 <a href="https://github.com/PKISolutions/Asn1Editor.WPF">Asn1Editor.WPF  </a>工具对比确认一下：</p>
+<p><img alt="asn1editor-rsa" src="https://blog.debao.me/images/asn1editor-rsa.png"></p>
+<p>可以看到它也在继续解读BIT STRING。</p>
+<p>OK，临时修改一下上面的python代码（注意，此处跳过BitString的第一个字节00，它用于指定最后一个内容字节中存在的未使用位数）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="mh">0x03</span><span class="p">:</span>  <span class="c1"># BitString</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">parse_der</span><span class="p">(</span><span class="n">contents</span><span class="p">[</span><span class="mi">1</span><span class="p">:])[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">tag</span><span class="p">,</span> <span class="n">total_length</span><span class="p">,</span> <span class="n">contents</span><span class="o">.</span><span class="n">hex</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>可得到两个值：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>[27445599381378035545670523148607236472225286815854892348596803754128427639970701679060637674408997570467049607589422583767959961753522984671350732011421502377280857000739029206485080166159886898664317181584241642378526386882345159670001146437538224818393591073459474805361047165591136893859645793002623819995930088355664715708614808951470601732409482672759339954069052827132163326960803603753820677019256485986991663132033163463784405045346025270316334503071062277674190893959720506018839850062431584678553749928642692097173492555975389032958879496564099492785722322726190859650291595641789787694809886825416252926319, 65537]
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_4">例子</h2>
+<h3 id="rsa-pkcs8x509-vs-pkcs1">RSA PKCS8/X.509 vs PKCS1</h3>
+<blockquote>
+<p>注意公钥头部 <code>-----BEGIN PUBLIC KEY-----</code> 与 <code>-----BEGIN RSA PUBLIC KEY-----</code>的不同。后者标出RSA字样，格式简单直接，存储RSA公钥；前者能存储各种算法的公钥，需要专门的OID标识。</p>
+</blockquote>
+<ul>
+<li>对于公钥，这两个格式分别由X.509<strong>SubjectPublicKeyInfo</strong> 和 PKCS1<strong>RSAPublicKey</strong>规范</li>
+<li>对于私钥，这两个格式分别由PKCS8 <strong>PrivateKeyInfo</strong>和 PKCS1 <strong>RSAPrivateKey</strong>规范</li>
+</ul>
+<p>上面的例子中，我们解读的是RSA的公钥（X.509）。可以转换成PKCS1格式，再看看</p>
+<p>转换可以通过openssl实现：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl<span class="w"> </span>rsa<span class="w"> </span>-pubin<span class="w"> </span>-in<span class="w"> </span>rsa_2048.pub<span class="w"> </span>-out<span class="w"> </span>rsa_2048_pkcs1.pub<span class="w"> </span>-RSAPublicKey_out
+</code></pre></div></td></tr></table></div>
+
+<p>结果文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="gh">-----BEGIN RSA PUBLIC KEY-----</span>
+<span class="s">MIIBCgKCAQEA2Wk4/RZTlV2Wp28mMlzGEvCJtYUKlK1BD1bzGl4dS41dQuLjkmgV</span>
+<span class="s">6QnLcOgpfJCF8CPuS4rVBCZ0jG0VuY6AZU+cBsY74LY+WDQt6GJCktgFmDoQ81on</span>
+<span class="s">mA+SYS5yIhVJMo4KCbn88HXt201iWPJKbla+EduA1CustJxDb+vkqylomceW0YZm</span>
+<span class="s">BkyfFJ5v5VYqql7BD/Roa9tU/rYssE67gnIfMRDyzWfATOKgPmERVEO4RPkwtH4N</span>
+<span class="s">IHmTDN6NgZixrnRXuY+tc46JPvPI8mhMKq62A5wHVWmJkzayFH4cMPogIVAJocxh</span>
+<span class="s">0Sct4jqIVA8FJOVoUzsUyZU/ct1fNU8pbwIDAQAB</span>
+<span class="gh">-----END RSA PUBLIC KEY-----</span>
+</code></pre></div></td></tr></table></div>
+
+<p>将这段内容直接贴进前面的python代码，输出结果如下（比前面简单直接）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>[27445599381378035545670523148607236472225286815854892348596803754128427639970701679060637674408997570467049607589422583767959961753522984671350732011421502377280857000739029206485080166159886898664317181584241642378526386882345159670001146437538224818393591073459474805361047165591136893859645793002623819995930088355664715708614808951470601732409482672759339954069052827132163326960803603753820677019256485986991663132033163463784405045346025270316334503071062277674190893959720506018839850062431584678553749928642692097173492555975389032958879496564099492785722322726190859650291595641789787694809886825416252926319, 65537]
+</code></pre></div></td></tr></table></div>
+
+<h4 id="pkcs1">PKCS1</h4>
+<ul>
+<li>https://www.rfc-editor.org/rfc/rfc3447#page-44</li>
+</ul>
+<p>定义RSA公钥和私钥的格式，其中私钥：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">      </span><span class="nv">RSAPrivateKey</span><span class="w"> </span><span class="o">::=</span><span class="w"> </span><span class="nv">SEQUENCE</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nv">version</span><span class="w">           </span><span class="nv">Version</span><span class="p">,</span>
+<span class="w">          </span><span class="nv">modulus</span><span class="w">           </span><span class="nv">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nv">n</span>
+<span class="w">          </span><span class="nv">publicExponent</span><span class="w">    </span><span class="nv">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nv">e</span>
+<span class="w">          </span><span class="nv">privateExponent</span><span class="w">   </span><span class="nv">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nv">d</span>
+<span class="w">          </span><span class="nv">prime1</span><span class="w">            </span><span class="nv">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nv">p</span>
+<span class="w">          </span><span class="nv">prime2</span><span class="w">            </span><span class="nv">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nv">q</span>
+<span class="w">          </span><span class="nv">exponent1</span><span class="w">         </span><span class="nv">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nv">d</span><span class="w"> </span><span class="nf">mod</span><span class="w"> </span><span class="p">(</span><span class="nv">p</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">          </span><span class="nv">exponent2</span><span class="w">         </span><span class="nv">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nv">d</span><span class="w"> </span><span class="nf">mod</span><span class="w"> </span><span class="p">(</span><span class="nv">q</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">          </span><span class="nv">coefficient</span><span class="w">       </span><span class="nv">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="p">(</span><span class="nv">inverse</span><span class="w"> </span><span class="nv">of</span><span class="w"> </span><span class="nv">q</span><span class="p">)</span><span class="w"> </span><span class="nv">mod</span><span class="w"> </span><span class="nv">p</span>
+<span class="w">          </span><span class="nv">otherPrimeInfos</span><span class="w">   </span><span class="nv">OtherPrimeInfos</span><span class="w"> </span><span class="nv">OPTIONAL</span>
+<span class="w">      </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>在ASN.1中，注释有两种形式，单行注释和多行注释。单行注释以 <code>--</code> 开始，以行尾或者另一个<code>--</code>结束（以先遇到的为准）。多行注释以<code>/*</code>开始，以<code>*/</code>结束。多行注释允许多重嵌套，如果遇到多个<code>/*</code>，需要遇到同等的<code>*/</code>才结束注释。</p>
+</blockquote>
+<p>公钥：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">      </span><span class="nv">RSAPublicKey</span><span class="w"> </span><span class="o">::=</span><span class="w"> </span><span class="nv">SEQUENCE</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nv">modulus</span><span class="w">           </span><span class="nv">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nv">n</span>
+<span class="w">          </span><span class="nv">publicExponent</span><span class="w">    </span><span class="nv">INTEGER</span><span class="w">   </span><span class="o">--</span><span class="w"> </span><span class="nv">e</span>
+<span class="w">      </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="pkcs8">PKCS8</h4>
+<ul>
+<li>https://datatracker.ietf.org/doc/html/rfc5208</li>
+</ul>
+<p>定义私钥PrivateKeyInfo的格式</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="x">PrivateKeyInfo ::= SEQUENCE {</span>
+<span class="x">   version Version,</span>
+<span class="x">   privateKeyAlgorithm AlgorithmIdentifier </span><span class="cp">{{</span><span class="nv">PrivateKeyAlgorithms</span><span class="cp">}}</span><span class="x">,</span>
+<span class="x">   privateKey PrivateKey,</span>
+<span class="x">   attributes [0] Attributes OPTIONAL }</span>
+
+<span class="x">Version ::= INTEGER {v1(0)} (v1,...)</span>
+
+<span class="x">PrivateKey ::= OCTET STRING</span>
+
+<span class="x">Attributes ::= SET OF Attribute</span>
+</code></pre></div></td></tr></table></div>
+
+<p>以及EncryptedPrivateKeyInfo</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="x">EncryptedPrivateKeyInfo ::= SEQUENCE {</span>
+<span class="x">    encryptionAlgorithm AlgorithmIdentifier </span><span class="cp">{{</span><span class="nv">KeyEncryptionAlgorithms</span><span class="cp">}}</span><span class="x">,</span>
+<span class="x">    encryptedData EncryptedData</span>
+<span class="x">}</span>
+
+<span class="x">EncryptedData ::= OCTET STRING</span>
+</code></pre></div></td></tr></table></div>
+
+<p>但是公钥定义应该不再PKCS8里面。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">SubjectPublicKeyInfo</span><span class="w">  </span><span class="o">::=</span><span class="w">  </span><span class="nv">SEQUENCE</span><span class="w">  </span><span class="p">{</span>
+<span class="w">     </span><span class="nv">algorithm</span><span class="w">            </span><span class="nv">AlgorithmIdentifier</span><span class="p">,</span>
+<span class="w">     </span><span class="nv">subjectPublicKey</span><span class="w">     </span><span class="nv">BIT</span><span class="w"> </span><span class="nv">STRING</span><span class="w">  </span><span class="p">}</span>
+
+<span class="nv">AlgorithmIdentifier</span><span class="w">  </span><span class="o">::=</span><span class="w">  </span><span class="nv">SEQUENCE</span><span class="w">  </span><span class="p">{</span>
+<span class="w">     </span><span class="nv">algorithm</span><span class="w">               </span><span class="nv">OBJECT</span><span class="w"> </span><span class="nv">IDENTIFIER</span><span class="p">,</span>
+<span class="w">     </span><span class="nv">parameters</span><span class="w">              </span><span class="nv">ANY</span><span class="w"> </span><span class="nv">DEFINED</span><span class="w"> </span><span class="nv">BY</span><span class="w"> </span><span class="nv">algorithm</span><span class="w"> </span><span class="nv">OPTIONAL</span><span class="w">  </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>对RSA来说， OID 是 <code>1.2.840.113549.1.1.1</code>, 其 <code>RSAPublicKey</code> 位于 <code>subjectPublicKey</code>  这个BIT STRING 中。</p>
+<h3 id="openssl">OpenSSL</h3>
+<p>OpenSSL 提供一个 asn1parse 的工具，用于解读 asn1文件。</p>
+<p>输出内容说明：</p>
+<ul>
+<li>d：嵌套深度(depth)</li>
+<li>hl：头部长度(head length)</li>
+<li>l：内容长度(length)</li>
+<li>cons/prim：类型</li>
+</ul>
+<h4 id="public-key-x509">解读 PUBLIC KEY 格式的公钥（X.509)：</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl asn1parse -in rsa_2048.pub
+    0:d=0  hl=4 l= 290 cons: SEQUENCE
+    4:d=1  hl=2 l=  13 cons: SEQUENCE
+    6:d=2  hl=2 l=   9 prim: OBJECT            :rsaEncryption
+   17:d=2  hl=2 l=   0 prim: NULL
+   19:d=1  hl=4 l= 271 prim: BIT STRING
+</code></pre></div></td></tr></table></div>
+
+<p>可以看到，默认和我们一样，key 在 BIT STRING 中，需要进一步解读。</p>
+<h4 id="rsa-public-keypkcs1">解读 RSA PUBLIC KEY公钥（PKCS1）：</h4>
+<p>这个就比较直接：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl asn1parse -in rsa_2048_pkcs1.pub
+    0:d=0  hl=4 l= 266 cons: SEQUENCE
+    4:d=1  hl=4 l= 257 prim: INTEGER           :D96938FD1653955D96A76F26325CC612F089B5850A94AD410F56F31A5E1D4B8D5D42E2E3926815E909CB70E8297C9085F023EE4B8AD50426748C6D15B98E80654F9C06C63BE0B63E58342DE8624292D805983A10F35A27980F92612E72221549328E0A09B9FCF075EDDB4D6258F24A6E56BE11DB80D42BACB49C436FEBE4AB296899C796D18666064C9F149E6FE5562AAA5EC10FF4686BDB54FEB62CB04EBB82721F3110F2CD67C04CE2A03E61115443B844F930B47E0D2079930CDE8D8198B1AE7457B98FAD738E893EF3C8F2684C2AAEB6039C075569899336B2147E1C30FA20215009A1CC61D1272DE23A88540F0524E568533B14C9953F72DD5F354F296F
+  265:d=1  hl=2 l=   3 prim: INTEGER           :010001
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_5">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/X.690#DER_encoding</li>
+<li>https://learn.microsoft.com/zh-cn/windows/win32/seccertenroll/about-bit-string</li>
+<li>https://www.oss.com/asn1/resources/asn1-made-simple/encoding-rules.html</li>
+<li>https://www.alvestrand.no/objectid/1.2.840.113549.1.1.html</li>
+<li>https://medium.com/asecuritysite-when-bob-met-alice/the-magic-of-cryptographic-identifiers-and-formats-oids-der-and-asn-1-efc4e75c94db</li>
+<li>https://mbed-tls.readthedocs.io/en/latest/kb/cryptography/asn1-key-structures-in-der-and-pem/</li>
+<li>https://stackoverflow.com/questions/18039401/how-can-i-transform-between-the-two-styles-of-public-key-format-one-begin-rsa</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-12-13T19:09:00+08:00" pubdate>Wed 13 December 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a class="category" href="https://blog.debao.me/tags/der.html">der</a>,    <a class="category" href="https://blog.debao.me/tags/rsa.html">rsa</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

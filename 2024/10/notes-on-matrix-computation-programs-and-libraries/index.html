@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>矩阵的计算程序与库小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">矩阵的计算程序与库小记</h1>
+    <p class="meta">
+<time datetime="2024-10-15T13:24:00+08:00" pubdate>Tue 15 October 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>接前面的<a href="https://blog.debao.me/2024/10/notes-on-matrix/">矩阵知识小记</a>，稍微整理一下相关的计算程序或库（不考虑商业版）。</p>
+</blockquote>
+<h2 id="_1">对比</h2>
+<p>涉及矩阵的各种程序和库有很多，暂时关注一下如下4个：</p>
+<ul>
+<li><strong>Maxima</strong> 是一个计算机代数系统，主要用于符号计算。</li>
+<li><strong>NumPy</strong> 是 Python 中的科学计算库，广泛用于数值计算。</li>
+<li><strong>OpenCV</strong> 是 C++ 用于计算机视觉的库，支持一些矩阵操作，但主要用于图像处理。他有python绑定，但python绑定的矩阵操作主要使用NumPy。</li>
+<li><strong>Eigen</strong> 是 C++ 的矩阵和线性代数库，广泛用于数值计算。</li>
+</ul>
+<h3 id="_2">矩阵常规操作</h3>
+<p>矩阵的创建，矩阵的运算，矩阵的分解...</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th><strong>Maxima</strong></th>
+<th><strong>NumPy</strong></th>
+<th><strong>OpenCV (C++)</strong></th>
+<th><strong>Eigen</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>矩阵创建</strong></td>
+<td><code>matrix([a,b], [c,d])</code></td>
+<td><code>np.array([[a, b], [c, d]])</code></td>
+<td><code>cv::Mat A = (cv::Mat_&lt;double&gt;(2,2) &lt;&lt; a, b, c, d);</code></td>
+<td><code>Eigen::MatrixXd A(2, 2); A &lt;&lt; a, b, c, d;</code></td>
+</tr>
+<tr>
+<td><strong>矩阵加法</strong></td>
+<td><code>A + B</code></td>
+<td><code>A + B</code></td>
+<td><code>cv::add(A, B, C);</code></td>
+<td><code>A + B</code></td>
+</tr>
+<tr>
+<td><strong>矩阵乘法</strong></td>
+<td><code>A . B</code></td>
+<td><code>np.dot(A, B)</code> 或 <code>A @ B</code></td>
+<td><code>C = A * B;</code>  或 <code>cv::gemm(A, B, 1.0, cv::Mat(), 0.0, C);</code></td>
+<td><code>A * B</code></td>
+</tr>
+<tr>
+<td><strong>矩阵转置</strong></td>
+<td><code>transpose(A)</code></td>
+<td><code>A.T</code></td>
+<td><code>cv::transpose(A, B);</code></td>
+<td><code>A.transpose()</code></td>
+</tr>
+<tr>
+<td><strong>矩阵行列式</strong></td>
+<td><code>determinant(A)</code></td>
+<td><code>np.linalg.det(A)</code></td>
+<td><code>cv::determinant(A);</code></td>
+<td><code>A.determinant()</code></td>
+</tr>
+<tr>
+<td><strong>矩阵求逆</strong></td>
+<td><code>invert(A)</code></td>
+<td><code>np.linalg.inv(A)</code></td>
+<td><code>cv::invert(A, B);</code></td>
+<td><code>A.inverse()</code></td>
+</tr>
+<tr>
+<td><strong>矩阵求迹</strong></td>
+<td><code>trace(A)</code></td>
+<td><code>np.trace(A)</code></td>
+<td><code>cv::trace(A);</code></td>
+<td><code>A.trace()</code></td>
+</tr>
+<tr>
+<td><strong>矩阵的LU分解</strong></td>
+<td><code>lu_factor(A)</code></td>
+<td><code>scipy.linalg.lu(A)</code></td>
+<td><code>cv::LU(A, B);</code> (部分功能)</td>
+<td><code>Eigen::FullPivLU</code></td>
+</tr>
+<tr>
+<td><strong>矩阵的QR分解</strong></td>
+<td>N/A</td>
+<td><code>np.linalg.qr(A)</code></td>
+<td>N/A</td>
+<td><code>Eigen::HouseholderQR</code></td>
+</tr>
+<tr>
+<td><strong>矩阵的特征值分解</strong></td>
+<td><code>eigenvalues(A)</code></td>
+<td><code>np.linalg.eig(A)</code></td>
+<td><code>cv::eigenNonSymmetric()</code></td>
+<td><code>Eigen::EigenSolver</code></td>
+</tr>
+<tr>
+<td><strong>矩阵的SVD分解</strong></td>
+<td>N/A</td>
+<td><code>np.linalg.svd(A)</code></td>
+<td><code>cv::SVDecomp(A, W, U, Vt);</code></td>
+<td><code>Eigen::JacobiSVD</code></td>
+</tr>
+<tr>
+<td><strong>矩阵与标量相乘</strong></td>
+<td><code>k * A</code></td>
+<td><code>k * A</code></td>
+<td><code>A = A * k;</code></td>
+<td><code>k * A</code></td>
+</tr>
+<tr>
+<td><strong>矩阵拼接</strong></td>
+<td><code>augment(A, B)</code>（水平），<code>stackmatrix(A, B)</code>（竖直）</td>
+<td><code>np.hstack((A, B))</code> (水平)，<code>np.vstack((A, B))</code> （竖直）</td>
+<td><code>cv::hconcat(A, B, C);</code> (水平)，<code>cv::vconcat(A, B, C);</code> （竖直）</td>
+<td><code>Eigen::MatrixXd::hstack(A, B)</code> ，<code>Eigen::MatrixXd::vstack(A, B)</code></td>
+</tr>
+<tr>
+<td><strong>矩阵求范数</strong></td>
+<td>N/A</td>
+<td><code>np.linalg.norm(A)</code></td>
+<td><code>cv::norm(A);</code></td>
+<td><code>A.norm()</code></td>
+</tr>
+<tr>
+<td><strong>单位矩阵</strong></td>
+<td><code>ident(n)</code></td>
+<td><code>np.eye(n)</code></td>
+<td><code>cv::Mat::eye(n, n, CV_64F);</code></td>
+<td><code>Eigen::MatrixXd::Identity(n, n)</code></td>
+</tr>
+<tr>
+<td><strong>零矩阵</strong></td>
+<td><code>zeromatrix(m, n)</code></td>
+<td><code>np.zeros((m, n))</code></td>
+<td><code>cv::Mat::zeros(m, n, CV_64F);</code></td>
+<td><code>Eigen::MatrixXd::Zero(m, n)</code></td>
+</tr>
+<tr>
+<td><strong>矩阵元素逐项相乘</strong></td>
+<td><code>A .* B</code></td>
+<td><code>A * B</code></td>
+<td><code>cv::multiply(A, B, C);</code></td>
+<td><code>A.cwiseProduct(B)</code></td>
+</tr>
+<tr>
+<td><strong>矩阵元素逐项取平方</strong></td>
+<td>N/A</td>
+<td><code>np.square(A)</code></td>
+<td><code>cv::pow(A, 2, B);</code></td>
+<td><code>A.array().square()</code></td>
+</tr>
+<tr>
+<td><strong>矩阵对角线元素</strong></td>
+<td><code>diagmatrix(A)</code></td>
+<td><code>np.diag(A)</code></td>
+<td><code>cv::Mat diag = cv::Mat::diag(A);</code></td>
+<td><code>A.diagonal()</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_3">存储结构</h3>
+<blockquote>
+<p>计算机内存是线性的，即内存地址是一个连续的线性空间，但矩阵是二维（或多维）的数据结构。为了将这些多维数据存储在线性内存中，就需要决定如何对数据进行线性化存储，即按行还是按列的顺序存储。</p>
+</blockquote>
+<ul>
+<li>行主序（Row-major order） 是大多数编程语言（如 C、C++、Python（NumPy 默认））的默认存储方式。这种存储方式更符合线性代数中常见的运算模式，例如矩阵乘法中的行向量和列向量操作。</li>
+<li>列主序（Column-major order） 是 Fortran 和一些数学工具（如 MATLAB 和 Eigen（默认））的选择。这是因为 Fortran 早期广泛用于科学计算，使用列主序可以更好地优化向量化操作和循环性能。</li>
+</ul>
+<p>比如：对于 2x2 矩阵：</p>
+<div class="math display">
+A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}
+</div>
+
+<p>按 <strong>行主序</strong> 存储的内存排列为：<code>[1, 2, 3, 4]</code>；按 <strong>列主序</strong> 存储的内存排列则为：<code>[1, 3, 2, 4]</code>。</p>
+<table>
+<thead>
+<tr>
+<th>库/工具</th>
+<th>默认存储顺序</th>
+<th>如何选择行/列主序</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Maxima</strong></td>
+<td>无特别存储顺序</td>
+<td>无法选择，列表的列表</td>
+</tr>
+<tr>
+<td><strong>NumPy</strong></td>
+<td>行主序（可选列主序）</td>
+<td>使用 <code>order='C'</code> 选择行主序，<code>&lt;br&gt;</code>使用 <code>order='F'</code> 选择列主序</td>
+</tr>
+<tr>
+<td><strong>OpenCV</strong></td>
+<td>行主序</td>
+<td>无法选择，默认使用行主序</td>
+</tr>
+<tr>
+<td><strong>Eigen</strong></td>
+<td>列主序（可选行主序）</td>
+<td>使用 <code>Eigen::RowMajor</code> 选择行主序，<code>&lt;br&gt;</code>默认列主序</td>
+</tr>
+</tbody>
+</table>
+<h2 id="-">例子-特征值计算</h2>
+<p>以如下矩阵为例，计算其特征值</p>
+<div class="math display">
+A = \begin{pmatrix}
+  4 & 0 & 1 \\
+  2 & 3 & 2 \\
+  1 & 0 & 4
+  \end{pmatrix}
+</div>
+
+<p>maxima执行的是符号运算，我们可以使用它模拟手动计算过程：</p>
+<h3 id="_4">“手动”计算</h3>
+<ul>
+<li>使用charpoly获取特征多项式，也就是<span class="math inline">\mathbf{A}-t\mathbf{I}</span>的行列式值</li>
+<li>使用factor对特征多项进行分解，得出 <span class="math inline">-(t-5)*(t-3)^2</span>，可以肉眼看出特征值的结果</li>
+<li>使用solve解方程，得出特征值</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">(%</span><span class="nt">i1</span><span class="o">)</span><span class="w"> </span><span class="nt">A</span><span class="o">:</span><span class="w"> </span><span class="nt">matrix</span><span class="o">(</span><span class="cp">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="cp">]</span><span class="o">,</span><span class="cp">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="cp">]</span><span class="o">,</span><span class="cp">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="cp">]</span><span class="o">);</span>
+<span class="w">                                  </span><span class="cp">[</span><span class="w"> </span><span class="mi">4</span><span class="w">  </span><span class="mi">0</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="cp">]</span>
+<span class="w">                                  </span><span class="cp">[</span><span class="w">         </span><span class="cp">]</span>
+<span class="o">(%</span><span class="nt">o1</span><span class="o">)</span><span class="w">                             </span><span class="cp">[</span><span class="w"> </span><span class="mi">2</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="cp">]</span>
+<span class="w">                                  </span><span class="cp">[</span><span class="w">         </span><span class="cp">]</span>
+<span class="w">                                  </span><span class="cp">[</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="mi">0</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="cp">]</span>
+<span class="o">(%</span><span class="nt">i2</span><span class="o">)</span><span class="w"> </span><span class="nt">f</span><span class="o">:</span><span class="w"> </span><span class="nt">charpoly</span><span class="o">(</span><span class="nt">A</span><span class="o">,</span><span class="w"> </span><span class="nt">t</span><span class="o">);</span>
+<span class="w">                                              </span><span class="nt">2</span>
+<span class="o">(%</span><span class="nt">o2</span><span class="o">)</span><span class="w">                      </span><span class="nt">t</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">(</span><span class="nt">3</span><span class="w"> </span><span class="nt">-</span><span class="w"> </span><span class="nt">t</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="nt">4</span><span class="w"> </span><span class="nt">-</span><span class="w"> </span><span class="nt">t</span><span class="o">)</span><span class="w">  </span><span class="nt">-</span><span class="w"> </span><span class="nt">3</span>
+<span class="o">(%</span><span class="nt">i3</span><span class="o">)</span><span class="w"> </span><span class="nt">factor</span><span class="o">(</span><span class="nt">f</span><span class="o">);</span>
+<span class="w">                                               </span><span class="nt">2</span>
+<span class="o">(%</span><span class="nt">o3</span><span class="o">)</span><span class="w">                         </span><span class="nt">-</span><span class="w"> </span><span class="o">(</span><span class="nt">t</span><span class="w"> </span><span class="nt">-</span><span class="w"> </span><span class="nt">5</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="nt">t</span><span class="w"> </span><span class="nt">-</span><span class="w"> </span><span class="nt">3</span><span class="o">)</span>
+<span class="o">(%</span><span class="nt">i4</span><span class="o">)</span><span class="w"> </span><span class="nt">solve</span><span class="o">(</span><span class="nt">f</span><span class="o">=</span><span class="nt">0</span><span class="o">,</span><span class="w"> </span><span class="nt">t</span><span class="o">);</span>
+<span class="o">(%</span><span class="nt">o4</span><span class="o">)</span><span class="w">                           </span><span class="cp">[</span><span class="nx">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="cp">]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如何求解特征向量呢？？</p>
+<p>比如，接上面，我们要继续求解特征值 3 的特征向量，需要解如下方程 <span class="math inline">(A - 3I) \mathbf{v} = 0</span></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>(%i12) linsolve([v3+v1=0, 2*v3+2*v1=0, v3+v1=0], [v1,v2,v3]);
+(%o12)                 [v1 = - %r1, v2 = %r2, v3 = %r1]
+</code></pre></div></td></tr></table></div>
+
+<p>解出来的解是参数形式。据此，将参数用（1,0）和（0,1）带入，可以构造出两个特征向量</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>[1, 0, −1], [0, 1, 0]
+</code></pre></div></td></tr></table></div>
+
+<p>同样，对于特征值5，需要解 <span class="math inline">(A - 5I) \mathbf{v} = 0</span></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>(%i15) linsolve([v3-v1=0, 2*v3-2*v2+2*v1=0, v1-v3=0], [v1,v2,v3]);
+(%o15) [v1 = %r3, v2 = 2 %r3, v3 = %r3]
+</code></pre></div></td></tr></table></div>
+
+<p>接出来的解依然是参数形式，将参数用1带入，可以构造出特征向量</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>[1,2,1]
+</code></pre></div></td></tr></table></div>
+
+<h3 id="maxima">maxima自动计算</h3>
+<p>让 maxima 直接计算特征值也很简单：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">(%</span><span class="nt">i1</span><span class="o">)</span><span class="w"> </span><span class="nt">A</span><span class="o">:</span><span class="w"> </span><span class="nt">matrix</span><span class="o">(</span><span class="cp">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="cp">]</span><span class="o">,</span><span class="cp">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="cp">]</span><span class="o">,</span><span class="cp">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="cp">]</span><span class="o">);</span>
+<span class="w">                                  </span><span class="cp">[</span><span class="w"> </span><span class="mi">4</span><span class="w">  </span><span class="mi">0</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="cp">]</span>
+<span class="w">                                  </span><span class="cp">[</span><span class="w">         </span><span class="cp">]</span>
+<span class="o">(%</span><span class="nt">o1</span><span class="o">)</span><span class="w">                             </span><span class="cp">[</span><span class="w"> </span><span class="mi">2</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="cp">]</span>
+<span class="w">                                  </span><span class="cp">[</span><span class="w">         </span><span class="cp">]</span>
+<span class="w">                                  </span><span class="cp">[</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="mi">0</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="cp">]</span>
+<span class="o">(%</span><span class="nt">i2</span><span class="o">)</span><span class="w"> </span><span class="nt">eigenvalues</span><span class="o">(</span><span class="nt">A</span><span class="o">);</span>
+<span class="o">(%</span><span class="nt">o2</span><span class="o">)</span><span class="w">                          </span><span class="cp">[</span><span class="err">[</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="cp">]</span><span class="o">,</span><span class="w"> </span><span class="cp">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="cp">]</span><span class="o">]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>真正的特征值是放在结果的第一个list 当中，也就是5 和3。那第二个list 代表什么呢？代表的就是每个特征值的几何重数, 也就是每个特征值对应的特征向量空间之维度。</p>
+<p>如果同时要求出特征向量，可以直接用eigenvectors函数：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>(%i3) eigenvectors(A);
+(%o3) [[[5, 3], [1, 2]], [1, 2, 1], [1, 0, −1], [0, 1, 0]]
+</code></pre></div></td></tr></table></div>
+
+<h3 id="numpy">numpy</h3>
+<p>Python下功能都是现成的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+
+<span class="n">eigenvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+<span class="c1"># A 的特征值： [3. 5. 3.]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A 的特征值：&quot;</span><span class="p">,</span> <span class="n">eigenvalues</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果要同时求出特征向量，可以直接用</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A 的特征值：&quot;</span><span class="p">,</span> <span class="n">eigenvalues</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A 的特征向量：</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">eigenvectors</span><span class="p">)</span>
+
+<span class="c1">#A 的特征值： [3. 5. 3.]</span>
+<span class="c1">#A 的特征向量：</span>
+<span class="c1"># [[ 0.          0.40824829 -0.70710678]</span>
+<span class="c1"># [ 1.          0.81649658  0.        ]</span>
+<span class="c1"># [ 0.          0.40824829  0.70710678]]</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>特征向量要竖着看（列向量）。</p>
+</blockquote>
+<h3 id="eigen">Eigen</h3>
+<p>Eigen下使用 EigenSolver 计算矩阵 A 的特征值和特征向量</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Eigen/Dense&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span><span class="w"> </span><span class="n">A</span><span class="p">;</span>
+<span class="w">    </span><span class="n">A</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">         </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">         </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">Eigen</span><span class="o">::</span><span class="n">EigenSolver</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span><span class="o">&gt;</span><span class="w"> </span><span class="n">solver</span><span class="p">(</span><span class="n">A</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w">  </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">solver</span><span class="p">.</span><span class="n">eigenvalues</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w">  </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">solver</span><span class="p">.</span><span class="n">eigenvectors</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>输出结果</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>(5,0)
+(3,0)
+(3,0)
+ (0.408248,0)  (0.408248,0) (-0.268517,0)
+ (0.816497,0) (-0.816497,0) (-0.925093,0)
+ (0.408248,0) (-0.408248,0)  (0.268517,0)
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>特征向量要竖着看（列向量）。</p>
+</blockquote>
+<h3 id="opencv">OpenCV</h3>
+<p>在OpenCV中，使用 cv::eigen 或 cv::eigenNonSymmetric 计算特征值和特征向量</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;opencv2/opencv.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">cv</span><span class="o">::</span><span class="n">Mat</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">cv</span><span class="o">::</span><span class="n">Mat_</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">                 </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">                 </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">cv</span><span class="o">::</span><span class="n">Mat</span><span class="w"> </span><span class="n">eigenvalues</span><span class="p">,</span><span class="w"> </span><span class="n">eigenvectors</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">cv</span><span class="o">::</span><span class="n">eigenNonSymmetric</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">eigenvalues</span><span class="p">,</span><span class="w"> </span><span class="n">eigenvectors</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">eigenvalues</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">eigenvectors</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>输出结果</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>[5;
+ 3;
+ 3]
+[0.547722557505166, 1.095445115010332, 0.5477225575051659;
+ -0.4082482904638631, 0.8164965809277259, 0.4082482904638629;
+ -0.5412318472679982, -1.153604282963793, 0.5412318472679984]
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>特征向量要竖着看（列向量）。</p>
+</blockquote>
+<p>注意，上面用的cv::eigenNonSymmetric函数，尽管cv::eigen也能用于特征值求解，但是它只适用于对称矩阵。
+如果不小心用错了函数，大致会得到下面这种错误的结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>[5.903211925911553;
+ 3.80606343352537;
+ 1.290724640563077]
+[0.3971125497870069, 0.5206573684395941, 0.7557893406837773;
+ 0.8876503388204475, -0.4271322870657471, -0.1721478589408799;
+ 0.233191978407506, 0.7392387395392244, -0.6317812811178029]
+</code></pre></div></td></tr></table></div>
+
+<h2 id="octave">Octave</h2>
+<p>Octave：Octave 是一个开源的高级编程语言，主要用于数值计算，语法和功能与 MATLAB 高度兼容。有不少在线网站可以用于练习。</p>
+<p>在一定程度上，Octave和Python的Numpy可以类比：</p>
+<table>
+<thead>
+<tr>
+<th><strong>特性</strong></th>
+<th><strong>Octave</strong></th>
+<th><strong>Python (NumPy + SciPy)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>矩阵支持</strong></td>
+<td><strong>原生支持矩阵类型</strong>，默认情况下一切操作都是基于矩阵</td>
+<td>通过 <strong>NumPy</strong> 提供矩阵和数组支持，默认是数组（ndarray）</td>
+</tr>
+<tr>
+<td><strong>矩阵操作的简洁性</strong></td>
+<td><strong>矩阵运算非常简洁</strong>，默认处理为二维矩阵，类似 MATLAB</td>
+<td>NumPy 的数组操作非常灵活，但 Python 本身没有内置矩阵支持</td>
+</tr>
+<tr>
+<td><strong>矩阵索引</strong></td>
+<td>1 基索引（从 1 开始）</td>
+<td>0 基索引（从 0 开始），符合大多数编程语言的习惯</td>
+</tr>
+<tr>
+<td><strong>线性代数库</strong></td>
+<td>内置矩阵运算与线性代数函数，如 <code>inv</code>、<code>eig</code>、<code>det</code> 等</td>
+<td><strong>NumPy</strong> 和 <strong>SciPy</strong> 提供了丰富的线性代数函数，如 <code>inv</code>、<code>eig</code>、<code>det</code> 等</td>
+</tr>
+<tr>
+<td><strong>稀疏矩阵支持</strong></td>
+<td>支持稀疏矩阵，通过 <code>sparse</code> 函数进行稀疏矩阵运算</td>
+<td><strong>SciPy</strong> 提供了强大的稀疏矩阵支持，适合处理大规模稀疏矩阵</td>
+</tr>
+<tr>
+<td><strong>广播机制</strong></td>
+<td>无自动广播机制，矩阵的维度必须匹配</td>
+<td><strong>NumPy</strong> 支持广播机制，可在不同维度的数组之间进行操作</td>
+</tr>
+<tr>
+<td><strong>矩阵乘法</strong></td>
+<td><code>*</code> 表示矩阵乘法，<code>.*</code> 表示元素逐个相乘</td>
+<td><code>@</code> 表示矩阵乘法，<code>*</code> 表示元素逐个相乘（从 Python 3.5+ 开始）</td>
+</tr>
+<tr>
+<td><strong>向量化计算</strong></td>
+<td>默认支持向量化计算，所有操作都是矩阵或向量的</td>
+<td><strong>NumPy</strong> 默认支持向量化计算，避免显式的循环</td>
+</tr>
+<tr>
+<td><strong>性能</strong></td>
+<td>针对矩阵运算进行了优化，矩阵操作性能较好</td>
+<td><strong>NumPy</strong> 和 <strong>SciPy</strong> 的矩阵运算经过高度优化，性能非常好，部分操作可以与 Octave 相媲美</td>
+</tr>
+<tr>
+<td><strong>矩阵转置</strong></td>
+<td>使用 <code>'</code> 符号进行矩阵转置</td>
+<td>使用 <code>T</code> 属性进行矩阵转置（如 <code>A.T</code>）</td>
+</tr>
+<tr>
+<td><strong>高级矩阵分解</strong></td>
+<td>内置支持常见的矩阵分解如 QR、LU、SVD</td>
+<td><strong>SciPy</strong> 提供了丰富的矩阵分解功能，如 QR、LU、SVD、Cholesky 等</td>
+</tr>
+<tr>
+<td><strong>矩阵求解</strong></td>
+<td>使用 <code>A\b</code> 语法求解线性方程组</td>
+<td>使用 <code>np.linalg.solve(A, b)</code> 进行线性方程组求解</td>
+</tr>
+<tr>
+<td><strong>性能优化</strong></td>
+<td>支持与 <strong>BLAS/LAPACK</strong> 库集成，提升大规模矩阵运算性能</td>
+<td><strong>NumPy</strong> 和 <strong>SciPy</strong> 也可以与 <strong>BLAS/LAPACK</strong> 集成，提供类似的性能优化</td>
+</tr>
+<tr>
+<td><strong>GPU 支持</strong></td>
+<td>无原生支持，需要额外配置（如借助 OpenCL）</td>
+<td>可通过 <strong>CuPy</strong> 等库轻松扩展到 GPU 支持</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">其他</h2>
+<ul>
+<li>Armadillo：Armadillo 是一个 C++ 线性代数库，提供类似 MATLAB 的简洁语法，适合科学计算和与 BLAS/LAPACK 集成的高效运算。</li>
+<li>Blaze：Blaze 是一个高度优化的 C++ 线性代数库，专注于性能，通过自动向量化和并行化提供极致的矩阵运算效率。</li>
+<li>CuPy 提供了与 NumPy 类似的接口，适合 Python 用户进行 GPU 加速。</li>
+<li>MAGMA 支持混合 CPU 和 GPU 的矩阵运算，适合需要在多核 CPU 和 GPU 上并行执行的高性能任务。</li>
+<li>TensorFlow 和 PyTorch 虽然是机器学习框架，但也可以用于 GPU 上的高效矩阵运算。</li>
+<li>...</li>
+</ul>
+<h2 id="_6">参考</h2>
+<ul>
+<li>https://maxima.sourceforge.io</li>
+<li>https://numpy.org/</li>
+<li>https://eigen.tuxfamily.org</li>
+<li>https://docs.opencv.org</li>
+<li>https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors</li>
+<li>https://octave.org/</li>
+<li>https://arma.sourceforge.net/</li>
+<li>https://bitbucket.org/blaze-lib/blaze</li>
+<li>https://octave-online.net/</li>
+<li>https://www.mycompiler.io/new/octave</li>
+<li>https://docs.cupy.dev/en/stable/</li>
+<li>https://icl.utk.edu/magma/</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-10-15T13:24:00+08:00" pubdate>Tue 15 October 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

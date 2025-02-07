@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>傅里叶变换小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/science.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">傅里叶变换小记</h1>
+    <p class="meta">
+<time datetime="2024-10-17T09:21:00+08:00" pubdate>Thu 17 October 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>东南大学《工程数学·积分变换》主要介绍傅里叶变换和拉普拉斯变换；顾樵《数学物理方法》二三四章都在介绍这两个变换；ALAN V. OPPENHEIM《信号与系统》二三四九十章都在介绍积分变换；《数字图像处理》...</p>
+</blockquote>
+<p>傅里叶认为，任何复杂的周期信号都可以用一组简单的正弦波（sine waves，即不同频率的正弦和余弦函数）表示。这种方法不仅适用于光滑的信号，也适用于不光滑的信号（例如锯齿波，sawtooth wave），甚至是 <strong>不连续</strong> 的信号（discontinuous signals）。</p>
+<p><img alt="fourier series" src="https://blog.debao.me/images/science/math_fourier_series.png"></p>
+<p>这就是现在所说的 傅里叶级数。后来，这一思想被推广到更广泛的领域，包括 傅里叶变换 和 离散傅里叶变换。</p>
+<p><img alt="img" src="https://blog.debao.me/images/science/math_fourier_laplace_etc.png"></p>
+<h2 id="_1">学术争议</h2>
+<blockquote>
+<p>傅里叶提出的用正弦和余弦函数表示任意周期函数的观点，实际上是引入了 正交基（orthogonal basis）的概念。今天我们知道，正弦和余弦函数组成了一个 完备的函数集（complete function set），可以用于表示任何周期函数。然而，在傅里叶所处的时代，这一想法是前所未有的，并不为大多数数学家所接受。</p>
+</blockquote>
+<h3 id="_2">困境</h3>
+<p>由于当时 数学分析（mathematical analysis），特别是关于 函数收敛性（convergence of functions）的理论还处于发展的早期阶段，傅里叶的工作缺乏严格的数学基础。他并没有明确给出傅里叶级数（Fourier series）的收敛条件，或证明这些级数在一定条件下会收敛到原函数。</p>
+<p>在傅里叶之前的10多年，著名数学家 欧拉（Leonhard Euler）和 伯努利（Daniel Bernoulli）在研究弦振动（vibrating strings）时也提出过类似的 正弦波叠加（superposition of sine waves）的想法，但他们并没有深入研究这一概念。事实上，欧拉本人后来放弃了使用 三角函数级数（trigonometric series）来表示函数的想法。</p>
+<h3 id="_3">争议</h3>
+<p>在傅里叶的同代人中，著名数学家 约瑟夫·拉格朗日（Joseph-Louis Lagrange）和 西蒙·泊松（Siméon Denis Poisson）是傅里叶理论的强烈反对者。</p>
+<ul>
+<li>拉格朗日：拉格朗日质疑傅里叶级数的 严谨性（rigor）。他认为傅里叶声称的“任意函数”可以分解为正弦和余弦函数的和，这一观点过于宽泛。拉格朗日坚持认为，只有非常光滑且具有 连续一阶导数（continuously differentiable functions）的函数才能用这种方法表示出来。他尤其怀疑傅里叶级数是否能适用于 不连续函数（discontinuous functions）。</li>
+<li>泊松：泊松则从物理角度质疑傅里叶的观点，认为傅里叶的数学方法可能与物理现实不符。他特别关注傅里叶级数在处理 边界条件（boundary conditions）时的有效性问题，并认为傅里叶的理论在物理应用中可能并不适用。</li>
+</ul>
+<h3 id="_4">发展</h3>
+<ul>
+<li>狄利克雷（Johann Peter Gustav Lejeune Dirichlet）为傅里叶级数的 收敛性（convergence）问题提供了严格的数学证明，定义了 狄利克雷条件（Dirichlet conditions），从而解决了拉格朗日和泊松等人关于傅里叶级数收敛性的担忧。</li>
+<li>奥古斯丁·柯西（Augustin Cauchy）和 皮埃尔·西蒙·拉普拉斯（Pierre-Simon Laplace）等人也对傅里叶的理论表示支持，并对其进行了进一步的完善，推动了傅里叶级数和傅里叶变换在数学和物理中的应用。</li>
+</ul>
+<h2 id="_5">傅里叶级数 到 傅里叶变换</h2>
+<p>傅里叶级数 和 傅里叶变换 是傅里叶分析的核心工具。傅里叶积分则是傅里叶变换的中间形式。</p>
+<ul>
+<li><strong>傅里叶级数</strong>（<strong>Fourier Series</strong>）：用于表示周期信号的离散频谱（discrete spectrum of periodic signals）。</li>
+<li><strong>傅里叶积分</strong>（<strong>Fourier Integral</strong>）：用于处理非周期信号的连续频谱（continuous spectrum of non-periodic signals）。</li>
+<li><strong>傅里叶变换</strong>（<strong>Fourier Transform</strong>）：最广泛的形式，用于任意信号的时域到频域转换。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>对比项</strong></th>
+<th><strong>傅里叶级数（Fourier Series）</strong></th>
+<th><strong>傅里叶积分（Fourier Integral）</strong></th>
+<th><strong>傅里叶变换（Fourier Transform）</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>适用对象</strong></td>
+<td>周期信号（periodic signals）</td>
+<td>非周期信号（aperiodic signals）</td>
+<td>任意信号（any signals）</td>
+</tr>
+<tr>
+<td><strong>频谱</strong></td>
+<td>离散频谱（discrete spectrum）</td>
+<td>连续频谱（continuous spectrum）</td>
+<td>连续频谱（continuous spectrum）</td>
+</tr>
+<tr>
+<td><strong>展开方式</strong></td>
+<td>离散频率下的正弦和余弦函数的和</td>
+<td>频率连续变化的正弦和余弦函数的积分</td>
+<td>频率连续变化的正弦和余弦函数的积分</td>
+</tr>
+<tr>
+<td><strong>应用领域</strong></td>
+<td>处理周期性现象，如振动、波动等</td>
+<td>对非周期信号的频率分析</td>
+<td>广泛</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_6">傅里叶级数</h3>
+<p>对于周期为 <span class="math inline"> T </span> 的函数 <span class="math inline"> f(t) </span>，它可以展开为傅里叶级数：</p>
+<div class="math display">
+f(t) = \frac{a_0}{2} + \sum_{n=1}^{\infty} \left( a_n \cos\left( \frac{2\pi n t}{T} \right) + b_n \sin\left( \frac{2\pi n t}{T} \right) \right)
+</div>
+
+<p>其中，傅里叶系数 <span class="math inline"> a_n </span> 和 <span class="math inline"> b_n </span> 通过以下公式计算：</p>
+<div class="math display">
+a_n = \frac{2}{T} \int_{0}^{T} f(t) \cos\left( \frac{2\pi n t}{T} \right) dt
+\\
+b_n = \frac{2}{T} \int_{0}^{T} f(t) \sin\left( \frac{2\pi n t}{T} \right) dt
+</div>
+
+<blockquote>
+<p>在傅里叶级数中，周期函数的频率是离散的，正弦波的频率是其周期的整数倍。然而，在处理非周期信号（aperiodic signals）时，傅里叶级数<strong>不再</strong>适用，因为此时频率将不再是离散的，而是连续的。</p>
+</blockquote>
+<h4 id="orthogonal-basis">正交基（Orthogonal Basis）</h4>
+<p>泰勒级数的基底函数：<span class="math inline">1, x^2, x^3, x^4, ... </span></p>
+<p>傅里叶级数的基底函数：<span class="math inline">1, \cos x, \cos 2x, \cos 3x, ..., \sin x, \sin 2x, \sin 3x, ...</span></p>
+<p>与泰勒级数不同，傅里叶级数的任意两个基底函数，在区间 <span class="math inline">[0, 2\pi]</span>上都是正交的。</p>
+<h4 id="dirichlets-theorem">狄利赫雷定理（Dirichlet's Theorem）</h4>
+<blockquote>
+<p>傅里叶级数用于将周期函数表示为正弦和余弦函数的无穷级数，狄利赫雷定理给出了傅里叶级数收敛的条件。</p>
+</blockquote>
+<p>如果一个周期为 <span class="math inline">T</span> 的函数 <span class="math inline">f(x)</span> 满足以下条件，则它的傅里叶级数在每个点都收敛于 <span class="math inline">f(x)</span> 在该点的值（或者在不连续点处收敛于左右极限的平均值）：</p>
+<ol>
+<li><strong>周期性（Periodicity）</strong>：<span class="math inline">f(x)</span> 是一个周期为 <span class="math inline">T</span> 的周期函数。</li>
+<li><strong>分段连续（Piecewise Continuity）</strong>：函数 <span class="math inline">f(x)</span> 在一个周期内至多有有限个不连续点，并且在这些不连续点处的左极限和右极限存在。</li>
+<li><strong>分段光滑（Piecewise Smoothness）</strong>：函数 <span class="math inline">f(x)</span> 在一个周期内至多有有限个极值点，并且在这些点之间，函数是可微的，且导数连续。</li>
+</ol>
+<p><img alt="fourier series" src="https://blog.debao.me/images/science/math_fourier_series.png"></p>
+<p>意味着：</p>
+<ul>
+<li><strong>在连续点上</strong>：傅里叶级数收敛于函数 <span class="math inline">f(x)</span> 的值。</li>
+<li><strong>在不连续点上</strong>：傅里叶级数收敛于该点的左右极限的平均值，即：</li>
+</ul>
+<div class="math display">
+\text{傅里叶级数在不连续点} \ x_0 \ \text{上收敛于} \ \frac{f(x_0^-) + f(x_0^+)}{2}
+</div>
+
+<h3 id="_7">傅里叶积分</h3>
+<blockquote>
+<p>傅里叶积分是连接傅里叶级数和傅里叶变换的桥梁，它适用于 <strong>非周期函数</strong>（non-periodic function）。当周期趋于无穷大时，傅里叶级数过渡为傅里叶积分。</p>
+</blockquote>
+<p>对于非周期函数 <span class="math inline"> f(t) </span>，我们可以使用傅里叶积分来表示（不使用复数时，注意积分范围<span class="math inline">[0, \infty)</span>）：</p>
+<div class="math display">
+f(t) = \int_{0}^{\infty}[A(\omega)\cos\omega t+B(\omega)\sin\omega t]d\omega
+</div>
+
+<p>其中，傅里叶系数 <span class="math inline"> A(\omega) </span> 和 <span class="math inline"> B(\omega) </span> 通过以下公式计算：</p>
+<div class="math display">
+A(\omega) = \frac{1}{\pi} \int_{-\infty}^{\infty} f(t) \cos\omega t dt
+\\
+B(\omega) = \frac{1}{\pi} \int_{-\infty}^{\infty} f(t) \sin\omega t dt
+</div>
+
+<p>当使用复数表达时，上下限就变成<span class="math inline">(-\infty, \infty)</span></p>
+<div class="math display">
+f(t) = \int_{-\infty}^{+\infty} F(\omega) e^{-j\omega t } \mathrm{d} \omega
+</div>
+
+<p>其中：</p>
+<div class="math display">
+F(\omega) = \frac{1}{2\pi}\int_{-\infty}^{+\infty}f(\tau)e^{-j\omega\tau} \mathrm{d}\tau
+</div>
+
+<h4 id="_8">傅里叶积分定理</h4>
+<p>傅里叶积分的前提是：<span class="math inline">f(t)</span> 在 <span class="math inline">(-\infty, +\infty)</span> 上满足如下条件：</p>
+<ul>
+<li><span class="math inline">f(t)</span> 在任一有限区间满足 狄利赫雷条件。</li>
+<li><span class="math inline">f(t)</span> 在无限区域上绝对可积！！</li>
+</ul>
+<p>那么，什么是...</p>
+<h4 id="absolutely-integrable">绝对可积（absolutely integrable）</h4>
+<blockquote>
+<p>从傅里叶级数到傅里叶积分转变过程中，绝对可积是一个重要概念。</p>
+</blockquote>
+<p><img alt="absolutely_integrable" src="https://blog.debao.me/images/science/math_fourier_absolutely_integrable.png"></p>
+<p>如果<span class="math inline">f(t)</span>在 <span class="math inline">(-\infty, +\infty)</span> 上满足如下条件：</p>
+<div class="math display">
+\int_{-\infty}^{\infty} \lvert f(t) \rvert \mathrm{d}t < \infty
+</div>
+
+<p>则称为 <span class="math inline">f(t)</span> 绝对可积。</p>
+<p>该条件可以确保前面 <span class="math inline">A(\omega)</span> 和 <span class="math inline">B(\omega)</span> 对 <span class="math inline">f(t)</span> 乘以绝对值小于1的三角函数后一定时可积分的。</p>
+<h3 id="_9">傅里叶变换</h3>
+<p>对于定义在实数轴上 <span class="math inline"> t \in (-\infty, \infty) </span> 的函数 <span class="math inline"> f(t) </span>，傅里叶变换定义为：</p>
+<div class="math display">
+F(\omega) = \int_{-\infty}^{\infty} f(t) e^{-i \omega t} dt
+</div>
+
+<p>这里，<span class="math inline"> F(\omega) </span> 是信号 <span class="math inline"> f(t) </span> 在频率 <span class="math inline"> \omega </span> 上的傅里叶变换，表示信号的频谱。</p>
+<p><strong>逆傅里叶变换</strong> 可以将频域的函数转换回时域，其定义为：</p>
+<div class="math display">
+f(t) = \frac{1}{2\pi} \int_{-\infty}^{\infty} F(\omega) e^{i \omega t} d\omega
+</div>
+
+<p>可以看出，<span class="math inline">f{t}</span> 和 <span class="math inline">F(\omega)</span> 可以互相表达。其中</p>
+<p>傅里叶变换式 可以记为：</p>
+<div class="math display">
+F(\omega) = \mathcal{F}[f(t)]
+</div>
+
+<p>傅里叶逆变换式记为：</p>
+<div class="math display">
+f(t) = \mathcal{F}^{-1}[F(\omega)]
+</div>
+
+<h4 id="epicycle">周转圆（Epicycle）</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>    Epicycle(frequency=1, amplitude=3, phase=0),
+    Epicycle(frequency=-3, amplitude=1, phase=0),
+</code></pre></div></td></tr></table></div>
+
+<p><img alt="epicycles" src="https://blog.debao.me/images/science/math_fourier_epicycles.png"></p>
+<p>Epicycle（周转圆）是古代天文学家用来解释天体运动的几何模型，特别是为了描述行星的复杂轨迹。这个概念最早由托勒密（Ptolemy）提出，主要用于解释在地心模型中看到的行星逆行现象。</p>
+<p>在周转圆模型中，行星并不直接绕地球运动，而是首先围绕一个小圆（周转圆）运动，而这个小圆的中心则绕着一个大圆（称为本轮，deferent）运动。通过这种双重旋转，古代天文学家能够近似描述行星的复杂轨迹。</p>
+<p>傅里叶级数和傅里叶变换是将函数分解为多个频率的正弦波或复数指数函数的叠加。这些正弦波可以看作是不同频率的"周转圆"。
+在傅里叶级数中，每个离散频率的复数指数函数对应一个"周转圆"，而傅里叶变换中每个连续频率的复数指数函数也可以看作一个"周转圆"。</p>
+<h4 id="_10">花体符号表示</h4>
+<p><strong>傅里叶变换</strong> 通常用 <strong>花体的 <span class="math inline">\mathcal{F}</span></strong> 表示：</p>
+<div class="math display">
+\mathcal{F}\{f(t)\} = F(\omega) = \int_{-\infty}^{\infty} f(t) e^{-i \omega t} dt
+</div>
+
+<p>其中，<span class="math inline">\mathcal{F}</span> 表示傅里叶变换运算符，将时域中的信号 <span class="math inline">f(t)</span> 转换为频域中的信号 <span class="math inline">F(\omega)</span>。</p>
+<p>与此类似，后面提到的拉普拉斯变换通常用 <strong>花体的 <span class="math inline">\mathcal{L}</span></strong> 表示：</p>
+<div class="math display">
+\mathcal{L}\{f(t)\} = F(s)
+</div>
+
+<p>其中，<span class="math inline">\mathcal{L}</span> 表示拉普拉斯变换运算符，将时域信号 <span class="math inline">f(t)</span> 转换为复频域中的信号 <span class="math inline">F(s)</span>。</p>
+<h2 id="dft">离散傅里叶变换（DFT）</h2>
+<blockquote>
+<p>离散傅里叶变换（DFT） 的思想源自傅里叶的工作，但它的真正发展得益于 20 世纪中期计算机和数字信号处理的进步。特别是在 J. W. Cooley 和 John Tukey 在 1965 年提出的 快速傅里叶变换（FFT）算法后。</p>
+</blockquote>
+<p>对于长度为 <span class="math inline">N</span> 的序列 <span class="math inline">x[n]</span>，它的离散傅里叶变换 <span class="math inline">X[k]</span> 定义为：</p>
+<div class="math display">
+X[k] = \sum_{n=0}^{N-1} x[n] e^{-i \frac{2\pi}{N} kn}, \quad k = 0, 1, \dots, N-1
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">x[n]</span> 是时域的离散信号，</li>
+<li><span class="math inline">X[k]</span> 是频域的离散傅里叶系数，</li>
+<li><span class="math inline">N</span> 是信号的长度，</li>
+<li><span class="math inline">i</span> 是虚数单位。</li>
+</ul>
+<p>逆离散傅里叶变换（Inverse Discrete Fourier Transform, IDFT）的定义为：</p>
+<div class="math display">
+x[n] = \frac{1}{N} \sum_{k=0}^{N-1} X[k] e^{i \frac{2\pi}{N} kn}, \quad n = 0, 1, \dots, N-1
+</div>
+
+<p>通过 DFT，我们可以将时域的离散信号 <span class="math inline">x[n]</span> 转换为频域信号 <span class="math inline">X[k]</span>，而通过 IDFT，可以将频域信号 <span class="math inline">X[k]</span> 转换回时域信号 <span class="math inline">x[n]</span>。</p>
+<h3 id="fftfast-fourier-transform">FFT（Fast Fourier Transform）</h3>
+<blockquote>
+<p><strong>FFT</strong>（Fast Fourier Transform）是快速计算 <strong>DFT</strong>（Discrete Fourier Transform）的高效算法，将复杂度从 <span class="math inline">O(N^2)</span> 降低到 <span class="math inline">O(N \log N)</span>。它通过<strong>分治法</strong>（divide and conquer）将大规模问题分解为多个小规模问题，再递归求解。</p>
+</blockquote>
+<p>FFT的分治思想依赖于<strong>蝴蝶操作</strong>（Butterfly Operation），它通过反复将DFT分解为两个规模分别为 <span class="math inline">N/2</span> 的DFT。具体来说，FFT利用了偶数项和奇数项的分解：</p>
+<div class="math display">
+X[k] = \sum_{n=0}^{N-1} x[n] e^{-i \frac{2\pi}{N} kn}
+</div>
+
+<p>可以拆分为：</p>
+<div class="math display">
+X[k] = \sum_{n=0}^{N/2 - 1} \left( x[2n] e^{-i \frac{2\pi}{N} k(2n)} + x[2n+1] e^{-i \frac{2\pi}{N} k(2n+1)} \right)
+</div>
+
+<p>通过这种方法，FFT算法将问题的规模从 <span class="math inline">N</span> 逐步减少到 <span class="math inline">N/2</span>、<span class="math inline">N/4</span>，直到可以直接求解最小规模的DFT。</p>
+<p>注意：</p>
+<ul>
+<li>信号长度：经典的Cooley-Tukey FFT算法通常要求输入信号长度为2的幂次方。对于不满足这一条件的信号，通常需要进行零填充（padding）来扩展信号长度。</li>
+<li>窗口效应：FFT假设信号是周期性的，对于非周期信号，直接使用FFT可能会引入伪频谱（leakage）问题。为此，通常会使用窗函数（window function）来减少这种效应。</li>
+</ul>
+<h2 id="laplace-transform">傅里叶变换 到 拉普拉斯变换（Laplace Transform）</h2>
+<p>傅里叶变换有广泛应用，但也有明显的局限性...</p>
+<h3 id="_11">傅里叶变换局限性</h3>
+<blockquote>
+<p>傅里叶变换要求函数在负无穷到正无穷的整个区间上都有定义，并且满足一定的条件，才能保证傅里叶变换的存在和收敛。</p>
+</blockquote>
+<ul>
+<li>1 函数在整个实数轴上定义： 对于一个信号或函数 <span class="math inline">f(t)</span>，其傅里叶变换的定义是基于从 <span class="math inline">-\infty</span> 到 <span class="math inline">\infty</span> 的积分：</li>
+</ul>
+<div class="math display">
+     F(\omega) = \int_{-\infty}^{\infty} f(t) e^{-i \omega t} dt
+</div>
+
+<p>意味着 <span class="math inline">f(t)</span> 必须在整个区间 <span class="math inline">(-\infty, \infty)</span> 上有定义。</p>
+<ul>
+<li>2 绝对可积性： 傅里叶变换的一个重要条件是绝对可积性，即函数 <span class="math inline">f(t)</span> 的绝对值的积分在整个实数范围内必须是有限的：</li>
+</ul>
+<div class="math display">
+     \int_{-\infty}^{\infty} |f(t)| dt < \infty
+</div>
+
+<p>这通常被称为 <strong>狄利赫雷条件（Dirichlet conditions）</strong> 之一。绝对可积性确保了傅里叶变换的收敛性，即傅里叶变换在频域中的结果（频谱）能有效地存在。</p>
+<h3 id="_12">考虑</h3>
+<p>对于任意一个函数 <span class="math inline">g(t)(t\ge 0)</span>，如何才能做傅里叶变换？</p>
+<ol>
+<li>确保定义域是  <span class="math inline">(-\infty, \infty)</span>，乘以阶跃函数<span class="math inline">u(t)</span>：</li>
+</ol>
+<div class="math display">
+g(t)u(t)
+</div>
+
+<ol>
+<li>要保证绝对可积，再乘以衰减因子<span class="math inline">\exp (-\beta t)(\beta &gt; 0)</span>：</li>
+</ol>
+<div class="math display">
+g(t)u(t)\exp(-\beta t)
+</div>
+
+<p>这样一来，就可以进行变换了：</p>
+<div class="math display">
+\int_{-\infty}^{\infty} g(t)u(t)\exp(-\beta t) e^{-i\omega t}\mathrm{d}t = \int_{0}^{\infty}f(t)e^{pt}\mathrm{d}t
+</div>
+
+<p>其中：<span class="math inline">f(t)=g(t)u(t)</span>，<span class="math inline">p=\beta + i\omega</span>。</p>
+<h3 id="_13">拉普拉斯变换</h3>
+<p><strong>拉普拉斯变换</strong>（<strong>Laplace Transform</strong>）用于将一个时域信号转换为<strong>复频域信号</strong>（<strong>complex frequency domain signal</strong>，复数 <span class="math inline">s</span> 的函数）。它比傅里叶变换更广泛，因为它可以处理不仅仅是<strong>稳定信号</strong>（<strong>stable signals</strong>），还可以处理<strong>不稳定信号</strong>（<strong>unstable signals</strong>），如指数增长的信号。对于时域信号 <span class="math inline">f(t)</span>，拉普拉斯变换定义为：</p>
+<div class="math display">
+F(s) = \int_{0}^{\infty} f(t) e^{-st} dt
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">f(t)</span> 是<strong>时域信号</strong>（<strong>time-domain signal</strong>）。</li>
+<li><span class="math inline">F(s)</span> 是<strong>复频域信号</strong>（<strong>complex frequency-domain signal</strong>），<span class="math inline">s</span> 是复数，表示为 <span class="math inline">s = \sigma + i \omega</span>，其中 <span class="math inline">\sigma</span> 是实部，<span class="math inline">\omega</span> 是虚部。</li>
+</ul>
+<p>拉普拉斯变换的<strong>逆变换</strong>（<strong>inverse transform</strong>）为：</p>
+<div class="math display">
+f(t) = \frac{1}{2\pi i} \int_{\sigma - i \infty}^{\sigma + i \infty} F(s) e^{st} ds
+</div>
+
+<p>其中积分路径通常位于<strong>复平面</strong>（<strong>complex plane</strong>）上的某条直线。</p>
+<h3 id="z">z变换</h3>
+<blockquote>
+<p>Z 变换是离散时间的拉普拉斯变换。通过 <span class="math inline">z = e^{sT}</span>（<span class="math inline">T</span> 为采样周期），Z 变换可以看作离散系统的拉普拉斯变换。</p>
+</blockquote>
+<p>对于一个离散时间信号 <span class="math inline">x[n]</span>，其 <strong>Z 变换</strong> 定义为：</p>
+<div class="math display">
+X(z) = \sum_{n=-\infty}^{\infty} x[n] z^{-n}
+</div>
+
+<p>其中 <span class="math inline">z</span> 是复数变量，通常表示为 <span class="math inline">z = re^{i\omega}</span>。</p>
+<p><strong>逆 Z 变换</strong>用于将复频域中的信号 <span class="math inline">X(z)</span> 转换回时域信号 <span class="math inline">x[n]</span>，其定义为：</p>
+<div class="math display">
+x[n] = \frac{1}{2\pi i} \oint_C X(z) z^{n-1} dz
+</div>
+
+<p>其中 <span class="math inline">C</span> 是围绕收敛区域的一条闭合路径。</p>
+<h3 id="zdft">z变换与离散傅里叶变换（DFT）</h3>
+<p>当 <span class="math inline">z</span> 落在单位圆 <span class="math inline">|z| = 1</span> 上时，Z 变换退化为离散傅里叶变换：</p>
+<div class="math display">
+X(e^{i\omega}) = \sum_{n=-\infty}^{\infty} x[n] e^{-i \omega n}
+</div>
+
+<p>因此，Z 变换是 DFT 的广义形式，可以处理更广泛的信号类型。</p>
+<h2 id="integral-transform">积分变换（Integral Transform）</h2>
+<blockquote>
+<p>傅里叶变换和拉普拉斯变换都是积分变换的一种，只是核函数不同。</p>
+</blockquote>
+<p><strong>积分变换</strong>是通过积分操作将一个函数从一个域（通常是时域或空间域）转换到另一个域（通常是频域或复频域）的数学工具。其定义：</p>
+<div class="math display">
+F(s) = \int_{a}^{b} K(s, t) f(t) dt
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">f(t)</span> 是待变换的函数。</li>
+<li><span class="math inline">F(s)</span> 是变换后的函数。</li>
+<li><span class="math inline">K(s, t)</span> 是<strong>核函数（Kernel Function）</strong>，决定了变换的特性。</li>
+<li><span class="math inline">s</span> 是变换后的变量。</li>
+</ul>
+<p>对傅里叶变换公式来说，核函数是 <span class="math inline">e^{-i \omega t}</span>（其中，<span class="math inline">\omega</span> 是频率变量，<span class="math inline">i</span> 是虚数单位）：</p>
+<div class="math display">
+F(\omega) = \int_{-\infty}^{\infty} f(t) e^{-i \omega t} dt
+</div>
+
+<p>对拉普拉斯变换公式来说，核函数是<span class="math inline">e^{-st}</span>（其中，<span class="math inline">s</span> 是复频率变量，可以写作 <span class="math inline">s = \sigma + i \omega</span>，包含实部 <span class="math inline">\sigma</span> 和虚部 <span class="math inline">i \omega</span>）：</p>
+<div class="math display">
+F(s) = \int_{0}^{\infty} f(t) e^{-st} dt
+</div>
+
+<h2 id="convolution">卷积（Convolution）</h2>
+<blockquote>
+<p>傅里叶变换与卷积关系：傅里叶变换将卷积运算转化为频域中的简单乘积运算，即两个函数的卷积在频域中对应它们傅里叶变换的乘积。</p>
+</blockquote>
+<p>卷积在物理上描述了如何将一个<strong>输入信号（input signal）</strong>通过一个<strong>线性时不变系统（linear time-invariant system, LTI）</strong>，得到<strong>输出信号（output signal）</strong>。例如，在电子电路中，输入信号通过滤波器后的输出可以用卷积来描述：</p>
+<ul>
+<li><span class="math inline">f(t)</span>：输入信号（input signal）。</li>
+<li><span class="math inline">g(t)</span>：滤波器的时域响应（impulse response）。</li>
+<li><span class="math inline">(f * g)(t)</span>：滤波器对输入信号的输出（output of the filter）。</li>
+</ul>
+<h3 id="_14">定义</h3>
+<p><img alt="convolution" src="https://blog.debao.me/images/science/convolution_of_box_signal_with_itself2.gif"></p>
+<h4 id="continuous-convolution">连续卷积（Continuous Convolution）</h4>
+<p>对于两个连续函数 <span class="math inline">f(t)</span> 和 <span class="math inline">g(t)</span>，它们的<strong>卷积</strong> <span class="math inline">(f * g)(t)</span> 定义为：</p>
+<div class="math display">
+(f * g)(t) = \int_{-\infty}^{\infty} f(\tau) g(t - \tau) d\tau
+</div>
+
+<p>这意味着，函数 <span class="math inline">f(t)</span> 在时间 <span class="math inline">t</span> 时刻的卷积结果是 <span class="math inline">g(t)</span> 的每个时刻与 <span class="math inline">f(t)</span> 的整体相互作用的加权和。</p>
+<ul>
+<li><span class="math inline">f(t)</span>：输入信号（input signal）。</li>
+<li><span class="math inline">g(t)</span>：系统的脉冲响应（impulse response）或滤波器（filter）。</li>
+</ul>
+<h4 id="discrete-convolution">离散卷积（Discrete Convolution）</h4>
+<p>对于离散信号 <span class="math inline">x[n]</span> 和 <span class="math inline">h[n]</span>，它们的卷积 <span class="math inline">(x * h)[n]</span> 定义为：</p>
+<div class="math display">
+(x * h)[n] = \sum_{k=-\infty}^{\infty} x[k] h[n - k]
+</div>
+
+<h3 id="convolution-theorem">卷积定理（Convolution Theorem）</h3>
+<blockquote>
+<p>卷积与傅里叶变换（Fourier Transform）的关系，主要通过<strong>卷积定理（Convolution Theorem）</strong>来体现。</p>
+</blockquote>
+<p>卷积定理指出：</p>
+<p>时域中的卷积 对应 频域中的乘积：</p>
+<div class="math display">
+  \mathcal{F}\{f(t) * g(t)\} = F(\omega) \cdot G(\omega)
+</div>
+
+<p>即，两个时域信号的卷积，其傅里叶变换等于它们傅里叶变换的乘积。</p>
+<p>频域中的卷积 对应 时域中的乘积：</p>
+<div class="math display">
+  \mathcal{F}^{-1}\{F(\omega) * G(\omega)\} = f(t) \cdot g(t)
+</div>
+
+<p>即，两个频域信号的卷积，其逆傅里叶变换等于它们时域信号的乘积。</p>
+<h3 id="laplace-convolution-theorem">拉普拉斯卷积定理（Laplace Convolution Theorem）</h3>
+<blockquote>
+<p>拉普拉斯变换主要用于分析<strong>线性时不变系统（linear time-invariant systems, LTI）</strong>的响应。在这种情况下，输入信号 <span class="math inline">f(t)</span> 和系统的单位脉冲响应 <span class="math inline">h(t)</span> 的卷积描述了系统的输出。</p>
+</blockquote>
+<p>时域中的卷积 对应 频域中的拉普拉斯乘积：</p>
+<div class="math display">
+  \mathcal{L}\{f(t) * g(t)\} = F(s) \cdot G(s)
+</div>
+
+<p>即，两个时域信号的卷积，其拉普拉斯变换等于它们拉普拉斯变换的乘积。</p>
+<p>频域中的拉普拉斯卷积 对应 时域中的乘积：</p>
+<div class="math display">
+  \mathcal{L}^{-1}\{F(s) * G(s)\} = f(t) \cdot g(t)
+</div>
+
+<p>即，两个拉普拉斯域信号的卷积，其逆拉普拉斯变换等于它们时域信号的乘积。</p>
+<h2 id="_15">参考</h2>
+<ul>
+<li>《Signals &amp; Systems》ALAN V. OPPENHEIM</li>
+<li><a href="https://www.youtube.com/watch?v=spUNpyF58BY">2Blue1Brown But what is the Fourier Transform? A visual introduction. </a></li>
+<li>https://www.jezzamon.com/fourier/zh-cn.html</li>
+<li>http://www.limit-point.com/blog/2023/epicycles/</li>
+<li>https://en.wikipedia.org/wiki/Fourier_transform</li>
+<li>https://en.wikipedia.org/wiki/Laplace_transform</li>
+<li>https://en.wikipedia.org/wiki/Discrete_Fourier_transform</li>
+<li>https://en.wikipedia.org/wiki/Convolution</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-10-17T09:21:00+08:00" pubdate>Thu 17 October 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/science.html'>Science</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

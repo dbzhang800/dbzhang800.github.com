@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Windows下CMD、Powershell、pwsh与Terminal小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Windows下CMD、Powershell、pwsh与Terminal小记</h1>
+    <p class="meta">
+<time datetime="2025-01-01T00:03:00+08:00" pubdate>Wed 01 January 2025</time>    </p>
+</header>
+
+  <div class="entry-content"><p><img alt="terminal" src="https://blog.debao.me/images/tools/windows_terminal.png"></p>
+<blockquote>
+<p>从传统的 <code>cmd.exe</code> 到 <code>Windows Powershell</code>，再到跨平台的 <code>PowerShell Core</code>，随着 Windows 系统的不断发展，命令行工具上的选择也越来越多（乱），稍作记录</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#windows">Windows 下的黑色窗口到底叫什么？</a><ul>
+<li><a href="#_1">列个表</a></li>
+<li><a href="#pwshexepowershell-corepowershell">pwsh.exe（Powershell Core，Powershell）</a><ul>
+<li><a href="#_2">面向对象</a></li>
+<li><a href="#_3">别名</a></li>
+</ul>
+</li>
+<li><a href="#powershellexewindows-powershell">powershell.exe（Windows Powershell）</a><ul>
+<li><a href="#windows-powershell-ise">Windows PowerShell ISE</a></li>
+</ul>
+</li>
+<li><a href="#cmdexecommand-promote">cmd.exe（Command Promote）</a></li>
+<li><a href="#commandcomms-dos-prompt">command.com（MS-DOS Prompt）</a></li>
+<li><a href="#bashexemingw-bash">bash.exe（MinGW Bash）</a></li>
+<li><a href="#wsl-shell">WSL Shell</a></li>
+<li><a href="#windowsterminalexewindows-terminal">WindowsTerminal.exe（Windows Terminal）</a></li>
+<li><a href="#conhostexewindows-console">conhost.exe（Windows Console）</a></li>
+</ul>
+</li>
+<li><a href="#_4">配置文件</a><ul>
+<li><a href="#pwsh">pwsh</a></li>
+<li><a href="#mingw-bash">mingw bash</a></li>
+<li><a href="#windows-terminal">Windows terminal</a></li>
+</ul>
+</li>
+<li><a href="#_5">脚本</a></li>
+<li><a href="#_6">参考</a></li>
+</ul>
+</div>
+<h2 id="windows">Windows 下的黑色窗口到底叫什么？</h2>
+<ul>
+<li>“控制台”？？那个黑色的文字交互窗口本身</li>
+<li>“命令提示符”？？运行在控制台中的 CMD.exe 程序</li>
+<li>“终端”？？现代化的工具（如 Windows Terminal），支持运行多个命令行解释器</li>
+<li>“Shell”？？负责解析命令的实际程序。</li>
+<li>...</li>
+</ul>
+<h3 id="_1">列个表</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>类型</th>
+<th>平台支持</th>
+<th>特点和用途</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>pwsh.exe</strong></td>
+<td>Shell+脚本语言</td>
+<td>跨平台</td>
+<td>跨平台支持，持续更新，现代化功能丰富</td>
+<td>跨平台脚本开发、云计算管理</td>
+</tr>
+<tr>
+<td>powershell.exe</td>
+<td>Shell+脚本语言</td>
+<td>Windows</td>
+<td>深度集成 Windows，成熟稳定，但已停止更新</td>
+<td>Windows 系统管理、企业环境</td>
+</tr>
+<tr>
+<td>cmd.exe</td>
+<td>Shell</td>
+<td>Windows</td>
+<td>基础命令行工具，支持旧版批处理脚本</td>
+<td>简单任务、运行旧版脚本</td>
+</tr>
+<tr>
+<td>command.com</td>
+<td>Shell</td>
+<td>DOS/早期 Windows</td>
+<td>16 位环境，仅用于兼容性目的</td>
+<td>运行旧版 DOS 程序</td>
+</tr>
+<tr>
+<td><strong>Windows Terminal</strong></td>
+<td>终端模拟器</td>
+<td>Windows</td>
+<td>多标签、多主题，支持丰富的命令行工具</td>
+<td>多工具整合、开发者日常任务</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pwshexepowershell-corepowershell">pwsh.exe（Powershell Core，Powershell）</h3>
+<ul>
+<li>首个预览版发布于2016年，正式版PowerShell Core6.0发布于2018年，2020年更名为PowerShell7（注意它和Windows Powershell的关系）</li>
+<li><strong><code>pwsh.exe</code></strong> 是 <strong>PowerShell Core/PowerShell</strong> 的可执行程序。</li>
+<li>它是 <strong>PowerShell</strong> 的现代化版本，由 Microsoft 基于 .NET Core 开发，支持 <strong>Windows、Linux、macOS</strong>。</li>
+<li>相较于 <strong>Windows PowerShell</strong>，它更轻量、更快，并且提供了跨平台兼容性。</li>
+</ul>
+<p>对powershell的评价挺两极分化的，它的问题包括：</p>
+<ul>
+<li>学习曲线较陡，对新手不友好</li>
+<li>对 Unix/Linux 用户来说不够直观</li>
+<li>对 Windows 用户的传统习惯冲击大</li>
+<li>...</li>
+</ul>
+<h4 id="_2">面向对象</h4>
+<blockquote>
+<p>PowerShell（pwsh） 和 CMD 的核心区别之一是 PowerShell 是面向对象的，而 CMD 是基于文本的。理解这一点的关键在于它们处理数据的方式：CMD 将命令输出作为纯文本，而 PowerShell 将命令输出作为对象。</p>
+</blockquote>
+<p>Cmdlet 是 PowerShell 的核心命令，是一种小型、轻量级的命令行工具</p>
+<ul>
+<li>所有 Cmdlet 都采用统一的命名规范，格式为 Verb-Noun（如 Get-Process、Set-Location）。</li>
+<li>动词表示操作（如 Get、Set、Remove 等），名词表示目标对象（如 Process、Location 等）。</li>
+</ul>
+<p>找个例子看看：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">Get-ChildItem</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>输出是一个对象列表，每个文件或文件夹是一个 System.IO.FileInfo 或 System.IO.DirectoryInfo 对象。</li>
+<li>这些对象包含丰富的元数据，例如文件名称、大小、创建时间等。</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        2025-01-01  10:00 AM                Documents
+-a----        2025-01-01  10:00 AM         12345 example.txt
+</code></pre></div></td></tr></table></div>
+
+<p>可以直接访问这些对象的属性，例如文件名和大小</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">Get-ChildItem</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">Name</span><span class="p">,</span> <span class="n">Length</span>
+</code></pre></div></td></tr></table></div>
+
+<p>可能这样更直观</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">$files</span> <span class="p">=</span> <span class="nb">Get-ChildItem</span>
+<span class="nv">$files</span><span class="p">[</span><span class="n">0</span><span class="p">].</span><span class="n">Name</span>  <span class="c"># 获取第一个文件/文件夹的名称</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_3">别名</h4>
+<p>别名是一种对完整命令（Cmdlet）的简化表示。常见的别名</p>
+<table>
+<thead>
+<tr>
+<th><strong>别名</strong></th>
+<th><strong>对应命令</strong></th>
+<th><strong>说明</strong></th>
+<th><strong>来源</strong></th>
+<th><strong>类似于</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ls</code></td>
+<td><code>Get-ChildItem</code></td>
+<td>列出文件和目录</td>
+<td>模拟 Linux 下的 <code>ls</code> 命令</td>
+<td>Linux 的 <code>ls</code></td>
+</tr>
+<tr>
+<td><code>pwd</code></td>
+<td><code>Get-Location</code></td>
+<td>显示当前目录</td>
+<td>模拟 Linux 下的 <code>pwd</code> 命令</td>
+<td>Linux 的 <code>pwd</code></td>
+</tr>
+<tr>
+<td><code>rm</code></td>
+<td><code>Remove-Item</code></td>
+<td>删除文件或目录</td>
+<td>模拟 Linux 下的 <code>rm</code> 命令</td>
+<td>Linux 的 <code>rm</code></td>
+</tr>
+<tr>
+<td><code>mv</code></td>
+<td><code>Move-Item</code></td>
+<td>移动或重命名文件/目录</td>
+<td>模拟 Linux 下的 <code>mv</code> 命令</td>
+<td>Linux 的 <code>mv</code></td>
+</tr>
+<tr>
+<td><code>cp</code></td>
+<td><code>Copy-Item</code></td>
+<td>复制文件或目录</td>
+<td>模拟 Linux 下的 <code>cp</code> 命令</td>
+<td>Linux 的 <code>cp</code></td>
+</tr>
+<tr>
+<td><code>cat</code></td>
+<td><code>Get-Content</code></td>
+<td>显示文件内容</td>
+<td>模拟 Linux 下的 <code>cat</code> 命令</td>
+<td>Linux 的 <code>cat</code></td>
+</tr>
+<tr>
+<td><code>man</code></td>
+<td><code>help</code></td>
+<td>获取命令帮助信息</td>
+<td>模拟 Linux 下的 <code>man</code> 命令</td>
+<td>Linux 的 <code>man</code></td>
+</tr>
+<tr>
+<td><code>sleep</code></td>
+<td><code>Start-Sleep</code></td>
+<td>等待指定秒数</td>
+<td>模拟 Linux 下的 <code>sleep</code> 命令</td>
+<td>Linux 的 <code>sleep</code></td>
+</tr>
+<tr>
+<td><code>grep</code></td>
+<td><code>Select-String</code></td>
+<td>查找文本内容</td>
+<td>模拟 Linux 下的 <code>grep</code> 命令</td>
+<td>Linux 的 <code>grep</code></td>
+</tr>
+<tr>
+<td><code>kill</code></td>
+<td><code>Stop-Process</code></td>
+<td>终止进程</td>
+<td>模拟 Linux 下的 <code>kill</code> 命令</td>
+<td>Linux 的 <code>kill</code></td>
+</tr>
+<tr>
+<td><code>clear</code></td>
+<td><code>Clear-Host</code></td>
+<td>清屏</td>
+<td>模拟 Linux 下的 <code>clear</code> 命令</td>
+<td>Linux 的 <code>clear</code></td>
+</tr>
+<tr>
+<td><code>echo</code></td>
+<td><code>Write-Output</code></td>
+<td>输出内容</td>
+<td>模拟 Linux 下的 <code>echo</code> 命令</td>
+<td>Linux 的 <code>echo</code></td>
+</tr>
+<tr>
+<td><code>touch</code></td>
+<td><code>New-Item</code></td>
+<td>创建新文件</td>
+<td>模拟 Linux 下的 <code>touch</code> 命令</td>
+<td>Linux 的 <code>touch</code></td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td><code>Get-Content</code></td>
+<td>查看文件内容</td>
+<td>模拟 CMD 下的 <code>type</code> 命令</td>
+<td>CMD 的 <code>type</code></td>
+</tr>
+<tr>
+<td><code>cls</code></td>
+<td><code>Clear-Host</code></td>
+<td>清屏</td>
+<td>模拟 CMD 下的 <code>cls</code> 命令</td>
+<td>CMD 的 <code>cls</code></td>
+</tr>
+<tr>
+<td><code>cd</code></td>
+<td><code>Set-Location</code></td>
+<td>切换目录</td>
+<td>模拟 CMD 下的 <code>cd</code> 命令</td>
+<td>CMD 的 <code>cd</code></td>
+</tr>
+<tr>
+<td><code>dir</code></td>
+<td><code>Get-ChildItem</code></td>
+<td>列出文件和目录</td>
+<td>模拟 CMD 下的 <code>dir</code> 命令</td>
+<td>CMD 的 <code>dir</code></td>
+</tr>
+<tr>
+<td><code>del</code></td>
+<td><code>Remove-Item</code></td>
+<td>删除文件</td>
+<td>模拟 CMD 下的 <code>del</code> 命令</td>
+<td>CMD 的 <code>del</code></td>
+</tr>
+<tr>
+<td><code>rd</code></td>
+<td><code>Remove-Item</code></td>
+<td>删除目录</td>
+<td>模拟 CMD 下的 <code>rd</code> 命令</td>
+<td>CMD 的 <code>rd</code></td>
+</tr>
+<tr>
+<td><code>md</code></td>
+<td><code>New-Item</code></td>
+<td>创建目录</td>
+<td>模拟 CMD 下的 <code>md</code> 命令</td>
+<td>CMD 的 <code>md</code></td>
+</tr>
+<tr>
+<td><code>ren</code></td>
+<td><code>Rename-Item</code></td>
+<td>重命名文件或目录</td>
+<td>模拟 CMD 下的 <code>ren</code> 命令</td>
+<td>CMD 的 <code>ren</code></td>
+</tr>
+<tr>
+<td><code>history</code></td>
+<td><code>Get-History</code></td>
+<td>查看命令历史</td>
+<td>模拟 CMD 下的 <code>doskey /history</code></td>
+<td>CMD 的 <code>doskey /history</code></td>
+</tr>
+<tr>
+<td><code>start</code></td>
+<td><code>Start-Process</code></td>
+<td>启动文件/程序</td>
+<td>模拟 CMD 下的 <code>start</code> 命令</td>
+<td>CMD 的 <code>start</code></td>
+</tr>
+<tr>
+<td><code>popd</code></td>
+<td><code>Pop-Location</code></td>
+<td>从堆栈中恢复目录</td>
+<td>模拟 CMD 下的 <code>popd</code> 命令</td>
+<td>CMD 的 <code>popd</code></td>
+</tr>
+<tr>
+<td><code>pushd</code></td>
+<td><code>Push-Location</code></td>
+<td>将目录压入堆栈</td>
+<td>模拟 CMD 下的 <code>pushd</code> 命令</td>
+<td>CMD 的 <code>pushd</code></td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td><code>ForEach-Object</code></td>
+<td>遍历对象</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>?</code></td>
+<td><code>Where-Object</code></td>
+<td>过滤对象</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>gci</code></td>
+<td><code>Get-ChildItem</code></td>
+<td>列出文件和目录</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>gps</code></td>
+<td><code>Get-Process</code></td>
+<td>获取当前运行的进程信息</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>gal</code></td>
+<td><code>Get-Alias</code></td>
+<td>查看别名列表</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>gc</code></td>
+<td><code>Get-Content</code></td>
+<td>读取文件内容</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>ni</code></td>
+<td><code>New-Item</code></td>
+<td>创建新文件或目录</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>measure</code></td>
+<td><code>Measure-Object</code></td>
+<td>统计对象数量、总和等</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>select</code></td>
+<td><code>Select-Object</code></td>
+<td>选择对象的属性</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>sort</code></td>
+<td><code>Sort-Object</code></td>
+<td>对对象进行排序</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>fl</code></td>
+<td><code>Format-List</code></td>
+<td>以列表形式显示对象</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>ft</code></td>
+<td><code>Format-Table</code></td>
+<td>以表格形式显示对象</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>sls</code></td>
+<td><code>Select-String</code></td>
+<td>查找字符串内容</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>ogv</code></td>
+<td><code>Out-GridView</code></td>
+<td>图形化方式显示内容</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>ipcsv</code></td>
+<td><code>Import-Csv</code></td>
+<td>从 CSV 文件导入数据</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>epcsv</code></td>
+<td><code>Export-Csv</code></td>
+<td>导出数据到 CSV 文件</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>tee</code></td>
+<td><code>Tee-Object</code></td>
+<td>将输出写入文件并同时输出到控制台</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>r</code></td>
+<td><code>Invoke-History</code></td>
+<td>运行历史中的命令</td>
+<td>PowerShell 原生</td>
+<td>无</td>
+</tr>
+</tbody>
+</table>
+<h3 id="powershellexewindows-powershell">powershell.exe（Windows Powershell）</h3>
+<ul>
+<li>首次发布于2006年，Windows PowerShell 5.1 是基于 .NET Framework 构建的最后一个版本，也是 Windows PowerShell 系列的最终版本。（后续转向开源的Powershell Core）</li>
+<li><strong>Windows PowerShell</strong> 是 Windows 系统自带的命令行 Shell 和脚本语言。</li>
+<li>基于 .NET Framework 开发，仅支持 Windows 平台。</li>
+<li>虽然功能强大，但由于依赖 .NET Framework，它的跨平台能力和性能相比 PowerShell Core 有所限制。</li>
+</ul>
+<h4 id="windows-powershell-ise">Windows PowerShell ISE</h4>
+<p>Windows PowerShell ISE（Integrated Scripting Environment）是一个图形化的脚本编辑和运行环境，专为 Windows PowerShell 用户设计。它集成了脚本编辑、调试和运行功能，使用户可以更轻松地编写、测试和调试 PowerShell 脚本。</p>
+<p>Windows PowerShell ISE 是专为 Windows PowerShell（基于 .NET Framework）设计的工具，因此仅支持 Windows 平台。已经停止开发，且不适用于pwsh。</p>
+<h3 id="cmdexecommand-promote">cmd.exe（Command Promote）</h3>
+<ul>
+<li>首次发布于1987年</li>
+<li>Command Prompt（命令提示符）是 Windows 系统的传统命令行工具，通常简称为 CMD。</li>
+<li>Windows 早期的 Shell 环境，提供了 DOS 风格的命令行接口。</li>
+<li>支持 .bat 和 .cmd 文件的执行</li>
+</ul>
+<h3 id="commandcomms-dos-prompt">command.com（MS-DOS Prompt）</h3>
+<ul>
+<li>首次发布于1980年</li>
+<li>command.com 是 MS-DOS 的命令行解释器，也是 Windows 9x 系列系统中默认的 Shell。</li>
+<li>它是 CMD 的前辈，设计于 16 位环境，功能非常有限。</li>
+</ul>
+<h3 id="bashexemingw-bash">bash.exe（MinGW Bash）</h3>
+<p>MinGW（Minimalist GNU for Windows） 是一个工具集，它将一部分常见的 GNU 工具移植到 Windows 平台上，主要用于编译和构建基于 Windows 的程序。</p>
+<p>MinGW Bash 是 MinGW 提供的一个命令行工具，它模拟了一个类似于 Linux 环境的 Bash Shell，用于在 Windows 上运行一部分 GNU 命令。</p>
+<h3 id="wsl-shell">WSL Shell</h3>
+<p>WSL 提供了一个核心命令行工具 wsl.exe，它允许：</p>
+<ul>
+<li>启动默认的 WSL 发行版。</li>
+<li>指定启动某个具体的 WSL 发行版（如 Ubuntu、Debian 等）。</li>
+<li>执行 Linux 命令或脚本（例如：wsl ls）。</li>
+<li>启动 Bash Shell</li>
+</ul>
+<p>当运行 wsl 或 wsl.exe 时，WSL 会启动用户安装的 Linux 发行版的默认 Shell（通常是 Bash）。</p>
+<h3 id="windowsterminalexewindows-terminal">WindowsTerminal.exe（Windows Terminal）</h3>
+<p><img alt="terminal" src="https://blog.debao.me/images/tools/windows_terminal.png"></p>
+<ul>
+<li>首次发布于2019年。</li>
+<li>Windows Terminal 是微软开发的现代化终端工具，为用户提供统一的命令行体验。</li>
+<li>它并不是一个 Shell，而是一个终端模拟器，可以托管多个 Shell 和命令行工具，如 CMD、PowerShell、WSL、Azure CLI 等。</li>
+<li>它支持多标签、多主题和 GPU 加速渲染，是现代开发者的首选终端工具。</li>
+</ul>
+<p>Windows Terminal 使用一个 JSON 配置文件（settings.json）来定义终端的外观和行为。每种终端环境（如 PowerShell、CMD、WSL Bash）都作为一个单独的 "profile" 被定义在这个配置文件中。通过配置文件，Windows Terminal 可以调用这些环境并在独立的标签页或分屏中运行它们。</p>
+<h3 id="conhostexewindows-console">conhost.exe（Windows Console）</h3>
+<p>conhost.exe 是 Console Host（控制台主机），是 Windows Console API 的宿主进程。
+它是用来管理和渲染 控制台窗口 的组件，负责处理控制台应用程序的输入输出（如显示文本、处理键盘输入等）。</p>
+<blockquote>
+<p>在早期 Windows 系统（如 XP）中，控制台应用程序（如 cmd.exe）直接与 csrss.exe（Client Server Runtime Process）交互，这是 Windows 的核心系统服务。</p>
+</blockquote>
+<p>从 Windows 7 开始，Microsoft 引入了 conhost.exe，将控制台窗口的管理从 csrss.exe 中分离出来。</p>
+<h2 id="_4">配置文件</h2>
+<p>看看位置</p>
+<h3 id="pwsh">pwsh</h3>
+<ul>
+<li>%UserProfile%\Documents\PowerShell\Profile.ps1</li>
+<li>%ProgramFiles%\PowerShell\7\Profile.ps1</li>
+</ul>
+<p>可以通过如下命令查看具体位置：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$PROFILE
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>比如：anaconda的 conda init 会修改这个文件。</p>
+</blockquote>
+<h3 id="mingw-bash">mingw bash</h3>
+<p>全局配置文件：</p>
+<ul>
+<li>通常在 MinGW 安装目录下的 /etc/profile 或 /etc/bash.bashrc。</li>
+</ul>
+<p>用户级配置文件，则在用户主目录下的：</p>
+<ul>
+<li>~/.bashrc</li>
+<li>~/.bash_profile</li>
+<li>~/.profile</li>
+</ul>
+<h3 id="windows-terminal">Windows terminal</h3>
+<ul>
+<li>%LocalAppData%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState</li>
+</ul>
+<h2 id="_5">脚本</h2>
+<ul>
+<li>.ps1 中的 ps 代表 PowerShell。数字 1 代表 PowerShell 版本 1.0（这是 PowerShell 的第一个正式版本），后面没再改。【注意：.ps 是 Adobe 公司大名鼎鼎的 postscript 文件（.pdf文件的前身）的后缀，微软这也是避嫌了】</li>
+<li>.bat 或 .cmd：Windows 批处理脚本文件。（Powershell 通过内部调用cmd可以支持.bat文件）</li>
+<li>.sh 取自shell，Linux 本身不关注后缀，而且有各种shell存在</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>特性</strong></th>
+<th><strong><code>.ps1</code></strong></th>
+<th><strong><code>.bat</code></strong></th>
+<th><strong><code>.sh</code></strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>运行环境</strong></td>
+<td>PowerShell</td>
+<td>Windows CMD（命令提示符）</td>
+<td>Linux/Unix（Shell）</td>
+</tr>
+<tr>
+<td><strong>适用系统</strong></td>
+<td>Windows、Linux、macOS</td>
+<td>仅 Windows</td>
+<td>Linux、macOS（Windows 需工具）</td>
+</tr>
+<tr>
+<td><strong>功能</strong></td>
+<td>强（支持面向对象和模块化设计）</td>
+<td>中（适合简单任务）</td>
+<td>强（擅长文本处理和系统管理）</td>
+</tr>
+<tr>
+<td><strong>现代化</strong></td>
+<td>高</td>
+<td>较低</td>
+<td>中等</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_6">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/PowerShell</li>
+<li>https://en.wikipedia.org/wiki/Cmd.exe</li>
+<li>https://en.wikipedia.org/wiki/Windows_Terminal</li>
+<li>https://en.wikipedia.org/wiki/COMMAND.COM</li>
+<li>https://en.wikipedia.org/wiki/Windows_Console</li>
+<li>https://github.com/microsoft/terminal</li>
+<li>https://github.com/PowerShell/PowerShell</li>
+<li>https://www.mingw-w64.org/</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2025-01-01T00:03:00+08:00" pubdate>Wed 01 January 2025</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

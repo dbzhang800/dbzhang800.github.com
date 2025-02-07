@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>How to use QThread in the right way (Part 2) &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">How to use QThread in the right way (Part 2)</h1>
+    <p class="meta">
+<time datetime="2013-08-06T18:29:00+08:00" pubdate>Tue 06 August 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><p>There are two way to use QThread:</p>
+<ul>
+<li><strong>Subclass QThread and reimplement its run() function</strong></li>
+<li><strong>Use worker objects by moving them to the thread</strong></li>
+</ul>
+<p>As the QThread::run() is the entry point of worker thread, so the former usage is rather easy to understand.</p>
+<p>In this article, we will try to figure out in which way the latter usage works.</p>
+<h2 id="event-loop">Event Loop</h2>
+<p>As a event direvn programming framework, Qt make use of event loop widely. For example, following functions are used in nearly every Qt program.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">QCoreApplication</span>::<span class="k">exec</span><span class="ss">()</span>
+<span class="nv">QDialog</span>::<span class="k">exec</span><span class="ss">()</span>
+<span class="nv">QDrag</span>::<span class="k">exec</span><span class="ss">()</span>
+<span class="nv">QMenu</span>::<span class="k">exec</span><span class="ss">()</span>
+<span class="nv">QThread</span>::<span class="k">exec</span><span class="ss">()</span>
+...
+</code></pre></div></td></tr></table></div>
+
+<p>Each of them will create a QEventLoop object, and run it. Take QCoreApplication as an example,</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">QCoreApplication::exec</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="c1">//...</span>
+<span class="w">    </span><span class="n">QEventLoop</span><span class="w"> </span><span class="n">eventLoop</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">returnCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eventLoop</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="c1">//...</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">returnCode</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>Conceptually, the event loop looks like this:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">QEventLoop::exec</span><span class="p">(</span><span class="n">ProcessEventsFlags</span><span class="w"> </span><span class="n">flags</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="c1">//...</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">exit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">posted_event_queue_is_empty</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">process_next_posted_event</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="c1">//...</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>Each thread has its own event queue, note that, <strong>event queue is belong to thread instead of event loop, and it's shared by all the event loops running in this thread</strong>.</p>
+<p>When the event loop find that its event queue is not empty, it will process the events one by one. Eventually, the <code>QObject::event()</code> member of the target object get called.</p>
+<p>Seems it's really not easy to understand how the event system works without a example. So we create a demo</p>
+<h3 id="example">Example</h3>
+<p>In this example,</p>
+<p>First, we</p>
+<ul>
+<li>Create a custom Event <code>new QEvent(QEvent::User)</code></li>
+<li>Post the Event to a queue <code>QCoreApplication::postEvent()</code></li>
+</ul>
+<p>Then,</p>
+<ul>
+<li>The Event is discovered by the event loop in the queue <code>QApplication::exec()</code></li>
+<li>The <code>Test::event()</code> get called by the event loop.</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#if QT_VERSION&gt;=0x050000</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QtWidgets&gt;</span>
+<span class="cp">#else</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QtGui&gt;</span>
+<span class="cp">#endif</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Test</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QObject</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Q_OBJECT</span>
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">event</span><span class="p">(</span><span class="n">QEvent</span><span class="w"> </span><span class="o">*</span><span class="n">evt</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">evt</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">QEvent</span><span class="o">::</span><span class="n">User</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;Event received in thread&quot;</span><span class="o">&lt;&lt;</span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThread</span><span class="p">();</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">QObject</span><span class="o">::</span><span class="n">event</span><span class="p">(</span><span class="n">evt</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Button</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QPushButton</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Q_OBJECT</span>
+<span class="w">    </span><span class="n">Test</span><span class="w"> </span><span class="o">*</span><span class="n">m_test</span><span class="p">;</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">Button</span><span class="p">(</span><span class="n">Test</span><span class="w"> </span><span class="o">*</span><span class="n">test</span><span class="p">)</span><span class="o">:</span><span class="n">QPushButton</span><span class="p">(</span><span class="s">&quot;Send Event&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">m_test</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">connect</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="n">SIGNAL</span><span class="p">(</span><span class="n">clicked</span><span class="p">()),</span><span class="w"> </span><span class="n">SLOT</span><span class="p">(</span><span class="n">onClicked</span><span class="p">()));</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="k">private</span><span class="w"> </span><span class="n">slots</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">onClicked</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">QCoreApplication</span><span class="o">::</span><span class="n">postEvent</span><span class="p">(</span><span class="n">m_test</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QEvent</span><span class="p">(</span><span class="n">QEvent</span><span class="o">::</span><span class="n">User</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">    </span><span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;From main thread: &quot;</span><span class="o">&lt;&lt;</span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThread</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">Test</span><span class="w"> </span><span class="n">test</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Button</span><span class="w"> </span><span class="n">btn</span><span class="p">(</span><span class="o">&amp;</span><span class="n">test</span><span class="p">);</span>
+<span class="w">    </span><span class="n">btn</span><span class="p">.</span><span class="n">show</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>In this example, the <code>Test::event()</code> get called in the main thread. What should we do if want to run it in a work thread??</p>
+<h2 id="thread-affinity">Thread Affinity</h2>
+<p>As each thread have its own event queue, so there will be more than one event queues exists in one multi-thread program. So which event queue will be used when we post a event?</p>
+<p>Let's have a look at the code of postEvent().</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">QCoreApplication::postEvent</span><span class="p">(</span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">receiver</span><span class="p">,</span><span class="w"> </span><span class="n">QEvent</span><span class="w"> </span><span class="o">*</span><span class="n">event</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QThreadData</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">volatile</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">pdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">receiver</span><span class="o">-&gt;</span><span class="n">d_func</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">threadData</span><span class="p">;</span>
+<span class="w">    </span><span class="n">QThreadData</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">pdata</span><span class="p">;</span>
+<span class="w">    </span><span class="n">QMutexLocker</span><span class="w"> </span><span class="n">locker</span><span class="p">(</span><span class="o">&amp;</span><span class="n">data</span><span class="o">-&gt;</span><span class="n">postEventList</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+<span class="w">    </span><span class="n">data</span><span class="o">-&gt;</span><span class="n">postEventList</span><span class="p">.</span><span class="n">addEvent</span><span class="p">(</span><span class="n">QPostEvent</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span><span class="w"> </span><span class="n">event</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>As you can see, the event queue is found through the receiver's thread property. This thread is called the thread affinity - what thread the QObject "lives" in. Normally, it's the thread in which the object was created, but it can be changed using <code>QObject::moveToThread()</code>.</p>
+<p>Please note that, <code>QCoreApplication::postEvent()</code> is thread safe, as QMutex has been used here.</p>
+<p>Now, it's easy to run the event process it worker thread instead of main thread.</p>
+<h3 id="example_1">Example</h3>
+<p>Add three lines to the main() function of last example.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">int</span><span class="w"> </span><span class="nt">main</span><span class="o">(</span><span class="nt">int</span><span class="w"> </span><span class="nt">argc</span><span class="o">,</span><span class="w"> </span><span class="nt">char</span><span class="w"> </span><span class="o">*</span><span class="nt">argv</span><span class="cp">[]</span><span class="o">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="err">QApplication</span><span class="w"> </span><span class="err">a(argc,</span><span class="w"> </span><span class="err">argv)</span><span class="p">;</span>
+<span class="w">    </span><span class="err">qDebug()&lt;&lt;&quot;From</span><span class="w"> </span><span class="err">main</span><span class="w"> </span><span class="n">thread</span><span class="p">:</span><span class="w"> </span><span class="err">&quot;</span><span class="o">&lt;&lt;</span><span class="n">QThread</span><span class="o">::</span><span class="nf">currentThread</span><span class="p">();</span>
+
+<span class="w">    </span><span class="err">Test</span><span class="w"> </span><span class="err">test</span><span class="p">;</span>
+<span class="w">    </span><span class="err">QThread</span><span class="w"> </span><span class="err">thread</span><span class="p">;</span><span class="w">               </span><span class="err">//new</span><span class="w"> </span><span class="err">line</span>
+<span class="w">    </span><span class="err">test.moveToThread(&amp;thread)</span><span class="p">;</span><span class="w">   </span><span class="err">//new</span><span class="w"> </span><span class="err">line</span>
+<span class="w">    </span><span class="err">thread.start()</span><span class="p">;</span><span class="w">               </span><span class="err">//new</span><span class="w"> </span><span class="err">line</span>
+
+<span class="w">    </span><span class="err">Button</span><span class="w"> </span><span class="err">btn(&amp;test)</span><span class="p">;</span>
+<span class="w">    </span><span class="err">btn.show()</span><span class="p">;</span>
+
+<span class="w">    </span><span class="err">return</span><span class="w"> </span><span class="err">a.exec()</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>The output of application will be</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>From main thread:  QThread(0x9e8100) 
+Event received in thread QThread(0x13fed4) 
+Event received in thread QThread(0x13fed4)
+</code></pre></div></td></tr></table></div>
+
+<p>while the output of last example was</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>From main thread:  QThread(0x9e8100) 
+Event received in thread QThread(0x9e8100) 
+Event received in thread QThread(0x9e8100)
+</code></pre></div></td></tr></table></div>
+
+<h2 id="queued-connection">Queued Connection</h2>
+<p>For queued connection, when the signal is emitted, a event will be post to the event queue.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">QMetaCallEvent</span><span class="w"> </span><span class="o">*</span><span class="n">ev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">isSlotObject</span><span class="w"> </span><span class="o">?</span>
+<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">QMetaCallEvent</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">slotObj</span><span class="p">,</span><span class="w"> </span><span class="n">sender</span><span class="p">,</span><span class="w"> </span><span class="n">signal</span><span class="p">,</span><span class="w"> </span><span class="n">nargs</span><span class="p">,</span><span class="w"> </span><span class="n">types</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="o">:</span>
+<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">QMetaCallEvent</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">method_offset</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">method_relative</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">callFunction</span><span class="p">,</span><span class="w"> </span><span class="n">sender</span><span class="p">,</span><span class="w"> </span><span class="n">signal</span><span class="p">,</span><span class="w"> </span><span class="n">nargs</span><span class="p">,</span><span class="w"> </span><span class="n">types</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span>
+<span class="w">    </span><span class="n">QCoreApplication</span><span class="o">::</span><span class="n">postEvent</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">receiver</span><span class="p">,</span><span class="w"> </span><span class="n">ev</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>Then, this event will be found by the event queued, and finally, QObject::event() will be called in the thread.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">bool</span><span class="w"> </span><span class="nf">QObject::event</span><span class="p">(</span><span class="n">QEvent</span><span class="w"> </span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">type</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">QEvent</span><span class="o">::</span><span class="no">MetaCall</span><span class="p">:</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">QMetaCallEvent</span><span class="w"> </span><span class="o">*</span><span class="n">mce</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">QMetaCallEvent</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>As <code>QCoreApplication::postEvent()</code> is thread safe, so if you interact with an object only using queued signal/slot connections, then the usual multithreading precautions need not to be taken any more.</p>
+<h2 id="reference">Reference</h2>
+<ul>
+<li><a href="http://doc.qt.digia.com/qq/qq11-events.html">Another Look at Events</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2013-08-06T18:29:00+08:00" pubdate>Tue 06 August 2013</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a class="category" href="https://blog.debao.me/tags/qt.html">Qt</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

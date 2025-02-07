@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>使用QJSEngine与QUiLoader实现Qt程序动态扩展 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">使用QJSEngine与QUiLoader实现Qt程序动态扩展</h1>
+    <p class="meta">
+<time datetime="2024-01-10T21:24:00+08:00" pubdate>Wed 10 January 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>接前面<a href="https://blog.debao.me/2024/01/notes-on-the-javascript-engine-in-qt/">Qt中的JavaScript引擎小记</a>，<a href="https://blog.debao.me/2024/01/notes-on-using-qjsengine-in-qtwidgets/">QJSEngine在QtWidgets下使用小记</a>，简单看看QJSEngine和QUiLoader能碰撞出什么火花。</p>
+<blockquote>
+<p>这是很老的方案，在QtScript时期，应该不少人折腾过这个。只不过qml时代，似乎意义不大了。</p>
+<p>不过，随便折腾一下也无妨...</p>
+</blockquote>
+<p>我们知道：</p>
+<ul>
+<li>只要用Qt Designer设计一个ui界面 (x.ui)，不需要编译，就可以交由现有的Qt程序来显示（QUiLoader）</li>
+<li>只要写一个javascript文件(x.js)，不需要编译，就可以交由现有的Qt程序来执行某些逻辑（QJSEngine）</li>
+</ul>
+<p>既然界面显示和逻辑代码都可以随时修改而无需编译，那么二者配合作为Qt程序扩展机制，会怎么样？</p>
+<ul>
+<li>在客户现场，用随便一个文件编辑器，修改 x.ui 和 x.js 文件。即可影响界面效果</li>
+<li>在客户现场，用随便一个文件编辑器，添加 x.ui 和 x.js 文件，即可增加新的功能</li>
+<li>在Qt程序编写上，只需要通过QJSEngine暴露几个API接口，再加简单的模块搜索功能</li>
+</ul>
+<p><img alt="qt-demo-for-qjsengine-quiloader-plugins" src="https://blog.debao.me/images/qt-demo-for-qjsengine-quiloader-plugins.png"></p>
+<h3 id="1">准备1</h3>
+<p>先创建一个main.cpp文件：</p>
+<ul>
+<li>主窗口：MainWindow，包含一个QPlainTextEdit作为log窗口，包含一个QTabWidget作为带扩展的容器</li>
+<li>该窗口会作为window对象注册进QJSEngine中，以便在js中被访问</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MainWindow</span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QMainWindow</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Q_OBJECT</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">MainWindow</span><span class="p">(</span><span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="n">parent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">)</span>
+<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">QMainWindow</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s">&quot;1+1=10&#39;s Demo for QJSEngine and QUiLoader&quot;</span><span class="p">);</span>
+
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">tabWidget</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QTabWidget</span><span class="p">;</span>
+<span class="w">        </span><span class="n">tabWidget</span><span class="o">-&gt;</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;tabWidget&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">setCentralWidget</span><span class="p">(</span><span class="n">tabWidget</span><span class="p">);</span>
+
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">logEdit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QPlainTextEdit</span><span class="p">;</span>
+<span class="w">        </span><span class="n">logEdit</span><span class="o">-&gt;</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;logEdit&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">dock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QDockWidget</span><span class="p">(</span><span class="s">&quot;Log&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">dock</span><span class="o">-&gt;</span><span class="n">setWidget</span><span class="p">(</span><span class="n">logEdit</span><span class="p">);</span>
+<span class="w">        </span><span class="n">addDockWidget</span><span class="p">(</span><span class="n">Qt</span><span class="o">::</span><span class="n">BottomDockWidgetArea</span><span class="p">,</span><span class="w"> </span><span class="n">dock</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="2">准备2</h3>
+<p>准备 widget.ui 和 widget.js 文件，将其放置到特定文件夹下，比如工作目录下的<code>js-ui-1</code>子目录</p>
+<h4 id="qt-designer">用Qt Designer设计一个界面</h4>
+<p>界面上放置两个控件 slider1 和 spinBox1，记住名字，我们在js脚本中要用。</p>
+<p>保存为<code>widget.ui</code>：</p>
+<p><img alt="qt-demo-for-qjsengine-quiloader-ui" src="https://blog.debao.me/images/qt-demo-for-qjsengine-quiloader-ui.png"></p>
+<h4 id="js">编写js脚本</h4>
+<ul>
+<li>输出log信息到主窗口界面</li>
+<li>建立ui组件之间的联动关系</li>
+</ul>
+<p>完整脚本 <code>widget.js</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">logEdit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">findMyChild</span><span class="p">(</span><span class="s2">&quot;logEdit&quot;</span><span class="p">);</span>
+<span class="nx">logEdit</span><span class="p">.</span><span class="nx">appendPlainText</span><span class="p">(</span><span class="s2">&quot;---- widget.js loaded ----\n&quot;</span><span class="p">);</span>
+
+<span class="nx">slider1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">findMyChild</span><span class="p">(</span><span class="s2">&quot;slider1&quot;</span><span class="p">);</span>
+<span class="nx">spinBox1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">findMyChild</span><span class="p">(</span><span class="s2">&quot;spinBox1&quot;</span><span class="p">);</span>
+<span class="nx">slider1</span><span class="p">.</span><span class="nx">valueChanged</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">spinBox1</span><span class="p">.</span><span class="nx">setValue</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_1">整合一下</h3>
+<p>其实没什么好整合的，整个程序就一个main.cpp源文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>src/main.cpp
+src/CMakeLists.txt
+
+&lt;app-working-dir&gt;/js-ui-1/widget.ui
+&lt;app-working-dir&gt;/js-ui-1/widget.js
+</code></pre></div></td></tr></table></div>
+
+<p>完善一下main.cpp文件，使其启动时加载js-ui-1目录下的ui和js文件，程序就完整了：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QMainWindow&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QDockWidget&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QTabWidget&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QPlainTextEdit&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QFile&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QUiLoader&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MainWindow</span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QMainWindow</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Q_OBJECT</span>
+<span class="w">    </span><span class="n">QTabWidget</span><span class="w"> </span><span class="o">*</span><span class="n">tabWidget</span><span class="p">;</span>
+<span class="w">    </span><span class="n">QPlainTextEdit</span><span class="w"> </span><span class="o">*</span><span class="n">logEdit</span><span class="p">;</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">MainWindow</span><span class="p">(</span><span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="n">parent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">)</span>
+<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">QMainWindow</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s">&quot;1+1=10&#39;s Demo for QJSEngine and QUiLoader&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">setObjectOwnership</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">CppOwnership</span><span class="p">);</span>
+
+<span class="w">        </span><span class="n">tabWidget</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QTabWidget</span><span class="p">;</span>
+<span class="w">        </span><span class="n">tabWidget</span><span class="o">-&gt;</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;tabWidget&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">setCentralWidget</span><span class="p">(</span><span class="n">tabWidget</span><span class="p">);</span>
+
+<span class="w">        </span><span class="n">logEdit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QPlainTextEdit</span><span class="p">;</span>
+<span class="w">        </span><span class="n">logEdit</span><span class="o">-&gt;</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;logEdit&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">dock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QDockWidget</span><span class="p">(</span><span class="s">&quot;Log&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">dock</span><span class="o">-&gt;</span><span class="n">setWidget</span><span class="p">(</span><span class="n">logEdit</span><span class="p">);</span>
+<span class="w">        </span><span class="n">addDockWidget</span><span class="p">(</span><span class="n">Qt</span><span class="o">::</span><span class="n">BottomDockWidgetArea</span><span class="p">,</span><span class="w"> </span><span class="n">dock</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">Q_INVOKABLE</span><span class="w"> </span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">findMyChild</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">my</span><span class="o">=</span><span class="k">nullptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">my</span><span class="p">)</span>
+<span class="w">            </span><span class="n">my</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">my</span><span class="o">-&gt;</span><span class="n">findChild</span><span class="o">&lt;</span><span class="n">QWidget</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">FindChildrenRecursively</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">load</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">dir</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="w"> </span><span class="o">&amp;</span><span class="n">engine</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">doLoadUi</span><span class="p">(</span><span class="n">QString</span><span class="p">(</span><span class="s">&quot;%1/widget.ui&quot;</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">dir</span><span class="p">));</span>
+<span class="w">        </span><span class="n">doLoadJS</span><span class="p">(</span><span class="n">QString</span><span class="p">(</span><span class="s">&quot;%1/widget.js&quot;</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">dir</span><span class="p">),</span><span class="w"> </span><span class="n">engine</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">doLoadUi</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fileName</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">QUiLoader</span><span class="w"> </span><span class="n">loader</span><span class="p">;</span>
+<span class="w">        </span><span class="n">QFile</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="w"> </span><span class="n">fileName</span><span class="w"> </span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="o">!</span><span class="n">f</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">QIODevice</span><span class="o">::</span><span class="n">ReadOnly</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+<span class="w">            </span><span class="k">return</span><span class="p">;</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="o">&amp;</span><span class="n">f</span><span class="p">);</span>
+<span class="w">        </span><span class="n">tabWidget</span><span class="o">-&gt;</span><span class="n">addTab</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="o">-&gt;</span><span class="n">windowTitle</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">doLoadJS</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fileName</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="w"> </span><span class="o">&amp;</span><span class="n">engine</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">QFile</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="w"> </span><span class="n">fileName</span><span class="w"> </span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="o">!</span><span class="n">f</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">QIODevice</span><span class="o">::</span><span class="n">ReadOnly</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+<span class="w">            </span><span class="k">return</span><span class="p">;</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">readAll</span><span class="p">();</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">,</span><span class="w"> </span><span class="n">fileName</span><span class="p">);</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Uncaught exception at line&quot;</span>
+<span class="w">                     </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;lineNumber&quot;</span><span class="p">).</span><span class="n">toInt</span><span class="p">()</span>
+<span class="w">                     </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;:&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">MainWindow</span><span class="w"> </span><span class="n">mw</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">installExtensions</span><span class="p">(</span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">ConsoleExtension</span><span class="p">);</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;window&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mw</span><span class="p">));</span>
+
+<span class="w">    </span><span class="n">QString</span><span class="w"> </span><span class="n">js</span><span class="p">(</span><span class="s">&quot;window.size=</span><span class="se">\&quot;</span><span class="s">800x600</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">);</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Uncaught exception at line&quot;</span>
+<span class="w">                 </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;lineNumber&quot;</span><span class="p">).</span><span class="n">toInt</span><span class="p">()</span>
+<span class="w">                 </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;:&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">mw</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;js-ui-1&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">mw</span><span class="p">.</span><span class="n">show</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>直接编译运行即可看到效果：</p>
+<p><img alt="images/qt-demo-for-qjsengine-quiloader-app" src="https://blog.debao.me/images/qt-demo-for-qjsengine-quiloader-app.png"></p>
+<p>然后，就可以在程序发布后：随时修改ui文件和js文件，以便界面上显示各种不同的组件及调整它们之间的联动关系。</p>
+<h3 id="_2">完善？？</h3>
+<p>简单折腾可以，用于内部的各种工具程序应该问题也不大。不过真将这种方案用于生产，还有很多很多问题存在。</p>
+<p>比如，多个模组之间，怎么约定各自的地盘（作用域），如果重名怎么办，如何规避。javascript脚本如何调试，是不是要有一个简单的环境。</p>
+<p>接下来，并不考虑或尝试去完善这些东西，只关注自然而然的扩展方向...</p>
+<h4 id="_3">自动搜索和加载</h4>
+<p>main函数中的load语句，可以改成自动搜索，以便于加载所有符合规则的模组：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">QDir</span><span class="w"> </span><span class="n">dir</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="k">module</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">dir</span><span class="p">.</span><span class="n">entryList</span><span class="p">(</span><span class="n">QStringList</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;js-ui-*&quot;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Loading module&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="k">module</span><span class="p">;</span>
+<span class="w">        </span><span class="n">mw</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="k">module</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_4">模组的入口</h4>
+<p>为了简单，例子中将x.ui和x.js都作为模块的入口分别处理。但从设计上，应该把权力都下发给js文件，让它负责触发ui文件的加载和处理（如果需要ui的话）。</p>
+<p>这样的话，Qt程序只需要找到并加载 js文件就行了。</p>
+<p>比如，脚本<code>module.js</code>写成下面这样（需要加载什么ui文件，加载几个，都自己控制）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">logEdit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">findMyChild</span><span class="p">(</span><span class="s2">&quot;logEdit&quot;</span><span class="p">);</span>
+<span class="nx">logEdit</span><span class="p">.</span><span class="nx">appendPlainText</span><span class="p">(</span><span class="s2">&quot;---- module.js loaded ----\n&quot;</span><span class="p">);</span>
+
+<span class="c1">// add logic for the widget</span>
+<span class="kd">let</span><span class="w"> </span><span class="nx">widget</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">loadUi</span><span class="p">(</span><span class="s2">&quot;js-ui-1/widget.ui&quot;</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">widget</span><span class="p">);</span>
+<span class="nx">slider1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">findMyChild</span><span class="p">(</span><span class="s2">&quot;slider1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">widget</span><span class="p">);</span>
+<span class="nx">spinBox1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">findMyChild</span><span class="p">(</span><span class="s2">&quot;spinBox1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">widget</span><span class="p">);</span>
+<span class="nx">slider1</span><span class="p">.</span><span class="nx">valueChanged</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">spinBox1</span><span class="p">.</span><span class="nx">setValue</span><span class="p">);</span>
+
+<span class="c1">// add widget to main window</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">addWidgetToTab</span><span class="p">(</span><span class="nx">widget</span><span class="p">,</span><span class="w"> </span><span class="nx">widget</span><span class="p">.</span><span class="nx">windowTitle</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>而后在Qt程序中，通过window提供几个API接口就供js使用就行了。</p>
+<p>对应的<code>main.cpp</code>的内容如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QMainWindow&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QDockWidget&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QTabWidget&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QPlainTextEdit&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QFile&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QDir&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QUiLoader&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MainWindow</span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QMainWindow</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Q_OBJECT</span>
+<span class="w">    </span><span class="n">QTabWidget</span><span class="w"> </span><span class="o">*</span><span class="n">tabWidget</span><span class="p">;</span>
+<span class="w">    </span><span class="n">QPlainTextEdit</span><span class="w"> </span><span class="o">*</span><span class="n">logEdit</span><span class="p">;</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">MainWindow</span><span class="p">(</span><span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="n">parent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">)</span>
+<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">QMainWindow</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s">&quot;1+1=10&#39;s Demo for QJSEngine and QUiLoader&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">setObjectOwnership</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">CppOwnership</span><span class="p">);</span>
+
+<span class="w">        </span><span class="n">tabWidget</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QTabWidget</span><span class="p">;</span>
+<span class="w">        </span><span class="n">tabWidget</span><span class="o">-&gt;</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;tabWidget&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">setCentralWidget</span><span class="p">(</span><span class="n">tabWidget</span><span class="p">);</span>
+
+<span class="w">        </span><span class="n">logEdit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QPlainTextEdit</span><span class="p">;</span>
+<span class="w">        </span><span class="n">logEdit</span><span class="o">-&gt;</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;logEdit&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">dock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QDockWidget</span><span class="p">(</span><span class="s">&quot;Log&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">dock</span><span class="o">-&gt;</span><span class="n">setWidget</span><span class="p">(</span><span class="n">logEdit</span><span class="p">);</span>
+<span class="w">        </span><span class="n">addDockWidget</span><span class="p">(</span><span class="n">Qt</span><span class="o">::</span><span class="n">BottomDockWidgetArea</span><span class="p">,</span><span class="w"> </span><span class="n">dock</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// helper function to find child named name of the given object</span>
+<span class="w">    </span><span class="n">Q_INVOKABLE</span><span class="w"> </span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">findMyChild</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">my</span><span class="o">=</span><span class="k">nullptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">my</span><span class="p">)</span>
+<span class="w">            </span><span class="n">my</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">my</span><span class="o">-&gt;</span><span class="n">findChild</span><span class="o">&lt;</span><span class="n">QWidget</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">FindChildrenRecursively</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// helper function to load the .ui file</span>
+<span class="w">    </span><span class="n">Q_INVOKABLE</span><span class="w"> </span><span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="n">loadUi</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fileName</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">QUiLoader</span><span class="w"> </span><span class="n">loader</span><span class="p">;</span>
+<span class="w">        </span><span class="n">QFile</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="w"> </span><span class="n">fileName</span><span class="w"> </span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="o">!</span><span class="n">f</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">QIODevice</span><span class="o">::</span><span class="n">ReadOnly</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="o">&amp;</span><span class="n">f</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">Q_INVOKABLE</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">addWidgetToTab</span><span class="p">(</span><span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="n">widget</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">title</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">tabWidget</span><span class="o">-&gt;</span><span class="n">addTab</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span><span class="w"> </span><span class="n">title</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">loadJSModule</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fileName</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="w"> </span><span class="o">&amp;</span><span class="n">engine</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">QFile</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="w"> </span><span class="n">fileName</span><span class="w"> </span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="o">!</span><span class="n">f</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">QIODevice</span><span class="o">::</span><span class="n">ReadOnly</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+<span class="w">            </span><span class="k">return</span><span class="p">;</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">readAll</span><span class="p">();</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">,</span><span class="w"> </span><span class="n">fileName</span><span class="p">);</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Uncaught exception at line&quot;</span>
+<span class="w">                     </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;lineNumber&quot;</span><span class="p">).</span><span class="n">toInt</span><span class="p">()</span>
+<span class="w">                     </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;:&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">MainWindow</span><span class="w"> </span><span class="n">mw</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">installExtensions</span><span class="p">(</span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">ConsoleExtension</span><span class="p">);</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;window&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mw</span><span class="p">));</span>
+
+<span class="w">    </span><span class="n">QString</span><span class="w"> </span><span class="n">js</span><span class="p">(</span><span class="s">&quot;window.size=</span><span class="se">\&quot;</span><span class="s">800x600</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">);</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Uncaught exception at line&quot;</span>
+<span class="w">                 </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;lineNumber&quot;</span><span class="p">).</span><span class="n">toInt</span><span class="p">()</span>
+<span class="w">                 </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;:&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">QDir</span><span class="w"> </span><span class="n">dir</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="k">module</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">dir</span><span class="p">.</span><span class="n">entryList</span><span class="p">(</span><span class="n">QStringList</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;js-ui-*&quot;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Loading module&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="k">module</span><span class="p">;</span>
+<span class="w">        </span><span class="n">mw</span><span class="p">.</span><span class="n">loadJSModule</span><span class="p">(</span><span class="k">module</span><span class="o">+</span><span class="s">&quot;/module.js&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">mw</span><span class="p">.</span><span class="n">show</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果和上面一样。只不过灵活性更强。</p>
+<h3 id="_5">其他</h3>
+<p>为保持完整，附上widget.ui文件的内容：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;ui</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;4.0&quot;</span><span class="nt">&gt;</span>
+<span class="w"> </span><span class="nt">&lt;class&gt;</span>widget1<span class="nt">&lt;/class&gt;</span>
+<span class="w"> </span><span class="nt">&lt;widget</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;QWidget&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;widget1&quot;</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;geometry&quot;</span><span class="nt">&gt;</span>
+<span class="w">   </span><span class="nt">&lt;rect&gt;</span>
+<span class="w">    </span><span class="nt">&lt;x&gt;</span>0<span class="nt">&lt;/x&gt;</span>
+<span class="w">    </span><span class="nt">&lt;y&gt;</span>0<span class="nt">&lt;/y&gt;</span>
+<span class="w">    </span><span class="nt">&lt;width&gt;</span>420<span class="nt">&lt;/width&gt;</span>
+<span class="w">    </span><span class="nt">&lt;height&gt;</span>320<span class="nt">&lt;/height&gt;</span>
+<span class="w">   </span><span class="nt">&lt;/rect&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/property&gt;</span>
+<span class="w">  </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;windowTitle&quot;</span><span class="nt">&gt;</span>
+<span class="w">   </span><span class="nt">&lt;string&gt;</span>Form<span class="nt">&lt;/string&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/property&gt;</span>
+<span class="w">  </span><span class="nt">&lt;layout</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;QVBoxLayout&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;verticalLayout&quot;</span><span class="nt">&gt;</span>
+<span class="w">   </span><span class="nt">&lt;item&gt;</span>
+<span class="w">    </span><span class="nt">&lt;widget</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;QSlider&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;slider1&quot;</span><span class="nt">&gt;</span>
+<span class="w">     </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;orientation&quot;</span><span class="nt">&gt;</span>
+<span class="w">      </span><span class="nt">&lt;enum&gt;</span>Qt::Horizontal<span class="nt">&lt;/enum&gt;</span>
+<span class="w">     </span><span class="nt">&lt;/property&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/widget&gt;</span>
+<span class="w">   </span><span class="nt">&lt;/item&gt;</span>
+<span class="w">   </span><span class="nt">&lt;item&gt;</span>
+<span class="w">    </span><span class="nt">&lt;widget</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;QSpinBox&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;spinBox1&quot;</span><span class="nt">/&gt;</span>
+<span class="w">   </span><span class="nt">&lt;/item&gt;</span>
+<span class="w">   </span><span class="nt">&lt;item&gt;</span>
+<span class="w">    </span><span class="nt">&lt;spacer</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;verticalSpacer&quot;</span><span class="nt">&gt;</span>
+<span class="w">     </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;orientation&quot;</span><span class="nt">&gt;</span>
+<span class="w">      </span><span class="nt">&lt;enum&gt;</span>Qt::Vertical<span class="nt">&lt;/enum&gt;</span>
+<span class="w">     </span><span class="nt">&lt;/property&gt;</span>
+<span class="w">     </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;sizeHint&quot;</span><span class="w"> </span><span class="na">stdset=</span><span class="s">&quot;0&quot;</span><span class="nt">&gt;</span>
+<span class="w">      </span><span class="nt">&lt;size&gt;</span>
+<span class="w">       </span><span class="nt">&lt;width&gt;</span>20<span class="nt">&lt;/width&gt;</span>
+<span class="w">       </span><span class="nt">&lt;height&gt;</span>40<span class="nt">&lt;/height&gt;</span>
+<span class="w">      </span><span class="nt">&lt;/size&gt;</span>
+<span class="w">     </span><span class="nt">&lt;/property&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/spacer&gt;</span>
+<span class="w">   </span><span class="nt">&lt;/item&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/layout&gt;</span>
+<span class="w"> </span><span class="nt">&lt;/widget&gt;</span>
+<span class="w"> </span><span class="nt">&lt;resources/&gt;</span>
+<span class="w"> </span><span class="nt">&lt;connections/&gt;</span>
+<span class="nt">&lt;/ui&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_6">参考</h2>
+<ul>
+<li>https://doc.qt.io/qt-6/qjsengine.html</li>
+<li>https://doc.qt.io/qt-6/quiloader.html</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-01-10T21:24:00+08:00" pubdate>Wed 10 January 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/javascript.html">javascript</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

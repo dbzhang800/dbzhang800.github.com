@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Qt样式表小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Qt样式表小记</h1>
+    <p class="meta">
+<time datetime="2024-10-27T19:45:00+08:00" pubdate>Sun 27 October 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>Qt 样式表（stylesheet），简称QSS，是一种声明式的样式定义方法，允许开发者以类似于 Web 开发中的 CSS 的方式，为 Qt 应用中的传统的QtWidgets窗口控件（如按钮、标签、文本框等）设置外观。它可以用来改变控件的颜色、边框、背景、字体、形状等。</p>
+<div class="toc">
+<ul>
+<li><a href="#qss-vs-css">QSS vs CSS</a><ul>
+<li><a href="#sub-controls">子控件（Sub-Controls）</a></li>
+<li><a href="#c">C++命名空间中的控件</a></li>
+<li><a href="#q_property">Q_PROPERTY属性</a></li>
+</ul>
+</li>
+<li><a href="#qss">QSS模板</a><ul>
+<li><a href="#_1">模板</a></li>
+<li><a href="#_2">工具</a></li>
+<li><a href="#_3">样式切换的一些思考点</a></li>
+</ul>
+</li>
+<li><a href="#_4">参考</a></li>
+</ul>
+</div>
+<h2 id="qss-vs-css">QSS vs CSS</h2>
+<blockquote>
+<p>Qt 样式表 与 CSS2 在语法和部分功能上有很多相似之处，但 Qt 样式表 是为桌面应用的 Qt Widgets 设计的，功能和灵活性相比 CSS2 有一些限制。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th><strong>特性</strong></th>
+<th><strong>Qt 样式表</strong></th>
+<th><strong>CSS2</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>适用对象</strong></td>
+<td>用于 <strong>Qt Widgets</strong>（桌面应用的控件）</td>
+<td>用于 <strong>HTML 元素</strong>（网页中的元素）</td>
+</tr>
+<tr>
+<td><strong>选择器支持</strong></td>
+<td>支持CSS2所有选择器类型</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>子控件选择器</strong></td>
+<td>专门引入了 <code>::subcontrol</code> 来选择控件的子部分</td>
+<td>直接使用类或 ID 选择器</td>
+</tr>
+<tr>
+<td><strong>继承性</strong></td>
+<td>通过合并祖先控件和应用程序的样式表来获得。不会自动从父窗口的继承颜色字体等。没有 <code>!important</code> 规则</td>
+<td>样式在父子元素之间可以继承（如 <code>color</code>、<code>font-size</code> 等）</td>
+</tr>
+<tr>
+<td><strong>单位支持</strong></td>
+<td><code>px</code>（通用）、<code>pt</code>（只用于字体）、<code>em</code> 、<code>ex</code></td>
+<td>完全支持 <code>px</code>、<code>em</code>、<code>rem</code>、<code>%</code> 等多种单位</td>
+</tr>
+<tr>
+<td><strong>背景图片</strong></td>
+<td>支持 <code>background-image</code> 和 <code>border-image</code></td>
+<td>支持 <code>background-image</code>，可用于更多元素和伪类</td>
+</tr>
+<tr>
+<td><strong>颜色</strong></td>
+<td>支持颜色名称和十六进制颜色值，如 <code>#RRGGBB</code>以及hsv,hsl等 。注意Qt有调色版<code>palette</code>可供使用。具体关注属性类型Brush。</td>
+<td>没有调色板</td>
+</tr>
+<tr>
+<td><strong>渐变色</strong></td>
+<td><code>qlineargradient</code>等,与CSS语法差异大</td>
+<td><code>linear-gradient</code>等</td>
+</tr>
+<tr>
+<td><strong>边框样式</strong></td>
+<td>支持 <code>border</code>，但不支持如 <code>border-collapse</code> 等复杂的属性</td>
+<td>支持完整的边框属性，如 <code>border-radius</code>、<code>border-collapse</code> 等</td>
+</tr>
+<tr>
+<td><strong>属性值支持</strong></td>
+<td>支持基本的属性值，如 <code>color</code>、<code>background-color</code>、<code>border</code> 等</td>
+<td>支持更复杂的属性值，如 <code>box-shadow</code>、<code>text-shadow</code> 等</td>
+</tr>
+</tbody>
+</table>
+<p>另外注意Qt特有的语法：</p>
+<h3 id="sub-controls">子控件（Sub-Controls）</h3>
+<blockquote>
+<p>子控件（Sub-control） 是 Qt 中用于样式化复杂控件的一个重要概念。它们可以通过双冒号<code>::</code>语法进行选择，并且可以使用 <code>subcontrol-origin</code> 和 <code>subcontrol-position</code> 来调整其在小部件中的定位。</p>
+</blockquote>
+<p>对于 QComboBox 的下拉按钮。选择器可以包含子控件，从而使得可以将样式规则应用于特定的子控件。例如：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">QComboBox</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">margin-right</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="kt">px</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">QComboBox</span><span class="p">::</span><span class="nd">drop-down</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">image</span><span class="p">:</span><span class="w"> </span><span class="nb">url</span><span class="p">(</span><span class="sx">dropdown.png</span><span class="p">);</span>
+<span class="w">    </span><span class="n">subcontrol-origin</span><span class="p">:</span><span class="w"> </span><span class="k">margin</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>双冒号 <code>::</code> 语法类似 CSS3 的伪元素，二者概念上有不同，且具有不同的层叠语义。</p>
+<h3 id="c">C++命名空间中的控件</h3>
+<p>Qt 样式表使用控件的 <code>QObject::className()</code> 来确定类型选择器。如果自定义的控件位于命名空间中，<code>QObject::className()</code> 将返回 <code>&lt;namespace&gt;::&lt;classname&gt;</code>。这与子控件（<code>Sub-Controls</code>）的语法相冲突。为了解决这个问题，当为命名空间中的小部件使用类型选择器时，必须将 <code>::</code> 替换为 <code>--</code></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">namespace</span><span class="w"> </span><span class="nn">ns</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">class</span><span class="w"> </span><span class="nc">MyPushButton</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QPushButton</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">qApp</span><span class="o">-&gt;</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s">&quot;ns--MyPushButton { background: yellow; }&quot;</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="q_property">Q_PROPERTY属性</h3>
+<p>QSS 提供了一个特性，允许通过 <code>qproperty-</code> 前缀直接设置控件的 Qt 属性。这在 CSS 中是不存在的，主要是为了与 Qt 对象属性系统 进行集成。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">QPushButton</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">qproperty-icon</span><span class="p">:</span><span class="w"> </span><span class="nb">url</span><span class="p">(</span><span class="sx">icon.png</span><span class="p">);</span>
+<span class="w">    </span><span class="n">qproperty-iconSize</span><span class="p">:</span><span class="w"> </span><span class="mi">32</span><span class="kt">px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>通过<code>Q_PROPERTY</code> 定义的属性都可以使用 <code>qproperty-&lt;属性名&gt;</code> 语法进行设置。</p>
+<h2 id="qss">QSS模板</h2>
+<p>网络上不少网友分享的qss模板以及和模板相关的工具</p>
+<h3 id="_1">模板</h3>
+<ul>
+<li>https://qss-stock.devsecstudio.com/</li>
+<li>https://github.com/GTRONICK/QSS</li>
+<li>https://github.com/githubuser0xFFFF/Qt-Advanced-Stylesheets</li>
+<li>https://github.com/ColinDuquesnoy/QDarkStyleSheet</li>
+<li>https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle</li>
+<li>https://www.tech-artists.org/t/release-qt-dark-orange-stylesheet/2287</li>
+<li>https://github.com/antonypro/QGoodWindow</li>
+</ul>
+<h3 id="_2">工具</h3>
+<blockquote>
+<p>QSS没有原生的 theme（主题） 或 SASS 等预处理器的直接支持。但有不少工具来做这样的事情</p>
+</blockquote>
+<ul>
+<li>https://github.com/hustlei/QssStylesheetEditor</li>
+<li>https://github.com/HappySeaFox/qsseditor</li>
+<li>https://github.com/UN-GCPDS/qt-material</li>
+<li>https://gitlab.com/pavel.krupala/qt-skin-generator</li>
+<li>https://github.com/Qt-Widgets/Qui_QSS_Skin_Builder</li>
+</ul>
+<h3 id="_3">样式切换的一些思考点</h3>
+<p>我们可以使用SASS方式编写文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">$button-bg-color</span><span class="o">:</span><span class="w"> </span><span class="mh">#333</span><span class="err">;</span>
+<span class="na">$button-text-color</span><span class="o">:</span><span class="w"> </span><span class="ni">white</span><span class="err">;</span>
+
+<span class="nt">QPushButton</span><span class="w"> </span><span class="err">{</span>
+<span class="w">    </span><span class="na">background-color</span><span class="o">:</span><span class="w"> </span><span class="nv">$button-bg-color</span><span class="err">;</span>
+<span class="w">    </span><span class="na">color</span><span class="o">:</span><span class="w"> </span><span class="nv">$button-text-color</span><span class="err">;</span>
+<span class="err">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>而后调用sass或者使用其他三方工具生成qss样式表。这样，调整变量，容易生成多套样式表（尽管是静态的）。</p>
+<p>另外，考虑调色板可以用，可以让其作为QSS基本色</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">QToolTip</span><span class="p">{</span>
+<span class="w">  </span><span class="k">color</span><span class="p">:</span><span class="mh">#ffffff</span><span class="p">;</span>
+<span class="w">  </span><span class="k">background-color</span><span class="p">:</span><span class="nf">palette</span><span class="p">(</span><span class="n">base</span><span class="p">);</span>
+<span class="w">  </span><span class="k">border</span><span class="p">:</span><span class="mi">1</span><span class="kt">px</span><span class="w"> </span><span class="kc">solid</span><span class="w"> </span><span class="nf">palette</span><span class="p">(</span><span class="n">highlight</span><span class="p">);</span>
+<span class="w">  </span><span class="k">border-radius</span><span class="p">:</span><span class="mi">4</span><span class="kt">px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这样Qt程序运行时通过代码中修改调色板来影响样式表。</p>
+<p>控件的动态属性（setProperty）配合QSS的属性选择器，也容易实现单个qss文件的主题切换。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">qApp</span><span class="o">-&gt;</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">(</span>
+<span class="s">    QPushButton[theme=&quot;dark&quot;] {</span>
+<span class="s">        background-color: #333;</span>
+<span class="s">        color: white;</span>
+<span class="s">    }</span>
+<span class="s">    QPushButton[theme=&quot;light&quot;] {</span>
+<span class="s">        background-color: #fff;</span>
+<span class="s">        color: black;</span>
+<span class="s">    }</span>
+<span class="dl">)</span><span class="s">&quot;</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>对于样式表不能直接控制的部分，我们可以使用<code>qproperty-</code> 语法自定义属性进行补充。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">QPushButton</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">qproperty-iconSize</span><span class="p">:</span><span class="w"> </span><span class="mi">24</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">    </span><span class="n">qproperty-flat</span><span class="p">:</span><span class="w"> </span><span class="n">true</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_4">参考</h2>
+<ul>
+<li><a href="https://doc.qt.io/qt-6/stylesheet.html">https://doc.qt.io/qt-6/stylesheet.html</a></li>
+<li><a href="https://doc.qt.io/qt-6/stylesheet-syntax.html">https://doc.qt.io/qt-6/stylesheet-syntax.html</a></li>
+<li><a href="https://doc.qt.io/qt-6/stylesheet-reference.html">https://doc.qt.io/qt-6/stylesheet-reference.html</a></li>
+<li><a href="https://www.w3.org/TR/CSS2/selector.html#q1">https://www.w3.org/TR/CSS2/selector.html#q1</a></li>
+<li><a href="https://drive.google.com/file/d/1OnauZq5m2VimtNjgWWBBbt3z40Ay_3Xn/view">https://drive.google.com/file/d/1OnauZq5m2VimtNjgWWBBbt3z40Ay_3Xn/view</a></li>
+<li><a href="https://wiki.qt.io/Gallery_of_Qt_CSS_Based_Styles">https://wiki.qt.io/Gallery_of_Qt_CSS_Based_Styles</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-10-27T19:45:00+08:00" pubdate>Sun 27 October 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/qt.html">Qt</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

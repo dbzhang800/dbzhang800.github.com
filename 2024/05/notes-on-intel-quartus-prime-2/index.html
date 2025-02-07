@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Intel Quartus Prime Lite 小记（二） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/ee.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Intel Quartus Prime Lite 小记（二）</h1>
+    <p class="meta">
+<time datetime="2024-05-18T22:04:00+08:00" pubdate>Sat 18 May 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>接前面<a href="https://blog.debao.me/2024/05/notes-on-intel-quartus-prime-1/">Quartus Prime Lite小记一</a>，继续野路子补充Quartus基本知识。注：本文内容依然使用 Quartus Prime Lite 23.1进行验证。</p>
+</blockquote>
+<p>Quartus的界面很多人在用，但是用它的界面入门的话，总觉得还缺点东西...，可能命令行更适合我。</p>
+<h2 id="_1">工作流程</h2>
+<p>Quartus可以在命令行下工作，典型的工作流如下：</p>
+<p><img alt="quartus-command-line-design-flow" src="https://blog.debao.me/images/fpga/quartus-command-line-design-flow.png"></p>
+<p>详见：https://www.intel.com/content/www/us/en/docs/programmable/683432/21-4/compilation-with-quartus-sh-flow.html</p>
+<blockquote>
+<p>注意：图中，用于综合的工具叫做<code>quartus_syn</code>，这个是在Quartus专业版中才有，在我们的Lite版本中，只能使用<code>quartus_map</code>工具！！</p>
+</blockquote>
+<p>暂时只关心几个工具：</p>
+<table>
+<thead>
+<tr>
+<th>工具名称</th>
+<th>功能</th>
+<th>主要任务</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quartus_map</code></td>
+<td>综合设计，将高级描述转换为逻辑元素</td>
+<td>- 分析和优化设计代码。<br>- 进行逻辑综合，映射到 FPGA 的逻辑资源。<br>- 输出逻辑网表。</td>
+</tr>
+<tr>
+<td><code>quartus_fit</code></td>
+<td>执行布局与布线，将综合的逻辑元素放置到 FPGA 的物理资源上</td>
+<td>- 进行布局，确定元件位置。<br>- 执行布线，规划连接路径。<br>- 进行时序分析和优化。</td>
+</tr>
+<tr>
+<td><code>quartus_sta</code></td>
+<td>静态时序分析</td>
+<td>用于验证数字电路在没有进行实际操作或在没有输入任何实际数据的情况下满足时序要求。</td>
+</tr>
+<tr>
+<td><code>quartus_asm</code></td>
+<td>生成最终的 FPGA 设备配置文件</td>
+<td>- 合并布局与布线结果和引脚分配。<br>- 输出 <code>.sof</code> 文件和 <code>.rbf</code> 文件。<br>- 确保文件准确反映设计的所有方面。</td>
+</tr>
+<tr>
+<td><code>quartus_eda</code></td>
+<td>EDA网表写入</td>
+<td>用于与其他电子设计自动化（EDA）工具集成。这包括生成用于仿真和验证的文件，以及为电路板级设计生成其他必需的设计文件。</td>
+</tr>
+<tr>
+<td><code>quartus_pgm</code></td>
+<td>FPGA 设备编程</td>
+<td>- 通过 JTAG 或其他接口将配置文件（如 <code>.sof</code> 文件）下载到 FPGA 或 CPLD 设备。<br>- 支持设备的在线或离线编程。</td>
+</tr>
+<tr>
+<td><code>quartus_cpf</code></td>
+<td>配置文件格式转换</td>
+<td>- 从 <code>.sof</code> 格式转换为 <code>.rbf</code> 或其他格式。<br>- 支持配置文件的压缩和加密等高级特性。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_2">查看帮助</h3>
+<p>如下命令可以调出帮助页面：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>quartus_sh -qhelp
+</code></pre></div></td></tr></table></div>
+
+<p><img alt="quartus-command-line-help" src="https://blog.debao.me/images/fpga/quartus-command-line-help.png"></p>
+<h3 id="_3">参数</h3>
+<blockquote>
+<p>手册中说，调用命令时，尽可能使用<code>--read_settings_files=off</code>和<code>--write_settings_files=off</code>，来优化Quartus读取和更新.qsf文件的方式。</p>
+</blockquote>
+<h4 id="assignments">命令行程序执行时，会按照如下顺序读取Assignments</h4>
+<ul>
+<li>命令行参数</li>
+<li>.qsf文件内容</li>
+<li>工程的数据库(db目录）</li>
+<li>Intel Quartus软件默认值</li>
+</ul>
+<p>通过如下命令控制是否去读.qsf文件：</p>
+<ul>
+<li><code>--read_settings_files = on</code> （default）</li>
+<li><code>--read_settings_files = off</code></li>
+</ul>
+<h4 id="_4">程序执行结束时，参数写入</h4>
+<ul>
+<li>.qsf文件</li>
+<li>工程数据库(db)</li>
+</ul>
+<p>如下命令可以控制是否写入.qsf文件：</p>
+<ul>
+<li><code>--write_settings_files = on</code> （default)</li>
+<li><code>--write_settings_files = off</code></li>
+</ul>
+<h2 id="_5">例子</h2>
+<p>不使用界面，看看只用命令行，如何创建一个项目，并完成编译</p>
+<h3 id="_6">创建工程</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>quartus_sh --prepare mytest2
+</code></pre></div></td></tr></table></div>
+
+<p>会创建出如下两个文件：</p>
+<ul>
+<li>mytest2.qpf</li>
+<li>mytest2.qsf</li>
+</ul>
+<p>qpf文件没什么内容，主要看看.qsf文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">FAMILY</span><span class="w"> </span><span class="s">&quot;Cyclone V&quot;</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">DEVICE</span><span class="w"> </span><span class="n">AUTO</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">TOP_LEVEL_ENTITY</span><span class="w"> </span><span class="n">mytest2</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">ORIGINAL_QUARTUS_VERSION</span><span class="w"> </span><span class="mf">23.1</span><span class="n">STD</span><span class="mf">.0</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">PROJECT_CREATION_TIME_DATE</span><span class="w"> </span><span class="s">&quot;14:10:27  MAY 17, 2024&quot;</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">LAST_QUARTUS_VERSION</span><span class="w"> </span><span class="s">&quot;23.1std.0 Lite Edition&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>网上有这个<code>--prepare</code>似乎很少，没找到如何通过命令行指定FAMILY和DEVICE，只能手动修改这个文件了（根据自己的FPGA手动修改）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">FAMILY</span><span class="w"> </span><span class="s">&quot;MAX 10&quot;</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">DEVICE</span><span class="w"> </span><span class="mh">10</span><span class="n">M50SAE144C8G</span><span class="w"> </span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_7">源文件</h3>
+<p>编写一个verilog文件，比如mytest2.v</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">module</span><span class="w"> </span><span class="n">mytest2</span><span class="w"> </span><span class="p">(</span><span class="k">input</span><span class="w"> </span><span class="kt">wire</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="k">input</span><span class="w"> </span><span class="kt">wire</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="w"> </span><span class="kt">wire</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
+<span class="w">    </span><span class="k">assign</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">x1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">x2</span><span class="p">)</span><span class="o">|</span><span class="p">(</span><span class="o">~</span><span class="n">x1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">x2</span><span class="p">);</span>
+<span class="k">endmodule</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意：模块名字和需要和qsf文件中的 <code>TOP_LEVEL_ENTITY</code> 匹配。</p>
+</blockquote>
+<p>将该文件加入到.qsf文件内，即加一行</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">VERILOG_FILE</span><span class="w"> </span><span class="n">mytest2</span><span class="p">.</span><span class="n">v</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>如果要绑定引脚，也是需要修改.qsf文件。</p>
+</blockquote>
+<h3 id="_8">编译</h3>
+<p>源码和项目文件都有了，可以直接编译了...</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>quartus_map mytest2
+quartus_fit mytest2
+quartus_asm mytest2
+</code></pre></div></td></tr></table></div>
+
+<p>三条命令执行完，即可在当前目录下得到如下文件：</p>
+<ul>
+<li>mytest2.sof</li>
+<li>mytest2.pof</li>
+</ul>
+<p>不想直接敲这么多命令的话，其实下面一条命令也是可以的</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>quartus_sh --flow compile mytest2
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>该命令除了执行我们前面的命令外，还执行<code>quartus_sta</code>。</p>
+</blockquote>
+<h3 id="_9">清理</h3>
+<p>要删除各种临时文件，只需要如下命令：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>quartus --clean mytest2
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意，这个清理工作是智能的，它只清理mytest2对应的各种产出结果。如果同一个文件夹下还有一个mytest3，mytest3的源码以及各种产出结果，并不会被清理。</p>
+</blockquote>
+<h2 id="tcl">TCL脚本</h2>
+<blockquote>
+<p>真的像我们这样用命令行的似乎很少。资料找起来有点头大，可能姿势不对...，官方对TCL支持似乎更好。</p>
+</blockquote>
+<h3 id="_10">创建项目</h3>
+<p>先写一个tcl脚本，比如my_setup.tcl</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">project_new</span><span class="w"> </span>mytest3<span class="w"> </span><span class="o">-</span>overwrite
+
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>FAMILY<span class="w"> </span><span class="s2">&quot;MAX 10&quot;</span>
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>DEVICE<span class="w"> </span><span class="mi">10</span>M50SAE144C8G<span class="w"> </span>
+set_global_assignment<span class="w"> </span><span class="o">-</span>name<span class="w"> </span>TOP_LEVEL_ENTITY<span class="w"> </span>mytest2
+
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>VERILOG_FILE<span class="w"> </span>mytest2.v
+
+<span class="nv">set_location_assignment</span><span class="w"> </span>PIN_6<span class="w"> </span><span class="o">-</span>to<span class="w"> </span>x1
+<span class="nv">set_location_assignment</span><span class="w"> </span>PIN_7<span class="w"> </span><span class="o">-</span>to<span class="w"> </span>x2
+<span class="nv">set_location_assignment</span><span class="w"> </span>PIN_8<span class="w"> </span><span class="o">-</span>to<span class="w"> </span>f
+</code></pre></div></td></tr></table></div>
+
+<p>而后直接执行它</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>quartus_sh -t my_setup.tcl
+</code></pre></div></td></tr></table></div>
+
+<p>这样就会生成如下文件</p>
+<ul>
+<li>mytest3.qpf</li>
+<li>mytest3.qsf</li>
+</ul>
+<h3 id="_11">编译</h3>
+<p>把我们上个例子中的mytest.v源码拷进来，工程就是全的。直接执行</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>quartus_sh --flow compile mytest3
+</code></pre></div></td></tr></table></div>
+
+<p>即可完成编译，并生成待烧写文件：</p>
+<ul>
+<li>mytest3.sof</li>
+<li>mytest3.pof</li>
+</ul>
+<h2 id="_12">常用文件后缀</h2>
+<p>前面走马观花看了verilog在Quartus开发最简流程，接触了一些后缀文件。需要再看看</p>
+<h3 id="_13">项目文件</h3>
+<p>前面见到了</p>
+<ul>
+<li>.qpf 项目入口文件</li>
+</ul>
+<ul>
+<li>.qsf 项目配置文件：包括项目使用的 FPGA 设备类型、引脚配置、项目选项、编译设置、时序约束和其他用户定义的设置</li>
+</ul>
+<p>手册中还提到（尽管在Prime Lite下没找到如何生成它们）</p>
+<ul>
+<li>.qws 工作区文件（和项目构建无关，纯粹和Quartus界面有关？）</li>
+</ul>
+<ul>
+<li>.qdf 默认配置文件（格式和.qsf一样）</li>
+</ul>
+<h3 id="_14">配置文件（烧写文件）</h3>
+<p>前面编译的结果是 .sof文件，这个文件通常调试，正式发布的话，一般需要转成.pof文件或.jic文件</p>
+<ul>
+<li>.sof 文件（SRAM Object File）：这是一个二进制文件，包含 FPGA 的配置数据，通常在开发阶段用于直接通过 JTAG 或其他接口将配置下载到 FPGA 的 SRAM。</li>
+</ul>
+<ul>
+<li>.pof 文件（Programmer Object File）：这是一个用于永久编程 FPGA 或 CPLD 的二进制文件，适用于需要将配置数据永久存储在设备中的情况。</li>
+</ul>
+<ul>
+<li>.jic文件（JTAG Indirect Configuration File）：这个文件用于定义通过 JTAG 间接配置 FPGA 时所需的数据和参数。</li>
+</ul>
+<p>通过 Quartus Prime菜单<code>File-&gt;Convert Programming Files...</code> 可以调出这个转换页面。</p>
+<p>另外还有</p>
+<ul>
+<li>.rbf 文件（Raw Binary File）：</li>
+</ul>
+<ul>
+<li>.hex 文件（）：一种文本文件...</li>
+</ul>
+<h3 id="_15">设计输入</h3>
+<p>这个表格有点长</p>
+<table>
+<thead>
+<tr>
+<th>文件扩展名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.tdf</code></td>
+<td>Intel自己的硬件描述语言（Altera HDL)，用于硬件描述</td>
+</tr>
+<tr>
+<td><code>.vhd</code>, <code>.vhdl</code></td>
+<td><strong>VHDL源代码文件</strong>，用于硬件描述</td>
+</tr>
+<tr>
+<td><code>.v</code>, <code>.vlg</code>, <code>.verilog</code></td>
+<td><strong>Verilog源代码文件</strong>，用于硬件描述</td>
+</tr>
+<tr>
+<td><code>.sv</code></td>
+<td><strong>SystemVerilog源代码文件</strong>，用于更复杂的硬件描述和验证</td>
+</tr>
+<tr>
+<td><code>.vqm</code></td>
+<td>包含了用于 Quartus 综合器的优化后的 Verilog HDL 代码</td>
+</tr>
+<tr>
+<td><code>.edf</code>, <code>.edif</code>, <code>.edn</code></td>
+<td>电子设计互操作格式文件，用于在不同的CAD工具之间传输设计数据</td>
+</tr>
+<tr>
+<td><code>.cpp</code>, <code>.h</code></td>
+<td>C++源代码和头文件，可能用于FPGA设计中的软件部分或与FPGA交互的外部程序</td>
+</tr>
+<tr>
+<td><code>.mdl</code></td>
+<td>MATLAB Simulink模型文件，用于基于模型的设计和仿真</td>
+</tr>
+<tr>
+<td><code>.gdf</code>, <code>.bdf</code></td>
+<td>图形设计文件，用于Quartus Prime的图形用户界面</td>
+</tr>
+<tr>
+<td><code>.qip</code></td>
+<td>Quartus IP 文件</td>
+</tr>
+<tr>
+<td><code>.qdb</code></td>
+<td>Quartus Database，存储编译后的设计数据</td>
+</tr>
+<tr>
+<td><code>.cmp</code></td>
+<td>Compiler Mapping File，可能用于定义编译器的映射设置</td>
+</tr>
+<tr>
+<td><code>.qxp</code></td>
+<td>Quartus Export Package，用于导出和导入设计的一部分</td>
+</tr>
+<tr>
+<td><code>.smf</code></td>
+<td>Simulation Model File，用于仿真模型</td>
+</tr>
+<tr>
+<td><code>.qsys</code>, <code>.ip</code></td>
+<td>用于定义和实例化系统级设计和IP核</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tcl_1">TCL语言介绍</h2>
+<p>Tcl（Tool Command Language，工具命令语言）是一种灵活的脚本语言，与 Python 和 C++ 相比，它具有不同的语法和设计理念。Tcl 的设计侧重于字符串处理、集成和易于嵌入。</p>
+<h3 id="_16">基本语法</h3>
+<ul>
+<li>命令和参数</li>
+</ul>
+<p>Tcl 的基本单位是命令，每个命令由一个命令名和一系列参数组成，参数之间由空格分隔。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">commandName</span><span class="w"> </span>arg1<span class="w"> </span>arg2<span class="w"> </span>arg3
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>注释</li>
+</ul>
+<p>在 Tcl 中，注释以井号 # 开始，直到行末。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c"># 这是一个注释</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>变量</li>
+</ul>
+<p>变量通过 set 命令定义，不需要声明类型。使用 $ 符号来访问变量。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">set</span><span class="w"> </span>a<span class="w"> </span><span class="mi">10</span>
+<span class="nb">puts</span><span class="w"> </span><span class="nv">$a</span><span class="w">  </span><span class="err">#</span><span class="w"> </span>输出<span class="w"> </span><span class="mi">10</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>字符串</li>
+</ul>
+<p>字符串可以用双引号（处理变量和转义字符）或大括号（原样输出，不进行任何替换）括起来。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">set</span><span class="w"> </span>name<span class="w"> </span><span class="s2">&quot;World&quot;</span>
+<span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Hello, $name&quot;</span><span class="w">      </span><span class="err">#</span><span class="w"> </span>输出<span class="w"> </span>Hello,<span class="w"> </span>World
+<span class="nb">puts</span><span class="w"> </span><span class="k">{</span><span class="nv">Hello</span>,<span class="w"> </span><span class="nv">$name</span><span class="k">}</span><span class="w">      </span><span class="err">#</span><span class="w"> </span>输出<span class="w"> </span>Hello,<span class="w"> </span><span class="nv">$name</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_17">控制结构</h3>
+<ul>
+<li>if 语句</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="nv">$a</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">10</span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Greater than 10&quot;</span>
+<span class="k">}</span><span class="w"> </span><span class="k">elseif</span><span class="w"> </span><span class="k">{</span><span class="nv">$a</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">10</span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Equal to 10&quot;</span>
+<span class="k">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Less than 10&quot;</span>
+<span class="k">}</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>循环</li>
+</ul>
+<p>for 循环类似于 C++ 和 Python 中的 for 循环。
+foreach 循环用于遍历列表。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">for</span><span class="w"> </span><span class="k">{set</span><span class="w"> </span>i<span class="w"> </span><span class="mi">0</span><span class="k">}</span><span class="w"> </span><span class="k">{</span><span class="nv">$i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nv">10</span><span class="k">}</span><span class="w"> </span><span class="k">{</span><span class="nb">incr</span><span class="w"> </span>i<span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="nv">$i</span>
+<span class="k">}</span>
+
+<span class="k">set</span><span class="w"> </span>list<span class="w"> </span><span class="k">{</span><span class="nv">apple</span><span class="w"> </span>banana<span class="w"> </span>cherry<span class="k">}</span>
+<span class="k">foreach</span><span class="w"> </span>fruit<span class="w"> </span><span class="nv">$list</span><span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="nv">$fruit</span>
+<span class="k">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_18">列表和字典</h3>
+<ul>
+<li>列表</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">set</span><span class="w"> </span>myList<span class="w"> </span><span class="k">{</span><span class="nv">apple</span><span class="w"> </span>banana<span class="w"> </span>cherry<span class="k">}</span>
+<span class="nb">puts</span><span class="w"> </span><span class="k">[</span><span class="nb">lindex</span><span class="w"> </span><span class="nv">$myList</span><span class="w"> </span><span class="mi">1</span><span class="k">]</span><span class="w">  </span><span class="err">#</span><span class="w"> </span>输出<span class="w"> </span>banana
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>字典</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">set</span><span class="w"> </span>myDict<span class="w"> </span><span class="k">{</span><span class="nv">key1</span><span class="w"> </span>value1<span class="w"> </span>key2<span class="w"> </span>value2<span class="k">}</span>
+<span class="nb">puts</span><span class="w"> </span><span class="k">[</span><span class="nb">dict</span><span class="w"> </span>get<span class="w"> </span><span class="nv">$myDict</span><span class="w"> </span>key1<span class="k">]</span><span class="w">  </span><span class="err">#</span><span class="w"> </span>输出<span class="w"> </span>value1
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_19">函数（过程）</h3>
+<p>在 Tcl 中，函数被称为“过程”（procedure），使用 proc 关键字定义。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">proc</span><span class="w"> </span>sum<span class="w"> </span><span class="k">{</span><span class="nv">a</span><span class="w"> </span>b<span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="nv">$a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$b</span><span class="k">]</span>
+<span class="k">}</span>
+<span class="nb">puts</span><span class="w"> </span><span class="k">[</span><span class="nv">sum</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">3</span><span class="k">]</span><span class="w">  </span><span class="err">#</span><span class="w"> </span>输出<span class="w"> </span><span class="mi">8</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_20">文件读写</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">set</span><span class="w"> </span>file<span class="w"> </span><span class="k">[</span><span class="nb">open</span><span class="w"> </span><span class="s2">&quot;filename.txt&quot;</span><span class="w"> </span>r<span class="k">]</span>
+<span class="k">set</span><span class="w"> </span>data<span class="w"> </span><span class="k">[</span><span class="nb">read</span><span class="w"> </span><span class="nv">$file</span><span class="k">]</span>
+<span class="nb">close</span><span class="w"> </span><span class="nv">$file</span>
+<span class="nb">puts</span><span class="w"> </span><span class="nv">$data</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_21">参考</h2>
+<ul>
+<li><a href="https://www.intel.com/content/www/us/en/programmable/quartushelp/21.3/index.htm#reference/glossary/def_file_types.htm">Intel® Quartus® Prime Pro Edition Help version 21.3 - file types Definition</a></li>
+<li><a href="https://www.intel.cn/content/www/cn/zh/support/programmable/support-resources/design-guidance/quartus-support.html">英特尔® Quartus® Prime 设计软件支持中心资源 |英特尔 (intel.cn)</a></li>
+<li>https://community.intel.com/t5/Intel-Quartus-Prime-Software/Quartus-version-control-methodology/m-p/1479729</li>
+<li><a href="https://www.intel.com/content/www/us/en/programmable/quartushelp/23.1/index.htm#tafs/tafs/tcl_pkg_project_ver_7.0.htm">Intel® Quartus® Prime Pro Edition Help version 23.1 - ::quartus::project</a></li>
+<li><a href="https://github.com/intel/fpga-partial-reconfig">GitHub - intel/fpga-partial-reconfig: Tutorials, scripts and reference designs for the Intel FPGA partial reconfiguration (PR) design flow</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-05-18T22:04:00+08:00" pubdate>Sat 18 May 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/ee.html'>EE</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a class="category" href="https://blog.debao.me/tags/quartus.html">Quartus</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

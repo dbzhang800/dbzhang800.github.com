@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>PySide6下VTK小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">PySide6下VTK小记</h1>
+    <p class="meta">
+<time datetime="2024-12-15T01:19:00+08:00" pubdate>Sun 15 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>接前面<a href="https://blog.debao.me/2024/11/a-review-of-the-history-of-qt-and-python-bindings/">Qt与Python的绑定历史回顾</a>与<a href="https://blog.debao.me/2024/12/notes-on-matplotlib-with-pyside6/">PySide6下Matplotlib小记</a>，继续梳理一点点...</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#vtk">vtk 是什么</a><ul>
+<li><a href="#1-vtk">例子1：使用 vtk</a></li>
+<li><a href="#2-vtkmodules">例子2：使用 vtkmodules</a></li>
+</ul>
+</li>
+<li><a href="#vtk_1">vtk类</a><ul>
+<li><a href="#vtkwindow">vtkWindow</a></li>
+<li><a href="#vtkrender">vtkRender</a></li>
+<li><a href="#qt">Qt控件？</a></li>
+</ul>
+</li>
+<li><a href="#pyside">PySide等绑定的支持？</a></li>
+<li><a href="#qt-qvtkrenderwindowinteractor">Qt控件 QVTKRenderWindowInteractor</a></li>
+<li><a href="#pyside6">PySide6下使用</a></li>
+<li><a href="#_1">参考</a></li>
+</ul>
+</div>
+<h2 id="vtk">vtk 是什么</h2>
+<p>VTK（Visualization Toolkit） 是一个开源的跨平台库，用于 3D 计算机图形学、图像处理 和 科学数据可视化。它由 Kitware 开发和维护，支持从简单的 2D/3D 图形渲染到复杂的可视化算法应用。它支持多种格式文件：</p>
+<table>
+<thead>
+<tr>
+<th><strong>格式</strong></th>
+<th><strong>文件扩展名</strong></th>
+<th><strong>用途</strong></th>
+<th><strong>VTK 支持的类</strong></th>
+<th><strong>特点</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VTK</strong></td>
+<td><code>*.vtk</code></td>
+<td>VTK 原生格式，用于网格和几何数据</td>
+<td><code>vtkDataSetReader</code> / <code>vtkDataSetWriter</code></td>
+<td>支持结构化、非结构化网格及几何；ASCII 和二进制两种模式。</td>
+</tr>
+<tr>
+<td><strong>VTU</strong></td>
+<td><code>*.vtu</code></td>
+<td>XML 格式的非结构化网格</td>
+<td><code>vtkXMLUnstructuredGridReader</code> / <code>vtkXMLUnstructuredGridWriter</code></td>
+<td>XML 格式，支持大数据和并行处理。</td>
+</tr>
+<tr>
+<td><strong>STL</strong></td>
+<td><code>*.stl</code></td>
+<td>表面几何模型，常用于 3D 打印</td>
+<td><code>vtkSTLReader</code> / <code>vtkSTLWriter</code></td>
+<td>支持 ASCII 和二进制格式。</td>
+</tr>
+<tr>
+<td><strong>PLY</strong></td>
+<td><code>*.ply</code></td>
+<td>多边形网格和点云</td>
+<td><code>vtkPLYReader</code> / <code>vtkPLYWriter</code></td>
+<td>支持点、边、面以及附加属性（如颜色、法线）。</td>
+</tr>
+<tr>
+<td><strong>OBJ</strong></td>
+<td><code>*.obj</code></td>
+<td>表面几何和纹理数据</td>
+<td><code>vtkOBJReader</code> / <code>vtkOBJExporter</code></td>
+<td>可存储顶点、面、法线和纹理数据，与 MTL 文件结合支持材质。</td>
+</tr>
+<tr>
+<td><strong>3DS</strong></td>
+<td><code>*.3ds</code></td>
+<td>3D Studio 模型</td>
+<td><code>vtk3DSImporter</code></td>
+<td>早期的三维模型格式，支持材质和几何。</td>
+</tr>
+<tr>
+<td><strong>GLTF/GLB</strong></td>
+<td><code>*.gltf</code>, <code>*.glb</code></td>
+<td>高效传输和渲染的现代格式</td>
+<td>外部库支持（如 PyVista 或 vtk.js）</td>
+<td>支持几何、材质、纹理和动画；GLB 为二进制格式。</td>
+</tr>
+<tr>
+<td><strong>ExodusII</strong></td>
+<td><code>*.exo</code></td>
+<td>有限元分析的科学数据</td>
+<td><code>vtkExodusIIReader</code></td>
+<td>存储网格、模拟结果和元数据，常用于工程仿真。</td>
+</tr>
+<tr>
+<td><strong>XDMF</strong></td>
+<td><code>*.xdmf</code></td>
+<td>高性能科学数据格式</td>
+<td><code>vtkXdmfReader</code></td>
+<td>通常与 HDF5 结合使用，支持大规模并行处理。</td>
+</tr>
+<tr>
+<td><strong>NetCDF</strong></td>
+<td><code>*.nc</code></td>
+<td>气象和海洋科学网格数据</td>
+<td><code>vtkNetCDFReader</code></td>
+<td>存储多维数组数据，支持高效存储和访问。</td>
+</tr>
+<tr>
+<td><strong>Ensight</strong></td>
+<td><code>*.case</code></td>
+<td>流体力学和有限元分析数据</td>
+<td><code>vtkEnsightReader</code></td>
+<td>支持科学可视化，专为流体仿真设计。</td>
+</tr>
+<tr>
+<td><strong>HDF5</strong></td>
+<td><code>*.h5</code></td>
+<td>高性能科学数据格式</td>
+<td><code>vtkHDFReader</code></td>
+<td>支持多维数据，提供快速存储和访问。</td>
+</tr>
+<tr>
+<td><strong>ParaView State</strong></td>
+<td><code>*.pvd</code>, <code>*.pvtu</code></td>
+<td>并行科学数据可视化</td>
+<td><code>vtkPVDReader</code></td>
+<td>ParaView 支持的格式，适用于并行处理的网格数据。</td>
+</tr>
+<tr>
+<td><strong>LAS/LAZ</strong></td>
+<td><code>*.las</code>, <code>*.laz</code></td>
+<td>激光雷达点云数据</td>
+<td>外部工具转换后支持</td>
+<td>存储点云数据，包含高度、颜色和反射强度等信息。</td>
+</tr>
+</tbody>
+</table>
+<p>东西太多，找个最简单的例子，先看看python下如何使用，找找感觉</p>
+<h3 id="1-vtk">例子1：使用 vtk</h3>
+<p>传统方式，直接导入 <code>vtk</code> 模块</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">vtk</span>
+
+<span class="n">cone</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkConeSource</span><span class="p">()</span>
+<span class="n">cone</span><span class="o">.</span><span class="n">SetResolution</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="c1"># 创建一个 Mapper，将几何数据映射到图形</span>
+<span class="n">mapper</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkPolyDataMapper</span><span class="p">()</span>
+<span class="n">mapper</span><span class="o">.</span><span class="n">SetInputConnection</span><span class="p">(</span><span class="n">cone</span><span class="o">.</span><span class="n">GetOutputPort</span><span class="p">())</span>
+
+<span class="c1"># 创建一个 Actor，表示绘制到屏幕上的对象</span>
+<span class="n">actor</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkActor</span><span class="p">()</span>
+<span class="n">actor</span><span class="o">.</span><span class="n">SetMapper</span><span class="p">(</span><span class="n">mapper</span><span class="p">)</span>
+
+<span class="c1"># 创建一个 Renderer，负责渲染场景</span>
+<span class="n">renderer</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkRenderer</span><span class="p">()</span>
+<span class="n">renderer</span><span class="o">.</span><span class="n">SetBackground</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span>  <span class="c1"># 设置背景色</span>
+
+<span class="c1"># 创建一个 RenderWindow 和 RenderWindowInteractor</span>
+<span class="n">render_window</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkRenderWindow</span><span class="p">()</span>
+<span class="n">render_window</span><span class="o">.</span><span class="n">AddRenderer</span><span class="p">(</span><span class="n">renderer</span><span class="p">)</span>
+<span class="n">render_window</span><span class="o">.</span><span class="n">SetSize</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+
+<span class="n">interactor</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkRenderWindowInteractor</span><span class="p">()</span>
+<span class="n">interactor</span><span class="o">.</span><span class="n">SetRenderWindow</span><span class="p">(</span><span class="n">render_window</span><span class="p">)</span>
+
+<span class="c1"># 将 Actor 添加到 Renderer 中</span>
+<span class="n">renderer</span><span class="o">.</span><span class="n">AddActor</span><span class="p">(</span><span class="n">actor</span><span class="p">)</span>
+
+<span class="c1"># 开始渲染</span>
+<span class="n">render_window</span><span class="o">.</span><span class="n">Render</span><span class="p">()</span>
+<span class="n">interactor</span><span class="o">.</span><span class="n">Start</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注，<code>vtk.py</code>文件内部长这样：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="sd">&quot;&quot;&quot;This is the vtk module&quot;&quot;&quot;</span>
+
+<span class="c1"># this module has the same contents as vtkmodules.all</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkCommonCore</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkWebCore</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkCommonMath</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkCommonTransforms</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkCommonDataModel</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkCommonExecutionModel</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkIOCore</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkImagingCore</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkIOImage</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkIOXMLParser</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkIOXML</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkCommonMisc</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkFiltersCore</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkRenderingCore</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkRenderingContext2D</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkRenderingFreeType</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="o">...</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="2-vtkmodules">例子2：使用 vtkmodules</h3>
+<p>使用 模块化导入方式，理论上更快，但是细节...</p>
+<blockquote>
+<p>例子中前两行代码中没有直接用到，但是必须导入，否则窗口中没有任何内容！？？</p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">vtkmodules.vtkInteractionStyle</span>  <span class="c1"># 渲染交互器</span>
+<span class="kn">import</span> <span class="nn">vtkmodules.vtkRenderingOpenGL2</span>  <span class="c1"># 渲染窗口</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkFiltersSources</span> <span class="kn">import</span> <span class="n">vtkConeSource</span>  <span class="c1"># 圆锥体源</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkRenderingCore</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">vtkActor</span><span class="p">,</span>
+        <span class="n">vtkPolyDataMapper</span><span class="p">,</span>
+        <span class="n">vtkRenderer</span><span class="p">,</span>
+        <span class="n">vtkRenderWindow</span><span class="p">,</span>
+        <span class="n">vtkRenderWindowInteractor</span>
+<span class="p">)</span><span class="c1"># 渲染相关类</span>
+
+<span class="c1"># 创建一个圆锥体</span>
+<span class="n">cone</span> <span class="o">=</span> <span class="n">vtkConeSource</span><span class="p">()</span>
+<span class="n">cone</span><span class="o">.</span><span class="n">SetResolution</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="c1"># 创建一个 Mapper，将几何数据映射到图形</span>
+<span class="n">mapper</span> <span class="o">=</span> <span class="n">vtkPolyDataMapper</span><span class="p">()</span>
+<span class="n">mapper</span><span class="o">.</span><span class="n">SetInputConnection</span><span class="p">(</span><span class="n">cone</span><span class="o">.</span><span class="n">GetOutputPort</span><span class="p">())</span> 
+
+<span class="c1"># 创建一个 Actor，表示绘制到屏幕上的对象</span>
+<span class="n">actor</span> <span class="o">=</span> <span class="n">vtkActor</span><span class="p">()</span>
+<span class="n">actor</span><span class="o">.</span><span class="n">SetMapper</span><span class="p">(</span><span class="n">mapper</span><span class="p">)</span><span class="n">r</span>
+
+<span class="c1"># 创建一个 Renderer，负责渲染场景</span>
+<span class="n">renderer</span> <span class="o">=</span> <span class="n">vtkRenderer</span><span class="p">()</span>
+<span class="n">renderer</span><span class="o">.</span><span class="n">AddActor</span><span class="p">(</span><span class="n">actor</span><span class="p">)</span> 
+<span class="n">renderer</span><span class="o">.</span><span class="n">SetBackground</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span>
+
+<span class="c1"># 创建一个 RenderWindow 和 RenderWindowInteractor</span>
+<span class="n">render_window</span> <span class="o">=</span> <span class="n">vtkRenderWindow</span><span class="p">()</span>
+<span class="n">render_window</span><span class="o">.</span><span class="n">AddRenderer</span><span class="p">(</span><span class="n">renderer</span><span class="p">)</span>
+<span class="n">render_window</span><span class="o">.</span><span class="n">SetSize</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+
+<span class="n">interactor</span> <span class="o">=</span> <span class="n">vtkRenderWindowInteractor</span><span class="p">()</span>
+<span class="n">interactor</span><span class="o">.</span><span class="n">SetRenderWindow</span><span class="p">(</span><span class="n">render_window</span><span class="p">)</span>
+
+<span class="c1"># 开始渲染</span>
+<span class="n">render_window</span><span class="o">.</span><span class="n">Render</span><span class="p">()</span>
+<span class="n">interactor</span><span class="o">.</span><span class="n">Start</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="vtk_1">vtk类</h2>
+<p>和渲染直接相关的类：</p>
+<ul>
+<li>vtkRenderer   渲染器，负责绘制一个场景。</li>
+<li>vtkRenderWindow   渲染窗口，负责在屏幕上显示内容。</li>
+<li>vtkRenderWindowInteractor 提供与用户的交互功能（缩放、旋转、平移等）。</li>
+</ul>
+<p><a href="https://vtk.org/doc/nightly/html/classvtkRenderer.html">vtkRenderer</a> 和 <a href="https://vtk.org/doc/nightly/html/classvtkRenderWindow.html">vtkRenderWindow</a>都很复杂。</p>
+<h3 id="vtkwindow">vtkWindow</h3>
+<p>vtkWindow 类有点多，特别关注：</p>
+<ul>
+<li>vtkXOpenGLRenderWindow (Linux默认)</li>
+<li>vtkWin32OpenGLRenderWindow (Windows默认)</li>
+<li>vtkEGLRenderWindow （<code>VTK_OPENGL_HAS_EGL</code>启用时的默认）</li>
+</ul>
+<p>详细的类继承关系：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code>vtkWindow
+   ├── vtkRenderWindow
+   │      ├── vtkOpenGLRenderWindow
+   │      │      ├── vtkCocoaOpenGLRenderWindow
+   │      │      ├── vtkEGLRenderWindow
+   │      │      ├── vtkGenericOpenGLRenderWindow
+   │      │      │      ├── vtkExternalOpenGLRenderWindow
+   │      │      │      ├── vtkZSpaceGenericRenderWindow
+   │      │      ├── vtkIOSRenderWindow
+   │      │      ├── vtkOSOpenGLRenderWindow
+   │      │      ├── vtkSDL2OpenGLRenderWindow
+   │      │      ├── vtkVRRenderWindow
+   │      │      │      ├── vtkOpenVRRenderWindow
+   │      │      │      ├── vtkOpenXRRenderWindow
+   │      │      ├── vtkWebAssemblyOpenGLRenderWindow
+   │      │      ├── vtkWin32OpenGLRenderWindow
+   │      │      │      ├── vtkWin32OpenGLDXRenderWindo
+   │      │      │      ├── vtkZSpaceWin32RenderWindo
+   │      │      ├── vtkXOpenGLRenderWindow
+   │      ├── vtkWebGPURenderWindow
+   │      │      ├── vtkSDL2WebGPURenderWindow
+   │      │      ├── vtkWebAssemblyWebGPURenderWindow
+   │      │      ├── vtkXWebGPURenderWindow
+</code></pre></div></td></tr></table></div>
+
+<h3 id="vtkrender">vtkRender</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code>vtkViewport
+   ├── vtkRender
+   │      ├── vtkOpenGLRender
+   │      │      ├── vtkExternalOpenGLRender
+   │      │      ├── vtkVRRender
+   │      │      │      ├── vtkOpenVRRender
+   │      │      │      ├── vtkOpenXRRender
+   │      │      ├── vtkZSpaceRender
+   │      ├── vtkWebGPURender
+</code></pre></div></td></tr></table></div>
+
+<h3 id="qt">Qt控件？</h3>
+<blockquote>
+<p>尽管这部分和PySide无关，但由于其对C++ Qt有用，简单列一下</p>
+</blockquote>
+<p>源码目录<code>vtk/GUISupport/Qt</code>中有一些C++的类，用于提供和Qt的集成。其中有几个和QWidget/QWindow直接相关。</p>
+<p>QVTKOpenGLNativeWidget</p>
+<ul>
+<li>别名：QVTKRenderWidget </li>
+<li>派生自：<strong>QOpenGLWidget</strong></li>
+<li>内部使用 vtkGenericOpenGLRenderWindow</li>
+</ul>
+<p>QVTKOpenGLStereoWidget</p>
+<ul>
+<li>派生自：<strong>QWidget</strong></li>
+<li>内部使用 vtkGenericOpenGLRenderWindow 或 vtkRenderWindow</li>
+</ul>
+<p>QVTKOpenGLWindow</p>
+<ul>
+<li>派生自：<strong>QOpenGLWindow</strong></li>
+<li>内部使用 vtkGenericOpenGLRenderWindow 或 vtkRenderWindow</li>
+</ul>
+<p>手册中说，一般来说，QVTKOpenGLNativeWidget 可能是更好的选择，但对于需要四缓冲（quad-buffer）立体显示的应用程序，基于 QVTKOpenGLWindow 的 QVTKOpenGLStereoWidget 可能是更好的选择。需要注意，QVTKOpenGLStereoWidget 有所有 Qt 中 QWidget::createWindowContainer 造成的缺陷。</p>
+<h2 id="pyside">PySide等绑定的支持？</h2>
+<p>vtk是一个C++的库，它并没有使用sip或shiboken创建PyQt或PySide的绑定。而是直接尝试找到并使用（这个顺序比matplotlib采用的顺序更符合我的认知/喜好）：</p>
+<ul>
+<li>PySide6</li>
+<li>PyQt6</li>
+<li>PyQt5</li>
+<li>PySide2</li>
+<li>PyQt4</li>
+<li>PySide</li>
+</ul>
+<p>其 <code>Python/vtkmodules/qt/__init__.py</code> 源码：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># PyQtImpl can be set by the user</span>
+<span class="n">PyQtImpl</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># Has an implementation has been imported yet?</span>
+<span class="k">for</span> <span class="n">impl</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;PySide6&quot;</span><span class="p">,</span> <span class="s2">&quot;PyQt6&quot;</span><span class="p">,</span> <span class="s2">&quot;PyQt5&quot;</span><span class="p">,</span> <span class="s2">&quot;PySide2&quot;</span><span class="p">,</span> <span class="s2">&quot;PyQt4&quot;</span><span class="p">,</span> <span class="s2">&quot;PySide&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">impl</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+        <span class="c1"># Sometimes an attempted import can be crufty (e.g., unclean</span>
+        <span class="c1"># uninstalls of PyQt5), so let&#39;s try to import the actual functionality</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">impl</span> <span class="o">+</span> <span class="s1">&#39;.QtCore&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">PyQtImpl</span> <span class="o">=</span> <span class="n">impl</span>
+            <span class="k">break</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="qt-qvtkrenderwindowinteractor">Qt控件 QVTKRenderWindowInteractor</h2>
+<p>vtk提供了一个 名为 QVTKRenderWindowInteractor 的类：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">QVTKRenderWindowInteractor</span><span class="p">(</span><span class="n">QVTKRWIBaseClass</span><span class="p">):</span>
+</code></pre></div></td></tr></table></div>
+
+<p>它是从QWidget（或者QOpenGLWidget，或者QGLWidet）派生出来的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Define types for base class, based on string</span>
+<span class="k">if</span> <span class="n">QVTKRWIBase</span> <span class="o">==</span> <span class="s2">&quot;QWidget&quot;</span><span class="p">:</span>
+    <span class="n">QVTKRWIBaseClass</span> <span class="o">=</span> <span class="n">QWidget</span>
+<span class="k">elif</span> <span class="n">QVTKRWIBase</span> <span class="o">==</span> <span class="s2">&quot;QGLWidget&quot;</span><span class="p">:</span>
+    <span class="n">QVTKRWIBaseClass</span> <span class="o">=</span> <span class="n">QGLWidget</span>
+<span class="k">elif</span> <span class="n">QVTKRWIBase</span> <span class="o">==</span> <span class="s2">&quot;QOpenGLWidget&quot;</span><span class="p">:</span>
+    <span class="n">QVTKRWIBaseClass</span> <span class="o">=</span> <span class="n">QOpenGLWidget</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Unknown base class for QVTKRenderWindowInteractor &quot;</span> <span class="o">+</span> <span class="n">QVTKRWIBase</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>有了这个Widget，和Qt程序集成就不是问题了</p>
+<ul>
+<li>与Qt窗口集成</li>
+<li>事件交互</li>
+</ul>
+<h2 id="pyside6">PySide6下使用</h2>
+<p><img alt="pyside6 vtk" src="https://blog.debao.me/images/qt/pyside6_vtk.png"></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">PySide6.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QMainWindow</span>
+
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkFiltersSources</span> <span class="kn">import</span> <span class="n">vtkConeSource</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.vtkRenderingCore</span> <span class="kn">import</span> <span class="n">vtkActor</span><span class="p">,</span> <span class="n">vtkPolyDataMapper</span><span class="p">,</span> <span class="n">vtkRenderer</span>
+<span class="kn">from</span> <span class="nn">vtkmodules.qt.QVTKRenderWindowInteractor</span> <span class="kn">import</span> <span class="n">QVTKRenderWindowInteractor</span>
+
+<span class="c1"># load implementations for rendering and interaction factory classes</span>
+<span class="kn">import</span> <span class="nn">vtkmodules.vtkInteractionStyle</span>
+<span class="kn">import</span> <span class="nn">vtkmodules.vtkRenderingOpenGL2</span>
+
+<span class="k">class</span> <span class="nc">VTKWindow</span><span class="p">(</span><span class="n">QMainWindow</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;VTK in PySide6 from 1+1=10&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+
+        <span class="c1"># 创建VTK对应的 QWidget 控件</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">QVTKRenderWindowInteractor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+
+        <span class="c1"># 应用渲染器</span>
+        <span class="n">ren</span> <span class="o">=</span> <span class="n">vtkRenderer</span><span class="p">()</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">GetRenderWindow</span><span class="p">()</span><span class="o">.</span><span class="n">AddRenderer</span><span class="p">(</span><span class="n">ren</span><span class="p">)</span>
+
+        <span class="c1"># 创建 3D 锥体</span>
+        <span class="n">cone</span> <span class="o">=</span> <span class="n">vtkConeSource</span><span class="p">()</span>
+        <span class="n">cone</span><span class="o">.</span><span class="n">SetResolution</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+
+        <span class="c1"># 创建映射器并设置输入</span>
+        <span class="n">coneMapper</span> <span class="o">=</span> <span class="n">vtkPolyDataMapper</span><span class="p">()</span>
+        <span class="n">coneMapper</span><span class="o">.</span><span class="n">SetInputConnection</span><span class="p">(</span><span class="n">cone</span><span class="o">.</span><span class="n">GetOutputPort</span><span class="p">())</span>
+
+        <span class="c1"># 创建演员并设置映射器</span>
+        <span class="n">coneActor</span> <span class="o">=</span> <span class="n">vtkActor</span><span class="p">()</span>
+        <span class="n">coneActor</span><span class="o">.</span><span class="n">SetMapper</span><span class="p">(</span><span class="n">coneMapper</span><span class="p">)</span>
+
+        <span class="c1"># 将演员添加到渲染器</span>
+        <span class="n">ren</span><span class="o">.</span><span class="n">AddActor</span><span class="p">(</span><span class="n">coneActor</span><span class="p">)</span>
+
+        <span class="c1"># 设置渲染器背景颜色</span>
+        <span class="n">ren</span><span class="o">.</span><span class="n">SetBackground</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span>  <span class="c1"># 深蓝色背景</span>
+
+        <span class="c1"># 显示窗口</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+        <span class="c1"># 初始化并开始交互</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">VTKWindow</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">())</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_1">参考</h2>
+<ul>
+<li>https://gitlab.kitware.com/vtk/vtk/-/blob/master/Wrapping/Python/vtkmodules/qt/QVTKRenderWindowInteractor.py</li>
+<li>https://gitlab.kitware.com/vtk/vtk/-/blob/master/Examples/GUI/Qt/MinimalQtVTKApp/</li>
+<li>https://examples.vtk.org/site/Python/</li>
+<li>https://docs.vtk.org/en/latest/build_instructions/index.html</li>
+<li></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-12-15T01:19:00+08:00" pubdate>Sun 15 December 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/python.html">python</a>,    <a class="category" href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a class="category" href="https://blog.debao.me/tags/vtk.html">vtk</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

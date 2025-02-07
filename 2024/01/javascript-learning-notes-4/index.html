@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>JavaScript学习笔记（四） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/javascript.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">JavaScript学习笔记（四）</h1>
+    <p class="meta">
+<time datetime="2024-01-24T22:24:00+08:00" pubdate>Wed 24 January 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>接前面的：</p>
+<ul>
+<li><a href="https://blog.debao.me/2024/01/notes-on-javascript-engines-and-runtimes/">JavaScript引擎与运行时入门小记</a>：在哪些环境下可以运行JavaScript</li>
+<li><a href="https://blog.debao.me/2024/01/javascript-learning-notes-1/">JavaScript学习笔记（一）</a>：理解概念，一等函数、编程范式、原型、单线程</li>
+<li><a href="https://blog.debao.me/2024/01/javascript-learning-notes-2/">JavaScript学习笔记（二）</a>：全局对象globalThis，this用法，全局对象们</li>
+<li><a href="https://blog.debao.me/2024/01/javascript-learning-notes-3/">JavaScript学习笔记（三）</a>：7种原始数据类型，对象类型（引用类型），typeof，原始类型包装器</li>
+</ul>
+<p>继续学习JavaScript。</p>
+<blockquote>
+<p>JavaScript 的模块系统是一种用于组织和重用代码的机制，它允许将代码分割成独立的文件或模块。JavaScript 原生的模块系统，是 ES6 引入的。</p>
+</blockquote>
+<h2 id="es6esm">ES6模块（ESM）</h2>
+<p>模块的概念不复杂，但是和想象的不一样：竟然只能在module文件中使用<code>import</code>！</p>
+<h3 id="1">模块使用尝试1</h3>
+<p>Node.js环境下，先写了一个模块文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// mylib.mjs</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">repeat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">str</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">str</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">str</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">str</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">shout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">str</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">str</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span><span class="si">}</span><span class="sb">!`</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>然后写个使用它的脚本：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// myapp.js</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">repeat</span><span class="p">,</span><span class="w"> </span><span class="nx">shout</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;./mylib.mjs&#39;</span><span class="p">;</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">repeat</span><span class="p">(</span><span class="s1">&#39;hello 1+1=10&#39;</span><span class="p">));</span><span class="w"> </span><span class="c1">// hello 1+1=10 hello 1+1=10 hello 1+1=10</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">shout</span><span class="p">(</span><span class="s1">&#39;hello 1+1=2&#39;</span><span class="p">));</span><span class="w"> </span><span class="c1">// HELLO 1+1=2!</span>
+</code></pre></div></td></tr></table></div>
+
+<p>使用使用node.js运行一下，直接报错：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">&gt;</span> <span class="n">node</span> <span class="n">myapp</span><span class="p">.</span><span class="n">js</span>
+<span class="p">(</span><span class="n">node</span><span class="p">:</span><span class="n">29488</span><span class="p">)</span> <span class="n">Warning</span><span class="p">:</span> <span class="n">To</span> <span class="n">load</span> <span class="n">an</span> <span class="n">ES</span> <span class="n">module</span><span class="p">,</span> <span class="nb">set </span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;module&quot;</span> <span class="k">in</span> <span class="n">the</span> <span class="n">package</span><span class="p">.</span><span class="n">json</span> <span class="n">or</span> <span class="n">use</span> <span class="n">the</span> <span class="p">.</span><span class="n">mjs</span> <span class="n">extension</span><span class="p">.</span>
+<span class="p">(</span><span class="n">Use</span> <span class="p">`</span><span class="n">node</span> <span class="p">-</span><span class="n">-trace-warnings</span> <span class="p">...`</span> <span class="n">to</span> <span class="n">show</span> <span class="nb">where </span><span class="n">the</span> <span class="n">warning</span> <span class="n">was</span> <span class="n">created</span><span class="p">)</span>
+<span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">dbzha</span><span class="p">\</span><span class="n">Desktop</span><span class="p">\</span><span class="n">js-test</span><span class="p">\</span><span class="n">myapp</span><span class="p">.</span><span class="n">js</span><span class="p">:</span><span class="n">1</span>
+<span class="n">import</span> <span class="p">{</span><span class="n">repeat</span><span class="p">,</span> <span class="n">shout</span><span class="p">}</span> <span class="n">from</span> <span class="s1">&#39;./mylib.mjs&#39;</span><span class="p">;</span>
+<span class="p">^^^^^^</span>
+
+<span class="n">SyntaxError</span><span class="p">:</span> <span class="n">Cannot</span> <span class="n">use</span> <span class="n">import</span> <span class="n">statement</span> <span class="n">outside</span> <span class="n">a</span> <span class="n">module</span>
+</code></pre></div></td></tr></table></div>
+
+<p>不过错误信息很直观，照做即可：</p>
+<ul>
+<li>方法一：把后缀从 <code>.js</code>改成 <code>.mjs</code></li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">&gt;</span> <span class="n">node</span> <span class="n">mymain</span><span class="p">.</span><span class="n">mjs</span>
+<span class="n">hello</span> <span class="n">1</span><span class="p">+</span><span class="n">1</span><span class="p">=</span><span class="n">10</span> <span class="n">hello</span> <span class="n">1</span><span class="p">+</span><span class="n">1</span><span class="p">=</span><span class="n">10</span> <span class="n">hello</span> <span class="n">1</span><span class="p">+</span><span class="n">1</span><span class="p">=</span><span class="n">10</span>
+<span class="n">HELLO</span> <span class="n">1</span><span class="p">+</span><span class="n">1</span><span class="p">=</span><span class="n">2</span><span class="p">!</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>方法二：创建一个<code>package.json</code>文件，指定类型：</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;module&quot;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>而后</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">&gt;</span> <span class="n">node</span> <span class="n">myapp</span><span class="p">.</span><span class="n">js</span>
+<span class="n">hello</span> <span class="n">1</span><span class="p">+</span><span class="n">1</span><span class="p">=</span><span class="n">10</span> <span class="n">hello</span> <span class="n">1</span><span class="p">+</span><span class="n">1</span><span class="p">=</span><span class="n">10</span> <span class="n">hello</span> <span class="n">1</span><span class="p">+</span><span class="n">1</span><span class="p">=</span><span class="n">10</span>
+<span class="n">HELLO</span> <span class="n">1</span><span class="p">+</span><span class="n">1</span><span class="p">=</span><span class="n">2</span><span class="p">!</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>方法三：使用 import()函数改写myapp.js文件</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">import</span><span class="p">(</span><span class="s2">&quot;./mylib.mjs&quot;</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">mylib</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">mylib</span><span class="p">.</span><span class="nx">repeat</span><span class="p">(</span><span class="s1">&#39;hello 1+1=10&#39;</span><span class="p">));</span><span class="w"> </span><span class="c1">// hello 1+1=10 hello 1+1=10 hello 1+1=10</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">mylib</span><span class="p">.</span><span class="nx">shout</span><span class="p">(</span><span class="s1">&#39;hello 1+1=2&#39;</span><span class="p">));</span><span class="w"> </span><span class="c1">// HELLO 1+1=2!</span>
+<span class="p">});</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>方法四：使用node的命令行参数</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">&gt;</span> <span class="n">node</span> <span class="p">-</span><span class="n">-experimental-default-type</span><span class="p">=</span><span class="n">module</span> <span class="p">.\</span><span class="n">myapp</span><span class="p">.</span><span class="n">js</span>
+<span class="n">hello</span> <span class="n">1</span><span class="p">+</span><span class="n">1</span><span class="p">=</span><span class="n">10</span> <span class="n">hello</span> <span class="n">1</span><span class="p">+</span><span class="n">1</span><span class="p">=</span><span class="n">10</span> <span class="n">hello</span> <span class="n">1</span><span class="p">+</span><span class="n">1</span><span class="p">=</span><span class="n">10</span>
+<span class="n">HELLO</span> <span class="n">1</span><span class="p">+</span><span class="n">1</span><span class="p">=</span><span class="n">2</span><span class="p">!</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="2">模块使用尝试2</h3>
+<p>在firefox下，写一个html文件，调用前面的 <code>mylib.mjs</code>文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">&lt;!DOCTYPE html&gt;</span>  
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>  
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>  
+  <span class="p">&lt;</span><span class="nt">p</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;demo&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>  
+  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;module&quot;</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">repeat</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;./mylib.mjs&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">repeat</span><span class="p">(</span><span class="s2">&quot;Hello 1+1=10&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;demo&#39;</span><span class="p">).</span><span class="nx">textContent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">result</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">  </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>页面显示内容：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Hello 1+1=10 Hello 1+1=10 Hello 1+1=10
+</code></pre></div></td></tr></table></div>
+
+<p>注：使用import必须指定script的类型为module，不然报错</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Uncaught</span><span class="w"> </span><span class="n">SyntaxError</span><span class="p">:</span><span class="w"> </span><span class="kn">import</span><span class="w"> </span><span class="nn">declarations</span><span class="w"> </span><span class="n">may</span><span class="w"> </span><span class="n">only</span><span class="w"> </span><span class="n">appear</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">top</span><span class="w"> </span><span class="n">level</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">module</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="3">模块使用尝试3</h3>
+<p>回到Qt下，看看QJSEngine。一个完整例子如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QCoreApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QFile&gt;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">lib_js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">export const repeat = (str) =&gt; `${str} ${str} ${str}`;</span>
+<span class="s">export const shout = (str) =&gt; `${str.toUpperCase()}!`;</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">app_js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">import {repeat, shout} from &#39;./mylib.mjs&#39;;</span>
+
+<span class="s">console.log(repeat(&#39;hello 1+1=10&#39;)); // hello 1+1=10 hello 1+1=10 hello 1+1=10</span>
+<span class="s">console.log(shout(&#39;hello 1+1=2&#39;)); // HELLO 1+1=2!</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">app</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">QFile</span><span class="w"> </span><span class="n">myApp</span><span class="p">(</span><span class="s">&quot;myapp.mjs&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">myApp</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">QIODevice</span><span class="o">::</span><span class="n">WriteOnly</span><span class="p">))</span>
+<span class="w">            </span><span class="n">myApp</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">app_js</span><span class="p">);</span>
+
+<span class="w">        </span><span class="n">QFile</span><span class="w"> </span><span class="n">myLib</span><span class="p">(</span><span class="s">&quot;mylib.mjs&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">myLib</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">QIODevice</span><span class="o">::</span><span class="n">WriteOnly</span><span class="p">))</span>
+<span class="w">            </span><span class="n">myLib</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">lib_js</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">installExtensions</span><span class="p">(</span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">ConsoleExtension</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">importModule</span><span class="p">(</span><span class="s">&quot;myapp.mjs&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// auto ret = engine.evaluate(app_js, &quot;myapp.mjs&quot;);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="n">hello</span><span class="w"> </span><span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="o">=</span><span class="mi">10</span><span class="w"> </span><span class="n">hello</span><span class="w"> </span><span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="o">=</span><span class="mi">10</span><span class="w"> </span><span class="n">hello</span><span class="w"> </span><span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="o">=</span><span class="mi">10</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="n">HELLO</span><span class="w"> </span><span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="o">=</span><span class="mi">2</span><span class="o">!</span>
+</code></pre></div></td></tr></table></div>
+
+<p>同样注意，只能使用<code>importModule()</code>，而不能用<code>evaluate()</code>，不然报错如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>&quot;SyntaxError: Unexpected token `import&#39;&quot;
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意，QJSEngine 完全不支持<code>import()</code>写法，也就没办法像Node.js中的方法三那样使用。</p>
+</blockquote>
+<h3 id="js-mjs">文件后缀 .js .mjs</h3>
+<p>在WEB中，文件后缀用什么都所谓的，只要MIME类型是<code>text/javascript</code>即可。对浏览器来说，判断是否module是通过<code>type="module"</code>来进行的。尽管如此，<a href="https://v8.dev/features/modules#mjs">V8文档</a>建议模块的后缀选择<code>.mjs</code>：</p>
+<ul>
+<li>开发过程中，后缀<code>.mjs</code>对项目中任何人都更清晰：这是一个模块而不是一个传统的脚本。二者处理方式不同，区分他们很重要。</li>
+<li>可以确保Node.js等运行时以及Babel等工具将文件解析为模块。</li>
+</ul>
+<blockquote>
+<p>需要注意，web服务器需要保证发送.mjs文件时设置正确的头： <code>Content-Type: text/javascript</code>。</p>
+</blockquote>
+<h4 id="_1">传统脚本 与 模块</h4>
+<p>尽管单靠后缀不能区分 传统脚本和模块。我们还是要看看传统脚本 与 模块的区别：</p>
+<ul>
+<li>模块默认启用<code>strict mode</code>。（传统脚本需要使用<code>'use strict';</code>来启用）</li>
+<li>模块不支持HTML风格的注释<code>&lt;!-- Comments --&gt;</code></li>
+<li>模块具有词法顶层作用域。<code>var foo='1+1=10';</code>不会创建名为foo的全局变量。模块中的<code>this</code>也不指向全局<code>this</code>，而是<code>undefined</code>。</li>
+<li><code>import</code>和<code>export</code>只能在模块中使用，在传统脚本中无效。</li>
+<li>模块中可以使用顶级的<code>await</code>。传统脚本不行。</li>
+</ul>
+<p>比如，传统脚本中，只能：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">await</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;1+1=10&#39;</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}());</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在模块中，可以：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">await</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;1+1=10&#39;</span><span class="p">));</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>在浏览器中，传统脚本可以多次执行，模块只执行一次</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;classic.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;classic.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="cm">&lt;!-- classic.js executes multiple times. --&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;module&quot;</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;module.mjs&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;module&quot;</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;module.mjs&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;module&quot;</span><span class="p">&gt;</span><span class="k">import</span><span class="w"> </span><span class="s1">&#39;./module.mjs&#39;</span><span class="p">;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="cm">&lt;!-- module.mjs executes only once. --&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="export">export</h3>
+<p>在模块中，函数、var、let、const 和 类 都可以被导出。但它们必须是顶级项，不能在函数内部使用 <code>export</code>。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// mylib.mjs</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">myVal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;1+1=10&#39;</span><span class="p">;</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">hello</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;hello 1+1=10&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">MyClass</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">name</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nx">hello</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Hello </span><span class="si">${</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>或者在最后一行统一导出</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">myVal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;1+1=10&#39;</span><span class="p">;</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">hello</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;hello 1+1=10&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nx">MyClass</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">name</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nx">hello</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Hello </span><span class="si">${</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">myVal</span><span class="p">,</span><span class="w"> </span><span class="nx">hello</span><span class="p">,</span><span class="w"> </span><span class="nx">MyClass</span><span class="w"> </span><span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+
+<p>导出的时候，还可以顺便改下名字：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">export</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">myVal</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">myValue</span><span class="p">,</span><span class="w"> </span><span class="nx">hello</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">myHello</span><span class="p">,</span><span class="w"> </span><span class="nx">MyClass</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">myClass</span><span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+
+<p>使用它：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// myapp.mjs</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">myHello</span><span class="p">,</span><span class="w"> </span><span class="nx">myClass</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;./mylib.mjs&#39;</span><span class="p">;</span>
+
+<span class="nx">myHello</span><span class="p">();</span><span class="w"> </span><span class="c1">// hello 1+1=10</span>
+<span class="ow">new</span><span class="w"> </span><span class="nx">myClass</span><span class="p">(</span><span class="s1">&#39;1+1=10&#39;</span><span class="p">).</span><span class="nx">hello</span><span class="p">();</span><span class="w"> </span><span class="c1">// Hello 1+1=10</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="export-default">export default</h4>
+<p>关于这个东西，mdn解释说：</p>
+<blockquote>
+<p>this is designed to make it easy to have a default function provided by a module, and also helps JavaScript modules to interoperate with  existing CommonJS and AMD module systems</p>
+</blockquote>
+<p>看个例子：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// mylib.mjs</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">myVal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;1+1=10&#39;</span><span class="p">;</span>
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">hello</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;hello 1+1=10&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// myapp.mjs</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">myHello</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;./mylib.mjs&#39;</span><span class="p">;</span>
+<span class="nx">myHello</span><span class="p">();</span><span class="w"> </span><span class="c1">// hello 1+1=10</span>
+</code></pre></div></td></tr></table></div>
+
+<p>特点：import时，不需要使用大括号<code>{}</code>，而且名字随便取</p>
+<p>等同于</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// myapp.mjs</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="k">default</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">myHello</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;./mylib.mjs&#39;</span><span class="p">;</span>
+<span class="nx">myHello</span><span class="p">();</span><span class="w"> </span><span class="c1">// hello 1+1=10</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="import">import</h3>
+<p>它有import声明和类似函数的import()两种用法</p>
+<h4 id="import_1">import声明</h4>
+<p>import声明（不要和import函数）的语法如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="nx">defaultExport</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;module-name&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">name</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;module-name&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">export1</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;module-name&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">export1</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">alias1</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;module-name&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">alias</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;module-name&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">export1</span><span class="p">,</span><span class="w"> </span><span class="nx">export2</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;module-name&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">export1</span><span class="p">,</span><span class="w"> </span><span class="nx">export2</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">alias2</span><span class="p">,</span><span class="w"> </span><span class="cm">/* … */</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;module-name&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;string name&quot;</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">alias</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;module-name&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">defaultExport</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">export1</span><span class="p">,</span><span class="w"> </span><span class="cm">/* … */</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;module-name&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">defaultExport</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">name</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;module-name&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="s2">&quot;module-name&quot;</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>模块名<code>module-name</code>和 JavaScript 运行环境相关：</p>
+<ul>
+<li>一般都是指向.js文件的 相对或绝对路径。</li>
+<li>Node.js下支持不带后缀的名字，指向<code>node_modules</code>中的包。</li>
+<li>浏览器下支持一个<code>importmap</code>东西，通过JSON格式建立模块指示符(module specifier)和真实路径的关系。这样import时使用模块指示符就行了。</li>
+</ul>
+<p>四种形式：</p>
+<ul>
+<li>Named import: <code>import { export1, export2 } from "module-name";</code></li>
+<li>Default import: <code>import defaultExport from "module-name";</code></li>
+<li>Namespace import: <code>import * as name from "module-name";</code></li>
+<li>Side effect import: <code>import "module-name";</code></li>
+</ul>
+<h4 id="import_2">import()</h4>
+<p>好处是在普通js文件中可以使用</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;/my-module.js&quot;</span><span class="p">;</span>
+
+<span class="k">import</span><span class="p">(</span><span class="s2">&quot;/my-module.js&quot;</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">mod2</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">mod</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">mod2</span><span class="p">);</span><span class="w"> </span><span class="c1">// true</span>
+<span class="p">});</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="es6">ES6之前</h2>
+<blockquote>
+<p>有了ESM之后，用CommonJS和AMD实现模块似乎意义不大了，不过思想还是很有用。</p>
+</blockquote>
+<p>对比一下CommonJS和AMD：</p>
+<ul>
+<li><strong>设计目标：</strong> CommonJS 主要为服务器端设计，而 AMD 主要为客户端设计。</li>
+<li><strong>加载方式：</strong> CommonJS 是同步加载，而 AMD 是异步加载。</li>
+<li><strong>导出和引入：</strong> CommonJS 使用 <code>module.exports</code> 和 <code>require</code>，而 AMD 使用 <code>define</code> 和 <code>require</code>。</li>
+<li><strong>加载时机：</strong> CommonJS 在编译时加载模块，而 AMD 在运行时异步加载模块。</li>
+</ul>
+<h3 id="commonjs">CommonJS</h3>
+<blockquote>
+<p>CommonJS是一种规范，用于统一JavaScript在浏览器之外的实现。它定义了一套通用的应用程序使用的API，以填补JavaScript标准库过于简单和不足。每个模块内部有两个变量可以使用，require和module。</p>
+</blockquote>
+<p>一个js文件可看作是一个模块，比如myLib.js：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// myLib.js</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">repeat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">str</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">str</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">str</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">str</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">shout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">str</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">str</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span><span class="si">}</span><span class="sb">!`</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>要在myApp.js中使用它：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// myApp.js</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">myLib</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./myLib.js&#39;</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myLib</span><span class="p">.</span><span class="nx">repeat</span><span class="p">(</span><span class="s1">&#39;hello 1+1=10&#39;</span><span class="p">));</span><span class="w"> </span><span class="c1">// hello 1+1=10 hello 1+1=10 hello 1+1=10</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myLib</span><span class="p">.</span><span class="nx">shout</span><span class="p">(</span><span class="s1">&#39;hello 1+1=2&#39;</span><span class="p">));</span><span class="w"> </span><span class="c1">// HELLO 1+1=2!</span>
+</code></pre></div></td></tr></table></div>
+
+<p>不同于ESM中export和import两个关键字，CommonJS中的exports和require分别是对象和函数。</p>
+<p>其中：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">var</span><span class="w"> </span><span class="nx">exports</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>给exports添加属性是安全的，但是直接赋值会有问题，会断开和<code>module.exports</code>链接，而<code>module.exports</code>是真正要导出的东西。</p>
+<h4 id="_2">基本原理</h4>
+<ul>
+<li><strong>每个模块都是一个独立的文件：</strong> 在 Node.js 中，每个文件都被视为一个模块。每个模块都有自己的作用域，不会污染全局作用域。</li>
+</ul>
+<ul>
+<li><strong>module 对象的存在：</strong> 在每个模块的执行过程中，Node.js 在内部创建了一个名为 <code>module</code> 的对象。这个对象包含了模块的一些信息和接口。</li>
+</ul>
+<ul>
+<li><strong>exports 和 require：</strong> <code>module</code> 对象上有一个属性叫做 <code>exports</code>，最初指向一个空对象 <code>{}</code>。通过给 <code>exports</code> 赋值，可以将模块的接口导出。另外，<code>require</code> 函数用于引入其他模块，实际上是获取其他模块的 <code>exports</code> 导出的内容。</li>
+</ul>
+<ul>
+<li><strong>包装模块代码：</strong> 在实际执行模块代码之前，Node.js 会在模块代码的周围加上一个函数包装，形成一个闭包，这个闭包的参数包括 <code>exports</code>、<code>require</code>、<code>module</code>、<code>__filename</code> 和 <code>__dirname</code> 等变量。这个包装函数的大致形式如下：</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">exports</span><span class="p">,</span><span class="w"> </span><span class="nx">require</span><span class="p">,</span><span class="w"> </span><span class="nx">module</span><span class="p">,</span><span class="w"> </span><span class="nx">__filename</span><span class="p">,</span><span class="w"> </span><span class="nx">__dirname</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// 模块的实际代码在这里</span>
+<span class="p">});</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这个包装函数使得模块的代码在一个相对独立的作用域中执行。</p>
+<h3 id="amd">AMD</h3>
+<p>AMD：Asynchronous Module Definition。AMD 规范是由 RequireJS 实现并推广的。</p>
+<p>RequireJS 是一个用于浏览器端的 JavaScript 模块加载器，它遵循 AMD 规范，提供了在浏览器环境下实现模块化开发的工具，<code>define</code>和<code>require</code>两个函数是它实现的。</p>
+<ul>
+<li>使用define定义AMD模块：</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// mylib.js</span>
+<span class="nx">define</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">repeat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">str</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">str</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">str</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">shout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">str</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span><span class="si">}</span><span class="sb">!`</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">repeat</span><span class="o">:</span><span class="w"> </span><span class="nx">repeat</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">shout</span><span class="o">:</span><span class="w"> </span><span class="nx">shout</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">});</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这个<code>define</code>函数返回一个对象，这个对象的属性就是模块的公开API。</p>
+<ul>
+<li>在HTML，通过<code>requried</code>使用它：</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">&lt;!DOCTYPE html&gt;</span>  
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>  
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>  
+  <span class="p">&lt;</span><span class="nt">p</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;demo&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>  
+  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="nx">require</span><span class="p">([</span><span class="s1">&#39;./mylib&#39;</span><span class="p">],</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">mylib</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">mylib</span><span class="p">.</span><span class="nx">repeat</span><span class="p">(</span><span class="s2">&quot;Hello 1+1=10&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;demo&#39;</span><span class="p">).</span><span class="nx">textContent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">result</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在这个例子中，我们首先加载了RequireJS库。然后，我们使用<code>require</code>函数来加载我们的模块。这个函数接受两个参数：一个是模块的路径数组，另一个是一个回调函数。当所有模块都加载完成时，回调函数会被调用，加载的模块会作为回调函数的参数。</p>
+<h4 id="define">define</h4>
+<p><code>define</code> 函数是 AMD（异步模块定义）规范中用于定义模块的关键函数。它接受三个参数：模块的名称、依赖数组和模块的工厂函数。以下是 <code>define</code> 函数的基本结构：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>define(moduleName, dependencies, factoryFunction);
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li><code>moduleName</code>（可选）：指定模块的名称，通常是一个字符串。如果省略，一些 AMD 实现会尝试根据脚本文件的路径来猜测模块名称。</li>
+<li><code>dependencies</code>（可选）：一个数组，包含当前模块所依赖的其他模块的名称。这些模块会在加载当前模块之前被异步加载。</li>
+<li><code>factoryFunction</code>：一个函数，用于定义模块的实现。该函数在模块加载时执行，并接收参数，这些参数是依赖模块的导出对象。函数的返回值将被视为当前模块的导出内容。</li>
+</ul>
+<p>前面例子，可以写成：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">define</span><span class="p">(</span><span class="s2">&quot;mylib&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">repeat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">str</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">str</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">str</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">shout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">str</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span><span class="si">}</span><span class="sb">!`</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">repeat</span><span class="o">:</span><span class="w"> </span><span class="nx">repeat</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">shout</span><span class="o">:</span><span class="w"> </span><span class="nx">shout</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">});</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="require">require</h4>
+<p><code>require</code> 函数是 AMD（异步模块定义）规范中用于加载模块的函数。它接受两个参数：模块的名称和一个回调函数。以下是 <code>require</code> 函数的基本结构：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>require(moduleName, callback);
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li><code>moduleName</code>：指定要加载的模块的名称。</li>
+<li><code>callback</code>：一个回调函数，用于在模块加载完成后执行。这个回调函数通常包含对加载模块导出内容的操作。</li>
+</ul>
+<h2 id="nodejs">Node.js确定模块类型</h2>
+<p>截至Node.js v21，它同时支持CommonJS和ESM两种模块。如何确定和区分模块类型？</p>
+<ul>
+<li>https://nodejs.org/docs/latest-v21.x/api/packages.html#determining-module-system</li>
+</ul>
+<p>手册中说了很多，只关心最简单的规则：</p>
+<ul>
+<li><code>.mjs</code>文件，识别为 EMS模块</li>
+<li><code>.cjs</code>文件，识别为 CommonJS模块</li>
+<li><code>.js</code>文件，如果最近的(上层)<code>package.json</code>文件中，如果<code>type</code>为module，则识别为EMS模块，如果为<code>type</code>为commonjs，则识别为CommonJS模块，如果没有<code>type</code>，由命令行<code>--experimental-default-type</code>（当前默认值是commonjs，以后可能改为module）确定。</li>
+</ul>
+<h2 id="_3">参考</h2>
+<ul>
+<li>https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules</li>
+<li>https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import</li>
+<li>https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap</li>
+<li>https://v8.dev/features/modules#mjs</li>
+<li>https://en.wikipedia.org/wiki/CommonJS</li>
+<li>https://wiki.commonjs.org/wiki/Modules/1.1</li>
+<li>https://javascript.ruanyifeng.com/nodejs/module.html</li>
+<li>https://github.com/amdjs/amdjs-api/blob/master/AMD.md</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-01-24T22:24:00+08:00" pubdate>Wed 24 January 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/javascript.html'>JavaScript</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a class="category" href="https://blog.debao.me/tags/nodejs.html">nodejs</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

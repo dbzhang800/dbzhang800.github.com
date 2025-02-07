@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>C++中char、signed char、unsigned char、wchar_t、char16_t、char32_t、char8_t都是什么鬼？ &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/c.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">C++中char、signed char、unsigned char、wchar_t、char16_t、char32_t、char8_t都是什么鬼？</h1>
+    <p class="meta">
+<time datetime="2024-01-30T21:00:00+08:00" pubdate>Tue 30 January 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><div class="toc">
+<ul>
+<li><a href="#c">C++ 中字符类型</a></li>
+<li><a href="#charsigned-charunsigned-char">char、signed char、unsigned char</a><ul>
+<li><a href="#_1">首先这是三个不同的类型</a></li>
+<li><a href="#char">不要思考 char 有符号还是无符号</a></li>
+<li><a href="#charcc">char字面量在C与C++行为不同</a></li>
+</ul>
+</li>
+<li><a href="#wchar_t">wchar_t 的坑</a><ul>
+<li><a href="#gccwchar_t">GCC下的wchar_t</a></li>
+<li><a href="#msvc-wchar_t">MSVC下 wchar_t</a></li>
+</ul>
+</li>
+<li><a href="#char16_tchar32_t">char16_t、char32_t</a></li>
+<li><a href="#char8_t">你好 char8_t</a></li>
+<li><a href="#_2">执行字符集和源码字符集</a><ul>
+<li><a href="#_3">例子</a></li>
+<li><a href="#gcc">GCC</a></li>
+<li><a href="#msvc">MSVC</a></li>
+<li><a href="#utf-8">UTF-8 执行字符集</a></li>
+<li><a href="#utf-8_1">UTF-8 源码字符集</a></li>
+</ul>
+</li>
+<li><a href="#_4">其他</a><ul>
+<li><a href="#stdbyte">std::byte</a></li>
+<li><a href="#int8_tuint8_t">int8_t、uint8_t</a></li>
+<li><a href="#c_1">C++ 整数类型</a></li>
+<li><a href="#c_2">C中的字符类型别名？</a></li>
+</ul>
+</li>
+<li><a href="#_5">参考</a></li>
+</ul>
+</div>
+<p>C++20中引入了char8_t，目前看来，C++中字符类型全家应该都到齐了。</p>
+<p>不妨，从头梳理一下，看看不发散的情况下，能写多少东西...</p>
+<h2 id="c">C++ 中字符类型</h2>
+<blockquote>
+<p>C++中的字符类型非常非常乱，根源在于C语言是上世纪70年代创建的，当时的char和现代语言比如Java、C#中的char完全不是一个概念。</p>
+</blockquote>
+<p>先列个表格，看看全家福：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>引入C标准</th>
+<th>引入C++标准</th>
+<th>备注说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>char</td>
+<td>K&amp;R C</td>
+<td>C++98</td>
+<td>表示一个字节的字符</td>
+</tr>
+<tr>
+<td>signed char</td>
+<td>K&amp;R C</td>
+<td>C++98</td>
+<td>有符号一个字节字符</td>
+</tr>
+<tr>
+<td>unsigned char</td>
+<td>K&amp;R C</td>
+<td>C++98</td>
+<td>无符号一个字节字符</td>
+</tr>
+<tr>
+<td>wchar_t</td>
+<td>C89</td>
+<td>C++98</td>
+<td>宽字符</td>
+</tr>
+<tr>
+<td>char16_t</td>
+<td>C11</td>
+<td>C++11</td>
+<td>16位Unicode字符</td>
+</tr>
+<tr>
+<td>char32_t</td>
+<td>C11</td>
+<td>C++11</td>
+<td>32位Unicode字符</td>
+</tr>
+<tr>
+<td>char8_t</td>
+<td>C23</td>
+<td>C++20</td>
+<td>UTF-8编码字符</td>
+</tr>
+</tbody>
+</table>
+<p>如果历史可以重来:</p>
+<ul>
+<li><code>unsigned char</code> 改为 <code>byte</code></li>
+<li><code>char16_t</code> 改为  <code>char</code></li>
+<li>其他去掉</li>
+</ul>
+<p>只是，历史改不掉，C、C++也不可能像Python2到Python3那样变革，唯有接受现实，了解历史，规避各种坑</p>
+<ul>
+<li>char、signed char、unsigned char 是三国演义</li>
+<li>不要思考char是有符号还是无符号</li>
+<li>char的字面量在 C 与 C++ 下不一样</li>
+<li><code>wchar_t</code>跨平台很多坑：宽度不定，字符编码不定，是否独立类型不定</li>
+<li><code>wchar_t</code>在Windows下应用的非常非常普遍，但很多人用了而不自知</li>
+<li><code>char16_t</code>和<code>char32_t</code> 姗姗来迟，正视执行字符集</li>
+<li>你好<code>char8_t</code>，2011年你去哪儿了</li>
+<li>执行字符集</li>
+<li>源码字符集</li>
+</ul>
+<h2 id="charsigned-charunsigned-char">char、signed char、unsigned char</h2>
+<p>由于历史原因，C语言从一开始就引入了这三个不同的类型。C++从一开始又从C语言继承了这三个类型。</p>
+<h3 id="_1">首先这是三个不同的类型</h3>
+<p>它们很容易被误解成2个类型，因为signed int 和 int 是同一个类型。容易造成错误联想。</p>
+<p>可以使用如下断言进行验证：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">static_assert</span><span class="p">(</span><span class="w"> </span><span class="o">!</span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="kt">char</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="k">static_assert</span><span class="p">(</span><span class="w"> </span><span class="o">!</span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="kt">char</span><span class="p">,</span><span class="w"> </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>也可以直接输出类型看看：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;typeinfo&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="k">typeid</span><span class="p">(</span><span class="kt">char</span><span class="p">).</span><span class="n">name</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="k">typeid</span><span class="p">(</span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="p">).</span><span class="n">name</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="k">typeid</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="p">).</span><span class="n">name</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>尽管在不同的编译器下，看到的具体内容不同。但是输出的三行信息总是不同的。</p>
+</blockquote>
+<p>最直观的验证方式，使用函数重载：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">foo</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;char: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">foo</span><span class="p">(</span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;signed char: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">foo</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;unsigned char: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">foo</span><span class="p">(</span><span class="sc">&#39;a&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// char</span>
+<span class="w">    </span><span class="n">foo</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="o">&gt;</span><span class="p">(</span><span class="sc">&#39;a&#39;</span><span class="p">));</span><span class="w"> </span><span class="c1">// signed char</span>
+<span class="w">    </span><span class="n">foo</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="o">&gt;</span><span class="p">(</span><span class="sc">&#39;a&#39;</span><span class="p">));</span><span class="w"> </span><span class="c1">// unsigned char</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">char</span><span class="o">:</span><span class="w"> </span><span class="n">a</span>
+<span class="n">signed</span><span class="w"> </span><span class="n">char</span><span class="o">:</span><span class="w"> </span><span class="n">a</span>
+<span class="n">unsigned</span><span class="w"> </span><span class="n">char</span><span class="o">:</span><span class="w"> </span><span class="n">a</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="char">不要思考 char 有符号还是无符号</h3>
+<p>char 和 signed char、unsigned char 是不同的类型。使用char的时候，不要去思考它有没有符号。</p>
+<p>但是，如果<strong>你特别想把它作为一个整数来用的话</strong>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">aa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">aa</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果是什么？？</p>
+<ul>
+<li>-1</li>
+<li>255</li>
+</ul>
+<p><strong>两个皆有可能，取决于你的编译器选项</strong></p>
+<ul>
+<li>对g++来说：</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>g++ debao.cpp
+g++ -fsigned-char debao.cpp
+g++ -funsigned-char debao.cpp
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>对MSVC来说</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>cl debao.cpp
+cl /J debao.cpp
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>如果你真想让char作为整数来用，最好在代码中转成unsigned char或signed char而后再用，不要使用此处列出的编译器选项。后者是<code>uint8_t</code>和<code>int8_t</code>的替身，而char不是！</p>
+</blockquote>
+<h3 id="charcc">char字面量在C与C++行为不同</h3>
+<p>一个简单的例子，保存成 .c 还是 .cpp，结果不一样的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="k">sizeof</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;false&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li><code>g++ debao.c</code>或 <code>cl debao.c</code></li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>true
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li><code>g++ debao.cpp</code>或<code>cl debao.cpp</code></li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>false
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>C++和C毕竟是两门语言，所以存在很多情况，尽管语法在两个语言下都对，但是运行效果不同。</p>
+</blockquote>
+<h2 id="wchar_t">wchar_t 的坑</h2>
+<p>Unicode1.0是1991年发布，<code>wchar_t</code>是89年进入C标准，98年进入C++标准的。</p>
+<blockquote>
+<p><code>wchar_t</code>与Unicode擦肩而过，如果当初能明确它对应UTF-16或者UCS2，压根就不会有后面一堆的事。</p>
+</blockquote>
+<p>但是<code>wchar_t</code>从一开始就继承了C语言的<strong>优良传统</strong>：它的宽度是多少，编译器自己决定就可以，只要不比char窄就行了。别的！别的？啥都没说。</p>
+<p>Unicode 4.0标准的5.2节是如何说的：</p>
+<blockquote>
+<p>"The width of <code>wchar_t</code> is compiler-specific and can be as  small as 8 bits. Consequently, programs that need to be portable across  any C or C++ compiler should not use <code>wchar_t</code> for storing Unicode text. The <code>wchar_t</code> type is intended for storing compiler-defined wide characters, which may be Unicode characters in some compilers."</p>
+</blockquote>
+<p>如果你的程序想要跨平台，就不应该使用<code>wchar_t</code>。</p>
+<h3 id="gccwchar_t">GCC下的wchar_t</h3>
+<p>看个例子，该类型的宽度是多少？</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">wchar_t</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">L</span><span class="sc">&#39;a&#39;</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>猜猜结果是多少？</p>
+<ul>
+<li>2</li>
+<li>4</li>
+</ul>
+<p>结果都可以，却决于你的编译选项</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>g++<span class="w"> </span>-fshort-wchar<span class="w"> </span>debao.cpp
+g++<span class="w"> </span>debao.cpp
+</code></pre></div></td></tr></table></div>
+
+<p>不光宽度不定，更头大的是，在GCC下，还有<code>-fwide-exec-charset</code>这个选项（字符集也不确定，默认值都是4选1）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">-</span><span class="n">fwide</span><span class="o">-</span><span class="n">exec</span><span class="o">-</span><span class="n">charset</span><span class="o">=</span><span class="n">charset</span>
+
+<span class="w">    </span><span class="n">Set</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">wide</span><span class="w"> </span><span class="n">execution</span><span class="w"> </span><span class="n">character</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">wide</span><span class="w"> </span><span class="n">string</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">character</span><span class="w"> </span><span class="n">constants</span><span class="o">.</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">default</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">UTF</span><span class="o">-</span><span class="mi">32</span><span class="n">BE</span><span class="p">,</span><span class="w"> </span><span class="n">UTF</span><span class="o">-</span><span class="mi">32</span><span class="n">LE</span><span class="p">,</span><span class="w"> </span><span class="n">UTF</span><span class="o">-</span><span class="mi">16</span><span class="n">BE</span><span class="p">,</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">UTF</span><span class="o">-</span><span class="mi">16</span><span class="n">LE</span><span class="p">,</span><span class="w"> </span><span class="n">whichever</span><span class="w"> </span><span class="n">corresponds</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">width</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">wchar_t</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">big</span><span class="o">-</span><span class="n">endian</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">little</span><span class="o">-</span><span class="n">endian</span><span class="w"> </span><span class="n">byte</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="n">being</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="n">generation</span><span class="o">.</span><span class="w"> </span><span class="n">As</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="o">-</span><span class="n">fexec</span><span class="o">-</span><span class="n">charset</span><span class="p">,</span><span class="w"> </span><span class="n">charset</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="n">encoding</span><span class="w"> </span><span class="n">supported</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">system</span><span class="err">’</span><span class="n">s</span><span class="w"> </span><span class="n">iconv</span><span class="w"> </span><span class="n">library</span><span class="w"> </span><span class="n">routine</span><span class="p">;</span><span class="w"> </span><span class="n">however</span><span class="p">,</span><span class="w"> </span><span class="n">you</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">have</span><span class="w"> </span><span class="n">problems</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">encodings</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">do</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">fit</span><span class="w"> </span><span class="n">exactly</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">wchar_t</span><span class="o">.</span>
+</code></pre></div></td></tr></table></div>
+
+<p>你就想吧，<code>wchar_t</code> 到底是个多么不可控的东西——它可以设置成你能想象到的任何字符集（只要iconv支持）。</p>
+<h3 id="msvc-wchar_t">MSVC下 wchar_t</h3>
+<p>你可能知道，MSVC下，或者说在Windows下，<code>wchar_t</code>用的非常非常多，因为Windows操作系统的API接口在广泛使用它。尽管很多人都是通过TCHAR，WCHAR或其他宏的形式在用它，没有直接手敲<code>wchar_t</code>。</p>
+<p>在MSVC下：</p>
+<ul>
+<li>好处，<code>wchar_t</code> 执行字符集是确定的——UTF-16</li>
+<li>麻烦：<code>wchar_t</code>是否是独立类型？</li>
+</ul>
+<p>但不慌，看个例子：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">boolalpha</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="kt">wchar_t</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果是什么？</p>
+<ul>
+<li>false</li>
+<li>true</li>
+</ul>
+<p>都有可能，取决于你的编译器选项</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>cl debao.cpp
+cl /Zc:wchar_t- debao.cpp
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>如果你需要同时用两个预编译的第三方的C++库，接口都暴露了<code>wchar_t</code>，但是二者的编译选项不一致。可就有得玩了。</p>
+</blockquote>
+<p>平心而论，微软将 <code>wchar_t</code>作为UTF-16来用，是很明智的。如果当时其他平台也跟进，弄成事实标准，就没有<code>char16_t</code>什么事情了。但是微软要确保<code>wchar_t</code>执行字符集是UTF-16，必须要明确源代码采用的什么编码存储的，编译器才能干活。为此，一个简单到极致的字符集问题，微软从2003年<code>wchar_t</code>进入C++标准，一直折腾到MSVC2015Update1，才折腾完。这十几年，Visual Studio的几乎每个版本，处理策略都不一样（真怀疑和IE一版本一变一样，他们就是故意的，故意的！）。</p>
+<p>另外，注意：MSVC下的<code>/Zc:wchar_t-</code>和GCC下的<code>-fshort-wchar</code>完全不是同一个东西，不要类比，不要混淆，GCC下不管加什么选项，它都是独立类型。</p>
+<h2 id="char16_tchar32_t">char16_t、char32_t</h2>
+<p>在<code>wchar_t</code>被玩废的情况下，不管C++在国际化上到底又多烂，C++11总算往前走了一大步。</p>
+<p>都到了2011年，C++中连个现代意义上的<strong>字符</strong>都没有。由于char这个关键词一开始被C使用了，C++11只好引入了这两个长相怪异的兄弟。至此：</p>
+<ul>
+<li>源码字符集（仍然被C++标准丢到一边）</li>
+<li>执行字符集（提上日程）</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1+1=10&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">wchar_t</span><span class="w"> </span><span class="o">*</span><span class="n">name2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">L</span><span class="s">&quot;1+1=10&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char16_t</span><span class="w"> </span><span class="o">*</span><span class="n">name3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">u</span><span class="s">&quot;1+1=10&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char32_t</span><span class="w"> </span><span class="o">*</span><span class="n">name4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">U</span><span class="s">&quot;1+1=10&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// const char *name5 = u8&quot;1+1=10&quot;;</span>
+
+<span class="w">    </span><span class="n">rerurn</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这两个东西，特别是<code>char16_t</code>，很有用，但尴尬之处在于：我想写个小例子输出它，都不知道怎么写。</p>
+<p>你倒是把 std::cout 这种基础设施弄好啊！</p>
+<h2 id="char8_t">你好 char8_t</h2>
+<p>难以理解，<code>char8_t</code> 2020年才加入C++。</p>
+<p>2011年引入<code>u8"1+1=10"</code>这种写法的时候，为什么不顺便把这个类型弄进来呢？</p>
+<p>看个例子：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="cp">#if __cplusplus &gt;= 202002L</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char8_t</span><span class="w"> </span><span class="o">*</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">u8</span><span class="s">&quot;1+1=10&quot;</span><span class="p">;</span>
+<span class="cp">#elif  __cplusplus &gt;= 201103L</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">u8</span><span class="s">&quot;1+1=10&quot;</span><span class="p">;</span>
+<span class="cp">#else</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1+1=10&quot;</span><span class="p">;</span>
+<span class="cp">#endif</span>
+
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">name</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这是例子怎么写都无所谓，因为里面用的都是ASCII字符。</p>
+<p>但是，不少人喜欢写下面的东西（国内的不少教材从这儿把大家带歪了）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;你好&quot;</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>一下子，档次就上去了（快看看我，非ASCII字符存进 char 里面啦）：</p>
+<ul>
+<li>你用的源码字符集是什么东西？</li>
+<li>你用的执行字符集是什么东西？</li>
+</ul>
+<p>啊？这两个概念都不知道，我们就敢这么写C++程序？就敢在C++中直接敲中文？甚至是就敢在注释中用中文？</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="kt">char8_t</span><span class="w"> </span><span class="o">*</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">u8</span><span class="s">&quot;你好&quot;</span><span class="p">;</span>
+<span class="c1">//const char *name = u8&quot;你好&quot;;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这两个字符集的概念，一时半会是说不清楚了。</p>
+<p>C++标准引入<code>u8</code>和<code>char8_t</code>只是试图解决执行字符集问题。</p>
+<h2 id="_2">执行字符集和源码字符集</h2>
+<p>要在C++中正确使用中文，必须要了解下面两个概念：</p>
+<table>
+<thead>
+<tr>
+<th>编码</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>源码字符集(the source character set)</td>
+<td>源码文件是使用何种编码保存的</td>
+</tr>
+<tr>
+<td>执行字符集(the execution character set)</td>
+<td>可执行程序内保存的是何种编码(程序执行时内存中字符串编码)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>K&amp;R C： <strong>既没有规定源码字符集，也没有规定执行字符集</strong></li>
+<li>C++98：引入了<code>wchar_t</code>，问题依旧</li>
+<li>C++11：引入<code>char16_t</code>，<code>char32_t</code>试图 规范化执行字符集UTF16、UTF32、以及UTF8</li>
+<li>C++20：引入<code>char8_t</code> 试图规范化执行字符集 UTF8    </li>
+</ul>
+<h3 id="_3">例子</h3>
+<p>这个要求高么？</p>
+<blockquote>
+<p>一个简单的C++程序，只是希望它能在简体中文Windows、正体中文Windows、英文版Windows、Linux、MAC OS...下的结果一致。</p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">//main.cpp</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">mystr</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;老老实实的学问，来不得半点马虎&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">mystr</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>可以试着反问自己两个问题</p>
+<ul>
+<li>这个源码文件是何种编码保存的？(有确定答案么？)</li>
+<li>mystr中是什么内容？(有确定答案么？)</li>
+</ul>
+<p><strong>对C++来说，以上两点都不确定。</strong></p>
+<p>实际情况，实际上更有趣，单以MSVC2005为例（假定位于不同的国家的工程师都安装了MSVC2005，然后源码统一用不带BOM的本地字符集或UTF-8）：</p>
+<ul>
+<li>情况1：德国工程师正常代码，原封不动拷贝到中国，编译报错！</li>
+<li>情况2：德国工程师正常代码，原封不动拷贝到中国，编译通过，输出乱码！</li>
+<li>情况3：德国工程师正常代码，原封不动拷贝到中国，编译通过，运行结果不同！</li>
+<li>情况4：在中国，代码注释中加入三个中文字符，编译报错！</li>
+<li>情况5：在中国，代码注释中加入三个中文字符，编译通过，运行逻辑错误</li>
+<li>情况6：...</li>
+</ul>
+<p>如果两个人的MSVC的版本不一致，那么更火爆</p>
+<p>如果一个人MSVC，一个GCC，矛盾简直不可调和（同情一下：一路走来的C++跨平台库Qt）...</p>
+<h3 id="gcc">GCC</h3>
+<p>在GCC下，这两个都可以使用你自己喜好的编码(如果不指定，默认都是UTF8)</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>-finput-charset=charset
+-fexec-charset=charset
+</code></pre></div></td></tr></table></div>
+
+<h3 id="msvc">MSVC</h3>
+<p>在MSVC2015Update1之前，MSVC没有类似GCC前面的选项，需要灵魂拷问：</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>源码字符集如何解决？</td>
+<td>有BOM么，有则按BOM解释，无则使用本地Locale字符集(随系统设置而变)</td>
+</tr>
+<tr>
+<td>执行字符集如何解决?</td>
+<td>使用本地Locale字符集(随系统设置而变)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>MSVC2015Update1之后，引入类似gcc命令行选项，尽管只针对utf8的，但够用了。</p>
+</blockquote>
+<p>这才两个编译器，看起来就这么复杂了。而C++编译器的数目远大于2.</p>
+<p>要想跨平台，必须确保这两个字符集都是“确定”的，而能胜任该任务的字符集，似乎理想的也只能是...</p>
+<h3 id="utf-8">UTF-8 执行字符集</h3>
+<p>标准通过引入新的类型来解决执行字符集的问题。很好！</p>
+<p>但是新的类型我还是用不惯，因为第三方配套还不行！</p>
+<p>我还是是不是要写下面这样的代码：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">char</span><span class="w"> </span><span class="n">mystr</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;老老实实的学问，来不得半点马虎&quot;</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>好处在于：我现在不用考虑傻白甜的MSVC2003了，不用头疼怎么处理油盐不进的MSVC2005了，不用纠结怎么给MSVC2008打补丁了，甚至不用考虑MSVC2010提供的如下方案了：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#if _MSC_VER &gt;= 1600</span>
+<span class="cp">#pragma execution_character_set(&quot;utf-8&quot;)</span>
+<span class="cp">#endif</span>
+</code></pre></div></td></tr></table></div>
+
+<p>MSVC2015Update1开始，MSVC不光承诺二进制兼容性，而且还提供命令行选项了</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>/utf-8
+/source-charset:utf-8
+/execution-charset:utf-8
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>中日韩民众总算迎来一个好时代：C++执行字符集可以正大光明地用UTF-8，终于可以放心用本国字符而不用担心放到其他国家乱码了。</p>
+</blockquote>
+<h3 id="utf-8_1">UTF-8 源码字符集</h3>
+<blockquote>
+<p>C++标准引入类型<code>char8_t</code>、<code>char16_t</code>和<code>char32_t</code>，明确规定了utf8、utf16和utf32这3种执行字符集。可是C++并没有规定源码字符集</p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="kt">char8_t</span><span class="o">*</span><span class="w"> </span><span class="n">mystr</span><span class="o">=</span><span class="sa">u8</span><span class="s">&quot;中文&quot;</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>C++标准对编译器说，我不管这个文件的具体编码是什么，但你必须给我生成对应utf8编码的字节流。</p>
+<blockquote>
+<p>编译器似乎有点傻了吧？不知道源文件的编码，我如何转换</p>
+</blockquote>
+<p>于是：</p>
+<p>GCC说：我认为你就是utf8编码，除非通过命令行通知我其他编码。</p>
+<p>MSVC说：我就当你是本地locale的编码，除非你有BOM，或者通过命令行告诉我是utf8。</p>
+<blockquote>
+<p>2015年之前，为了跨GCC和MSVC等平台，源码需要保存中带BOM的UTF8。2015年之后，完全不需要BOM了，命令行参数更好使。</p>
+<p>突然之间，微软MSVC开始守规矩了，喜欢乱搞的IE也被干掉了，还真有点不适应。希望大家呼吁一下：什么时候微软能把系统API再搞一搞，以符合posix标准啊。</p>
+</blockquote>
+<h2 id="_4">其他</h2>
+<p>C++中，char、signed char、unsigned char 三兄弟肩负了太多的职责。</p>
+<p>除了没做好的<strong>字符</strong>的职责外，它们还承担寻址单位byte 和算数类型8位整数的职责：</p>
+<h3 id="stdbyte">std::byte</h3>
+<p>直到2017年，C++才开始剥离三兄弟的内存字节属性。</p>
+<p>C++17 引入为名 byte 新类型。注意，这是个枚举class类型，不是整数：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">byte</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="p">{};</span>
+</code></pre></div></td></tr></table></div>
+
+<p>用于标识内存中的字节类型，与char或整数不同，它不是字符类型，且不支持算术类型。只支持位操作符。</p>
+<p>使用举例：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstddef&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">byte</span><span class="w"> </span><span class="n">b1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">byte</span><span class="p">(</span><span class="mh">0x41</span><span class="p">);</span><span class="w"> </span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">byte</span><span class="w"> </span><span class="n">b2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">byte</span><span class="p">(</span><span class="mb">0b01010101</span><span class="p">);</span><span class="w"> </span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">byte</span><span class="w"> </span><span class="n">b3</span><span class="p">{</span><span class="mh">0x41</span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">byte</span><span class="w"> </span><span class="n">b4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">b2</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Result of bitwise OR: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">b4</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">intValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">b3</span><span class="p">);</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Integer value of b3: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">intValue</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="int8_tuint8_t">int8_t、uint8_t</h3>
+<p>C++11 引入的类型别名。</p>
+<p>只是类型别名，需要8位整数的时候，比用signed char、unsigned char显得好看。</p>
+<blockquote>
+<p>注意，不管有符号，还是无符号，都不会用 char 的！</p>
+</blockquote>
+<p>在不同的编译器下typedef是不同的。可以以 MSVC2019 为例，看一下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w">        </span><span class="kt">int8_t</span><span class="p">;</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w">      </span><span class="kt">uint8_t</span><span class="p">;</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w">        </span><span class="kt">int_least8_t</span><span class="p">;</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w">      </span><span class="kt">uint_least8_t</span><span class="p">;</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w">        </span><span class="kt">int_fast8_t</span><span class="p">;</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w">      </span><span class="kt">uint_fast8_t</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="c_1">C++ 整数类型</h3>
+<p>其实，这一堆的字符类型，在C++中，都属于整数类型。</p>
+<p>可以写个代码验证一下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;type_traits&gt;</span>
+
+<span class="cp">#define TYPE_CHECK(type) check_integral&lt;type&gt;(#type)</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">check_integral</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">typeName</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_integral</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;integral type: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">typeName</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;non integral type: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">typeName</span><span class="w">  </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">bool</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">char</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">short</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">long</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="kt">long</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="kt">long</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">wchar_t</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">char16_t</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">char32_t</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">char8_t</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">float</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="kt">double</span><span class="p">);</span>
+<span class="w">    </span><span class="n">TYPE_CHECK</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">byte</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="kt">bool</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">char</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">signed</span><span class="w"> </span><span class="nx">char</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">unsigned</span><span class="w"> </span><span class="nx">char</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">short</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">unsigned</span><span class="w"> </span><span class="nx">short</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">int</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">unsigned</span><span class="w"> </span><span class="nx">int</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">long</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">unsigned</span><span class="w"> </span><span class="nx">long</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">long</span><span class="w"> </span><span class="nx">long</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">unsigned</span><span class="w"> </span><span class="nx">long</span><span class="w"> </span><span class="nx">long</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">wchar_t</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">char16_t</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">char32_t</span>
+<span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">char8_t</span>
+<span class="nx">non</span><span class="w"> </span><span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">float</span>
+<span class="nx">non</span><span class="w"> </span><span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">double</span>
+<span class="nx">non</span><span class="w"> </span><span class="nx">integral</span><span class="w"> </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">std</span><span class="o">::</span><span class="nx">byte</span>
+</code></pre></div></td></tr></table></div>
+
+<p>不同于Java等语言，对于各类型宽度，C++标准只保证：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="mf">1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">sizeof</span><span class="p">(</span><span class="n">char</span><span class="p">)</span><span class="w"> </span><span class="err">≤</span><span class="w"> </span><span class="n">sizeof</span><span class="p">(</span><span class="n">short</span><span class="p">)</span><span class="w"> </span><span class="err">≤</span><span class="w"> </span><span class="n">sizeof</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="w"> </span><span class="err">≤</span><span class="w"> </span><span class="n">sizeof</span><span class="p">(</span><span class="n">long</span><span class="p">)</span><span class="w"> </span><span class="err">≤</span><span class="w"> </span><span class="n">sizeof</span><span class="p">(</span><span class="n">long</span><span class="w"> </span><span class="n">long</span><span class="p">)</span>
+<span class="mf">1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">sizeof</span><span class="p">(</span><span class="n">char</span><span class="p">)</span><span class="w"> </span><span class="err">≤</span><span class="w"> </span><span class="n">sizeof</span><span class="p">(</span><span class="n">wchar_t</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>也就是说 char 和 long long 可以一样长，只要sizeof是 1就行。</p>
+<h3 id="c_2">C中的字符类型别名？</h3>
+<blockquote>
+<p>标题用了C++，所以前面主要在说C++，但考虑C++和C渊源关系，为了完整性，最后还是看一眼C。</p>
+</blockquote>
+<p>不同于C++，截至到2024年，在C中：</p>
+<ul>
+<li>只有 <code>char</code>、<code>signed char</code>、<code>unsigned char</code> 是关键字</li>
+<li><code>wchar_t</code>、<code>char16_t</code>、<code>char32_t</code> 与 <code>char8_t</code>都不是关键词，也不是原生类型 </li>
+<li>它们只是类型别名！</li>
+</ul>
+<p>伪代码如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="kt">wchar_t</span><span class="p">;</span>
+<span class="c1">// typedef short unsigned int wchar_t;</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="kt">short</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">char16_t</span><span class="p">;</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">char32_t</span><span class="p">;</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">char8_t</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_5">参考</h2>
+<ul>
+<li>https://gcc.gnu.org/onlinedocs/gcc-13.2.0/gcc/Preprocessor-Options.html</li>
+</ul>
+<ul>
+<li>https://stackoverflow.com/questions/2324658/how-to-determine-the-version-of-the-c-standard-used-by-the-compiler</li>
+</ul>
+<ul>
+<li>https://blog.csdn.net/dbzhang800/article/details/7540905</li>
+</ul>
+<ul>
+<li>https://learn.microsoft.com/en-us/cpp/build/reference/utf-8-set-source-and-executable-character-sets-to-utf-8?view=msvc-170</li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/cpp/cpp/fundamental-types-cpp?view=msvc-170">Built-in types (C++) | Microsoft Learn</a></li>
+</ul>
+<ul>
+<li>https://en.wikipedia.org/wiki/Wide_character</li>
+</ul>
+<ul>
+<li>https://en.cppreference.com/w/cpp/language/type</li>
+</ul>
+<ul>
+<li>https://en.cppreference.com/w/cpp/language/types</li>
+</ul>
+<ul>
+<li>https://www.moria.us/articles/wchar-is-a-historical-accident/</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-01-30T21:00:00+08:00" pubdate>Tue 30 January 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/c.html'>C++</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/c.html">c++</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

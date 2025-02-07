@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Markdown小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Markdown小记</h1>
+    <p class="meta">
+<time datetime="2024-05-07T23:19:00+08:00" pubdate>Tue 07 May 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>用了10多年Markdown，却一直没有正经地看过它。每次换edit后，查看之前写的东西，总有些格式问题。各个编辑器介绍自己支持的一堆东西，又看不懂...</p>
+</blockquote>
+<h2 id="markdown">什么是Markdown？</h2>
+<blockquote>
+<p>Markdown 语法主要受 Swartz's 于 2002年创建的 atx 影响。</p>
+</blockquote>
+<p>Markdown 是一种用于编写结构化文档的纯文本格式。它由 John Gruber 开发（得到 Aaron Swartz 的帮助），并于 2004 年以语法描述和一个 Perl 脚本（Markdown.pl）的形式发布，该脚本用于将 Markdown 转换成 HTML。</p>
+<p>在接下来的十年中，许多语言中开发了数十种实现方式。其中一些扩展了原始 Markdown 语法，增加了脚注、表格和其他文档元素的约定。像 Reddit、StackOverflow 和 GitHub 这样的网站有数百万人使用 Markdown。Markdown 还开始被用于网络之外的地方，用于编写书籍、文章、幻灯片、信件和讲义。</p>
+<p>Markdown 与许多其他轻量级标记语法相比的特点是其可读性。正如 Gruber 所写：</p>
+<blockquote>
+<p>Markdown 格式语法的首要设计目标是尽可能提高可读性。其理念是，Markdown 格式的文档应当能够以纯文本的形式发布，而看上去不像是用标签或格式指令标记过。（http://daringfireball.net/projects/markdown/）</p>
+</blockquote>
+<h3 id="markup-markdownup-down">Markup 与 Markdown（up ↑ 与 down ↓ )？</h3>
+<ul>
+<li>Mark<strong>up</strong>（标记语言）指的是一种包含“标记”的编程语言，用于处理和定义文本的结构与样式。最常见的标记语言是 HTML（HyperText Markup Language），用于创建和设计网页。</li>
+<li>Mark<strong>down</strong> 是一种轻量级标记语言，用简单的标记语法来格式化文本。它的目标是使文档易于阅读、易于编写。</li>
+</ul>
+<h2 id="commonmarkgfmflfmmmd">CommonMark、GFM、FLFM、MMD、... 都是什么鬼？</h2>
+<blockquote>
+<p>John Gruber 对 Markdown 语法的规范描述，很多地方不够严谨（有二义性），对于各种Markdown工具的实现，是一个很大的挑战。而且Markdown.pl脚本，本身也有很多bug，可参考性不够。</p>
+</blockquote>
+<h3 id="commonmark">CommonMark</h3>
+<p>因为原始的 Markdown 语法由 John Gruber 设计时留下了一些模糊和不一致的地方，不同的解释器可能会对同样的 Markdown 文本产生不同的解析结果。这种差异可能导致文档在不同平台上的显示效果不同，从而影响内容的一致性和专业性。</p>
+<p>CommonMark 试图成为 Markdown 语法的标准化版本，通过提供统一的规范来帮助开发者和内容创作者避免兼容性问题。它不是要替代原始的 Markdown，而是希望通过解决其局限性来增强 Markdown 的实用性和可靠性。</p>
+<blockquote>
+<p>因为Gruber不同意这个标准化的工作，使用Markdown字样，最终<a href="https://blog.codinghorror.com/standard-markdown-is-now-common-markdown/">Standard Markdown is now Common Markdown </a>。</p>
+</blockquote>
+<p>CommonMark 是一种开源的 Markdown 规范，旨在解决不同 Markdown 解释器之间存在的语法不一致问题。</p>
+<ul>
+<li>明确和一致：CommonMark 提供了一套严格定义的规范，明确了 Markdown 语法的每一个方面，减少了解释的歧义。</li>
+<li>跨平台兼容：它旨在确保 Markdown 文档在任何支持 CommonMark 的平台上都能有一致的解析和显示效果。</li>
+</ul>
+<h3 id="gfm-github-flavored-markdown">GFM (GitHub Flavored Markdown)</h3>
+<p>GitHub Flavored Markdown，通常简称为 GFM，是目前 GitHub.com 和 GitHub Enterprise 上支持用户内容的 Markdown 方言。</p>
+<p>这个基于 CommonMark 规范的正式规范定义了这种方言的语法和语义。</p>
+<p>GFM 是 CommonMark 的严格超集。所有在 GitHub 用户内容中支持但未在原始 CommonMark 规范中指定的功能，因此被称为扩展，并作为此类突出显示。</p>
+<p>它的解析库是<code>cmark-gfm</code>，采用C编写，有各种语言的绑定：</p>
+<ul>
+<li>https://github.com/github/cmark-gfm</li>
+</ul>
+<h3 id="glfmgitlab-flavored-markdown">GLFM(Gitlab Flavored Markdown)</h3>
+<p>GitLab Flavored Markdown 包括以下内容：</p>
+<ul>
+<li>基于 CommonMark 规范的核心 Markdown 功能。</li>
+<li>来自 GitHub Flavored Markdown 的扩展。</li>
+<li>专为 GitLab 制作的扩展。</li>
+</ul>
+<h3 id="mmdmultimarkdown">MMD（MultiMarkdown)</h3>
+<blockquote>
+<p>MultiMarkdown 是在 CommonMark 出现之前开发的，并不完全符合 CommonMark 标准。</p>
+</blockquote>
+<p>MultiMarkdown (MMD) 是 Markdown 的一个扩展，它增加了对表格、脚注、交叉引用等复杂内容的支持，使其更适用于学术写作和专业出版。MultiMarkdown 旨在保持 Markdown 的简洁性和易用性，同时增加额外的功能以处理更复杂的文档结构。</p>
+<p>MultiMarkdown 特别适合需要编写结构复杂文档的场景，如学术论文、书籍、研究报告等。由于其对多种输出格式的支持，它也非常适合需要将内容转换成特定格式的出版流程。</p>
+<h3 id="php-markdown-extra">PHP Markdown Extra</h3>
+<blockquote>
+<p>PHP Markdown Extra 基于早期的 Markdown 实现，并且加入了一些额外的功能，如表格、定义列表和脚注等。并不符合 CommonMark 规范</p>
+</blockquote>
+<p>PHP Markdown Extra 是一个基于 PHP 的 Markdown 解析器，它在原始 Markdown 实现的基础上添加了一些额外的功能。这个扩展由 Michel Fortin 开发，旨在增加一些对专业和学术写作非常有用的特性，同时保持 Markdown 的简洁和易用性。</p>
+<h2 id="_1">编辑器与实现</h2>
+<p>缺乏统一标准，实现各个不同...</p>
+<h3 id="_2">编辑器</h3>
+<p>因为缺少同一个的规范，以及各种各样的扩展的存在。各个编辑器对Markdown支持也各不相同...</p>
+<ul>
+<li>VSCode（有多种扩展，Office Viewer）</li>
+<li>MarkText</li>
+<li>Typora（转正收费软件后，基本不考虑了）</li>
+<li>...</li>
+</ul>
+<h3 id="_3">实现</h3>
+<h4 id="markdown-it">markdown-it</h4>
+<p>markdown-it 是基于 JavaScript 的 Markdown 解析器。它完全兼容 CommonMark 规范，并且支持扩展 Markdown 语法（如 GFM、表格、脚注等）。</p>
+<p>它在python下的移植叫做：<code>markdown-it-py</code></p>
+<h4 id="python-markdown">Python-markdown</h4>
+<p>这不是一个 CommonMark 的实现；也不是在尝试成为一个！Python-Markdown 是在 CommonMark 规范发布很久之前开发的，并且一直（大部分时间）遵循原始参考实现的语法规则和行为。没有做出任何调整来适应 CommonMark 所建议的变更。</p>
+<ul>
+<li>markdown-katex 支持 katex</li>
+<li>md-mermaid 支持 mermaid</li>
+</ul>
+<p>Python-markdown的生态极为丰富。别的实现有的功能，多数都能找到对应扩展。</p>
+<h4 id="kramdown">kramdown</h4>
+<p>Kramdown 是一个免费的、纯 Ruby 编写的 Markdown 解析器和转换器。它被设计用来解析某些 Markdown 方言，并将其转换成多种输出格式，比如 HTML。</p>
+<h2 id="_4">扩展</h2>
+<p>混战的markdown有各种扩展。关注一下 katex 和 mermaid 等</p>
+<h3 id="metadatafront-matter">metadata、front matter？？</h3>
+<p><code>python-markdown</code>支持在markdown文件头部有类似下面的meta信息，文档中叫做<a href="https://python-markdown.github.io/extensions/meta_data/">meta data</a>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Title</span><span class="o">:</span><span class="w">   </span><span class="n">My</span><span class="w"> </span><span class="n">Document</span>
+<span class="n">Summary</span><span class="o">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">brief</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">my</span><span class="w"> </span><span class="n">document</span><span class="o">.</span>
+<span class="n">Authors</span><span class="o">:</span><span class="w"> </span><span class="n">Waylan</span><span class="w"> </span><span class="n">Limberg</span>
+<span class="w">         </span><span class="n">John</span><span class="w"> </span><span class="n">Doe</span>
+<span class="n">Date</span><span class="o">:</span><span class="w">    </span><span class="n">October</span><span class="w"> </span><span class="mi">2</span><span class="o">,</span><span class="w"> </span><span class="mi">2007</span>
+<span class="n">blank</span><span class="o">-</span><span class="n">value</span><span class="o">:</span>
+<span class="n">base_url</span><span class="o">:</span><span class="w"> </span><span class="n">http</span><span class="o">://</span><span class="n">example</span><span class="o">.</span><span class="na">com</span>
+
+<span class="n">This</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">first</span><span class="w"> </span><span class="n">paragraph</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">document</span><span class="o">.</span>
+</code></pre></div></td></tr></table></div>
+
+<p><code>MultiMarkdown</code>支持在markdown文件头部有类似下面的meta信息，文档中叫做<a href="http://fletcher.github.io/MultiMarkdown-5/metadata.html">meta data</a>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Title</span><span class="o">:</span><span class="w">    </span><span class="n">A</span><span class="w"> </span><span class="n">Sample</span><span class="w"> </span><span class="n">MultiMarkdown</span><span class="w"> </span><span class="n">Document</span><span class="w">  </span>
+<span class="n">Author</span><span class="o">:</span><span class="w">   </span><span class="n">Fletcher</span><span class="w"> </span><span class="n">T</span><span class="o">.</span><span class="w"> </span><span class="n">Penney</span><span class="w">  </span>
+<span class="n">Date</span><span class="o">:</span><span class="w">     </span><span class="n">February</span><span class="w"> </span><span class="mi">9</span><span class="o">,</span><span class="w"> </span><span class="mi">2011</span><span class="w">  </span>
+<span class="n">Comment</span><span class="o">:</span><span class="w">  </span><span class="n">This</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="n">intended</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">demonstrate</span><span class="w">  </span>
+<span class="w">          </span><span class="n">metadata</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">spans</span><span class="w"> </span><span class="n">multiple</span><span class="w"> </span><span class="n">lines</span><span class="o">,</span><span class="w"> </span><span class="n">yet</span><span class="w">  </span>
+<span class="w">          </span><span class="k">is</span><span class="w"> </span><span class="n">treated</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">single</span><span class="w"> </span><span class="n">value</span><span class="o">.</span><span class="w">  </span>
+<span class="n">CSS</span><span class="o">:</span><span class="w">      </span><span class="n">http</span><span class="o">://</span><span class="n">example</span><span class="o">.</span><span class="na">com</span><span class="o">/</span><span class="n">standard</span><span class="o">.</span><span class="na">css</span>
+</code></pre></div></td></tr></table></div>
+
+<p>jekyll支持文件头部包含<a href="https://jekyllrb.com/docs/front-matter/">YAML front matter block</a>。github的pages也使用<a href="https://docs.github.com/en/contributing/writing-for-github-docs/using-yaml-frontmatter">front matter</a>，注意格式<code>---</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nn">---</span>
+<span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">post</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Blogging Like a Hacker</span>
+<span class="nn">---</span>
+</code></pre></div></td></tr></table></div>
+
+<p>gitlab也支持<a href="https://handbook.gitlab.com/docs/frontmatter/">front matter</a>，但似乎没明确它是不是yaml：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nn">---</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Page</span><span class="nv"> </span><span class="s">title&quot;</span>
+<span class="nt">other_attribute</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;see</span><span class="nv"> </span><span class="s">other</span><span class="nv"> </span><span class="s">sections</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">what&#39;s</span><span class="nv"> </span><span class="s">valid&quot;</span>
+<span class="nn">---</span>
+</code></pre></div></td></tr></table></div>
+
+<p>pdandoc中有所谓的<a href="https://pandoc.org/MANUAL.html#extension-pandoc_title_block">title block</a>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c">% title</span>
+<span class="c">% author(s) (separated by semicolons)</span>
+<span class="c">% date</span>
+</code></pre></div></td></tr></table></div>
+
+<p>pandoc也支持<a href="https://pandoc.org/MANUAL.html#extension-yaml_metadata_block">yaml metadata block</a>，注意格式，以<code>---</code>开头，且用<code>---</code>或<code>...</code>表示该block的结束：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code>---
+title: The document title
+author:
+- name: Author One
+  affiliation: University of Somewhere
+- name: Author Two
+  affiliation: University of Nowhere
+...
+</code></pre></div></td></tr></table></div>
+
+<p>markdown-it生态下，各种扩展更是层出不穷，基本上以yaml为主。有的要求三个或以上<code>-</code>开头或结尾，有的要求<code>---</code>开头，用<code>---</code>或<code>...</code>结尾</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nn">---</span>
+<span class="nt">valid-front-matter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nn">---</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="katex">Katex</h3>
+<p>在MarkDown中添加公式支持，也是<strong>一团混战</strong>：<a href="https://github.com/cben/mathdown/wiki/math-in-markdown">Math in MarkDown · cben/mathdown Wiki · GitHub</a>，只能挑感兴趣的简单看看。</p>
+<p>KaTeX 是一个快速的数学排版库，它可以在网页上渲染高质量的数学公式。KaTeX 是由 Khan Academy 开发的，它的主要目的是为了在网页上快速渲染数学公式，以改善用户体验。</p>
+<p>KaTeX 的主要特点：</p>
+<ul>
+<li>速度快：KaTeX 是目前已知的最快的数学排版库之一，能够几乎即时地渲染数学公式</li>
+<li>自渲染：KaTeX 不依赖于任何外部服务或插件，它在用户的浏览器中直接渲染公式。</li>
+<li>易于使用：只需将 KaTeX 的 JavaScript 和 CSS 文件包含在你的网页中，就可以开始渲染数学公式了。</li>
+<li>高质量的排版：KaTeX 生成的数学公式外观精美，支持高分辨率显示。</li>
+</ul>
+<h4 id="mathjax">与MathJax对比</h4>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>KaTeX</th>
+<th>MathJax</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>渲染速度</strong></td>
+<td>非常快，适合需要快速渲染的场景</td>
+<td>较慢，尤其是在处理复杂公式时</td>
+</tr>
+<tr>
+<td><strong>服务器依赖</strong></td>
+<td>无需服务器支持，完全在客户端运行</td>
+<td>通常在客户端运行，但也可以配置服务器端渲染</td>
+</tr>
+<tr>
+<td><strong>易用性</strong></td>
+<td>简单，引入 CSS 和 JavaScript 即可使用</td>
+<td>配置较复杂，但提供丰富的自定义选项</td>
+</tr>
+<tr>
+<td><strong>LaTeX 兼容性</strong></td>
+<td><strong>支持的 LaTeX 命令较少</strong>，主要是基本和常用命令</td>
+<td>支持广泛的 LaTeX 命令和功能，包括复杂宏和扩展</td>
+</tr>
+<tr>
+<td><strong>浏览器兼容性</strong></td>
+<td>较好，特别是在现代浏览器中</td>
+<td>非常好，包括对老旧浏览器的支持</td>
+</tr>
+<tr>
+<td><strong>交互性</strong></td>
+<td>较少的交互性支持</td>
+<td>强大的交互性支持，包括可点击的公式等</td>
+</tr>
+<tr>
+<td><strong>文档和社区支持</strong></td>
+<td>文档清晰，社区活跃但相对较小</td>
+<td>详尽的文档和庞大的用户社区</td>
+</tr>
+</tbody>
+</table>
+<h4 id="gitlab">Gitlab支持</h4>
+<blockquote>
+<p>Gitlab 支持katex。</p>
+</blockquote>
+<p>行内公式：需要放置在美元符号和反引号构成的分隔符之间(<code>$`...`$</code>)或者放置到美元符号之间 (<code>$...$</code>) 。</p>
+<p>独立公式：放置到两个美元符号构成的分隔符之间(<code>$$...$$</code>)，或者声明为 <code>math</code>的代码块中。</p>
+<blockquote>
+<p>Marktext默认不支持math代码块的写法，但是可以通过 <code>preferences -&gt; Markdown-&gt; "GitLab compatibility"</code>选项打开【但是打开之后，Marktext的typewriter模式下又会自动把识别出的math转成 <code>$$...$$</code>写法，挺不好玩的】。另外，即使打开，(<code>$`...`$</code>)写法仍然不支持！！</p>
+</blockquote>
+<h4 id="python-markdown_1">python-markdown支持</h4>
+<p>python-markdown通过插件 <code>markdown-katex</code>来支持katex。它支持的Gitlab使用的如下语法：</p>
+<ul>
+<li>行内公式：需要放置在美元符号和反引号构成的分隔符之间(<code>$`...`$</code>)</li>
+<li>独立公式：放置到声明为 <code>math</code>的代码块中。比如：</li>
+</ul>
+<p>标记如下代码为 <code>math</code></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>f(x) = \int_{-\infty}^\infty
+    \hat f(\xi)\,e^{2 \pi i \xi x}
+    \,d\xi
+</code></pre></div></td></tr></table></div>
+
+<p>将会：</p>
+<div class="math display">
+f(x) = \int_{-\infty}^\infty
+    \hat f(\xi)\,e^{2 \pi i \xi x}
+    \,d\xi
+</div>
+
+<h3 id="mermaid">图表 mermaid</h3>
+<p>Mermaid 允许开发者和文档作者通过简洁的文本描述来生成图表和可视化表示，如流程图、序列图、甘特图等。它是专为简化在 Markdown 文件和网页中创建复杂图表的过程而设计的。</p>
+<p>标记如下代码为mermaid</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nf">graph</span><span class="w"> </span><span class="n">TD</span><span class="p">;</span>
+<span class="w">    </span><span class="n">A</span><span class="w"> </span><span class="o">--&gt;</span><span class="w"> </span><span class="n">B</span><span class="p">;</span>
+<span class="w">    </span><span class="n">A</span><span class="w"> </span><span class="o">--&gt;</span><span class="w"> </span><span class="n">C</span><span class="p">;</span>
+<span class="w">    </span><span class="n">B</span><span class="w"> </span><span class="o">--&gt;</span><span class="w"> </span><span class="n">D</span><span class="p">;</span>
+<span class="w">    </span><span class="n">C</span><span class="w"> </span><span class="o">--&gt;</span><span class="w"> </span><span class="n">D</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>将会</p>
+<div class="mermaid">
+graph TD;
+    A --> B;
+    A --> C;
+    B --> D;
+    C --> D;
+</div>
+
+<blockquote>
+<p>注意对比PlainUML。PlainUML是一个工具，允许用户使用纯文本语言来创建图表。它支持多种图表类型，包括序列图、用例图、类图、活动图、组件图、状态图等。</p>
+</blockquote>
+<p>python中的markdown有对merimad的扩展支持</p>
+<ul>
+<li>https://pypi.org/project/markdown-mermaidjs/</li>
+</ul>
+<h2 id="_5">参考</h2>
+<ul>
+<li><a href="https://daringfireball.net/projects/markdown/syntax">Daring Fireball: Markdown Syntax Documentation</a></li>
+<li><a href="https://github.github.com/gfm/">GitHub Flavored Markdown Spec</a></li>
+<li><a href="https://docs.gitlab.com/ee/user/markdown.html">GitLab Flavored Markdown (GLFM) | GitLab</a></li>
+<li>https://spec.commonmark.org/</li>
+<li><a href="https://en.wikipedia.org/wiki/Markdown">Markdown - Wikipedia</a></li>
+<li><a href="https://kramdown.gettalong.org/syntax.html">Syntax | kramdown</a></li>
+<li><a href="https://rawgit.com/fletcher/MultiMarkdown-6-Syntax-Guide/master/index.html">MultiMarkdown v6 Syntax Guide (rawgit.com)</a></li>
+<li><a href="https://michelf.ca/projects/php-markdown/extra/">PHP Markdown Extra (michelf.ca)</a></li>
+<li>https://github.com/markdown-it/markdown-it</li>
+<li>https://github.com/executablebooks/markdown-it-py</li>
+<li>https://github.com/github/cmark-gfm</li>
+<li><a href="http://www.aaronsw.com/2002/atx/intro.html">atx, the true structured text format (aaronsw.com)</a></li>
+<li>https://github.com/Vanessa219/vditor</li>
+<li><a href="https://www.markdownguide.org/tools/mark-text/">MarkText Markdown Reference | Markdown Guide</a></li>
+<li><a href="https://mermaid.js.org/syntax/flowchart.html">Flowcharts Syntax | Mermaid</a></li>
+<li><a href="https://github.com/cben/mathdown/wiki/math-in-markdown">Math in MarkDown · cben/mathdown Wiki · GitHub</a></li>
+</ul>
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+</script></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-05-07T23:19:00+08:00" pubdate>Tue 07 May 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a class="category" href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a class="category" href="https://blog.debao.me/tags/katex.html">katex</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

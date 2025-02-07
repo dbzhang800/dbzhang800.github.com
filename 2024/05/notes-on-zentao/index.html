@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>禅道配置与使用小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">禅道配置与使用小记</h1>
+    <p class="meta">
+<time datetime="2024-05-28T21:13:00+08:00" pubdate>Tue 28 May 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>准备试试禅道，简单记录一下。</p>
+<blockquote>
+<p>注意，本文提到的禅道，指代禅道 开源版18.11。</p>
+</blockquote>
+<h2 id="_1">安装</h2>
+<p>禅道有提供Linux下的一键安装包，也有用于Debian和Ubuntu的Deb包。</p>
+<p>安装后,apache的配置文件位于：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>/opt/zbox/etc/apache/httpd.conf
+</code></pre></div></td></tr></table></div>
+
+<p>在该文件内，可以修改监听地址等，比如：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Listen 127.0.0.1:81
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>以便于配置nginx作为反向代理。</p>
+</blockquote>
+<p>php配置文件位于</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>/opt/zbox/etc/php/php.ini
+</code></pre></div></td></tr></table></div>
+
+<p>在该文件内，通过<code>log_errors</code>设置成on，可以启用日志记录。路径在<code>/opt/zbox/logs/php_error_log</code>.</p>
+<p>另外，配置文件<code>/opt/zbox/app/zentao/config/my.php</code>中 <code>$config-&gt;debug</code>，也用于配置日志。日志目录位于 <code>/opt/zbox/app/zentao/tmp/log</code></p>
+<p>一些命令</p>
+<ul>
+<li>启动：<code>/opt/zbox/zbox/start</code></li>
+<li>停止：<code>/opt/zbox/zbox stop</code></li>
+<li>重启：<code>/opt/zbox/zbox restart</code></li>
+<li>检查：<code>/opt/zbox/zbox check</code></li>
+</ul>
+<blockquote>
+<p>ZBOX是禅道官方在linux下面运行的apache, php, mysql一键安装包。</p>
+</blockquote>
+<h2 id="_2">插件学习</h2>
+<blockquote>
+<p>禅道的扩展系统，从16.5版本起，其行了比较大的重构。</p>
+</blockquote>
+<p>感觉上，对插件开发挺不友好的，官方文档似乎很不全，第三方插件少，可能我没找到原因</p>
+<h3 id="_3">基本机制</h3>
+<p>禅道有一个个的模块组成：</p>
+<ul>
+<li>project</li>
+<li>user</li>
+<li>admin</li>
+<li>product</li>
+<li>job</li>
+<li>...</li>
+</ul>
+<p>每个模块又按照mvc进行划分M V C三层和辅助config、lang、css、js：</p>
+<ul>
+<li>control：控制层</li>
+<li>model：模型层</li>
+<li>view：视图层</li>
+<li>config：配置</li>
+<li>lang：语言</li>
+<li>css：样式</li>
+<li>js：脚本</li>
+</ul>
+<p><strong>对已有模块扩展</strong>（直接在对应ext目录下）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code>extension/custom/user/ext/control/{method1.php, method2.php, ...} 
+extension/custom/user/ext/model/{extend1.php, extend2.php, ...}
+extension/custom/user/ext/view/{method1.html.php, method2.html.php, ...}
+extension/custom/user/ext/config/{config1.php, config2.php, ...}
+extension/custom/user/ext/lang/zh-cn/{lang1.php, lang2.php, ...}
+extension/custom/user/ext/lang/en/{lang1.php, lang2.php, ...}
+extension/custom/user/ext/css/method1/{1.css, 2.css, ...}
+extension/custom/user/ext/js/method1/{1.js, 2.js, ...}
+</code></pre></div></td></tr></table></div>
+
+<p><strong>对新的模块</strong>，都在extension目录下。包含ext外的基本文件，和ext下的的扩展文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code>extension/custom/oa/control.php
+extension/custom/oa/model.php
+extension/custom/oa/view/{metho1.html.php, method2.html.php, ...}
+extension/custom/oa/config/config.php
+extension/custom/oa/css/{method1.css, method2.css, common.css, ...}
+extension/custom/oa/js/{method1.js, method2.js, common.js, ...}
+
+extension/custom/oa/ext/control/{method1.php, method2.php, ...} 
+extension/custom/oa/ext/model/{extend1.php, extend2.php, ...}
+extension/custom/oa/ext/view/{method1.html.php, method2.html.php, ...}
+extension/custom/oa/ext/config/{config1.php, config2.php, ...}
+extension/custom/oa/ext/lang/zh-cn/{lang1.php, lang2.php, ...}
+extension/custom/oa/ext/lang/en/{lang1.php, lang2.php, ...}
+extension/custom/oa/ext/css/method1/{1.css, 2.css, ...}
+extension/custom/oa/ext/js/method1/{1.js, 2.js, ...}
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_4">打包规范</h3>
+<blockquote>
+<p>需要一个doc目录。不知道怎么回事，越看越看不懂，特别是releases...</p>
+</blockquote>
+<p>doc目录下面包含了插件的配置信息，按照语言进行存储，比如英文版本的，存为en.yaml，中文zh-cn.yaml</p>
+<p>插件的配置文件采用yaml格式，里面包含了插件的基本信息以及历次版本的发布信息。</p>
+<h3 id="_5">新建模块</h3>
+<p>按照zentaoPHP框架结构，在插件目录(<code>extension/custom</code>)下创建子目录，比如ldap，然后，按照预定，分别实现对应的control，model，view，css，js，lang等概念。</p>
+<p>比如ldap插件，在<code>extension/custom/ldap</code>目录下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code>.
+├── config.php
+├── control.php
+├── css
+│   └── setting.css
+├── js
+│   └── setting.js
+├── lang
+│   ├── en.php
+│   ├── zh-cn.php
+│   └── zh-tw.php
+├── model.php
+└── view
+    └── setting.html.php
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>对比官网说法，这个插件的config.php位置似乎有问题，应该在 config/config.php 下？，不过官方extension之外的标准模块，config.php都是直接用的。</p>
+</blockquote>
+<h3 id="model">对model扩展</h3>
+<p>前面的ldap模块，对user的model层进行了扩展，<code>extension/custom/user</code></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>.
+└── ext
+    ├── config
+    │   └── config.php
+    └── model
+        ├── identify.php
+        └── updatePassword.php
+</code></pre></div></td></tr></table></div>
+
+<p>禅道有多种方法扩展model层。此处是通过在 <strong>ext/model/</strong> 目录下面建立相应的 <strong>以方法为名的文件</strong>。</p>
+<blockquote>
+<p>禅道框架在执行的时候，会自动将扩展目录下面的identify.php里面的代码，替换misc/model.php中的identify方法的代码。如果是新增的方法，则会追加到misc/model.php的代码中，最终生成一个合并之后的model类文件。</p>
+</blockquote>
+<h3 id="_6">对语言扩展</h3>
+<p>语言的扩展文件存放在<strong>ext/lang/</strong> 目录下面。按照不同的语言建立相应的目录，比如zh-cn下面，可以有多个文件，zentaoPHP框架会 <strong>自动加载该目录下面所有以.php结尾的文件</strong>。</p>
+<p>比如 Ldap，对admin模块进行扩展，在<code>extension/custom/admin</code>下:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code>.
+└── ext
+    └── lang
+        ├── de
+        │   └── ldapauth.php
+        ├── en
+        │   └── ldapauth.php
+        ├── fr
+        │   └── ldapauth.php
+        ├── zh-cn
+        │   └── ldapauth.php
+        └── zh-tw
+            └── ldapauth.php
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_7">对配置扩展</h3>
+<p>每个模块配置文件的扩展文件存放在 <strong>ext/config/</strong> 目录下面，可以有多个文件，zentaoPHP框架会<strong>自动加载该目录下面以config开头的.php文件</strong>。这样不同的扩展可以有自己的配置项，彼此之间不会冲突。</p>
+<p>在前面的 `extension/custom/user``下，可以配置的扩展（文件名无所谓）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>.
+└── ext
+    ├── config
+    │   └── config.php
+    └── model
+        ├── identify.php
+        └── updatePasswo
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_8">配置</h2>
+<h3 id="nginx">nginx 配置</h3>
+<p>可以使用nginx作为反向代理，以便于引入ssl支持等，简单配置一下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># server configuration for gitlab</span>
+<span class="k">server</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">        </span><span class="kn">listen</span><span class="w"> </span><span class="mi">443</span><span class="w"> </span><span class="s">ssl</span><span class="p">;</span>
+
+<span class="w">        </span><span class="kn">server_name</span><span class="w"> </span><span class="s">projects.debao.me</span><span class="p">;</span>
+
+<span class="w">        </span><span class="kn">ssl</span><span class="w"> </span><span class="no">on</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">ssl_certificate</span><span class="w"> </span><span class="s">/etc/ssl/projects.debao.me.cer</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">ssl_certificate_key</span><span class="w"> </span><span class="s">/etc/ssl/projects.debao.me.key</span><span class="p">;</span>
+
+<span class="w">        </span><span class="kn">location</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kn">return</span><span class="w"> </span><span class="mi">301</span><span class="w"> </span><span class="s">https://projects.debao.me/zentao/user-login-L3plbnRhby8=.html</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://127.0.0.1:81</span><span class="p">;</span>
+
+<span class="w">                </span><span class="c1"># Allow for large file uploads</span>
+<span class="w">                </span><span class="kn">client_max_body_size</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">                </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Host</span><span class="w"> </span><span class="nv">$http_host</span><span class="p">;</span>
+<span class="w">                </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Real-IP</span><span class="w"> </span><span class="nv">$remote_addr</span><span class="p">;</span>
+<span class="w">                </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-For</span><span class="w"> </span><span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+<span class="w">                </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-Proto</span><span class="w"> </span><span class="nv">$scheme</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意：配置行 <code>proxy_set_header X-Forwarded-Proto $scheme;</code>很关键，不然用户在https模式下无法登录。</p>
+<p>这是因为在文件<code>/opt/zbox/zbox/app/zentao/framework/base/router.class.php</code>中，有如下处理CSRF的代码。网上不少人遇到的https无法登录的问题，给出的方案就是：直接注释掉它们。这也...太简单粗暴了。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="x">        /* Change for CSRF. */</span>
+<span class="x">        if($this-&gt;config-&gt;framework-&gt;filterCSRF)</span>
+<span class="x">        {</span>
+<span class="x">            $httpType = (isset($_SERVER[&quot;HTTPS&quot;]) &amp;&amp; $_SERVER[&quot;HTTPS&quot;] == &#39;on&#39;) ? &#39;https&#39; : &#39;http&#39;;</span>
+<span class="x">            if(isset($_SERVER[&#39;HTTP_X_FORWARDED_PROTO&#39;]) and strtolower($_SERVER[&#39;HTTP_X_FORWARDED_PROTO&#39;]) == &#39;https&#39;) $httpType = &#39;https&#39;;</span>
+<span class="x">            if(isset($_SERVER[&#39;REQUEST_SCHEME&#39;]) and strtolower($_SERVER[&#39;REQUEST_SCHEME&#39;]) == &#39;https&#39;) $httpType = &#39;https&#39;;</span>
+
+<span class="x">            $httpHost = zget($_SERVER, &#39;HTTP_HOST&#39;, &#39;&#39;);</span>
+<span class="x">            $apiMode  = (defined(&#39;RUN_MODE&#39;) &amp;&amp; RUN_MODE == &#39;api&#39;) || isset($_GET[$this-&gt;config-&gt;sessionVar]);</span>
+<span class="x">            if(!$apiMode &amp;&amp; (empty($httpHost) or strpos($this-&gt;server-&gt;http_referer, &quot;$httpType://$httpHost&quot;) !== 0)) $_FILES = $_POST = array();</span>
+<span class="x">        }</span>
+</code></pre></div></td></tr></table></div>
+
+<p>另外<code>location = /</code>配置行，只为了直接跳转到登录页面，而不是停留在默认的广告界面，在手动点击登录开源版本。</p>
+<p>除此之外，在局域网内，可以设置根据主机名或者非ssl端口，直接进行跳转到ssl端口（配置文件加入如下若干行）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">server</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
+<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">projects</span><span class="w"> </span><span class="s">projects.debao.me</span><span class="p">;</span>
+<span class="w">    </span><span class="kn">return</span><span class="w"> </span><span class="mi">301</span><span class="w"> </span><span class="s">https://projects.debao.me</span><span class="nv">$request_uri</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">server</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">443</span><span class="p">;</span>
+<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">projects</span>
+<span class="w">    </span><span class="s">return</span><span class="w"> </span><span class="mi">301</span><span class="w"> </span><span class="s">https://projects.debao.me</span><span class="nv">$request_uri</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="ldap">Ldap配置</h3>
+<p>禅道官方没有给开源版提供Ldap支持。官网有如下一个链接，只支持到禅道7.3版本，早过时了。</p>
+<ul>
+<li><a href="https://www.zentao.net/extension-viewrelease-326-front.html">禅道开源版LDAP插件 - 版本详情 - 禅道开源项目管理软件 (zentao.net)</a></li>
+</ul>
+<p>在Github有不少用于禅道的LDAP插件：</p>
+<ul>
+<li><a href="https://github.com/twoBxx/zentao-ldap-plugin">twoBxx/zentao-ldap-plugin: Zentaopms LDAP plugin (github.com)</a></li>
+<li><a href="https://github.com/luzi2000/zentao-ldap">luzi2000/zentao-ldap: 根据前人总结的ldap工程改编而来，支持17.5版本 (github.com)</a></li>
+<li><a href="https://github.com/DYSDF/zentao-ldap">DYSDF/zentao-ldap (github.com)</a></li>
+<li><a href="https://github.com/iboxpay/ldap">iboxpay/ldap: 禅道开源版 LDAP插件 (github.com)</a></li>
+<li><a href="https://github.com/shynome/zentao-ldap">shynome/zentao-ldap: 禅道 zentao 11.5 可用的 ldap 插件 (github.com)</a></li>
+<li><a href="https://github.com/Mohamed-ncib19/Zentao-LDAP-plugin">Mohamed-ncib19/Zentao-LDAP-plugin (github.com)</a></li>
+<li>...</li>
+</ul>
+<blockquote>
+<p>东西最多，但一眼看去，感觉都不太靠谱...，</p>
+</blockquote>
+<h4 id="1">尝试1</h4>
+<p>先试试第一个 twoBxx/zentao-ldap-plugin，下载后，做成zip压缩包 ldap.zip (不包含顶层目录）。</p>
+<p><strong>插件安装</strong></p>
+<p>在界面等登陆后，通过 <code>后台-&gt;插件管理</code> 调出插件管理界面。</p>
+<p>选中前面的 ldap.zip，强制安装（因为版本不完全匹配）。</p>
+<p>安装后到 <code>后台-&gt;系统设置-&gt;LDAP</code>页面进行配置</p>
+<p><strong>LDAP配置</strong></p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>示例值</th>
+<th>必填</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>基础配置</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>协议</td>
+<td>ldap://，ldaps://</td>
+<td>T</td>
+<td>ldap://</td>
+</tr>
+<tr>
+<td>LDAP服务器</td>
+<td>ldap.test.com</td>
+<td>T</td>
+<td></td>
+</tr>
+<tr>
+<td>端口</td>
+<td>389，636</td>
+<td>T</td>
+<td></td>
+</tr>
+<tr>
+<td>searchDN</td>
+<td>ou=users,dc=test,dc=com</td>
+<td>T</td>
+<td></td>
+</tr>
+<tr>
+<td>BindDN</td>
+<td>cn=admin,dc=test,dc=com</td>
+<td>T</td>
+<td></td>
+</tr>
+<tr>
+<td>BindDN 密码</td>
+<td>ou=users,dc=test,dc=com</td>
+<td>T</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>属性配置</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>账号字段</td>
+<td>uid/sAMAccountName</td>
+<td>T</td>
+<td>uid</td>
+</tr>
+<tr>
+<td>默认用户组</td>
+<td>下拉选择</td>
+<td>F</td>
+<td>管理员</td>
+</tr>
+<tr>
+<td>Mail</td>
+<td>mail</td>
+<td>F</td>
+<td>mail</td>
+</tr>
+<tr>
+<td>姓名字段</td>
+<td>cn</td>
+<td>T</td>
+<td>cn</td>
+</tr>
+<tr>
+<td>手机号</td>
+<td>mobile</td>
+<td>F</td>
+<td>mobile</td>
+</tr>
+</tbody>
+</table>
+<p>界面修改的配置，写入到文件<code>extension/custom/ldap/config.php</code> 中。</p>
+<p>保存操作位于<code>extension/custom/ldap/control.php</code>中</p>
+<blockquote>
+<p>注意，由于ldap_get_entries() 返回的数组中所有键名都是小写的，所以uid设置samaccountname也应该都用小写字符。</p>
+</blockquote>
+<p><strong>问题：ldap连接测试不过</strong></p>
+<p>找到一个bug</p>
+<ul>
+<li>extension/custom/ldap/control.php 文件内，sssList在lang中而不是config中：</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="x"> public function test()</span>
+<span class="x"> {</span>
+<span class="x">      $fh = $this-&gt;config-&gt;ldap-&gt;sslList[$this-&gt;post-&gt;ssl] . $this-&gt;post-&gt;host . &#39;:&#39; .$this-    &gt;post-&gt;port;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>改为：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w"> </span><span class="n">public</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="n">test</span><span class="p">()</span>
+<span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="err">$</span><span class="n">fh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">lang</span><span class="o">-&gt;</span><span class="n">ldap</span><span class="o">-&gt;</span><span class="n">sslList</span><span class="p">[</span><span class="err">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">post</span><span class="o">-&gt;</span><span class="n">ssl</span><span class="p">]</span><span class="w"> </span><span class="p">.</span><span class="w"> </span><span class="err">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">post</span><span class="o">-&gt;</span><span class="n">host</span><span class="w"> </span><span class="p">.</span><span class="w"> </span><span class="s">&#39;:&#39;</span><span class="w"> </span><span class="p">.</span><span class="err">$</span><span class="n">this</span><span class="o">-</span><span class="w">    </span><span class="o">&gt;</span><span class="n">post</span><span class="o">-&gt;</span><span class="n">port</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>非tsl下的连接测试通过。</p>
+<p><strong>问题：任然无法同步账户</strong></p>
+<blockquote>
+<p>使用ldap和389端口，ldap连接没问题。</p>
+</blockquote>
+<p>但是Ldap用户还是无法登录，可能和用的 uid 取的 'sAMAccountName' 有关（改写全小写samaccountname）没有改善。</p>
+<p>排查extension/custom/ldap/model.php，由于AD中不是所有用户都配置了email和mobile字段，需要确保这两个字段不为null：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="x">        for (; $i &lt; $ldapUsers[&#39;count&#39;]; $i++) {</span>
+<span class="x">            $user-&gt;account = $ldapUsers[$i][$config-&gt;uid][0];</span>
+<span class="x">            $user-&gt;realname = $ldapUsers[$i][$config-&gt;name][0];</span>
+<span class="x">            // 确保 mobile 字段不为 NULL</span>
+<span class="x">            $user-&gt;email = !empty($ldapUsers[$i][$config-&gt;mail][0]) ? $ldapUsers[$i][$config-&gt;mail][0] : $user-&gt;realname . &quot;@debao.me&quot;;</span>
+<span class="x">            $user-&gt;mobile = !empty($ldapUsers[$i][$config-&gt;mobile][0]) ? $ldapUsers[$i][$config-&gt;mobile][0] : &quot;12345678&quot;;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>手动同步账户通过。</p>
+<p><strong>问题：LDAP账户依然无法登录</strong></p>
+<p>需要排查 <code>extension/custom/user/ext/model/identify.php</code></p>
+<p>...</p>
+<p><strong>问题：tls</strong></p>
+<p>但是ldaps和 636默认还是不行。可能和证书不受信任有关。用ldapsearch进行测试。</p>
+<p>尽管忽略证书校验，使用ldapsearch没问题</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>ldapsearch -H ldaps://dc1.debao.me:636 -x -D &quot;cn=admin,dc=debao,dc=me&quot; -w your_password -b &quot;dc=debao,dc=me&quot; -o &quot;tls_reqcert=never&quot;
+</code></pre></div></td></tr></table></div>
+
+<h4 id="2">尝试2</h4>
+<p>试试 luzi2000/zentao-ldap</p>
+<blockquote>
+<p>很顺利</p>
+</blockquote>
+<p><strong>插件安装</strong></p>
+<p>在界面等登陆后，通过 <code>后台-&gt;插件管理</code> 调出插件管理界面。</p>
+<p>选中前面的源码对应压缩包 zentao-ldap.zip，强制安装（因为版本不完全匹配）。</p>
+<p>安装后到 <code>后台-&gt;系统设置-&gt;LDAP</code>页面进行配置</p>
+<p><strong>配置</strong></p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>示例值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>基础配置</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>LDAP服务器</td>
+<td>ldap.test.com</td>
+</tr>
+<tr>
+<td>BindDN</td>
+<td>cn=admin,dc=test,dc=com</td>
+</tr>
+<tr>
+<td>BindDN 密码</td>
+<td>ou=users,dc=test,dc=com</td>
+</tr>
+<tr>
+<td><strong>属性配置</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>baseDN</td>
+<td>ou=users,dc=test,dc=com</td>
+</tr>
+<tr>
+<td>Serach Filter</td>
+<td>-</td>
+</tr>
+<tr>
+<td>账号字段</td>
+<td>samaccountname</td>
+</tr>
+<tr>
+<td>Mail</td>
+<td>mail</td>
+</tr>
+<tr>
+<td>姓名字段</td>
+<td>cn</td>
+</tr>
+</tbody>
+</table>
+<p>没有tls以及端口设置，功能弱一些，但装完作为demo可以用</p>
+<h2 id="_9">参考</h2>
+<ul>
+<li><a href="https://devel.easycorp.cn/book/extension-new/intro-52.html">zentaoPHP二次开发简介 - 禅道二次开发 - 易软天创开发者中心 (easycorp.cn)</a></li>
+<li><a href="https://www.zentao.net/blog/zentao-expansion-82385.html">禅道扩展机制 - 技术笔记 - 禅道开源项目管理软件 (zentao.net)</a></li>
+<li><a href="https://www.zentao.net/book/zentaopmshelp/144.html">禅道项目管理软件打包规范1.1版本 - 禅道二次开发手册 - 禅道开源项目管理软件</a></li>
+<li>https://github.com/easysoft/zentaopms</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-05-28T21:13:00+08:00" pubdate>Tue 28 May 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>从C++到Qt &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">从C++到Qt</h1>
+    <p class="meta">
+<time datetime="2010-11-05T16:35:00+08:00" pubdate>Fri 05 November 2010</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>原文发布在<a href="http://hi.baidu.com/dbzhang800/item/7ee28d10522e91eb9913d648">百度空间</a>，但由于百度空间屡次改版，越改越差，以至于有关闭可能，故而转移到此 http://blog.debao.me</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#_1">例子一：简单的控制台程序</a><ul>
+<li><a href="#g">g++</a></li>
+<li><a href="#cl">cl</a></li>
+</ul>
+</li>
+<li><a href="#gui">例子二：简单的GUI程序</a><ul>
+<li><a href="#g_1">g++</a></li>
+<li><a href="#cl_1">cl</a></li>
+<li><a href="#_2">多文件的程序如何管理</a></li>
+</ul>
+</li>
+<li><a href="#moc">例子三：引入moc</a></li>
+<li><a href="#rccuic">例子四，rcc和uic</a></li>
+<li><a href="#_3">其他</a></li>
+<li><a href="#2023">2023更新</a></li>
+</ul>
+</div>
+<p>Qt 是 C++ 的库，Qt 在 ansi C++ 的基础上进行了一点扩展。</p>
+<p>但国内似乎比较浮躁，学Qt的很多连基本的C++如何编译似乎都不太清楚。<strong>本文舍弃IDE或qmake、cmake等工具的束缚，尝试通过几个例子，一步一步从标准 C++ 的编译过渡到 Qt 的编译。</strong></p>
+<p>本文涉及的都是最基本的东西，或许可以说，只要你用C++ Qt，不管是通过哪种工具(qmake、cmake、boost.build、qtcreator、vs2008、Eclipse、...)，本文的内容都是需要理解的(尽管真正写程序时，我们都不会直接用C++编译器来编译Qt程序)。</p>
+<p>如果你对命令行比较恐惧，或许愿意先看看我原来整理的这个 <a href="http://wiki.ubuntu.org.cn/Gcchowto">GCC新手入门</a></p>
+<h2 id="_1">例子一：简单的控制台程序</h2>
+<hr>
+<p>一个很简单的例子，没用到Qt扩展：(也就是说，这是一个普通的C++程序)</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QtCore/QCoreApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QtCore/QDebug&gt;</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">app</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">    </span><span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="s">&quot;hello qt!&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">app</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>我们都知道，编译一个C++的程序，无非是 编译预处理，编译、链接</p>
+<ul>
+<li>编译预处理器：头文件路径 和 必要的宏</li>
+<li>编译器：一些编译参数</li>
+<li>链接器：一些链接参数 和 要链接的库</li>
+</ul>
+<h3 id="g">g++</h3>
+<p>简单一行命令，即可生成 main.exe (linux下，则生成可执行程序 main)</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>g++ main.cpp -DQT_CORE_LIB -Ie:\Qt\4.7.0\include -o main -Le:\Qt\4.7.0\lib -lQtCore4
+</code></pre></div></td></tr></table></div>
+
+<p>单行命令，很简单：</p>
+<ul>
+<li>-I 指定头文件路径</li>
+<li>-L 指定库文件路径</li>
+<li>-l 指定需要链接的库</li>
+<li>-D 定义必要的宏(其实对这个小程序，这个宏也没必要用)</li>
+<li>-o 指定生成的可执行文件名</li>
+</ul>
+<h3 id="cl">cl</h3>
+<p>简单一行命令，即可生成 main.exe</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>cl main.cpp -ID:/Qt/4.7.0/include -DQT_CORE_LIB -Femain -link -LIBPATH:D:/Qt/4.7.0/lib QtCore4.lib
+</code></pre></div></td></tr></table></div>
+
+<p>依然很简单</p>
+<ul>
+<li>-I 头文件路径</li>
+<li>-D 定义必要的宏</li>
+<li>-Fe 指定可执行程序文件名</li>
+<li>-link 后面是链接器参数<ul>
+<li>-LIBPATH 库文件路径</li>
+</ul>
+</li>
+</ul>
+<h2 id="gui">例子二：简单的GUI程序</h2>
+<p>这次稍微复杂一点，不是单一的控制台程序，而是一个简单的GUI程序</p>
+<ul>
+<li>main.cpp</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QtGui/QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;widget.h&quot;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QApplication</span><span class="w"> </span><span class="n">app</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Widget</span><span class="w"> </span><span class="n">w</span><span class="p">;</span>
+<span class="w">    </span><span class="n">w</span><span class="p">.</span><span class="n">show</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">app</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>widget.h</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QtGui/QWidget&gt;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Widget</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QWidget</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">Widget</span><span class="p">(</span><span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">parent</span><span class="o">=</span><span class="nb">NULL</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>widget.cpp</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;widget.h&quot;</span>
+
+<span class="n">Widget</span><span class="o">::</span><span class="n">Widget</span><span class="p">(</span><span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">parent</span><span class="p">)</span>
+<span class="o">:</span><span class="n">QWidget</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>同样，这个程序未使用Qt的扩展，直接用C++的编译器编译：</p>
+<h3 id="g_1">g++</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>g++ main.cpp widget.cpp -DQT_CORE_LIB -DQT_GUI_LIB -Ie:\Qt\4.7.0-beta2\include -o main -Le:\Qt\4.7.0-beta2\lib -lQtCore4 -lQtGui4
+</code></pre></div></td></tr></table></div>
+
+<p>因为我们使用了QtGui模块，所以和前面相比：</p>
+<ul>
+<li>增加了 -DQT_GUI_LIB 和 -lQtGui4</li>
+<li>多了一个文件 widget.cpp</li>
+</ul>
+<p>注意: Windows下</p>
+<p>如果在非windows平台下，这条命令就可以了。但windows下，你知道的：分console和windows两个链接子系统，而且入口函数分 main 和 WinMain 。</p>
+<p>这条命令，编译出的 main.exe 会弹出控制台。要想不要控制台，则使用下面的命令：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>g++ main.cpp widget.cpp -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -Ie:\Qt\4.7.0-beta2\include -o main -Le:\Qt\4.7.0-beta2\lib -lQtCore4 -lQtGui4 -lqtmain -Wl,-subsystem,windows
+</code></pre></div></td></tr></table></div>
+
+<p>多了两个选项：</p>
+<ul>
+<li>qtmain 该库中一个WinMain 函数，它会调用我们的代码的main函数。即对编译器来说：入口函数的名字变了</li>
+<li>-Wl,-subsystem,windows 你知道的，链接windows子系统</li>
+<li>对与MinGW来说，此处多了一个宏 QT_NEEDS_QMAIN，这个东西很有意思。在Qt Windows下链接子系统与入口函数(终结版) 中我们详细提到了这个。(在此处，不过你可以忽略它，不会出错，而且也不会有可感觉到的差异)</li>
+</ul>
+<h3 id="cl_1">cl</h3>
+<p>同windows下的g++基本一样，带控制台：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>cl main.cpp widget.cpp -ID:/Qt/4.7.0/include -DQT_CORE_LIB -DQT_GUI_LIB -Femain -link -LIBPATH:D:/Qt/4.7.0/lib QtCore4.lib QtGui4.lib
+</code></pre></div></td></tr></table></div>
+
+<p>不带控制台：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>cl main.cpp widget.cpp -ID:/Qt/4.7.0/include -DQT_CORE_LIB -DQT_GUI_LIB -Femain /MD -link -LIBPATH:D:/Qt/4.7.0/lib -subsystem:windows qtmain.lib QtCore4.lib QtGui4.lib
+</code></pre></div></td></tr></table></div>
+
+<p>分析同上：指定链接子系统，启用WinMain入口函数</p>
+<h3 id="_2">多文件的程序如何管理</h3>
+<p>直接调用编译器有什么坏处呢？</p>
+<ul>
+<li>参数多啊，每次手动输入，难免出错。（例子中我们用的参数已经尽可能少了，可能都还是让你眼晕了）。</li>
+<li>其次呢，很重要的一点，每次只要一个文件修改，所有东西都要重新编译。</li>
+</ul>
+<p>改变这种状况的办法，传统的就是写 Makefile，然后编译时只需要输入 make 就行了，他会判断哪些文件被改动需要重新编译。</p>
+<p>另外就是VS等一些IDE自己提供的功能。下面简单看一下本例子对应makefile文件：</p>
+<p>mingw32-make的Makefile文件</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">CPPFLAGS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-DQT_CORE_LIB<span class="w"> </span>-DQT_GUI_LIB<span class="w"> </span>-Ie:<span class="se">\Q</span>t<span class="se">\4</span>.7.0<span class="se">\i</span>nclude
+<span class="nv">LDFLAGS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-Le:<span class="se">\Q</span>t<span class="se">\4</span>.7.0<span class="se">\l</span>ib<span class="w"> </span>-lQtCore4<span class="w"> </span>-lQtGui4<span class="w"> </span>-lqtmain<span class="w"> </span>-Wl,-subsystem,windows
+
+<span class="nv">objects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>main.o<span class="w"> </span>widget.o
+<span class="nv">dest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>main
+
+<span class="nf">$(dest) </span><span class="o">:</span><span class="w"> </span><span class="k">$(</span><span class="nv">objects</span><span class="k">)</span>
+<span class="w">    </span>g++<span class="w"> </span>-o<span class="w"> </span><span class="nv">$@</span><span class="w"> </span><span class="k">$(</span>objects<span class="k">)</span><span class="w"> </span><span class="k">$(</span>LDFLAGS<span class="k">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>nmake的Makefile文件</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">CPPFLAGS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-ID:/Qt/4.7.0/include<span class="w"> </span>-DQT_CORE_LIB<span class="w"> </span>-DQT_GUI_LIB<span class="w"> </span>-MD
+<span class="nv">LDFLAGS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-LIBPATH:D:/Qt/4.7.0/lib<span class="w"> </span>-subsystem:windows<span class="w"> </span>qtmain.lib<span class="w"> </span>QtCore4.lib<span class="w"> </span>QtGui4.lib
+<span class="nv">objects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>main.obj<span class="w"> </span>widget.obj
+<span class="nv">dest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>main.exe
+<span class="nf">$(dest) </span><span class="o">:</span><span class="w"> </span><span class="k">$(</span><span class="nv">objects</span><span class="k">)</span>
+<span class="w">    </span>link<span class="w"> </span><span class="k">$(</span>objects<span class="k">)</span><span class="w"> </span><span class="k">$(</span>LDFLAGS<span class="k">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>对此不做介绍，因为Makefile编写也是一门学问。相当难写，所有才有qmake、cmake这些工具来帮我们生成Makefile文件</p>
+<h2 id="moc">例子三：引入moc</h2>
+<p>Qt 对 C++ 的扩展主要是3个方面：</p>
+<ul>
+<li>元对象系统，包含Q_OBJECT宏的文件(.h, .cpp等)需要 moc 预处理</li>
+<li>资源系统，.qrc 文件 需要 rcc 进行预处理</li>
+<li>界面系统，.ui 文件 需要 uic 进行预处理</li>
+</ul>
+<p>这3者之中，元对象系统最复杂，也是 Qt 程序中重要的。其他两个你都可以不要，唯独这个不要就有点不像话了(没它还叫Qt程序么？像我们前面写的，只不过是普通的C++程序)</p>
+<p>废话少说，看例子：（修改前面的widget.h，加入Q_OBJECT）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QtGui/QWidget&gt;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Widget</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QWidget</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">Q_OBJECT</span>
+<span class="w">   </span><span class="k">public</span><span class="o">:</span>
+<span class="w">   </span><span class="n">Widget</span><span class="p">(</span><span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">parent</span><span class="o">=</span><span class="nb">NULL</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如何编译这个程序呢？例子二中的命令还能用吗？不妨试试：</p>
+<p><strong>哇，输出好丰富啊！</strong></p>
+<p>来自 g++ 的问候：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>main.o:main.cpp:(.text$_ZN6WidgetD1Ev[Widget::~Widget()]+0xb): undefined reference to <span class="sb">`vtable for Widget&#39;</span>
+<span class="sb">main.o:main.cpp:(.text$_ZN6WidgetD1Ev[Widget::~Widget()]+0x15): undefined reference to `</span>vtable for Widget&#39;
+widget.o:widget.cpp:(.text+0x39): undefined reference to <span class="sb">`vtable for Widget&#39;</span>
+<span class="sb">widget.o:widget.cpp:(.text+0x43): undefined reference to `</span>vtable for Widget&#39;
+</code></pre></div></td></tr></table></div>
+
+<p>来自 cl 的问候：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">widget</span><span class="o">.</span><span class="n">obj</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="n">LNK2001</span><span class="p">:</span><span class="w"> </span><span class="err">无法解析的外部符号</span><span class="w"> </span><span class="s2">&quot;public: virtual struct QMetaObject const * __thiscall Widget::metaObject(void)const &quot;</span><span class="w"> </span><span class="p">(</span><span class="err">?</span><span class="n">metaObject</span><span class="err">@</span><span class="n">Widget</span><span class="err">@@</span><span class="n">UBEPBUQMetaObject</span><span class="err">@@</span><span class="n">XZ</span><span class="p">)</span>
+<span class="n">widget</span><span class="o">.</span><span class="n">obj</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="n">LNK2001</span><span class="p">:</span><span class="w"> </span><span class="err">无法解析的外部符号</span><span class="w"> </span><span class="s2">&quot;public: virtual void * __thiscall Widget::qt_metacast(char const *)&quot;</span><span class="w"> </span><span class="p">(</span><span class="err">?</span><span class="n">qt_metacast</span><span class="err">@</span><span class="n">Widget</span><span class="err">@@</span><span class="n">UAEPAXPBD</span><span class="err">@</span><span class="n">Z</span><span class="p">)</span>
+<span class="n">widget</span><span class="o">.</span><span class="n">obj</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="n">LNK2001</span><span class="p">:</span><span class="w"> </span><span class="err">无法解析的外部符号</span><span class="w"> </span><span class="s2">&quot;public: virtual int __thiscall Widget::qt_metacall(enum QMetaObject::Call,int,void * *)&quot;</span><span class="w"> </span><span class="p">(</span><span class="err">?</span><span class="n">qt_metacall</span><span class="err">@</span><span class="n">Widget</span><span class="err">@@</span><span class="n">UAEHW4Call</span><span class="err">@</span><span class="n">QMetaObject</span><span class="err">@@</span><span class="n">HPAPAX</span><span class="err">@</span><span class="n">Z</span><span class="p">)</span><span class="err">发生了什么？</span>
+</code></pre></div></td></tr></table></div>
+
+<p>添加一个宏后，发生了什么？我们看看编译器将宏展开后是什么样子的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QtGui/QWidget&gt;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Widget</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QWidget</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">QMetaObject</span><span class="w"> </span><span class="n">staticMetaObject</span><span class="p">;</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">QMetaObject</span><span class="w"> </span><span class="o">*</span><span class="nf">metaObject</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="nf">qt_metacast</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">qt_metacall</span><span class="p">(</span><span class="n">QMetaObject</span><span class="o">::</span><span class="n">Call</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">**</span><span class="p">);</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">Widget</span><span class="p">(</span><span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">parent</span><span class="o">=</span><span class="nb">NULL</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+
+<p>一下子多出来这么多函数，而且还没有函数体，不出错才怪。如何生成函数体呢？这正是moc所做的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>moc widget.h -o moc_widget.cpp
+</code></pre></div></td></tr></table></div>
+
+<p>这样一来，这些函数都在 moc_widget.cpp 被实现了，只要我们将该文件一块编译链接就行了</p>
+<p>对g++来说，在例子二的基础上，直接添加一个 moc_widget.cpp 文件，然后一切正常了：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>g++ main.cpp widget.cpp moc_widget.cpp -DQT_CORE_LIB -DQT_GUI_LIB -Ie:\Qt\4.7.0-beta2\include -o main -Le:\Qt\4.7.0-beta2\lib -lQtCore4 -lQtGui4
+</code></pre></div></td></tr></table></div>
+
+<p>对 cl 编译器，同样只要添加一个 moc_widget.cpp 即可。</p>
+<h2 id="rccuic">例子四，rcc和uic</h2>
+<p>有点糟蹋这个名字了，本节中不讲例子（因为 rcc 和 uic 概念比较简单）</p>
+<ul>
+<li>如果我们用了资源，那么需要一个 xxx.qrc 文件，这个文件呢，C++ 编译器不认识，于是<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>rcc xxx.qrc -o qrc_xxx.cpp
+</code></pre></div></td></tr></table></div>
+
+</li>
+</ul>
+<ul>
+<li>如果我们用了designer设计的界面 .ui。C++ 编译器不认识这个文件，于是<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>uic xxx.ui -o ui_xxx.h
+</code></pre></div></td></tr></table></div>
+
+</li>
+</ul>
+<p>这样一来，我们得到是就全是 .h 和 .cpp 的文件了，剩下的工作，你知道的，交给 C++ 编译器就行了。</p>
+<h2 id="_3">其他</h2>
+<p>现在来看这个图：是不是很简单了？</p>
+<p><img alt="From C++ to Qt" src="https://blog.debao.me/images/from-cpp-to-qt-build.jpg"></p>
+<h2 id="2023">2023更新</h2>
+<p>对Qt5、Qt6用户，本文基本适用，只需注意</p>
+<ul>
+<li>Qt4中gui在Qt5和Qt6中主要分成了Gui、Widget等几个库。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Qt4</th>
+<th>Qt5</th>
+<th>Qt6</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QtCore4</td>
+<td>Qt5Core</td>
+<td>Qt6Core</td>
+</tr>
+<tr>
+<td>QtGui4</td>
+<td>Qt5Gui Qt5Widget</td>
+<td>Qt6Gui Qt6Widgets</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>头文件 QtGui/QWidget 等需要变成 QtWidgets/QWidget</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2010-11-05T16:35:00+08:00" pubdate>Fri 05 November 2010</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/qt4.html">Qt4</a>,    <a class="category" href="https://blog.debao.me/tags/c.html">C++</a>,    <a class="category" href="https://blog.debao.me/tags/qt.html">Qt</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

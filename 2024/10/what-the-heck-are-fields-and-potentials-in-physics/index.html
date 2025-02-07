@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>物理中的场与势是什么鬼？ &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/science.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">物理中的场与势是什么鬼？</h1>
+    <p class="meta">
+<time datetime="2024-10-20T23:49:00+08:00" pubdate>Sun 20 October 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>标势、矢势都是什么东西。继续从物理门外汉角度找点浅显的资料捋一捋电磁学的概念...</p>
+</blockquote>
+<h2 id="field">场（Field）的概念</h2>
+<blockquote>
+<p>这个Field（场）与数学中的Field（域）以及编程语言中的Field（字段）没有任何关系，尽管对应同一个单词。</p>
+</blockquote>
+<p><strong>场</strong>（Field）是指在空间中的每一点都有一个物理量与之相关联的数学结构。这个物理量可以是标量、矢量或张量，依赖于场的性质。场通过这些物理量描述了某种分布式的物理效应。</p>
+<p>场描述了空间中物质或能量的分布，以及它们如何相互作用。场是连续的，通常使用微分方程来描述其变化。</p>
+<h3 id="_1">分类</h3>
+<ul>
+<li><strong>标量场（Scalar Field）</strong>：每个空间点都与一个标量（单一数值）相关联的场。例如，温度场是一个标量场，每一点的温度是一个标量值。重力势场、压力场等都是标量场。</li>
+</ul>
+<ul>
+<li><strong>矢量场（Vector Field）</strong>：每个空间点都与一个矢量（具有方向和大小的量）相关联的场。例如，速度场是一个矢量场，每一个点的速度都有大小和方向。重力场、电场、磁场等都是矢量场。</li>
+</ul>
+<ul>
+<li><strong>张量场（Tensor Field）</strong>：每个空间点都与一个张量（具有多个分量的物理量）相关联的场。张量场通常描述的是更复杂的物理现象，如应力场、电磁场张量、广义相对论中的度量场等。</li>
+</ul>
+<h3 id="equipotential-surfacefield-line">标量场的等位面（Equipotential Surface）与矢量场的矢量线（Field Line）</h3>
+<ul>
+<li><strong>等位面</strong>：标量场中，所有具有相同标量值的点组成的面。在等位面上，标量值恒定不变，标量场的梯度（如电场或重力场）总是垂直于等位面。</li>
+</ul>
+<ul>
+<li><strong>矢量线</strong>：矢量场中，为了直观表示矢量的分布，引入矢量线概念。它是这样的曲线，曲线上每点的切线方向与该点的矢量场方向一致。矢量线表示场的方向和强度分布。</li>
+</ul>
+<p>典型情况下，电势是标量场，有等势面的概念，对应的电场强度是矢量场，有电场线的概念。列表对比一下两个概念：</p>
+<table>
+<thead>
+<tr>
+<th><strong>属性</strong></th>
+<th><strong>等位面（Equipotential Surface）</strong></th>
+<th><strong>矢量线（Field Line）</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>定义</strong></td>
+<td>标量场中所有具有相同标量值的点构成的面</td>
+<td>矢量场中与矢量方向一致的曲线</td>
+</tr>
+<tr>
+<td><strong>方向关系</strong></td>
+<td>矢量场的梯度总是垂直于等位面</td>
+<td>矢量线的切线方向与矢量场的方向相同</td>
+</tr>
+<tr>
+<td><strong>移动后的变化</strong></td>
+<td>沿等位面移动时，势能不变，场力不做功</td>
+<td>沿矢量线移动时，势能发生变化</td>
+</tr>
+<tr>
+<td><strong>几何表现</strong></td>
+<td>等位面是封闭的连续曲面，标量值在面上恒定</td>
+<td>矢量线表示场的方向，线的密度表示场强度</td>
+</tr>
+<tr>
+<td><strong>相互关系</strong></td>
+<td>等位面与矢量线总是相互垂直（在静态电场、引力场中）</td>
+<td>矢量线与等位面垂直，不相交</td>
+</tr>
+<tr>
+<td><strong>物理意义</strong></td>
+<td>反映标量场的能量分布，帮助理解势的分布</td>
+<td>反映矢量场的方向和强度，帮助理解场的作用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gradientdivergencecurl">梯度（Gradient）、散度（Divergence）、旋度（Curl）</h3>
+<p><strong>标量场</strong>有梯度的概念，表示标量场变化最快的方向和速率；而<strong>矢量场</strong>有散度和旋度的概念，分别表示场的发散性（源或汇）和旋转性（循环或涡流）。</p>
+<ul>
+<li>梯度（Gradient）：标量场的梯度是一个矢量场，描述标量场在各个方向上的变化率。</li>
+<li>散度（Divergence）：散度是一个标量，衡量矢量场的"源"或"汇"的强度。它表示矢量场是否在某点向外发散或向内收缩。</li>
+<li>旋度（Curl）：旋度是一个矢量，描述矢量场在某点绕某一轴旋转的趋势。它表示矢量场的循环性或旋转性。</li>
+</ul>
+<h3 id="potential-fieldtube-like-fieldtube-like-field">有势场（Potential Field）、管型场（Tube-like Field）、管型场（Tube-like Field）</h3>
+<p>三种比较重要的场</p>
+<table>
+<thead>
+<tr>
+<th><strong>属性</strong></th>
+<th><strong>有势场（Potential Field）</strong></th>
+<th><strong>管型场（Tube-like Field）</strong></th>
+<th><strong>调和场（Harmonic Field）</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>定义</strong></td>
+<td>可以通过标量势函数描述的矢量场：<span class="math inline">\mathbf{F} = -\nabla \phi</span></td>
+<td>散度为零的矢量场</td>
+<td>满足拉普拉斯方程 <span class="math inline">\nabla^2 \phi = 0</span> 的场</td>
+</tr>
+<tr>
+<td><strong>旋度</strong></td>
+<td>旋度为零：<span class="math inline">\nabla \times \mathbf{F} = 0</span></td>
+<td>不一定为零</td>
+<td>旋度为零：<span class="math inline">\nabla \times \mathbf{F} = 0</span></td>
+</tr>
+<tr>
+<td><strong>散度</strong></td>
+<td>不一定为零</td>
+<td>散度为零：<span class="math inline">\nabla \cdot \mathbf{F} = 0</span></td>
+<td>散度为零：<span class="math inline">\nabla \cdot \mathbf{F} = 0</span></td>
+</tr>
+<tr>
+<td><strong>通量守恒</strong></td>
+<td>无特定要求</td>
+<td>通量在管内保持守恒</td>
+<td>通量守恒，因无源或汇</td>
+</tr>
+<tr>
+<td><strong>常见例子</strong></td>
+<td>重力场、电场（静电场）等</td>
+<td>流体力学中的不可压缩流体、磁场线等</td>
+<td>静电场、稳态热传导、引力场等</td>
+</tr>
+<tr>
+<td><strong>物理意义</strong></td>
+<td>描述能量分布，场由标量势的梯度表示</td>
+<td>描述无源、不可压缩的连续场，通量守恒</td>
+<td>描述无源、无旋且无散的平稳场分布</td>
+</tr>
+<tr>
+<td><strong>场线特性</strong></td>
+<td>场线无旋，表示场方向是势变化最快的方向</td>
+<td>场线连续，不分叉，类似流体流动</td>
+<td>场线无旋、无散，且满足拉普拉斯方程</td>
+</tr>
+</tbody>
+</table>
+<h2 id="potential">势（Potential）的概念</h2>
+<blockquote>
+<p>势本身就是一个场（Field），它与其他场（电场、磁场等）之间通过梯度或旋度等微分运算联系在一起。</p>
+</blockquote>
+<p><strong>势</strong>（Potential）是描述场的一种标量或矢量函数，通常用于表示系统中与场有关的能量状态。势的主要作用是帮助<strong>简化复杂的场问题</strong>，特别是在涉及力和能量的情况下。</p>
+<h3 id="_2">势与位？</h3>
+<p>中文翻译似乎很统一？比如下面三个是一个概念：</p>
+<ul>
+<li>磁矢势</li>
+<li>磁矢位</li>
+<li>矢量磁位</li>
+</ul>
+<h3 id="helmholtzs-theorem">亥姆霍兹定理（Helmholtz's theorem）</h3>
+<blockquote>
+<p>矢量场可以分解成 无旋场部分 和 无散场部分。</p>
+<ul>
+<li>无旋场部分取决于散度源 和 界面上的 法向分量；</li>
+<li>无散场部分取决于旋度源 和 界面上的 切向分量。</li>
+</ul>
+</blockquote>
+<p>亥姆霍兹定理指出：</p>
+<p>任何光滑且快速衰减的向量场 <span class="math inline">\mathbf{F}(\mathbf{r})</span> 都可以唯一地分解为<strong>无旋场</strong>和<strong>无散场</strong>的和，即：</p>
+<div class="math display">
+\mathbf{F}(\mathbf{r}) = -\nabla \phi(\mathbf{r}) + \nabla \times \mathbf{A}(\mathbf{r})
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">\phi(\mathbf{r})</span> 是<strong>标量势</strong>，描述的是场的无旋（或梯度）部分。</li>
+<li><span class="math inline">\mathbf{A}(\mathbf{r})</span> 是<strong>矢量势</strong>，描述的是场的无散（或旋度）部分。</li>
+</ul>
+<p>亥姆霍兹定理的推导基于以下两条公式：</p>
+<p>标量势 <span class="math inline">\Phi(\mathbf{r})</span> 的定义是：</p>
+<div class="math display">
+\Phi(\mathbf{r}) = \frac{1}{4\pi} \int_V \frac{\nabla' \cdot \mathbf{F}(\mathbf{r}')}{|\mathbf{r} - \mathbf{r}'|} dV' - \frac{1}{4\pi} \oint_S \frac{\hat{n}' \cdot \mathbf{F}(\mathbf{r}')}{|\mathbf{r} - \mathbf{r}'|} dS'
+</div>
+
+<p>矢量势 <span class="math inline">\mathbf{A}(\mathbf{r})</span> 的定义是：</p>
+<div class="math display">
+\mathbf{A}(\mathbf{r}) = \frac{1}{4\pi} \int_V \frac{\nabla' \times \mathbf{F}(\mathbf{r}')}{|\mathbf{r} - \mathbf{r}'|} dV' - \frac{1}{4\pi} \oint_S \frac{\hat{n}' \times \mathbf{F}(\mathbf{r}')}{|\mathbf{r} - \mathbf{r}'|} dS'
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">\mathbf{r}</span> 是观察点的坐标。</li>
+<li><span class="math inline">\mathbf{r}'</span> 是源点的坐标。</li>
+<li><span class="math inline">\hat{n}'</span> 是边界面 <span class="math inline">S</span> 上的单位法向量。</li>
+<li><span class="math inline">dV'</span> 是源点处的体积分元素。</li>
+<li><span class="math inline">dS'</span> 是边界面上的面积元素。</li>
+</ul>
+<p>当向量场 <span class="math inline">\mathbf{F}(\mathbf{r})</span> 在无穷远处衰减时，边界项通常可以忽略，公式简化为仅包含体积分的部分：</p>
+<div class="math display">
+\phi(\mathbf{r}) = \frac{1}{4\pi} \int_V \frac{\nabla' \cdot \mathbf{F}(\mathbf{r}')}{|\mathbf{r} - \mathbf{r}'|} dV'
+\\
+\mathbf{A}(\mathbf{r}) = \frac{1}{4\pi} \int_V \frac{\nabla' \times \mathbf{F}(\mathbf{r}')}{|\mathbf{r} - \mathbf{r}'|} dV'
+</div>
+
+<p>通过这两个公式，可以将一个向量场分解为标量势和矢量势的组合。</p>
+<p>亥姆霍兹定理 是数学上的，需要对应到物理中...</p>
+<h3 id="scalar-potential">标量势（Scalar Potential）</h3>
+<p>对标量场或矢量场的标量描述，通常表示某种能量。标量势在物理学中广泛应用，例如在引力场和电场中，势与力之间存在明确的关系。标量势场的梯度通常与场（如力场）相关联。</p>
+<p>例如，在引力场中，重力势能是标量势，重力场是该势的梯度：</p>
+<div class="math display">
+    \mathbf{g} = - \nabla \Phi
+</div>
+
+<p>其中，<span class="math inline">\Phi</span> 是重力势能。</p>
+<h3 id="vector-potential">矢量势（Vector Potential）</h3>
+<p>对矢量场的矢量描述，常用于描述与旋度相关的场。矢量势的旋度通常与矢量场（如磁场）相关联。</p>
+<p>例如，在磁场中，磁场与磁矢势的关系为：</p>
+<div class="math display">
+    \mathbf{B} = \nabla \times \mathbf{A}
+</div>
+
+<p>其中，<span class="math inline">\mathbf{A}</span> 是磁矢势。</p>
+<h2 id="electric-scalar-potential-magnetic-vector-potential">电标势（Electric Scalar Potential）与 磁矢势（Magnetic Vector Potential）</h2>
+<h3 id="electric-scalar-potential">电标势（Electric Scalar Potential）</h3>
+<blockquote>
+<p>在静电场中，电场强度E是矢量，有三个分量，而与之等价的电标势只有一个量。</p>
+</blockquote>
+<p>电标势是为了简化静电场的描述而引入的，它通过描述电场的能量分布，提供了对电场变化的直观理解，并且与电场的梯度密切相关。</p>
+<p><strong>定义</strong>：电场 <span class="math inline">\mathbf{E}</span> 可以表示为电标势 <span class="math inline">\phi</span> 的负梯度：</p>
+<div class="math display">
+  \mathbf{E} = -\nabla \phi
+</div>
+
+<p>其中，<span class="math inline">\phi</span> 是电标势，<span class="math inline">\mathbf{E}</span> 是电场（静电场）。</p>
+<h3 id="magnetic-vector-potential">磁矢势（Magnetic Vector Potential）</h3>
+<blockquote>
+<p>磁感应强度B的散度恒为0，等价于它是另一个矢量场的旋度场（矢势的引入会自动满足B散度为0）。</p>
+</blockquote>
+<p>磁矢势是为了简化磁场的计算而引入的，尤其在复杂电流分布的情况下，它是描述磁场的旋度形式。此外，在量子力学中，磁矢势具有重要的物理意义。特别是A-B效应显示，即使磁场为零，磁矢势的存在仍然能够影响电子的相位。【不再是一个辅助概念】</p>
+<p><strong>定义</strong>：磁场 <span class="math inline">\mathbf{B}</span> 可以表示为磁矢势 <span class="math inline">\mathbf{A}</span> 的旋度：</p>
+<div class="math display">
+  \mathbf{B} = \nabla \times \mathbf{A}
+</div>
+
+<p>其中，<span class="math inline">\mathbf{A}</span> 是磁矢势，<span class="math inline">\mathbf{B}</span> 是磁场。</p>
+<h3 id="magnetic-scalar-potential">磁标势（Magnetic Scalar Potential）</h3>
+<blockquote>
+<p>类似于电标势用于描述静电场。在某些特定条件下，磁场可以通过标量势来描述。它只能用于<strong>无电流区域</strong>，例如在磁材料外部或远离电流源的区域。</p>
+</blockquote>
+<p>磁标势（通常用符号 <span class="math inline">\phi_m</span> 表示）是一个标量量，主要用于描述<strong>静磁场</strong>（即时间不变的磁场）。然而，它的应用范围受限，尤其在存在电流分布时，磁标势的使用会遇到一些局限性。</p>
+<p><strong>定义</strong>：在无电流的区域（即 <span class="math inline">\nabla \times \mathbf{B} = 0</span>情况下），磁场 <span class="math inline">\mathbf{B}</span> 可以表示为磁标势 <span class="math inline">\psi</span> 的负梯度：</p>
+<div class="math display">
+  \mathbf{B} = -\nabla \phi_m
+</div>
+
+<p>其中，<span class="math inline">\phi_m</span> 是磁标势，<span class="math inline">\mathbf{B}</span> 是磁场。</p>
+<blockquote>
+<p>使用磁标势的好处（在能用的时候）是：简单，能列出关于它的拉普拉斯方程。</p>
+</blockquote>
+<h3 id="electric-scalar-potential_1">电矢势（Electric Scalar Potential）</h3>
+<p>与磁标势类似，在没有电荷的区域，根据E的散度为零。引入电矢势的概念。使用符号<span class="math inline">\mathbf{A}_m</span>表示。</p>
+<h2 id="gauge-invariance">规范不变性（Gauge Invariance）</h2>
+<blockquote>
+<p>规范不变性（Gauge Invariance）是现代物理学中一个核心概念，尤其在电磁学和量子场论中，它指的是物理系统的描述在某些特定的变换下保持不变。这意味着我们可以对某些场进行特定的数学变换，而物理观测量（如电场和磁场）不会发生变化。这种变换被称为<strong>规范变换（Gauge Transformation）</strong>。</p>
+</blockquote>
+<p>在经典电磁学中，我们使用<strong>电标势</strong> <span class="math inline">\phi</span> 和<strong>磁矢势</strong> <span class="math inline">\mathbf{A}</span> 来描述电场和磁场。通过麦克斯韦方程，电场 <span class="math inline">\mathbf{E}</span> 和磁场 <span class="math inline">\mathbf{B}</span> 分别由以下关系给出：</p>
+<div class="math display">
+\mathbf{E} = -\nabla \phi - \frac{\partial \mathbf{A}}{\partial t}
+\\
+\mathbf{B} = \nabla \times \mathbf{A}
+</div>
+
+<p>然而，电标势 <span class="math inline">\phi</span> 和磁矢势 <span class="math inline">\mathbf{A}</span> 本身并不是唯一的，物理上我们关心的是电场 <span class="math inline">\mathbf{E}</span> 和磁场 <span class="math inline">\mathbf{B}</span>，而不是具体的 <span class="math inline">\phi</span> 和 <span class="math inline">\mathbf{A}</span> 的数值。因此，电磁场允许我们对 <span class="math inline">\phi</span> 和 <span class="math inline">\mathbf{A}</span> 进行某种变换，使得电场和磁场不变，这就是<strong>规范不变性</strong>（Gauge Invariance）。</p>
+<h3 id="_3">麦克斯韦方程</h3>
+<p>将电标势 <span class="math inline">\phi</span> 和磁矢势 <span class="math inline">\mathbf{A}</span>带入如下麦克斯韦方程组：</p>
+<div class="math display">
+\nabla \cdot \mathbf{E} = \frac{\rho}{\epsilon_0}
+\\
+\nabla \cdot \mathbf{B} = 0
+\\
+\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}
+\\
+\nabla \times \mathbf{B} = \mu_0 \mathbf{J} + \mu_0 \epsilon_0 \frac{\partial \mathbf{E}}{\partial t}
+</div>
+
+<p>进行整理，可得到2个方程：</p>
+<div class="math display">
+\nabla^2 \phi + \frac{\partial}{\partial t} (\nabla \cdot \mathbf{A}) = -\frac{\rho}{\epsilon_0}
+\\
+\left( \nabla^2 \mathbf{A} - \mu_0 \epsilon_0 \frac{\partial^2 \mathbf{A}}{\partial t^2} \right) - \nabla \left( \nabla \cdot \mathbf{A} + \mu_0 \epsilon_0 \frac{\partial \phi}{\partial t} \right) = -\mu_0 \mathbf{J}
+</div>
+
+<p>选取不同的规范，还可以得到不同的简化形式</p>
+<h3 id="_4">规范变换：</h3>
+<p>电标势和磁矢势可以在以下形式下发生变化：</p>
+<div class="math display">
+\mathbf{A}' = \mathbf{A} + \nabla \chi
+\\
+\phi' = \phi - \frac{\partial \chi}{\partial t}
+</div>
+
+<p>其中，<span class="math inline">\chi</span> 是任意的<strong>标量场</strong>（规范函数）。</p>
+<p>经过这样的变换，电场和磁场保持不变：</p>
+<div class="math display">
+\mathbf{E}' = \mathbf{E}
+\\
+\mathbf{B}' = \mathbf{B}
+</div>
+
+<p>因此，尽管势函数 <span class="math inline">\phi</span> 和 <span class="math inline">\mathbf{A}</span> 发生了变化，实际的电场和磁场并没有改变。也就是说，电磁学中的物理定律具有<strong>规范不变性</strong>（Gauge Invariance）。</p>
+<h3 id="_5">物理意义</h3>
+<p>规范不变性使得我们可以在不改变物理结果的情况下选择不同的势函数。这种自由度有以下几个重要的物理意义：</p>
+<ul>
+<li><strong>简化计算</strong>：在实际问题中，选择合适的规范可以极大简化计算。例如，在静电学问题中，我们通常选择洛伦兹规范或库伦规范来简化电磁场方程的解。</li>
+</ul>
+<ul>
+<li><strong>消除赘余自由度</strong>：由于势函数并不唯一，规范变换允许我们消除多余的自由度，使得物理理论的描述更加简洁。</li>
+</ul>
+<h3 id="_6">常见的规范</h3>
+<p>尽管势函数具有一定的自由度，我们通常选择一个合适的<strong>规范</strong>来简化计算或满足特定的边界条件。常见的规范包括：</p>
+<h4 id="coulomb-gauge">库伦规范（Coulomb Gauge）</h4>
+<p>库伦规范：要求磁矢势的散度为零，即 <span class="math inline">\nabla \cdot \mathbf{A} = 0</span>。这种规范常用于静态场的问题。</p>
+<p>在库伦规范下，电场可以分解为电标势 <span class="math inline">\phi</span> 和磁矢势 <span class="math inline">\mathbf{A}</span> 的两部分：</p>
+<div class="math display">
+\mathbf{E} = -\nabla \phi - \frac{\partial \mathbf{A}}{\partial t}
+</div>
+
+<p>其中，<span class="math inline">\phi</span> 满足泊松方程：</p>
+<div class="math display">
+\nabla^2 \phi = -\frac{\rho}{\epsilon_0}
+</div>
+<p>这是与电荷密度 <span class="math inline">\rho</span> 直接相关的部分。</p>
+<p>假定无穷远处势为0，可以解出这个泊松方程：</p>
+<div class="math display">
+\phi(\mathbf{r}, t) = \frac{1}{4 \pi \epsilon_0} \int \frac{\rho(\mathbf{r}',t)}{|\mathbf{r} - \mathbf{r}'|} \, d^3\mathbf{r}'
+</div>
+
+<blockquote>
+<p>需要注意，非静电场中，要求出电场强度，还需要求出磁矢势。</p>
+</blockquote>
+<p><strong>库伦规范的缺点</strong></p>
+<p>库伦规范尽管计算标势非常简单，但是矢势的计算非常复杂。在库伦规范中，矢势的微分方程如下：</p>
+<div class="math display">
+\nabla^2 \mathbf{A} - \mu_0 \epsilon_0 \frac{\partial^2 \mathbf{A}}{\partial t^2} = -\mu_0 \mathbf{J} + \mu_0 \epsilon_0 \nabla \frac{\partial \phi}{\partial t}
+</div>
+
+<p>其中，<span class="math inline">c</span> 是光速，<span class="math inline">\mathbf{J}</span> 是电流密度。</p>
+<h4 id="lorenz-gauge">洛伦兹规范（Lorenz Gauge）</h4>
+<blockquote>
+<p>与库伦规范相比，它对标势和矢势的处理是相同的。</p>
+</blockquote>
+<p>洛伦兹规范要求 <span class="math inline">\nabla \cdot \mathbf{A} + \frac{1}{c^2} \frac{\partial \phi}{\partial t} = 0</span>。这种规范在相对论性电磁场中非常有用。</p>
+<p>在洛伦兹规范下，电场和磁场依旧可以通过电标势 <span class="math inline">\phi</span> 和磁矢势 <span class="math inline">\mathbf{A}</span> 来表示：</p>
+<div class="math display">
+\mathbf{E} = -\nabla \phi - \frac{\partial \mathbf{A}}{\partial t}
+\\
+\mathbf{B} = \nabla \times \mathbf{A}
+</div>
+
+<p>在洛伦兹规范下，麦克斯韦方程可以写成<strong>达朗贝尔方程</strong>（波动方程）的形式：</p>
+<div class="math display">
+\Box \phi = \frac{\rho}{\epsilon_0}
+\\
+\Box \mathbf{A} = \mu_0 \mathbf{J}
+</div>
+
+<p>其中，<span class="math inline">\Box</span> 是达朗贝尔算符，定义为：</p>
+<div class="math display">
+\Box = \nabla^2 - \frac{1}{c^2} \frac{\partial^2}{\partial t^2}
+</div>
+
+<p>这些方程表明，电标势 <span class="math inline">\phi</span> 和磁矢势 <span class="math inline">\mathbf{A}</span> 都遵从波动方程，传播速度是光速 <span class="math inline">c</span>。【可看作泊松方程的四维版本】</p>
+<h2 id="electromagnetic-four-potential">四维势（Electromagnetic Four-potential）</h2>
+<p>前面看到</p>
+<ul>
+<li><strong>电标势</strong> <span class="math inline"> \phi </span>：描述电场的源头，电荷会产生电场。</li>
+<li><strong>磁矢势</strong> <span class="math inline"> \mathbf{A} </span>：描述磁场的源头，电流会产生磁场。</li>
+</ul>
+<p>这两个势分别描述电场和磁场，但在相对论中，电场和磁场是同一个物理现象的两种表现，需要一个统一的描述方式，这就是<strong>四维势</strong>，有的书中称其为相对论势。</p>
+<h3 id="_7">四维势定义</h3>
+<p>在相对论框架下，时间和空间是结合在一起的，构成了<strong>四维时空</strong>。为了统一描述电场和磁场的来源，我们将<strong>电标势</strong>和<strong>磁矢势</strong>结合在一个新的量中，这个量叫做<strong>四维势</strong>，记作 <span class="math inline"> A^\mu </span>。</p>
+<div class="math display">
+A^\mu = \left( \frac{\phi}{c}, \mathbf{A} \right)
+</div>
+
+<ul>
+<li><span class="math inline"> \phi </span> 是电标势（标量）。</li>
+<li><span class="math inline"> \mathbf{A} = (A_x, A_y, A_z) </span> 是磁矢势（向量）。</li>
+<li><span class="math inline"> c </span> 是光速。</li>
+<li><span class="math inline"> \mu </span> 是四维索引，表示四维时空中的不同分量。</li>
+</ul>
+<p>具体来说，四维势 <span class="math inline"> A^\mu </span> 包含了<strong>四个分量</strong>：
+1. <strong>时间分量</strong> <span class="math inline"> A^0 = \frac{\phi}{c} </span> （电标势除以光速）。
+2. <strong>空间分量</strong> <span class="math inline"> A^1 = A_x </span>、<span class="math inline"> A^2 = A_y </span>、<span class="math inline"> A^3 = A_z </span> （磁矢势的分量）。</p>
+<p>因此，四维势可以写成：</p>
+<div class="math display">
+A^\mu = \left( \frac{\phi}{c}, A_x, A_y, A_z \right)
+</div>
+
+<h3 id="tensor-field">张量场（Tensor Field）、张量</h3>
+<p>前面出现一个奇怪的上标记法。这是张量逆变量的记法。四维势仍然是向量场（4个分量），尽管可以看作一阶张量场。但是由它导出的电磁场属于正经的二阶张量场。</p>
+<blockquote>
+<p><strong>张量</strong>（Tensor）是数学和物理学中描述多维数据和线性变换的工具，可以看作是<strong>标量</strong>、<strong>向量</strong>和<strong>矩阵</strong>的推广。</p>
+</blockquote>
+<p>张量的<strong>阶</strong>（Rank）表示它有多少个下标或上标，也就是它描述了多少个方向。不同阶的张量对应于不同的对象：</p>
+<ul>
+<li><strong>0阶张量</strong>：标量，没有下标。例子：<span class="math inline">5</span>、<span class="math inline">\pi</span> 等。</li>
+<li><strong>1阶张量</strong>：向量，有一个下标。例子：<span class="math inline">\mathbf{v}_i</span>，如位置向量、速度向量等。</li>
+<li><strong>2阶张量</strong>：矩阵，有两个下标。例子：<span class="math inline">A_{ij}</span>，如应力或惯性矩等。</li>
+<li><strong>3阶及以上的张量</strong>：高阶张量，有三个或更多下标。</li>
+</ul>
+<p>张量的分量可以分为<strong>协变分量</strong>（下标）和<strong>逆变分量</strong>（上标）。协变与逆变的区别在于它们在坐标变换下的行为不同：</p>
+<ul>
+<li><strong>协变张量</strong>：分量用下标表示，在坐标变换中按照基向量的反向变换。一个常见的例子是梯度 <span class="math inline">\partial_i</span>。</li>
+<li><strong>逆变张量</strong>：分量用上标表示，在坐标变换中按照基向量的同向变换。向量 <span class="math inline">v^i</span> 是一个逆变张量的例子。</li>
+</ul>
+<p>高阶张量可以同时有协变和逆变分量。例如，<span class="math inline">T_i^j</span> 是一个混合张量，有一个下标和一个上标。</p>
+<p>张量通常使用爱因斯坦求和约定，其中重复的上标和下标表示求和。例如，假设 <span class="math inline">A_{ij}</span> 是一个二阶张量（矩阵），<span class="math inline">v^j</span> 是一个一阶张量（向量），则它们的乘积可以写作：</p>
+<div class="math display">
+u_i = A_{ij} v^j
+</div>
+
+<p>根据爱因斯坦求和约定，上下标相同的 <span class="math inline">j</span> 表示对 <span class="math inline">j</span> 进行求和，这样 <span class="math inline">u_i</span> 也是一个向量。</p>
+<h3 id="_8">四维势与电磁场</h3>
+<blockquote>
+<p>通过四维势 <span class="math inline"> A^\mu </span> 可以构造出<strong>电磁场张量</strong>（也叫<strong>场强张量</strong>），它是一个四维张量，包含了所有的电场和磁场信息。</p>
+</blockquote>
+<p>电磁场张量 <span class="math inline"> F^{\mu\nu} </span> 是通过四维势的导数定义的：</p>
+<div class="math display">
+F^{\mu\nu} = \partial^\mu A^\nu - \partial^\nu A^\mu
+</div>
+
+<ul>
+<li><span class="math inline"> F^{\mu\nu} </span> 是一个二维张量，包含了电场和磁场的分量。</li>
+<li><span class="math inline"> \partial^\mu </span> 表示对四维坐标的偏导数。</li>
+</ul>
+<p>这个张量的分量具体来说是：
+- <span class="math inline"> F^{0i} </span> 对应电场的分量。
+- <span class="math inline"> F^{ij} </span> 对应磁场的分量。</p>
+<p>通过这一张量，我们可以统一描述电场和磁场，而不再需要单独处理它们。</p>
+<div class="math display">
+F^{\mu\nu} =
+\begin{pmatrix}
+0 & -\frac{E_x}{c} & -\frac{E_y}{c} & -\frac{E_z}{c} \\
+\frac{E_x}{c} & 0 & B_z & -B_y \\
+\frac{E_y}{c} & -B_z & 0 & B_x \\
+\frac{E_z}{c} & B_y & -B_x & 0
+\end{pmatrix}
+</div>
+
+<p>还有协变形式：</p>
+<div class="math display">
+F_{\mu\nu} =
+\begin{pmatrix}
+0 & \frac{E_x}{c} & \frac{E_y}{c} & \frac{E_z}{c} \\
+-\frac{E_x}{c} & 0 & -B_z & B_y \\
+-\frac{E_y}{c} & B_z & 0 & -B_x \\
+-\frac{E_z}{c} & -B_y & B_x & 0
+\end{pmatrix}
+</div>
+
+<p><strong>注意</strong>：电磁场的张量表示很乱！！除了协变和逆变的差异，还有...</p>
+<ul>
+<li>首先，里面分量有带c的版本和不带c的版本。二者是单位制不同的原因，不带c的采用的高斯单位制。此处我们只关注SI国际单位制</li>
+<li>其次，度规（metric）的选择可能不同，有的采用惯用的<code>diag(1, -1, -1, -1)</code>，有的采用东海岸符号 <code>diag(-1, 1, 1 ,1)</code>。导致磁场符号不同。</li>
+</ul>
+<h4 id="_9">度规概念</h4>
+<p>欧式空间度规是我们在日常生活中最常见的度规，适用于<strong>三维欧几里得空间</strong>，它定义了两点之间的直线距离。其公式为：</p>
+<div class="math display">
+ds^2 = dx^2 + dy^2 + dz^2
+</div>
+
+<p>Minkowski 度规用于描述<strong>四维时空</strong>，其中三维是空间，另一维是时间。它是狭义相对论中的核心几何工具，用来定义事件在时空中的间隔。Minkowski 度规的标准形式为：</p>
+<div class="math display">
+ds^2 = c^2 dt^2 - dx^2 - dy^2 - dz^2
+</div>
+
+<h3 id="_10">洛伦兹规范</h3>
+<p>在四维势下，前面提到的洛伦兹规范的可以重新表述为：</p>
+<div class="math display">
+\partial_\mu A^\mu = 0
+</div>
+
+<p>这意味着四维势的<strong>四维散度</strong>为零。这里的 <span class="math inline"> \partial_\mu </span> 是对四维时空坐标的偏导数，<span class="math inline"> A^\mu </span> 是四维势。</p>
+<ul>
+<li><span class="math inline"> A^\mu = \left( \frac{\phi}{c}, \mathbf{A} \right) </span></li>
+<li><span class="math inline"> \partial_\mu = \left( \frac{1}{c} \frac{\partial}{\partial t}, \nabla \right) </span></li>
+</ul>
+<p>因此，洛伦兹规范实际上是对电标势 <span class="math inline"> \phi </span> 和磁矢势 <span class="math inline"> \mathbf{A} </span> 的一个约束条件。</p>
+<p>在洛伦兹规范下，麦克斯韦方程可以用四维势 <span class="math inline"> A^\mu </span> 的形式写作：</p>
+<div class="math display">
+\Box A^\mu = \mu_0 J^\mu
+</div>
+
+<p>这里：</p>
+<ul>
+<li><span class="math inline"> \Box </span> 是<strong>达朗贝尔算子</strong>（也叫波动算子），表示为 <span class="math inline"> \Box = \partial_\mu \partial^\mu </span>，其展开为 <span class="math inline"> \Box = \frac{1}{c^2} \frac{\partial^2}{\partial t^2} - \nabla^2 </span>。</li>
+<li><span class="math inline"> J^\mu = (\rho c, \mathbf{J}) </span> 是<strong>四维电流密度</strong>，其中 <span class="math inline"> \rho </span> 是电荷密度，<span class="math inline"> \mathbf{J} </span> 是三维电流密度。</li>
+</ul>
+<p>这个方程表示四维势与四维电流之间的关系，具有完全的洛伦兹不变性。在洛伦兹规范下，这个方程变得更对称且更易于处理。</p>
+<h2 id="hertz-vector-potentials">赫兹矢量势（Hertz vector potentials）</h2>
+<blockquote>
+<p>在电磁场和电磁波课程中，通常会定义所谓的电赫兹矢量或磁赫兹矢量，用于简化特定情况下电磁场的计算。电动力学一般不涉及这个东西！</p>
+</blockquote>
+<p>电赫兹矢量 和 磁赫兹矢量 根据场景选用其中一个。不会两个同时使用。</p>
+<h3 id="_11">电赫兹矢量</h3>
+<p>电赫兹矢量 <span class="math inline"> \mathbf{\Pi}_e </span> 主要用于描述<strong>电偶极子辐射</strong>。通过它可以表达电磁势中的矢量势 和 标量势。</p>
+<p>对于电赫兹矢量 <span class="math inline"> \mathbf{\Pi}_e </span>：</p>
+<div class="math display">
+\mathbf{A} = \epsilon \mu \frac{\partial \mathbf{\Pi}_e}{\partial t}
+\\
+\phi = -\nabla \cdot \mathbf{\Pi}_e
+</div>
+
+<p>它满足如下方程：</p>
+<div class="math display">
+\nabla^2\mathbf{\Pi}_e - \epsilon \mu \frac{\partial^2 \mathbf{\Pi}_e}{\partial t^2} = - \frac{\mathbf{P}} {\epsilon}
+</div>
+
+<p>其中 P 是电场极化强度。</p>
+<h3 id="_12">磁赫兹矢量</h3>
+<blockquote>
+<p>注：不同参考资料不太一致，公式待确定。</p>
+</blockquote>
+<p>磁赫兹矢量 <span class="math inline"> \mathbf{\Pi}_m </span> 主要用于描述<strong>磁偶极子辐射</strong>。通过它可以表达电磁势中的电场矢量势 和 磁场标量势。</p>
+<p>对于磁赫兹矢量 <span class="math inline"> \mathbf{\Pi}_m </span>：</p>
+<div class="math display">
+\mathbf{A}_m = \epsilon \mu \frac{\partial \mathbf{\Pi}_m}{\partial t}
+\\
+\phi_m = -\nabla \cdot \mathbf{\Pi}_m
+</div>
+
+<p>它满足如下方程：</p>
+<div class="math display">
+\nabla^2\mathbf{\Pi}_m - \epsilon \mu \frac{\partial^2 \mathbf{\Pi}_m}{\partial t^2} = - \frac{\mathbf{M}} {\epsilon}
+</div>
+
+<p>其中，M 是磁场极化强度。</p>
+<h2 id="_13">参考</h2>
+<ul>
+<li>《工程数学——矢量分析与场论（第五版）》 - 谢树艺</li>
+<li>《电动力学教程》 - David J. Griffiths</li>
+<li>《高等电磁理论》- 傅君眉</li>
+<li>https://en.wikipedia.org/wiki/Vector_potential</li>
+<li>https://en.wikipedia.org/wiki/Magnetic_vector_potential</li>
+<li>https://en.wikipedia.org/wiki/Magnetic_scalar_potential</li>
+<li>https://en.wikipedia.org/wiki/Electromagnetic_four-potential</li>
+<li>https://en.wikipedia.org/wiki/Hertz_vector</li>
+<li>https://en.wikipedia.org/wiki/Helmholtz_decomposition</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-10-20T23:49:00+08:00" pubdate>Sun 20 October 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/science.html'>Science</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>真空磁导率与真空介电常数小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/science.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">真空磁导率与真空介电常数小记</h1>
+    <p class="meta">
+<time datetime="2024-09-19T23:12:00+08:00" pubdate>Thu 19 September 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>似乎很杂、很乱。简单捋一捋</p>
+</blockquote>
+<p>真空介电常数是从静电力常量中推导出来的，而静电力常量最早通过库伦扭秤测量的。真空磁导率是人为规定的（为了在SI单位制中引入安培）。这两个量在麦克斯韦方程中有和光速直接联系上（尽管麦克斯韦当时用的不是SI单位制，原始方程中也没有这两个常数）。</p>
+<h2 id="_1">简单看看</h2>
+<p>真空磁导率vacuum magnetic permeability（也称为真空导率、自由空间导率、真空的导率、磁常数）是一个物理常数，通常用 μ₀ 表示。</p>
+<ul>
+<li>2019年之后：μ₀ 是一个试验测定的常数 <code>μ₀ = 4π × 0.99999999987(16)×10⁻⁷ H/m</code></li>
+<li>2019年之前：μ₀ 拥有一个定义值 <code>μ₀ = 4π × 10⁻⁷ H/m</code></li>
+</ul>
+<p>真空介电常数vacuum permittivity，通常表示为ε₀，是经典真空的绝对介电常数值。它也可以称为自由空间的介电常数、电常数或真空的分布电容。它的数值由 μ₀ 和 真空中的光速确定</p>
+<div class="math display">
+\epsilon_0 = \frac{1}{\mu_0c^2}
+</div>
+
+<p>在新的 SI 单位制中，普朗克常数 ℎ、光速 c 和 基本电荷 e 都是定义值，因此可以通过精细结构常数（Fine structure constant） α 来推导出 μ₀ 和 ε₀：</p>
+<div class="math display">
+\alpha = \frac{2 \varepsilon_0 h c}{e^2} = \frac{2 h}{\mu_0 e^2 c}
+</div>
+
+<h2 id="_2">背景</h2>
+<p>在19世纪末至20世纪中期，物理学家们主要使用的是CGS单位制（厘米-克-秒制）。在 CGS 单位制中，电磁学的方程并没有引入像 <code>μ₀</code>  这样的常数。取而代之的是，物理学家通过直接的实验关系来定义电磁量。比如在 CGS 单位制下，磁感应强度 𝐵 和磁场强度 𝐻 的单位是相同的（高斯单位），这种情况下 𝐵 和 𝐻 在真空中的关系相对简单：它们数值上是相等的。</p>
+<h3 id="cgs">CGS 下的定律</h3>
+<p>在 CGS 单位制中，电磁学有两个主要的子系统：</p>
+<ul>
+<li>静电单位制（ESU）：用于描述静电现象。</li>
+<li>电磁单位制（EMU）：用于描述电流和磁场的相互作用。</li>
+</ul>
+<p>statampere 和 abampere 是在这两个不同子系统中分别定义的电流单位：</p>
+<ul>
+<li>statampere（esu/s）：基于电荷流动的静电学定义，量纲是电荷（esu）除以时间（秒）。</li>
+<li>abampere（abA）：基于安培力定律，通过电流产生的磁场和磁力效应定义，量纲是力（dyne）和长度（cm）的平方根。</li>
+</ul>
+<h4 id="_3">安培力定律</h4>
+<p>在 <strong>CGS 单位制</strong>中，安培力定律的表达式不包含 <code>μ₀</code> 这样的常数，因为该单位制下的电流单位与力的单位直接相关。</p>
+<div class="math display">
+F_m = 2\frac{I_1 I_2}{r}
+</div>
+
+<p>其中 <span class="math inline">F_m</span> 的单位用 dyne 表示，r 单位用 cm 表示，可以直接推导出电荷单位 <span class="math inline">\text{abampere} = (\text{cm}\cdot\text{dyne})^{1/2}</span></p>
+<blockquote>
+<p>在CGS电磁单位制（emu, electromagnetic units）下，电流的单位是电磁单位电流，通常称为 abampere 或 biot，符号为 abA。1 abampere 是指在 CGS 单位制下，产生 1 达因每厘米的磁力的电流。具体来说，两个相距 1 厘米的平行导线中，若各流过 1 abampere 的电流，则它们之间的磁力为 2 达因。1 abampere 的大小相当于 10 安培（1 abA = 10 A）。</p>
+</blockquote>
+<h4 id="_4">库伦定律</h4>
+<p>在 <strong>CGS 单位制</strong>中，库仑定律的表达式不包含 <code>ε₀</code> 这样的常数，因为该单位制下的电荷单位与力的单位直接相关。</p>
+<div class="math display">
+F = \frac{q_1 q_2}{r^2}
+</div>
+
+<p>在库伦定律中，F 的单位用 dyne 表示，r 单位用 cm 表示，可以直接推导出电荷单位 <span class="math inline">\text{esu} = \text{cm}\cdot\text{dyne}^{1/2}</span></p>
+<blockquote>
+<p>在静电单位制（esu, electrostatic units）下，电流的单位被定义为每秒通过的电荷量。电流单位是静电单位电流，记作 esu/s 或 statampere。1 esu/s 是指每秒钟通过一个 esu 的电荷量（静电单位电荷）。由于 1 esu = 3.33564 × 10⁻¹⁰ 库仑，因此 1 esu/s 大约等于 3.33564 × 10⁻¹⁰ 安培。</p>
+</blockquote>
+<h3 id="si">SI 单位制</h3>
+<blockquote>
+<p>statampere 和 abampere 在 CGS 单位制下的量纲不一致，是促使 SI 单位制引入统一的<strong>安培（A）</strong>作为电流基本单位的原因??</p>
+</blockquote>
+<p>当物理学家们转向国际单位制（SI制）时，电场和磁场的单位不再直接兼容。1948年之后，为了统一电磁学中的单位，并使得电流、电场、磁场和力之间的关系更加明确，因此引入了物理常数 <code>μ₀</code> 和 <code>ε₀</code> 来转换这些量度：</p>
+<ul>
+<li>μ₀：真空磁导率，用来描述磁场和电流之间的比例关系。</li>
+<li>ε₀：真空介电常数，用来描述电场和电荷之间的比例关系。</li>
+</ul>
+<h2 id="_5">真空磁导率</h2>
+<p>“磁常数”这一名称也曾被标准组织短暂使用，目的是避免使用具有物理意义的术语“导率”和“真空”。因为 μ₀ 在2019年之前是一个定义的值，而不是实验测量的结果。</p>
+<h3 id="_6">安培力定律</h3>
+<p>在 SI 单位制中，电磁学中引入了物理常数 <code>μ₀</code> 来连接电流、磁场和力的关系。尽管在 CGS 单位制中，这些关系通过实验定义的单位直接反映出来，因此不需要额外的常数。</p>
+<div class="math display">
+F_m = \frac{\mu_0}{2\pi} \frac{I_1 I_2}{r}
+</div>
+
+<blockquote>
+<p>从 1948 年到 2019 年，安培被定义为“如果在真空中保持两个无限长、具有可忽略圆截面的平行导线之间的恒定电流，并使它们相距 1 米，则这些导线之间每米长度的力为 2×10⁻⁷ 牛顿”。这相当于定义 μ₀ 为精确的 4π×10⁻⁷ H/m</p>
+</blockquote>
+<p>安培力定律 可以根据比奥-萨法尔定律和洛伦兹力定律导出，不过洛伦兹力定律则是在电磁学发展较为成熟之后，由洛伦兹在19世纪末提出的。</p>
+<ul>
+<li>比奥-萨法尔定律 —— 1820年</li>
+<li>安培力定律 —— 1820年</li>
+<li>洛伦兹力定律 —— 1895年</li>
+</ul>
+<h3 id="_7">磁场强度、磁感应强度</h3>
+<blockquote>
+<p><code>μ₀</code> 的引入给人的感觉似乎是为了解决H和B的关系。但是它们关系和相对磁导率关系更大。</p>
+</blockquote>
+<ul>
+<li>磁感应强度B：描述了磁场的实际效应，直接影响带电粒子的运动，通过洛伦兹力定律与它们的相互作用。</li>
+<li>磁场强度H：主要描述了外部电流产生的磁场，在材料中的表现还需要考虑材料的磁化效应。</li>
+</ul>
+<p>历史？</p>
+<ul>
+<li>早期磁学与电学独立发展 - 磁现象和电现象分别独立研究，尚未发现两者的联系。</li>
+<li>奥斯特的发现（1820年） - 奥斯特发现电流能够产生磁场，揭示了电与磁的关系，但当时尚未明确区分 H 和 B。</li>
+<li>安培的贡献（1820年） - 安培通过实验揭示了电流与磁场的定量关系，提出安培定律，为后来的 H 的定义奠定了理论基础。</li>
+<li>法拉第的贡献（1831年） - 法拉第发现电磁感应现象，提出磁力线概念，这为 B 作为磁通密度的概念奠定了基础。</li>
+<li>麦克斯韦的统一理论（1873年） - 麦克斯韦通过方程组统一了电场和磁场的描述，并首次明确区分了磁场强度 H 和磁感应强度 B，其中 H 描述了外部电流产生的磁场，而 B 则包括了材料的磁化效应。</li>
+<li>现代电磁学 - H 和 B 成为电磁学的基础概念，广泛应用于理论和技术领域，H 反映磁场的源头，而 B 则反映磁场的实际效应。</li>
+</ul>
+<h2 id="_8">相对磁导率</h2>
+<blockquote>
+<p>与电介质对电场的作用相比，磁性物质对磁场的作用更有趣一些：许多磁性材料中的磁场对所施加的磁场更强。</p>
+</blockquote>
+<p>在19世纪早期，尤其是安培和法拉第等人的实验中，科学家们已经开始认识到不同材料对磁场的响应不同，因此相对磁导率（relative permeability）的概念逐渐被提出，用来描述材料相对于真空的磁化能力。</p>
+<p>相对磁导率 的概念比 真空磁导率的历史更为悠久。</p>
+<table>
+<thead>
+<tr>
+<th><strong>性质</strong></th>
+<th><strong>顺磁性（Paramagnetism）</strong></th>
+<th><strong>抗磁性（Diamagnetism）</strong></th>
+<th><strong>铁磁性（Ferromagnetism）</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>相对磁导率</strong></td>
+<td>略大于 1，比如铝1.00002</td>
+<td>略小于 1，比如金0.99997</td>
+<td>远大于 1，比如纯铁5000</td>
+</tr>
+<tr>
+<td><strong>磁化方向</strong></td>
+<td>与外部磁场方向<strong>一致</strong></td>
+<td>与外部磁场方向<strong>相反</strong></td>
+<td>与外部磁场方向<strong>一致</strong></td>
+</tr>
+<tr>
+<td><strong>磁性强度</strong></td>
+<td><strong>弱磁性</strong>（轻微吸引）</td>
+<td><strong>极弱磁性</strong>（轻微排斥）</td>
+<td><strong>强磁性</strong>（强烈吸引，且可永久磁化）</td>
+</tr>
+<tr>
+<td><strong>外部磁场移除后</strong></td>
+<td>不保留磁性</td>
+<td>不保留磁性</td>
+<td>可能保留磁性（剩磁）</td>
+</tr>
+<tr>
+<td><strong>温度影响</strong></td>
+<td>随温度升高磁性减弱</td>
+<td>温度对抗磁性影响不大</td>
+<td>高于居里温度时失去磁性，转变为顺磁性</td>
+</tr>
+<tr>
+<td><strong>典型材料</strong></td>
+<td>铝、铂、氧气</td>
+<td>金、银、铜</td>
+<td>铁、钴、镍、钕铁硼</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_9">真空介电常数</h2>
+<blockquote>
+<p>世界第一次接触到真空介电常数并不是通过库仑定律，而是通过电容器的工作原理，它是电量Q与电压U的比例系数。</p>
+</blockquote>
+<ul>
+<li>库伦定律的系数，为什么包含 <span class="math inline">4\pi</span> 因子？</li>
+<li>真空电容率？</li>
+</ul>
+<h3 id="_10">库伦定律</h3>
+<p>在 <strong>CGS 单位制</strong>中，库仑定律的表达式不包含 <code>ε₀</code> 这样的常数，因为该单位制下的电荷单位与力的单位直接相关。</p>
+<p>库伦定律指出 F 与 距离 r 平方成反比。</p>
+<div class="math display">
+F \propto \frac{q_1 q_2}{r^2}
+</div>
+
+<p>库仑定律在1835年衍生出了高斯定律（Gauss' Law），它表明单个带电粒子产生的静电力并不只朝向第二个电荷，它以球对称的方式向所有方向扩散。</p>
+<p>这种扩散随着距离的增加应该逐渐变得稀薄，这种变化遵循平方反比定律，其前沿是一个球面。球面的面积为 <span class="math inline">4\pi r^2</span> ，其中 r 是半径。自学成才的天才<strong>奥利弗·赫维赛德（Oliver Heaviside）</strong>提出，更合理的方式是将库仑定律表示为：</p>
+<div class="math display">
+F \propto \frac{q_1 q_2}{4\pi r^2}
+</div>
+
+<p>这样一来，<span class="math inline">\epsilon_0</span> 和 <span class="math inline">4\pi</span> 就不那么突兀了。</p>
+<div class="math display">
+F = \frac{1}{\epsilon_0} \frac{q_1 q_2}{4\pi r^2}
+</div>
+
+<h3 id="_11">真空电容率</h3>
+<p>当亚历山德罗·伏特（Alessandro Volta）在1798年发明电池时，他观察到，如果我们在电容器的平行板之间施加电压
+U，那么一定量的负电荷将从正极板移动到负极板。一块板带上正电，另一块带上负电，板之间产生了电场。他将电池将相反电荷强行拉开的能力称为“电动势”（Electromotive Force，EMF）。</p>
+<p>迈克尔·法拉第（Michael Faraday）对电容器的行为进行了深入研究，发现板之间传递的电荷量取决于板之间介质的性质，这个介质甚至可以是真空。通过测量不同的电压 U，而不改变板的尺寸和间距，法拉第发现传递的电荷量正比于电压，即</p>
+<div class="math display">
+Q \propto U
+</div>
+
+<p>在 SI 单位制下，真空下电容公式：</p>
+<div class="math display">
+C = \frac {Q} {U} = \frac {\epsilon_0 S}{d}
+</div>
+
+<p>如果考虑一个形状为“单位立方体”的电容器，其两个正方形板的面积均为1平方米，板之间的距离为1米的真空，那么C数值上等于<span class="math inline">\epsilon_0</span>。</p>
+<h2 id="_12">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/Vacuum_permeability</li>
+<li>https://en.wikipedia.org/wiki/Vacuum_permittivity</li>
+<li>https://en.wikipedia.org/wiki/Fine-structure_constant</li>
+<li>https://www.quora.com/What-does-the-permittivity-of-a-vacuum-mean</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-09-19T23:12:00+08:00" pubdate>Thu 19 September 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/science.html'>Science</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

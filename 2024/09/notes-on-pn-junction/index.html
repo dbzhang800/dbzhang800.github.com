@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>半导体PN结知识小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/science.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">半导体PN结知识小记</h1>
+    <p class="meta">
+<time datetime="2024-09-29T22:33:00+08:00" pubdate>Sun 29 September 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>记录一下，备忘</p>
+</blockquote>
+<h2 id="_1">概念</h2>
+<h3 id="_2">能级的一些概念</h3>
+<p>硅的能级图（E-k) 图长下面这个样子：</p>
+<p><img alt="si_banddiagram" src="https://blog.debao.me/images/science/si_banddiagram.png"></p>
+<p>图中涉及太多是固体物理的内容，我也不懂：</p>
+<ul>
+<li>横轴展示了能量随波矢（k）的变化，波矢取值沿着不同的高对称方向，如Γ、L、X、K等点。其中 Γ：布里渊区的中心，对应于k = 0。L、X、K：布里渊区的边界点，对应于特定对称方向。</li>
+<li>k是布洛赫波函数的波矢，与电子的准动量直接相关（p = ℏk）。k空间，也称为波矢空间，倒易空间或动量空间，是描述晶体中电子波函数的空间，是实空间的傅里叶变换。</li>
+</ul>
+<p>涉及PN结时，经常看到类似下面的图：</p>
+<ul>
+<li>电子向费米能量较低的材料中移动，空穴则向相反方向移动。</li>
+<li>积累空间电荷并相应地调整电势，直到费米能量在各处都相同。</li>
+</ul>
+<p><img alt="pn_junction1" src="https://blog.debao.me/images/science/pn_junction1.png"></p>
+<p>涉及到能级的一些术语：</p>
+<ul>
+<li>导带底<span class="math inline">E_C</span>（Conduction Band Minimum）：导带底是导带中最低的能量状态。导带是半导体或绝缘体中电子可以自由移动的能带。</li>
+<li>价带顶<span class="math inline">E_V</span>（Valence Band maximum）：价带顶是价带中最高的能量状态。价带中的电子一般在较低能量状态下被束缚，不能自由移动。价带顶是电子最容易被激发到导带的位置</li>
+<li>费米能级<span class="math inline">E_F</span>（Fermi Level）：是在绝对零度（0K）下，电子占据能量状态的最高能量水平。在不同的温度下，它表示能量为该值的状态有50%几率被电子占据。费米能级在N型和P型半导体中位置不同。<ul>
+<li>在本征半导体中位于导带和价带的中间；</li>
+<li>在N型半导体中因导带的电子浓度较高，费米能级靠近导带；</li>
+<li>在P型半导体中，因为价带的空穴浓度较高，费米能级靠近价带，</li>
+</ul>
+</li>
+<li>真空能级<span class="math inline">E_{vac}</span>（Vacuum Level)：电子完全脱离材料进入真空所需的最小能量基准，常用于表征材料的表面特性。</li>
+<li>本征费米能级<span class="math inline">E_i</span>（Intrinsic Fermi Level）：本征半导体（即未掺杂的纯半导体）中，电子和空穴浓度相等时的费米能级位置。</li>
+<li>施主能级（Donor Level）：位于导带边缘之下，距离导带很近。施主杂质的电子室温下很容易被激发到导带。主要用于N型半导体，施主杂质通常是五价元素。</li>
+<li>受主能级（Acceptor Level）：位于价带边缘之上，距离价带非常近。价带中电子很容易被激发到受主能级，价带中生成空穴。主要用于P型半导体，受主杂质通常是三价元素。</li>
+</ul>
+<h3 id="pn">pn结一些概念</h3>
+<p>PN结（pn-junction）是由P型半导体和N型半导体接触形成的一种结构，具有单向导电特性。它通过在交界处形成的耗尽区（Depletion Region），也叫空间电荷区（Space Charge Region）阻止电流的自由流动。注意P区和N区都是电中性区。</p>
+<p><img alt="biased_junction" src="https://blog.debao.me/images/science/biased_junction.png"></p>
+<ul>
+<li>载流子 (Carriers)：半导体中能够移动并传导电流的粒子，包括电子和空穴。</li>
+<li>多数载流子 (Majority Carriers)：半导体中占主导地位的载流子。</li>
+<li>少数载流子 (Minority Carriers)：半导体中浓度较低的载流子。</li>
+<li>扩散 (Diffusion)：载流子因浓度差异自发从高浓度向低浓度区域移动。</li>
+<li>漂移 (Drift)：载流子在电场作用下沿电场方向移动。（注意纵轴是电子能量，电子往能量低的地方漂移。电位方向与之相反）。</li>
+</ul>
+<blockquote>
+<p>电子和空穴都趋向于它们各自的低能量位置：电子向导带的较低能量位置移动，空穴向价带的较高能量位置移动。</p>
+</blockquote>
+<h2 id="_3">势垒电容、扩散电容</h2>
+<p>PN结存在两种电容：</p>
+<ul>
+<li>结电容（Junction Capacitance）也称为势垒电容或耗尽电容，是由PN结的耗尽区电荷积累形成的电容。它在反向偏置或弱正向偏置时较为显著。</li>
+<li>扩散电容（Diffusion Capacitance）是由于载流子在PN结的正向偏置下积累而产生的电容，主要与多数载流子的扩散相关。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>特性</strong></th>
+<th><strong>结电容 (Junction Capacitance)</strong></th>
+<th><strong>扩散电容 (Diffusion Capacitance)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>出现条件</strong></td>
+<td>主要在<strong>反向偏置</strong>下显著</td>
+<td>主要在<strong>正向偏置</strong>下显著</td>
+</tr>
+<tr>
+<td><strong>物理机制</strong></td>
+<td>由于反向偏置下，PN结内的<strong>耗尽区</strong>扩展，固定正负离子产生电场，类似于平行板电容的结构</td>
+<td>正向偏置时，少数载流子从P区扩散到N区（反之亦然），在两侧积累，形成电荷存储效应</td>
+</tr>
+<tr>
+<td><strong>电容与电压的关系</strong></td>
+<td>随着反向偏置电压增加，耗尽区宽度增大，电容<strong>减小</strong></td>
+<td>随着正向电流增加，少数载流子积累增多，电容<strong>增大</strong></td>
+</tr>
+<tr>
+<td><strong>电流依赖性</strong></td>
+<td>与电流无关，主要由反向偏置电压控制</td>
+<td>与电流密切相关，电流越大，扩散电容越大</td>
+</tr>
+<tr>
+<td><strong>电容值大小</strong></td>
+<td>通常较小，范围在<strong>皮法拉 (pF)</strong> 量级</td>
+<td>通常较大，范围在<strong>纳法拉 (nF)</strong> 到 <strong>微法拉 (μF)</strong></td>
+</tr>
+<tr>
+<td><strong>电容变化公式</strong></td>
+<td><span class="math inline"> C_J = \frac{\varepsilon A}{W} </span> ，与耗尽区宽度W 成反比</td>
+<td><span class="math inline"> C_D = \frac{dQ}{dV} </span> ，与存储的少数载流子量成正比</td>
+</tr>
+<tr>
+<td><strong>频率响应</strong></td>
+<td>主要影响<strong>高频</strong>下的响应</td>
+<td>主要影响<strong>低频</strong>和<strong>中频</strong>下的响应</td>
+</tr>
+<tr>
+<td><strong>典型应用场景</strong></td>
+<td>在反向偏置的高速开关电路和高频电路中显著</td>
+<td>在正向偏置的二极管导通时显著，影响开关速度和信号放大</td>
+</tr>
+<tr>
+<td><strong>正向偏置下的表现</strong></td>
+<td>正向偏置时存在但不明显，通常<strong>被忽略</strong></td>
+<td>正向偏置时为<strong>主导电容</strong>，尤其在电荷积累显著时</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_4">温度效应</h2>
+<p><img alt="pn_temp_effect" src="https://blog.debao.me/images/science/pn_temp_effect.jpg"></p>
+<p>图片来自：<a href="https://people.iitism.ac.in/~sarun/notes/phc504/17_pn.html">iitism.ac.in</a></p>
+<table>
+<thead>
+<tr>
+<th><strong>特性</strong></th>
+<th><strong>温度升高的影响</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>反向饱和电流</strong></td>
+<td>反向饱和电流会<strong>显著增加</strong>，大约每升高 10°C，反向饱和电流会<strong>增加一倍</strong>。</td>
+</tr>
+<tr>
+<td><strong>正向导通电压</strong></td>
+<td>正向导通电压会<strong>降低</strong>，对于硅二极管，每升高 1°C，导通电压约降低 <strong>2mV</strong>（可用于测温）。</td>
+</tr>
+<tr>
+<td><strong>载流子迁移率</strong></td>
+<td>载流子的迁移率会<strong>降低</strong>，因为热振动加剧，导致电流携带粒子的移动速度减慢。</td>
+</tr>
+<tr>
+<td><strong>击穿电压</strong></td>
+<td>击穿电压会<strong>降低</strong>，温度升高使得雪崩击穿或齐纳击穿更容易发生。</td>
+</tr>
+<tr>
+<td><strong>结电容</strong></td>
+<td>结电容会<strong>变化</strong>，因为温度升高影响耗尽区宽度，反向偏置电容依赖于耗尽区的变化。</td>
+</tr>
+<tr>
+<td><strong>扩散电容</strong></td>
+<td>扩散电容会<strong>增加</strong>，因为正向偏置下，温度升高会导致更多的少数载流子注入耗尽区。</td>
+</tr>
+<tr>
+<td><strong>带隙能量</strong></td>
+<td>带隙能量会<strong>降低</strong>，硅的带隙能量每升高 1°C 大约降低 <strong>0.00023eV</strong>，使得PN结更容易导通。</td>
+</tr>
+<tr>
+<td><strong>热击穿（Thermal Runaway）</strong></td>
+<td>温度升高可能造成<strong>热失控</strong>，电流增加导致温度进一步升高，可能引发器件失效，尤其在高功率应用中。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="diode">Diode</h2>
+<blockquote>
+<p>Diode 的字面意思是<strong>“两端有通路的装置”</strong>，即它有两个电极：阳极 (Anode) 和 阴极 (Cathode)，电流在其中只能沿一个方向流动。</p>
+</blockquote>
+<p>半导体Diode可以和早期的真空管Diode做个比较</p>
+<p><img alt="diode" src="https://blog.debao.me/images/science/vacuum_diode_vs_zener_diode.png"></p>
+<h3 id="_5">历史</h3>
+<table>
+<thead>
+<tr>
+<th><strong>时间</strong></th>
+<th><strong>电子管二极管</strong></th>
+<th><strong>半导体二极管</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1873年</strong></td>
+<td><strong>爱迪生效应</strong>：托马斯·爱迪生发现热电子发射现象</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>1904年</strong></td>
+<td><strong>弗莱明发明电子管二极管</strong>，用于整流交流电</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>1906年</strong></td>
+<td>-</td>
+<td><strong>皮卡德发明点接触二极管</strong>，用于无线电信号检波</td>
+</tr>
+<tr>
+<td><strong>1920-1940s</strong></td>
+<td>广泛应用于收音机、整流器、放大器等电子设备中</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>1947年</strong></td>
+<td>-</td>
+<td><strong>晶体管发明</strong>，标志着半导体元件时代的开端</td>
+</tr>
+<tr>
+<td><strong>1950s</strong></td>
+<td>仍在高功率设备中使用</td>
+<td><strong>半导体二极管</strong>逐渐取代电子管，成为主流整流和信号处理器件</td>
+</tr>
+<tr>
+<td><strong>1962年</strong></td>
+<td>-</td>
+<td><strong>发光二极管（LED）</strong>发明，开创了新的应用领域</td>
+</tr>
+<tr>
+<td><strong>20世纪后期</strong></td>
+<td>被半导体二极管和晶体管逐渐取代</td>
+<td>半导体二极管成为现代电子设备的核心元件，广泛应用于各类电路中</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_6">特点</h3>
+<table>
+<thead>
+<tr>
+<th><strong>特性</strong></th>
+<th><strong>电子管二极管</strong></th>
+<th><strong>半导体二极管</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>导电机制</strong></td>
+<td>通过<strong>阴极热电子发射</strong>，电子在真空中运动</td>
+<td>通过<strong>PN结</strong>内的载流子运动</td>
+</tr>
+<tr>
+<td><strong>工作环境</strong></td>
+<td>需要在<strong>真空</strong>中工作，通常在真空玻璃管内</td>
+<td>基于<strong>固态半导体材料</strong>（如硅、锗）</td>
+</tr>
+<tr>
+<td><strong>导通电压</strong></td>
+<td>需要对阴极加热，导通前需要一定的启动时间</td>
+<td>硅二极管的<strong>正向导通电压</strong>约为 <strong>0.7V</strong>，锗二极管约为 <strong>0.3V</strong></td>
+</tr>
+<tr>
+<td><strong>尺寸</strong></td>
+<td>通常体积较大，且需要高电压供电</td>
+<td>尺寸小，易于集成到现代电路中</td>
+</tr>
+<tr>
+<td><strong>寿命与可靠性</strong></td>
+<td>相对较短，阴极材料会老化，且加热器可能损坏</td>
+<td>半导体材料稳定，寿命长</td>
+</tr>
+<tr>
+<td><strong>应用场景</strong></td>
+<td>早期的<strong>收音机、放大器、整流器</strong>中广泛使用，现已较少使用</td>
+<td>现代电子设备中广泛使用，如<strong>整流、信号调制、保护电路等</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="_7">参考</h2>
+<ul>
+<li><a href="https://www.tf.uni-kiel.de/matwis/amat/semi_en/kap_2/backbone/r2.html">Semiconductor Physics</a></li>
+<li><a href="https://km2000.us/franklinduan/articles/ecee.colorado.edu/~bart/book/book/contents.htm">Principles of Semiconductor Devices</a></li>
+<li>https://www.chu.berkeley.edu/wp-content/uploads/2020/01/Chenming-Hu-ch1-slides.pdf</li>
+<li>https://www.physics-and-radio-electronics.com/electronic-devices-and-circuits/semiconductor-diodes/junctioncapacitance-transitioncapacitance-diffusioncapacitance.html</li>
+<li>https://en.wikipedia.org/wiki/P%E2%80%93n_junction</li>
+<li>https://en.wikipedia.org/wiki/P%E2%80%93n_diode</li>
+<li>https://en.wikipedia.org/wiki/Band_diagram</li>
+<li>https://en.wikipedia.org/wiki/Band_bending</li>
+<li>《半导体物理学》刘恩科</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-09-29T22:33:00+08:00" pubdate>Sun 29 September 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/science.html'>Science</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

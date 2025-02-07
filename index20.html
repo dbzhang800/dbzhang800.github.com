@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div class="blog-index">
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2013/07/link-confilict-between-sdl-and-qt-under-windows/">Link Confilict between SDL and Qt under Windows</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-07-09T09:22:00+08:00" pubdate>Tue 09 July 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><p>Someone complain that, when using SDL and Qt in the same project under Windows, the linker will generate link error.</p>
+<blockquote>
+<p>SDLmain.lib(SDL_win32_main.obj):-1: error: LNK2005: _WinMain@16 already defined in qtmaind.lib(qtmain_win.obj)</p>
+</blockquote>
+<p>What happened behined this?</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;SDL …</span></code></pre></div></td></tr></table></div></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2013/07/link-confilict-between-sdl-and-qt-under-windows/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2013/07/redirect-current-processs-stdout-to-a-widget-such-as-qtextedit/">Redirect current process's stdout to a Widget such as QTextEdit</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-07-05T17:26:00+08:00" pubdate>Fri 05 July 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><p>Note: </p>
+<ul>
+<li>Source code can be got from https://github.com/dbzhang800/StdoutRedirector</li>
+<li>This class can only be used in Qt5, as QWindowsPipeReader which is introduced in Qt5.0 is used.</li>
+</ul>
+<h2 id="implementation">Implementation</h2>
+<h3 id="windows">Windows</h3>
+<ul>
+<li>Normally, we need to create pipe with CreatePipe(), then attach stdout to it's write end with SetStdHandle(), then …</li></ul></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2013/07/redirect-current-processs-stdout-to-a-widget-such-as-qtextedit/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2013/06/qt-macro-q_declare_interface/">Qt Macro: Q_DECLARE_INTERFACE</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-06-25T12:34:00+08:00" pubdate>Tue 25 June 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><h2 id="q_declare_interfaceinterfaceclassname-interfaceid">Q_DECLARE_INTERFACE(InterfaceClassName, InterfaceId)</h2>
+<p>This macro associate the given InterfaceId to the interface class called InterfaceClassName.The macro is normally used right after the interface definition:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MyInterface</span><span class="w"> </span><span class="p">{};</span>
+<span class="n">Q_DECLARE_INTERFACE</span><span class="p">(</span><span class="n">MyInterface</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;me.debao.qt.myinterface&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>Q_DECLARE_INTERFACE is a macro that defines helper function that make qobject_cast<IFace*>(QObject *object) return a …</iface*></p></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2013/06/qt-macro-q_declare_interface/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2013/06/qt-macro-q_declare_metatype/">Qt Macro: Q_DECLARE_METATYPE</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-06-21T11:29:00+08:00" pubdate>Fri 21 June 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><h2 id="qmetatype">QMetaType</h2>
+<ul>
+<li>It associates a type name to a type ID, enabling construction and destruction to occur dynamically at runtime.</li>
+<li>QMetaType is used as a helper in QVariant and queued signals and slots connections. </li>
+</ul>
+<p>example1: </p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16 …</span></pre></div></td></tr></table></div></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2013/06/qt-macro-q_declare_metatype/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2013/06/qt-macro-q_declare_typeinfo/">Qt Macro: Q_DECLARE_TYPEINFO</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-06-19T16:45:00+08:00" pubdate>Wed 19 June 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><h2 id="definition">Definition</h2>
+<p>Q_DECLARE_TYPEINFO is used to specialise a template class called QTypeInfo. </p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#define Q_DECLARE_TYPEINFO_BODY(TYPE, FLAGS) \</span>
+<span class="cp">class QTypeInfo&lt;TYPE &gt; \</span>
+<span class="cp">{ \</span>
+<span class="cp">public: \</span>
+<span class="cp">    enum { \</span>
+<span class="cp">        isComplex = (((FLAGS) &amp; Q_PRIMITIVE_TYPE) == 0), \</span>
+<span class="cp">        isStatic = (((FLAGS) &amp; (Q_MOVABLE_TYPE | Q_PRIMITIVE_TYPE)) == 0), \</span>
+<span class="cp">        isLarge = (sizeof(TYPE …</span></code></pre></div></td></tr></table></div></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2013/06/qt-macro-q_declare_typeinfo/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2013/06/screencss-used-by-octopress/">screen.css used by octopress</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-06-18T15:48:00+08:00" pubdate>Tue 18 June 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><h2 id="screencss">screen.css</h2>
+<p>The css file used by octopress blog with the default theme is called <code>screen.css</code>, which locates in source/stylesheets/screen.css.</p>
+<h2 id="screenscss">screen.scss</h2>
+<p>The screen.scss file, which locates in sass/screen.scss, is used to generate the above css file.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6 …</span></pre></div></td></tr></table></div></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2013/06/screencss-used-by-octopress/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2013/04/my-first-c-extension-to-numpy/">My first C Extension To Numpy</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-04-25T09:24:00+08:00" pubdate>Thu 25 April 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><h2 id="a-simple-example">A Simple Example</h2>
+<p>Let's create an extension module called <code>opee</code> and let's say we want to create a Python interface to one C function <code>example</code>. This function takes a numpy array as argument and return an integer. We want this function to be callable from Python as follows:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2 …</span></pre></div></td></tr></table></div></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2013/04/my-first-c-extension-to-numpy/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test/">Sandbox: For Octopress Usage and Markdown Syntax Test</a>
+      </h1>
+    <p class="meta">
+<time datetime="2012-08-28T17:32:00+08:00" pubdate>Tue 28 August 2012</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>Note: I had switched from Octopress to Pelican since 2015, so this page is not valid any more.
+Contents in this pages had been changed in order to make pelican happy.</p>
+</blockquote>
+<h2 id="table-test">Table Test</h2>
+<p>Source Code:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">Left</span> <span class="nv">Aligned</span> <span class="nv">Header</span> <span class="p">|</span> <span class="nv">Center</span> <span class="nv">Header</span> <span class="p">|</span> <span class="nv">Right</span> <span class="nv">Aligned</span> <span class="nv">Header</span>
+<span class="o">:-</span><span class="s s-Atom">------------------</span><span class="p">|</span><span class="o">:-</span><span class="s s-Atom">------------:</span><span class="p">|</span><span class="s s-Atom">--------------------:</span>
+<span class="nv">Cell …</span></code></pre></div></td></tr></table></div></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2012/08/sandbox-for-octopress-usage-and-markdown-syntax-test/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2012/08/setup-and-configure-my-octopress-blog/">Setup and Configure My Octopress Blog</a>
+      </h1>
+    <p class="meta">
+<time datetime="2012-08-27T21:44:00+08:00" pubdate>Mon 27 August 2012</time>    </p>
+</header>
+
+  <div class="entry-content"><p>I am using Mac OS X 10.8, Ubuntu 12.10 and Windows Vista at present. I want to have a simple blog which can be coutrolled by myself …</p>
+<h2 id="install-ruby-193">Install Ruby 1.9.3</h2>
+<p>Octopress depends on Ruby 1.9.2 or newer.</p>
+<h3 id="mac-x-108">Mac X 10.8</h3>
+<p>The Ruby provided …</p></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2012/08/setup-and-configure-my-octopress-blog/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/zh/2011/11/networking-settings-in-virtualbox/">VirtualBox的网络设置</a>
+      </h1>
+    <p class="meta">
+<time datetime="2011-11-20T16:25:00+08:00" pubdate>Sun 20 November 2011</time>    </p>
+</header>
+
+  <div class="entry-content"><p>VirtualBox 可以为每一个Guest分配多达8个网卡(界面上只显示了4个，其他需要通过VBoxManager modifyvm进行配置)，每个网卡的连接方式可以选为下列之一：</p>
+<ul>
+<li>Not attached</li>
+<li>NAT</li>
+<li>NAT Network</li>
+<li>Bridged Adapter</li>
+<li>Internal Network …</li></ul></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/zh/2011/11/networking-settings-in-virtualbox/">Read On &crarr;</a>
+  </footer>
+  		</article>
+<div class="pagination">
+    <a class="prev" href="https://blog.debao.me/index21.html">&larr; Older</a>
+
+    <a class="next" href="https://blog.debao.me/index19.html">Newer &rarr;</a>
+  <br />
+</div></div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Qt中的JavaScript引擎小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Qt中的JavaScript引擎小记</h1>
+    <p class="meta">
+<time datetime="2024-01-07T23:22:00+08:00" pubdate>Sun 07 January 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>准备补充些JavaScript知识，所以先从Qt角度简单梳理一下。Qt对JavaScript支持，从Qt3时代就开始了，但由于各种原因，一直没有好好了解过：</p>
+</blockquote>
+<ul>
+<li>QSA：Qt Script for Application。2003~2008，后被QtScript取代。</li>
+<li>QtScript：2007(Qt4.3) ~ 2020 (Qt6.0)，后被QJSEngine取代。（QtScript有两个版本，Qt经典版本和Qt4.6起基于JavaScriptCore的版本）</li>
+<li>QJSEngine：2012(Qt5.0)~至今。（QJSEngine 也有两个版本，基于V8的版本和Qt5.2起Qt自己的V4版本）</li>
+</ul>
+<p>QtWebEngine和早期QtWebkit中都包含javascript引擎，不在本文范围之内。</p>
+<h2 id="_1">背景</h2>
+<blockquote>
+<p>Qt下javascript的故事，感觉和Qt下opengl的故事有一拼：变来变去，受外界影响很大。</p>
+</blockquote>
+<h3 id="qt">Qt下引擎</h3>
+<blockquote>
+<p>早期Qt引入javascript是为了给QWidget引入脚本功能，后来改进引擎是为了支持QML。</p>
+</blockquote>
+<h4 id="qsa">QSA</h4>
+<p>QSA（Qt Script for Application），实现上，它是ECMAScript 3.0和4.0草案的复合。 </p>
+<ul>
+<li>2003年7月发布</li>
+<li>2008年结束支持（被Qt4.3引入的功能更强的QtScript模块取代）。</li>
+</ul>
+<h4 id="qtscript">QtScript</h4>
+<p>分两个版本(阶段)：</p>
+<ul>
+<li>QtScript (Classic)：Qt4.3 ~ Qt4.5。这个模块的问题是，没有JIT功能，速度慢，不支持EMCAScript新特性。Qt 4.6时，QtScript 使用JavaScriptCore进行了重写。原有的这个模块，以QtScriptClassic的名字被放入到了Qt Solutions 中。</li>
+<li>QtScript：Qt4.6 ~ Qt5.15。使用JavaScriptCore对QtScript进行重写的版本。但是JavaScriptCore作为Webkit的JavaScript引擎，并没有公开的API接口，不关注Webkit之外的应用场景，也不接受Qt提交的适配QtScript补丁。Qt需要维护自己的JavaScriptCore，在其内部挂钩子，但是上游变动很大，每次适配都需要大量工作，这从一开始也为废弃埋下伏笔。</li>
+</ul>
+<p>时间线：</p>
+<ul>
+<li>2007年5月，Qt4.3 引入了QtScript模块（ECMAScript 3.0标准）。</li>
+<li>2009年12月，Qt4.6使用JavaScriptCore对QtScript进行了重写。（此时Qt在Nokia旗下，重写QtScript是为了推出QML/QtQuick，以更好支持Qt在塞班、meego等手机操作系统下的APP开发）。</li>
+<li>2015年7月，Qt5.5发布，QtScript被标识为废弃。</li>
+<li>2020年8月，Qt6.0发布，QtScript从Qt6中正式移除。</li>
+</ul>
+<h4 id="qjsengine">QJSEngine</h4>
+<p>分两个版本(阶段)：</p>
+<ul>
+<li>QJSEngine（V8）：Qt5.0~Qt5.1。基于Google V8的 QJSEngine。V8作为JavaScript引擎，速度没得说，但是和QML配合起来，数据需要来回转换，性能受影响。而且V8和JavaScriptCore有同样的问题，不Care Qt下的使用场景，不接受Qt提交的补丁，需要Qt自行维护一个V8，比较痛苦。</li>
+<li>QJSEngine：Qt5.2 ~ 至今。Qt自研的V4，兼容EMCAScript5.1(在Qt6.0中，至少支持到EMCAScript 7)。与V8相比，对QML支持更好，但是纯JavaScript的话，会稍差一些。</li>
+</ul>
+<p>时间线：</p>
+<ul>
+<li>2012年，Qt5.0引入基于Google V8的 QJSEngine。</li>
+<li>2013年，Qt5.2引入自己的JavaScript引擎——V4VM，取代Google的V8。</li>
+</ul>
+<blockquote>
+<p>QQmlEngine：QJSEngine的派生类，与QJSEngine都是在Qt5.0引入。注意，QtQuick1中引擎叫做QDeclarativeEngine。</p>
+</blockquote>
+<h3 id="javascript">JavaScript</h3>
+<blockquote>
+<p>对于JavaScript，网络上的资料就很多了。而且里面涉及多个公司的爱恨情仇，远比Qt的故事复杂...</p>
+</blockquote>
+<p>JavaScript提交给ECMA指定标准，称之为ECMAScript，标准编号ECMA-262。本文中没有刻意区分 ECMAScript、ECMA-262和JavaScript。</p>
+<ul>
+<li><strong>ECMAScript</strong> (/ˈɛkməskrɪpt/)，JavaScript在标准中的名字</li>
+<li>ECMA-262，标准的名字</li>
+<li>ISO/IEC 16262:2011，对应的ISO标准名字</li>
+</ul>
+<h4 id="_2">标准化之前</h4>
+<ul>
+<li>1995年，网景公司（NetScope）就在浏览器中嵌入Scheme还是Java，展开激烈讨论。最终布兰登·艾克(Brendan Eich)5月花了10天时间设计了一门语言。取名Mocha，9月改名LiveScript，1995年年底定名JavaScript（当时网景公司与昇阳电脑公司组成的开发联盟为了让这门语言搭上Java这个编程语言“热词”，将其临时改名为JavaScript，日后这成为大众对这门语言有诸多误解的原因之一）。</li>
+<li>1996年8月，微软发布的 IE3.0 包含了JScript。JScript系通过对网景的解释器进行逆向而创建。（浏览器大战）</li>
+<li>1996年11月，网景正式向ECMA（欧洲计算机制造商协会）提交语言标准。ECMA以JavaScript语言为基础制定了ECMAScript标准规范——ECMA-262。</li>
+</ul>
+<blockquote>
+<p>注：1996年，微软在IE浏览器中也搞了自己VBScript脚本，但在IE寿终正寝之前，基本就已经没人在web中使用了，毕竟大家都不喜欢打开网页看到一句“请在IE浏览器下使用”。VBScript作为Windows系统的脚本语言，也已经于2023年10月10日进入微软的弃用名单。</p>
+</blockquote>
+<h4 id="1030">标准化 1.0~3.0</h4>
+<ul>
+<li>1997年6月，ECMAScript 1.0</li>
+<li>1998年6月，ECMAScript 2.0</li>
+<li>1999年12月，ECMAScript 3.0</li>
+</ul>
+<p>ECMAScript 3.0获取巨大成功，得到广泛支持。</p>
+<h4 id="40-31-5xisoiec">标准化 4.0 3.1 5.x(ISO/IEC)</h4>
+<p><strong>ECMAScript 4.0 并不存在</strong>，ECMAScript 3.1 也不存在，因为</p>
+<ul>
+<li>2000年，ECMAScript 4.0<strong>开始</strong>酝酿</li>
+<li>2007年10月， ECMAScript 4.0草案发布，各方对此有严重分歧</li>
+<li>2008年7月，<strong>终止</strong>ECMAScript4.0开发</li>
+</ul>
+<p>ECMA会议决定：将ECMAScript4.0草案中涉及现有功能改善的部分，发布为ECMAScript3.1，但会后不久又将其改为ECMAScript5.0；将草案中改动大的部分，放入JavaScript.next（即后面的ES6）或JavaScript.next.next。</p>
+<ul>
+<li>2009年12月，ECMAScript5.0发布</li>
+<li>2011年6月，ECMAScript5.1发布（并成为ISO国际标准 ISO/IEC 16262:2011)</li>
+</ul>
+<h4 id="6">标准化 6~ 至今（成熟阶段？）</h4>
+<ul>
+<li>2015年6月，ECMA262的第6版发布。如果从2000年4.0酝酿开始算，这一版本用时15年（比从C++98和难产的C++0x即后来的C++11跨度都大）。从这一版本开始，官方开始用年份命名：ECMAScript2015，简称ES2015（尽管很多人都在用ES6）。</li>
+</ul>
+<p>从ES2015开始，ECMA-262开挂了，每年6月份一个版本：</p>
+<ul>
+<li>2016年6月，ECMA262 第7版，ECMAScript 2016</li>
+<li>2017年6月，ECMA262 第8版，ECMAScript 2017</li>
+<li>2018年6月，ECMA262 第9版，ECMAScript 2018</li>
+<li>2019年6月，ECMA262 第10版，ECMAScript 2019</li>
+<li>2020年6月，ECMA262 第11版，ECMAScript 2020</li>
+<li>2021年6月，ECMA262 第12版，ECMAScript 2021</li>
+<li>2022年6月，ECMA262 第13版，ECMAScript 2022</li>
+<li>2023年6月，ECMA262 第14版，ECMAScript 2023</li>
+<li>...</li>
+</ul>
+<h3 id="babel">Babel</h3>
+<ul>
+<li>https://babeljs.io</li>
+</ul>
+<p>Babel 是一个广泛使用的 JavaScript 编译器，它可以将最新的 ECMAScript 语言标准（如 ES2015+）编译为向后兼容的 JavaScript 版本，以便在旧版本的浏览器或环境中运行。</p>
+<p>Babel 默认只转换新的 JavaScript 句法（syntax），而不转换新的 API，比如  Iterator、Generator、Set、Maps、Proxy、Reflect、Symbol、Promise  等全局对象，以及一些定义在全局对象上的方法。要使用新的API，需要使用某种Polyfill才行。</p>
+<p>Babel的插件<code>babel-polyfill</code>包含 <code>core-js</code>。</p>
+<h3 id="_3">引擎环境</h3>
+<p>ECMAScript规范的语言本身，而其执行需要环境：</p>
+<ul>
+<li>浏览器下：ECMAScript + WebAPIs（BOM + DOM)</li>
+<li>Node.js：ECMAScript + Node APIs（fs + net + ...)</li>
+</ul>
+<p>同样：</p>
+<ul>
+<li>Qt下：ECMAScript + Qt APIs</li>
+</ul>
+<h2 id="qjsengine_1">QJSEngine</h2>
+<ul>
+<li>https://doc.qt.io/qt-6/qtjavascript.html</li>
+<li>https://doc.qt.io/qt-6/qtqml-javascript-functionlist.html</li>
+<li>https://doc.qt.io/qt-6/qtqml-javascript-hostenvironment.html</li>
+<li>https://wiki.qt.io/V4</li>
+</ul>
+<p>扯了这么多，终于可以回到正题了。</p>
+<p>从QTBUG-47735在Qt5.12修复来看，QJSEngine 应该支持 ECMAScript2016 (ES7)。EMCA各个版本的特性可以如下地址查看：</p>
+<ul>
+<li>https://www.w3schools.com/js/js_versions.asp</li>
+</ul>
+<p>ECMAScript2017(ES8)还不支持，见QTBUG-58620，Add async/await support to V4。可是，六七年过去了，没都有动静。这也使得我们一直不能用 async/await。</p>
+<h3 id="_4">简单测试</h3>
+<p>使用ES2016中引入指数操作符(<code>**</code> )试一试：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QCoreApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSValueList&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine1</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">//! [0]</span>
+<span class="w">    </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">engine1</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s">&quot;2.5**3&quot;</span><span class="p">).</span><span class="n">toNumber</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">//! [0]</span>
+<span class="w">    </span><span class="c1">//! [1]</span>
+<span class="w">    </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">engine1</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s">&quot;let a = 2.5; let b= 3; a**b&quot;</span><span class="p">).</span><span class="n">toNumber</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">//! [1]</span>
+<span class="w">    </span><span class="c1">//! [2]</span>
+<span class="w">    </span><span class="n">engine1</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">2.5</span><span class="p">);</span>
+<span class="w">    </span><span class="n">engine1</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="w">    </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">engine1</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s">&quot;a**b&quot;</span><span class="p">).</span><span class="n">toNumber</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">//! [2]</span>
+<span class="w">    </span><span class="c1">//! [3]</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine1</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s">&quot;(function(a, b) { return a**b; })&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="n">QJSValueList</span><span class="p">{</span><span class="mf">2.5</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">}).</span><span class="n">toNumber</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">//! [3]</span>
+<span class="w">    </span><span class="c1">//! [4]</span>
+<span class="w">    </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine1</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s">&quot;((a, b) =&gt; a**b)&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="n">QJSValueList</span><span class="p">{</span><span class="mf">2.5</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">}).</span><span class="n">toNumber</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">//! [4]</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>输出结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="mf">15.625</span>
+<span class="mf">15.625</span>
+<span class="mf">15.625</span>
+<span class="mf">15.625</span>
+<span class="mf">15.625</span>
+</code></pre></div></td></tr></table></div>
+
+<p>使用ES2017添加的<code>Object.entries()</code>试试看：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine2</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine2</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;e&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine2</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">engine2</span><span class="p">));</span>
+<span class="w">    </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">engine2</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s">&quot;Object.entries(e)&quot;</span><span class="p">).</span><span class="n">toString</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>另外，在 qtdeclarative/tests/auto/qml/ecmascripttests下，有ecma262的测试用例，以及Qt用于跑这些数据的 qjstest 程序。</p>
+</blockquote>
+<h3 id="_5">小例子</h3>
+<p>点击按钮，调用javascript改变其属性：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QPushButton&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QFile&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">btn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QPushButton</span><span class="p">(</span><span class="s">&quot;Hello world!&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;btn&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="n">btn</span><span class="p">));</span>
+<span class="w">    </span><span class="n">btn</span><span class="o">-&gt;</span><span class="n">connect</span><span class="p">(</span><span class="n">btn</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">QPushButton</span><span class="o">::</span><span class="n">clicked</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">engine</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">engine</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s">&quot;btn.text=</span><span class="se">\&quot;</span><span class="s">Hello from js</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">});</span>
+
+<span class="w">    </span><span class="n">btn</span><span class="o">-&gt;</span><span class="n">show</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>使用module，实现上述功能：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QPushButton&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QFile&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">export function hello() {</span>
+<span class="s">    btn.text = &quot;Hello from js!&quot;;</span>
+<span class="s">}</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">QFile</span><span class="w"> </span><span class="n">f</span><span class="p">(</span><span class="s">&quot;test.mjs&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">f</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">QFile</span><span class="o">::</span><span class="n">WriteOnly</span><span class="p">);</span>
+<span class="w">        </span><span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">js</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">btn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QPushButton</span><span class="p">(</span><span class="s">&quot;Hello world!&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;btn&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="n">btn</span><span class="p">));</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">importModule</span><span class="p">(</span><span class="s">&quot;test.mjs&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">btn</span><span class="o">-&gt;</span><span class="n">connect</span><span class="p">(</span><span class="n">btn</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">QPushButton</span><span class="o">::</span><span class="n">clicked</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">m</span><span class="p">](){</span><span class="n">m</span><span class="p">.</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">).</span><span class="n">call</span><span class="p">();});</span>
+
+<span class="w">    </span><span class="n">btn</span><span class="o">-&gt;</span><span class="n">show</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_6">参考</h2>
+<ul>
+<li>https://www.qt.io/blog/2013/04/15/evolution-of-the-qml-engine-part-1</li>
+<li>https://bugreports.qt.io/browse/QTBUG-47735</li>
+<li>https://bugreports.qt.io/browse/QTBUG-71329</li>
+<li>https://bugreports.qt.io/browse/QTBUG-58620</li>
+<li>https://doc.qt.io/qt-6/qtqml-javascript-hostenvironment.html</li>
+<li>https://doc.qt.io/qt-5/qtscript-index.html</li>
+<li>https://doc.qt.io/qt-5/qtqml-javascript-hostenvironment.html</li>
+<li>https://doc.qt.io/archives/4.3/qtscript.html#language-overview</li>
+<li>https://doc.qt.io/archives/qt-4.8/porting-qsa.html</li>
+<li>https://www.qt.io/blog/2013/09/30/qt-5-2-alpha-available</li>
+<li>https://wiki.qt.io/New_Features_in_Qt_5.5</li>
+<li>https://development.qt-project.narkive.com/hzVG9b6f/qtscript-vs-qml-qjsengine</li>
+<li>https://en.wikipedia.org/wiki/QtScript</li>
+<li>https://web.archive.org/web/20131202231949/http://blog.qt.digia.com/blog/2007/01/05/say-hello-to-qtscript/</li>
+<li>https://web.archive.org/web/20080119082451/http://doc.trolltech.com/qsa-1.2.1/getting-started.html</li>
+<li>https://tc39.es/ecma262/</li>
+<li>https://developer.mozilla.org/en-US/docs/Web/JavaScript</li>
+<li>https://ecma-international.org/publications-and-standards/standards/ecma-262/</li>
+<li>https://www.w3schools.com/js/js_versions.asp</li>
+<li>https://en.wikipedia.org/wiki/ECMAScript</li>
+<li>https://en.wikipedia.org/wiki/JavaScript</li>
+<li>https://en.wikipedia.org/wiki/ECMAScript_version_history</li>
+<li><a href="https://wangdoc.com/es6/intro">ES6 标准入门</a></li>
+<li>https://es6.ruanyifeng.com/</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-01-07T23:22:00+08:00" pubdate>Sun 07 January 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/javascript.html">javascript</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

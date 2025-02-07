@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>集合、群、环、域、空间 等都是什么鬼？ &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/science.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">集合、群、环、域、空间 等都是什么鬼？</h1>
+    <p class="meta">
+<time datetime="2024-10-10T13:06:00+08:00" pubdate>Thu 10 October 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>查查资料，梳理一下</p>
+</blockquote>
+<p>如果一个集合具有一种或几种代数运算，并满足若干运算法则（公理），则称为一个代数结构（Algebraic Structure）。群、环、域和向量空间都是代数结构。集合不是代数结构，但它是构建代数结构的基础。拓扑空间是几何结构而不是代数结构。</p>
+<ul>
+<li>集合 (Set)：由德国数学家 <strong>康托尔 (Georg Cantor)</strong> 在19世纪末提出，集合论奠定了现代数学的基础。</li>
+<li>群 (Group)：由法国数学家 <strong>伽罗瓦 (Évariste Galois)</strong> 在19世纪初引入，起源于代数方程对称性的研究。</li>
+<li>环 (Ring)：由19世纪的数论研究发展而来，<strong>戴德金 (Richard Dedekind)</strong> 和 <strong>克罗内克 (Leopold Kronecker)</strong> 等人推动了环论的发展。</li>
+<li>域 (Field)：<strong>伽罗瓦(Évariste Galois)</strong> 和 <strong>阿贝尔 (Niels Henrik Abel)</strong> 在19世纪通过解决代数方程的根问题扩展了域的理论。</li>
+<li>空间 (Space)：<strong>赫尔穆特·哈斯 (Hermann Grassmann)</strong> 在19世纪提出向量空间，后由 <strong>希尔伯特 (David Hilbert)</strong> 推广，应用于量子力学和泛函分析。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>空间名称</strong></th>
+<th><strong>符号表示</strong></th>
+<th><strong>说明</strong></th>
+<th><strong>所属空间种类</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>欧几里得空间</strong></td>
+<td>ℝⁿ</td>
+<td>具有 n 个实数坐标的向量空间，通常用于描述 n 维几何空间。</td>
+<td>向量空间，度量空间</td>
+</tr>
+<tr>
+<td><strong>希尔伯特空间</strong></td>
+<td>𝐻 或 L²</td>
+<td>带有内积的完备向量空间。常见的希尔伯特空间包括平方可积函数空间 L² 空间。</td>
+<td>内积空间，巴拿赫空间</td>
+</tr>
+<tr>
+<td><strong>矩阵空间</strong></td>
+<td>𝑀ₘₓₙ</td>
+<td>所有 m × n 维矩阵的集合。</td>
+<td>向量空间</td>
+</tr>
+<tr>
+<td><strong>酉空间</strong></td>
+<td>ℂⁿ 或 𝐻ₘ</td>
+<td>复数向量空间，配备复数内积，满足酉变换的条件。</td>
+<td>内积空间，希尔伯特空间</td>
+</tr>
+<tr>
+<td><strong>辛空间</strong></td>
+<td>ℝ²ⁿ</td>
+<td>一个偶数维的实向量空间，配备辛形式。通常描述物理系统中的相空间。</td>
+<td>辛几何，向量空间</td>
+</tr>
+<tr>
+<td><strong>拓扑空间</strong></td>
+<td>(𝑋, τ)</td>
+<td>一个集合 𝑋 和一个拓扑 τ 的组合，定义了开集和闭集的结构。</td>
+<td>拓扑空间</td>
+</tr>
+<tr>
+<td><strong>度量空间</strong></td>
+<td>(𝑋, 𝑑)</td>
+<td>一个集合 𝑋 和一个度量 𝑑 的组合，定义了元素之间的距离。</td>
+<td>度量空间</td>
+</tr>
+<tr>
+<td><strong>巴拿赫空间</strong></td>
+<td>𝐵 或 Lᵖ</td>
+<td>一个带有范数的完备向量空间。Lᵖ 空间是常见的巴拿赫空间，表示可测函数的某种范数可积空间。</td>
+<td>范数空间，巴拿赫空间</td>
+</tr>
+<tr>
+<td><strong>范数空间</strong></td>
+<td>(𝑉, ∥·∥)</td>
+<td>配备了范数 ∥·∥ 的向量空间，用于测量向量的大小。</td>
+<td>范数空间</td>
+</tr>
+<tr>
+<td><strong>向量空间</strong></td>
+<td>𝑉</td>
+<td>具有向量加法和标量乘法运算的向量集合。</td>
+<td>向量空间</td>
+</tr>
+<tr>
+<td><strong>射影空间</strong></td>
+<td>ℙⁿ</td>
+<td>n 维射影空间，表示所有非零向量的集合，按比例关系进行分组。</td>
+<td>射影空间</td>
+</tr>
+<tr>
+<td><strong>李群</strong></td>
+<td>𝐺</td>
+<td>既是群又是流形的结构，通常用于描述连续对称性。</td>
+<td>拓扑群，流形，李群</td>
+</tr>
+<tr>
+<td><strong>张量积空间</strong></td>
+<td>𝑉 ⊗ 𝑊</td>
+<td>两个向量空间 𝑉 和 𝑊 的张量积，表示两个空间的组合，用于多线性代数中。</td>
+<td>向量空间</td>
+</tr>
+<tr>
+<td><strong>外积空间</strong></td>
+<td>Λᵏ 𝑉</td>
+<td>向量空间 𝑉 的 k 次外积，通常用于描述几何和物理中的体积和面积等概念。</td>
+<td>向量空间</td>
+</tr>
+<tr>
+<td><strong>函数空间</strong></td>
+<td>𝐶(𝑋) 或 Lᵖ(𝑋)</td>
+<td>定义在集合 𝑋 上的函数的空间。𝐶(𝑋) 表示连续函数空间，Lᵖ(𝑋) 表示 p 次可积函数空间。</td>
+<td>函数空间，巴拿赫空间</td>
+</tr>
+</tbody>
+</table>
+<h2 id="set">集合（Set)</h2>
+<p>集合（set）可以被定义为一组对象的集合，这些对象可以是任何东西，从数字、字母、点、线，到更抽象的概念。集合中的对象称为元素（element）或成员（member）。</p>
+<h3 id="_1">表示法</h3>
+<p>集合有多种表示法</p>
+<h4 id="roster-or-tabular-form">列举法（Roster or Tabular Form)</h4>
+<p>直接将集合的所有元素写在一对大括号 {} 里面，元素之间用逗号分隔。比如</p>
+<ul>
+<li>集合 A={1,2,3,4,5}</li>
+<li>集合 B={苹果,香蕉,桔子}</li>
+</ul>
+<h4 id="set-builder-noation">描述法（Set-builder Noation）</h4>
+<p>用一个条件来描述集合中的元素，而不是一一列出它们</p>
+<ul>
+<li>A={x∣x 是大于0且小于6的整数}</li>
+<li>B={x∣x 是奇数且 x&lt;10}</li>
+</ul>
+<h4 id="_2">符号表示法</h4>
+<p>常见的集合，有一些约定俗称的符号</p>
+<ul>
+<li>ℕ — 自然数集合 (Set of Natural Numbers)</li>
+<li>ℤ — 整数集合 (Set of Integers)</li>
+<li>ℚ — 有理数集合 (Set of Rational Numbers)</li>
+<li>ℝ — 实数集合 (Set of Real Numbers)</li>
+<li>ℂ — 复数集合 (Set of Complex Numbers)</li>
+<li>ℤ⁺ — 正整数集合 (Set of Positive Integers)</li>
+<li>ℕ₀ — 非负整数集合 (Set of Non-negative Integers)</li>
+<li>∅ — 空集 (Empty Set)</li>
+<li>𝒫(A) — 幂集 (Power Set)</li>
+</ul>
+<blockquote>
+<p>幂集（Power Set）是指某个集合的所有子集组成的集合。换句话说，给定一个集合 A，它的幂集 𝒫(A) 包含了A 的所有可能的子集，包括空集和集合本身。比如 A={1,2}，那么 𝒫(A)={∅,{1},{2},{1,2}} 。</p>
+</blockquote>
+<h3 id="_3">集合性质</h3>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>名称 (Name)</th>
+<th>定义 (Definition)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>∈</td>
+<td>属于 (Element of)</td>
+<td>如果元素 x 属于集合 A，则记作 x ∈ A。</td>
+</tr>
+<tr>
+<td>∉</td>
+<td>不属于 (Not an element of)</td>
+<td>如果元素 x 不属于集合 A，则记作 x ∉ A。</td>
+</tr>
+<tr>
+<td>⊆</td>
+<td>子集 (Subset)</td>
+<td>如果集合 A 的所有元素都属于集合 B，则记作 A ⊆ B。</td>
+</tr>
+<tr>
+<td>⊂</td>
+<td>真子集 (Proper Subset)</td>
+<td>如果集合 A 是集合 B 的子集且 A ≠ B，则记作 A ⊂ B。</td>
+</tr>
+<tr>
+<td>⊇</td>
+<td>包含 (Superset)</td>
+<td>如果集合 A 包含集合 B 的所有元素，则记作 A ⊇ B。</td>
+</tr>
+<tr>
+<td>⊃</td>
+<td>真包含 (Proper Superset)</td>
+<td>如果集合 A 真包含集合 B，且 A ≠ B，则记作 A ⊃ B。</td>
+</tr>
+<tr>
+<td>∪</td>
+<td>并集 (Union)</td>
+<td>集合 A 和 B 的并集是 A ∪ B，包含 A 和 B 的所有元素。</td>
+</tr>
+<tr>
+<td>∩</td>
+<td>交集 (Intersection)</td>
+<td>集合 A 和 B 的交集是 A ∩ B，包含 A 和 B 的共同元素。</td>
+</tr>
+<tr>
+<td>∖或-</td>
+<td>差集 (Difference)</td>
+<td>集合 A 和 B 的差集是 A ∖ B，包含属于 A 但不属于 B 的元素。</td>
+</tr>
+<tr>
+<td>𝐴ᶜ 或 𝐴̅</td>
+<td>补集 (Complement)</td>
+<td>集合 A 的补集是 Aᶜ 或 A̅，包含全集中不属于 A 的元素。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cardinal-numbercardinality">基数（Cardinal Number）/势（Cardinality）</h3>
+<p>势（Cardinality）用来表示某个集合的大小或元素的个数。记作 |A| 或 card(A)。它不仅适用于有限集合，也适用于无限集合。</p>
+<blockquote>
+<p>初次看到这个 <strong>势</strong> 这个术语时是蒙的，它受日文翻译影响。</p>
+</blockquote>
+<h4 id="_4">有限集合</h4>
+<p>对于有限集合，基数就是集合中元素的数量。</p>
+<ul>
+<li>若 A = {1, 2, 3}，则 |A| = 3 。</li>
+<li>若 B = {a, b, c, d, e} ，则 |B| = 5 。</li>
+<li>若 C = ∅ （空集），则 |C| = 0 。</li>
+</ul>
+<h4 id="_5">无限集合</h4>
+<p>对于无限集合，基数可以分为两类：</p>
+<ul>
+<li><strong>可数无限集</strong>（Countably Infinite Set）：这些集合的基数与自然数集  ℕ 的基数相同，记作 <strong>ℵ₀</strong>（读作“阿列夫零”）。</li>
+<li><strong>不可数无限集</strong>（Uncountably Infinite Set）：这些集合的基数比自然数集大，例如实数集  ℝ 的基数，通常记作 <strong>𝔠</strong> 或 <strong>2^ℵ₀</strong>，表示连续统的基数。</li>
+</ul>
+<h2 id="groupringfield">群（Group)、环（Ring）、域（Field）</h2>
+<p>先列个表格：</p>
+<table>
+<thead>
+<tr>
+<th>结构</th>
+<th>运算数量 Num</th>
+<th>运算符 Operator</th>
+<th>元素 Element</th>
+<th>主要性质 Structure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>群</strong> Group</td>
+<td>1</td>
+<td>o1 (加法/乘法)</td>
+<td>单位元, 有逆</td>
+<td>封闭性, 结合律</td>
+</tr>
+<tr>
+<td><strong>环</strong> Ring</td>
+<td>2</td>
+<td>o1 (加法), o2 (乘法)</td>
+<td>加法单位元, 加法有逆</td>
+<td>加法为阿贝尔群,<code>乘法封闭, 结合律,</code>分配律</td>
+</tr>
+<tr>
+<td><strong>域</strong> Field</td>
+<td>2</td>
+<td>o1 (加法), o2 (乘法)</td>
+<td>加法单位元, 加法有逆，<code>乘法单位元, 乘法有逆 | 加法为阿贝尔群,</code>乘法为阿贝尔群 (0 除外), ``分配律</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>再对照一下：在数系范围内</p>
+<ul>
+<li>最小的数域是有理数域</li>
+<li>最大的数域是复数域</li>
+<li>自然数都构不成一个群，只能是半群、幺半群。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>数系</th>
+<th>符号</th>
+<th>所属代数结构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>自然数</strong></td>
+<td>ℕ</td>
+<td><strong>半群</strong>（Semigroup），<strong>幺半群</strong>（Monoid）</td>
+</tr>
+<tr>
+<td><strong>整数</strong></td>
+<td>ℤ</td>
+<td><strong>群</strong>（Group），<strong>环</strong>（Ring）</td>
+</tr>
+<tr>
+<td><strong>有理数</strong></td>
+<td>ℚ</td>
+<td><strong>群</strong>（Group），<strong>环</strong>（Ring），<strong>域</strong>（Field）</td>
+</tr>
+<tr>
+<td><strong>实数</strong></td>
+<td>ℝ</td>
+<td><strong>群</strong>（Group），<strong>环</strong>（Ring），<strong>域</strong>（Field）</td>
+</tr>
+<tr>
+<td><strong>复数</strong></td>
+<td>ℂ</td>
+<td><strong>群</strong>（Group），<strong>环</strong>（Ring），<strong>域</strong>（Field）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="group">群（Group）</h3>
+<p><img alt="group" src="https://blog.debao.me/images/science/math_basic_group.png"></p>
+<h4 id="_6">定义</h4>
+<p>一个<strong>群</strong>（<strong>Group</strong>）  是由一个<strong>集合</strong>（<strong>Set</strong>） 和一个<strong>二元运算</strong>（<strong>Binary Operation</strong>）组成的代数结构，它满足以下四个条件：</p>
+<ol>
+<li><strong>封闭性</strong>（<strong>Closure</strong>）：对于任意 a, b ∈ G，有 a ∘ b ∈ G。</li>
+<li><strong>结合律</strong>（<strong>Associativity</strong>）：对于任意 a, b, c ∈ G，有 (a ∘ b) ∘ c = a ∘ (b ∘ c)。</li>
+<li><strong>单位元</strong>（<strong>Identity Element</strong>）：存在一个元素 e ∈ G，使得对任意 a ∈ G，有 e ∘ a = a ∘ e = a。</li>
+<li><strong>逆元</strong>（<strong>Inverse Element</strong>）：对于任意 a ∈ G，存在一个元素 b ∈ G，使得 a ∘ b = b ∘ a = e。</li>
+</ol>
+<p>如果群的运算还满足<strong>交换律</strong>（<strong>Commutativity</strong>，即 a ∘ b = b ∘ a），则称为<strong>阿贝尔群</strong>（<strong>Abelian Group</strong>）。</p>
+<h4 id="_7">群、半群、幺半群</h4>
+<ul>
+<li>半群（Semigroup）：集合上的二元运算满足结合律，没有单位元或逆元的要求。</li>
+<li>幺半群（Monoid）：是一个包含单位元的半群，但不要求每个元素有逆元。</li>
+<li>群（Group）：不仅有单位元，而且每个元素都有逆元。如果二元运算满足交换律，则称为阿贝尔群（Abelian Group）。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>性质</strong></th>
+<th><strong>半群（Semigroup）</strong></th>
+<th><strong>幺半群（Monoid）</strong></th>
+<th><strong>群（Group）</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>集合</strong></td>
+<td>一个集合 S</td>
+<td>一个集合 M</td>
+<td>一个集合 G</td>
+</tr>
+<tr>
+<td><strong>二元运算</strong></td>
+<td>定义在 S 上的二元运算</td>
+<td>定义在 M 上的二元运算</td>
+<td>定义在 G 上的二元运算</td>
+</tr>
+<tr>
+<td><strong>结合律</strong></td>
+<td>满足结合律</td>
+<td>满足结合律</td>
+<td>满足结合律</td>
+</tr>
+<tr>
+<td><strong>单位元</strong></td>
+<td>不要求存在单位元</td>
+<td>存在单位元</td>
+<td>存在单位元</td>
+</tr>
+<tr>
+<td><strong>逆元</strong></td>
+<td>不要求存在逆元</td>
+<td>不要求存在逆元</td>
+<td>每个元素都有逆元</td>
+</tr>
+<tr>
+<td><strong>交换律</strong></td>
+<td>不要求</td>
+<td>不要求</td>
+<td>如果满足交换律，则为阿贝尔群</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_8">李群</h4>
+<blockquote>
+<p>得名于挪威数学家索菲斯·李（Sophus Lie，1842-1899）。</p>
+</blockquote>
+<p>李群（Lie Group）是一个结合了群的代数结构和光滑流形的几何结构的数学对象，李群特别擅长描述连续对称性。</p>
+<p>一些李群的例子？</p>
+<table>
+<thead>
+<tr>
+<th><strong>群类型</strong></th>
+<th><strong>符号</strong></th>
+<th><strong>定义</strong></th>
+<th><strong>特点</strong></th>
+<th><strong>应用</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>一般线性群 (General Linear Group)</strong></td>
+<td>GL(n, ℝ) 或 GL(n, ℂ)</td>
+<td>所有<span class="math inline"> n \times n </span> 的可逆矩阵组成的群，运算是矩阵乘法。</td>
+<td>非交换李群，描述一般线性变换。</td>
+<td>线性代数、物理中的变换理论、控制论。</td>
+</tr>
+<tr>
+<td><strong>特殊线性群 (Special Linear Group)</strong></td>
+<td>SL(n, ℝ) 或 SL(n, ℂ)</td>
+<td>所有行列式为 1 的<span class="math inline"> n \times n </span> 可逆矩阵组成的群。</td>
+<td>非交换李群，描述体积保持的线性变换。</td>
+<td>物理学（守恒定律）、几何学、量子场论。</td>
+</tr>
+<tr>
+<td><strong>正交群 (Orthogonal Group)</strong></td>
+<td>O(n)</td>
+<td>所有保持欧几里得距离不变的<span class="math inline"> n \times n </span> 矩阵（正交矩阵）组成的群。</td>
+<td>非交换李群，包含旋转和反射。</td>
+<td>物理学（对称性）、计算机图形学、信号处理。</td>
+</tr>
+<tr>
+<td><strong>特殊正交群 (Special Orthogonal Group)</strong></td>
+<td>SO(n)</td>
+<td>所有保持距离且行列式为 1 的<span class="math inline"> n \times n </span> 正交矩阵（纯旋转）。</td>
+<td>非交换李群，描述纯旋转。</td>
+<td>物理学（旋转对称性）、计算机图形学、航天航空。</td>
+</tr>
+<tr>
+<td><strong>酉群 (Unitary Group)</strong></td>
+<td>U(n)</td>
+<td>所有保持复数内积的<span class="math inline"> n \times n </span> 酉矩阵组成的群。</td>
+<td>非交换李群，描述复数空间中的对称性。</td>
+<td>量子力学、量子信息、随机矩阵理论。</td>
+</tr>
+<tr>
+<td><strong>特殊酉群 (Special Unitary Group)</strong></td>
+<td>SU(n)</td>
+<td>所有行列式为 1 的<span class="math inline"> n \times n </span> 酉矩阵组成的群。</td>
+<td>非交换李群，描述复数空间中的体积保持变换。</td>
+<td>量子力学（自旋对称性）、粒子物理、规范场论。</td>
+</tr>
+<tr>
+<td><strong>洛伦兹群 (Lorentz Group)</strong></td>
+<td>O(1, 3)</td>
+<td>保持狭义相对论时空距离不变的变换群。</td>
+<td>非交换李群，描述空间和时间的对称性。</td>
+<td>狭义相对论、量子场论、广义相对论。</td>
+</tr>
+<tr>
+<td><strong>庞加莱群 (Poincaré Group)</strong></td>
+<td>—</td>
+<td>洛伦兹群和平移群的半直积，描述四维时空中的对称变换。</td>
+<td>非交换李群，包含空间转动、时间平移等。</td>
+<td>相对论物理学、量子场论、粒子物理。</td>
+</tr>
+<tr>
+<td><strong>圆周群 (Circle Group)</strong></td>
+<td>U(1)</td>
+<td>所有单位模的复数组成的群，运算是复数乘法。</td>
+<td>交换李群，描述一维复数向量的相位旋转。</td>
+<td>电磁学、量子力学（U(1) 规范对称性）。</td>
+</tr>
+<tr>
+<td><strong>三维特殊酉群 (Special Unitary Group in 3D)</strong></td>
+<td>SU(3)</td>
+<td>所有行列式为 1 的 3 × 3 酉矩阵组成的群。</td>
+<td>非交换李群，描述三维复数空间中的对称性。</td>
+<td>粒子物理学（强相互作用，量子色动力学）。</td>
+</tr>
+<tr>
+<td><strong>仿射群 (Affine Group)</strong></td>
+<td>Aff(n)</td>
+<td>由<span class="math inline"> n </span>-维空间的线性变换和平移组成的群。</td>
+<td>非交换李群，描述线性变换和平移。</td>
+<td>计算机视觉、几何学、机器人学。</td>
+</tr>
+</tbody>
+</table>
+<p>如何直观理解？</p>
+<ul>
+<li>旋转：假设你在二维平面上旋转一个物体。所有可能的旋转可以形成一个连续的对称性群，即李群。你可以通过一个连续的角度来描述旋转，比如从0度开始逐渐增加到360度，然后再回到原点。这种旋转形成了一个李群，通常记作 <strong>SO(2)</strong>，表示二维空间中的旋转群。</li>
+<li>平移：类似地，在一条直线上任意移动一个物体，所有可能的平移也组成了一个李群。你可以通过平移的距离来描述对称性，这种李群通常记作 <strong>R</strong>，即实数在加法下形成的群。</li>
+</ul>
+<h4 id="_9">非李群例子？</h4>
+<blockquote>
+<p>先找一些内容放上，以后再说</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th><strong>群类型</strong></th>
+<th><strong>符号</strong></th>
+<th><strong>定义</strong></th>
+<th><strong>特点</strong></th>
+<th><strong>应用</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>对称群 (Symmetric Group)</strong></td>
+<td>Sₙ</td>
+<td>n 个元素的全排列构成的群，运算是排列的复合。</td>
+<td>非交换群（当 n ≥ 3 时）。</td>
+<td>化学（分子对称性）、物理学、组合数学。</td>
+</tr>
+<tr>
+<td><strong>二面体群 (Dihedral Group)</strong></td>
+<td>Dₙ</td>
+<td>描述正 n 边形的旋转和反射的对称群。</td>
+<td>非交换群，具有 2n 个元素。</td>
+<td>图像处理、晶体学、机器人学。</td>
+</tr>
+<tr>
+<td><strong>阿贝尔群 (Abelian Group)</strong></td>
+<td>ℤ, +</td>
+<td>满足交换律的群，如整数加法群。</td>
+<td>交换群，但通常没有乘法结构。</td>
+<td>密码学（ECC）、网络编码、物理学（守恒定律）。</td>
+</tr>
+<tr>
+<td><strong>有限循环群 (Finite Cyclic Group)</strong></td>
+<td>ℤₙ</td>
+<td>由一个生成元生成的有限阶交换群。</td>
+<td>交换群，通常没有加法结构。</td>
+<td>密码学（Diffie-Hellman）、编码理论、图像处理。</td>
+</tr>
+<tr>
+<td><strong>四元数群 (Quaternion Group)</strong></td>
+<td>Q₈</td>
+<td>包含 8 个元素的非交换群，元素有 {1, -1, i, -i, j, -j, k, -k} 。</td>
+<td>非交换有限群，没有加法结构。</td>
+<td>计算机图形学（旋转）、物理学（自旋）、控制理论。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ring">环（Ring）</h3>
+<p>环（Ring）是一个代数结构，其中加法部分形成一个阿贝尔群，乘法部分满足封闭性、结合律和分配律。</p>
+<p><img alt="ring and field" src="https://blog.debao.me/images/science/math_basic_ring_field.png"></p>
+<h4 id="_10">定义</h4>
+<p>一个<strong>环</strong>（<strong>Ring</strong>）是由一个<strong>集合</strong>（<strong>Set</strong>） 和两个<strong>二元运算</strong>（<strong>Binary Operations</strong>）——加法和乘法组成的代数结构，它满足以下条件：</p>
+<p>加法部分：形成阿贝尔群（<strong>Additive Group</strong>）：</p>
+<ul>
+<li><strong>加法封闭性</strong>（<strong>Closure under Addition</strong>）：对于任意 a, b ∈ R，有 a + b ∈ R。</li>
+<li><strong>加法结合律</strong>（<strong>Associativity of Addition</strong>）：对于任意 a, b, c ∈ R，有 (a + b) + c = a + (b + c)。</li>
+<li><strong>加法交换律</strong>（<strong>Commutativity of Addition</strong>）：对于任意 a, b ∈ R，有 a + b = b + a。</li>
+<li><strong>加法单位元</strong>（<strong>Additive Identity</strong>）：存在一个元素 0 ∈ R，使得对任意 a ∈ R，有 a + 0 = 0 + a = a。</li>
+<li><strong>加法逆元</strong>（<strong>Additive Inverse</strong>）：对于任意 a ∈ R，存在一个元素 -a ∈ R，使得 a + (-a) = (-a) + a = 0。</li>
+</ul>
+<p>乘法部分：</p>
+<ul>
+<li><strong>乘法封闭性</strong>（<strong>Closure under Multiplication</strong>）：对于任意 a, b ∈ R，有 a ∘ b ∈ R。</li>
+<li><strong>乘法结合律</strong>（<strong>Associativity of Multiplication</strong>）：对于任意 a, b, c ∈ R，有 (a ∘ b) ∘ c = a ∘ (b ∘ c)。</li>
+</ul>
+<p>加法和乘法：</p>
+<ul>
+<li><strong>分配律</strong>（<strong>Distributivity</strong>）：对于任意 a, b, c ∈ R，有 a ∘ (b + c) = (a ∘ b) + (a ∘ c) 和 (a + b) ∘ c = (a ∘ c) + (b ∘ c)</li>
+</ul>
+<p><strong>注</strong>：</p>
+<ul>
+<li>如果乘法也满足<strong>交换律</strong>（<strong>Commutativity of Multiplication</strong>），即对于所有 a, b ∈ R 有 a ∘ b = b ∘ a ，则称为<strong>交换环</strong>（<strong>Commutative Ring</strong>）。</li>
+<li>如果 R 中存在一个乘法单位元 1 使得对所有 a ∈ R 有 1 ∘ a = a ∘ 1 = a， 则称 R 为<strong>含幺环</strong>（<strong>Ring with Unity</strong>）。</li>
+</ul>
+<h4 id="_11">环的例子？</h4>
+<table>
+<thead>
+<tr>
+<th><strong>环类型</strong></th>
+<th><strong>符号</strong></th>
+<th><strong>定义</strong></th>
+<th><strong>特点</strong></th>
+<th><strong>应用</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>整数环 (Integer Ring)</strong></td>
+<td>ℤ</td>
+<td>包含所有整数，运算是通常的加法和乘法。</td>
+<td>交换环，整除理论完善。</td>
+<td>数论、同余、模运算、质数分解。</td>
+</tr>
+<tr>
+<td><strong>多项式环 (Polynomial Ring)</strong></td>
+<td>R[x]</td>
+<td>由系数来自环 R 的多项式构成的环。</td>
+<td>交换环，如果 R 是整环，则 R[x] 是唯一分解整环。</td>
+<td>代数几何、计算机代数、控制理论。</td>
+</tr>
+<tr>
+<td><strong>矩阵环 (Matrix Ring)</strong></td>
+<td>Mₙ(R)</td>
+<td>包含所有 n × n 矩阵的集合，矩阵的元素来自环 R。</td>
+<td>非交换环，矩阵乘法不满足交换律。</td>
+<td>线性代数、量子力学、控制理论、图像处理。</td>
+</tr>
+<tr>
+<td><strong>高斯整数环 (Gaussian Integer Ring)</strong></td>
+<td>ℤ[i]</td>
+<td>由形如 a + bi 的复数构成，其中 a 和 b 是整数，i 是虚数单位。</td>
+<td>交换环，但不是域，没有乘法逆元。</td>
+<td>数论，特别是二次形式、素数分解。</td>
+</tr>
+<tr>
+<td><strong>模 n 环 (Ring of Integers Modulo n)</strong></td>
+<td>ℤ/nℤ 或 ℤₙ</td>
+<td>包含整数 0, 1, 2, ..., n-1，运算按模 n 进行。</td>
+<td>有限环，n 为素数时是域，n 非素数时是环。</td>
+<td>密码学、编码理论、数论、计算机科学。</td>
+</tr>
+<tr>
+<td><strong>欧几里得环 (Euclidean Ring)</strong></td>
+<td>多种符号</td>
+<td>可以使用欧几里得算法计算最大公因数的环，例如 ℤ、R[x]。</td>
+<td>交换环，可以定义“度量”或“大小”的概念。</td>
+<td>数论、多项式环、代数几何。</td>
+</tr>
+<tr>
+<td><strong>唯一分解整环 (UFD, Unique Factorization Domain)</strong></td>
+<td>多种符号</td>
+<td>元素可以唯一地分解为不可约元素的乘积，如 ℤ 和 R[x]。</td>
+<td>交换环，类似素数分解的唯一分解性质。</td>
+<td>代数几何、数论、代数拓扑。</td>
+</tr>
+<tr>
+<td><strong>余数环 (Quotient Ring)</strong></td>
+<td>R/I</td>
+<td>通过在一个环 R 上对某个理想 I 进行商构造出的环。</td>
+<td>交换或非交换，取决于母环 R 的性质。</td>
+<td>理想结构、代数几何、模论。</td>
+</tr>
+<tr>
+<td><strong>布尔环 (Boolean Ring)</strong></td>
+<td>B</td>
+<td>满足 a² = a 的环，所有元素的平方等于自身。</td>
+<td>交换环，常用于逻辑和组合代数。</td>
+<td>逻辑学、组合数学、数字电路设计。</td>
+</tr>
+<tr>
+<td><strong>幂零环 (Nilpotent Ring)</strong></td>
+<td>N</td>
+<td>一个环中，存在某个正整数 k 使得所有元素的 k 次幂为 0。</td>
+<td>非交换环，通常用于研究代数的奇异性质。</td>
+<td>奇异代数结构、代数几何中的奇点。</td>
+</tr>
+</tbody>
+</table>
+<h4 id="divisibility-theory-in-rings">环的整除理论 (Divisibility Theory in Rings)</h4>
+<p>虽然一般的环没有除法运算，但在某些环中，我们可以定义和研究类似于整数中的整除性质。这些环允许我们讨论因数、最大公因数、素元素等概念。常见的环中具有整除理论的例子包括：</p>
+<ul>
+<li><strong>整数环 ℤ (Integer Ring)</strong>：这是最常见的环，包含所有的整数。在这个环中，我们有完整的整除理论，例如素数、最大公因数、最小公倍数等。</li>
+<li><strong>欧几里得环 (Euclidean Ring)</strong>：如果一个环中可以定义一种“度量”或“大小”的概念，使得能够像在整数环中那样使用欧几里得算法来计算最大公因数，那么这个环就称为欧几里得环。例如，多项式环 𝑅[𝑥] (Polynomial Ring over Real Numbers) 和高斯整数环 ℤ[𝑖] (Gaussian Integer Ring) 都是欧几里得环。</li>
+<li><strong>唯一分解整环（UFD, Unique Factorization Domain）</strong>：在这些环中，元素可以唯一地分解为不可约元素的乘积，类似于整数的素数分解。比如，整数环 ℤ 和多项式环 𝑘[𝑥] (Polynomial Ring over a Field 𝑘)（其中 𝑘 是一个域）都是唯一分解整环。</li>
+</ul>
+<h3 id="field">域（Field）</h3>
+<p>域（Field）是一个更严格的结构，不仅加法部分形成阿贝尔群，乘法部分（不包括 0）也形成阿贝尔群，并且加法和乘法之间有分配律。</p>
+<h4 id="_12">定义</h4>
+<p>一个<strong>域</strong>（<strong>Field</strong>）是一个<strong>集合</strong>（<strong>Set</strong>）和两个<strong>二元运算</strong>（<strong>Binary Operations</strong>）——加法和乘法，它满足以下条件：</p>
+<p>加法部分：形成阿贝尔群（<strong>Additive Group</strong>）：</p>
+<ul>
+<li><strong>加法封闭性</strong>（<strong>Closure under Addition</strong>）：对于任意 a, b ∈ F，有 a + b ∈ F。</li>
+<li><strong>加法结合律</strong>（<strong>Associativity of Addition</strong>）：对于任意 a, b, c ∈ F，有 (a + b) + c = a + (b + c)。</li>
+<li><strong>加法交换律</strong>（<strong>Commutativity of Addition</strong>）：对于任意 a, b ∈ F，有 a + b = b + a。</li>
+<li><strong>加法单位元</strong>（<strong>Additive Identity</strong>）：存在一个元素 0 ∈ F，使得对任意 a ∈ F，有 a + 0 = 0 + a = a。</li>
+<li><strong>加法逆元</strong>（<strong>Additive Inverse</strong>）：对于任意 a ∈ F，存在一个元素 -a ∈ F，使得 a + (-a) = (-a) + a = 0。</li>
+</ul>
+<p>乘法部分：形成阿贝尔群（不含 0 元素）（<strong>Multiplicative Group</strong>）：</p>
+<ul>
+<li><strong>乘法封闭性</strong>（<strong>Closure under Multiplication</strong>）：对于任意 a, b ∈ F，有 a ∘ b ∈ F。</li>
+<li><strong>乘法结合律</strong>（<strong>Associativity of Multiplication</strong>）：对于任意 a, b, c ∈ F，有 (a ∘ b) ∘ c = a ∘ (b ∘ c)。</li>
+<li><strong>乘法交换律</strong>（<strong>Commutativity of Multiplication</strong>）：对于任意 a, b ∈ F，有 a ∘ b = b ∘ a。</li>
+<li><strong>乘法单位元</strong>（<strong>Multiplicative Identity</strong>）：存在一个元素 1 ∈ F，使得对任意 a ∈ F，有 a ∘ 1 = 1 ∘ a = a。</li>
+<li><strong>乘法逆元</strong>（<strong>Multiplicative Inverse</strong>）：对于任意 a ≠ 0 ∈ F，存在一个元素 a⁻¹ ∈ F，使得 a ∘ a⁻¹ = a⁻¹ ∘ a = 1。</li>
+</ul>
+<p>加法和乘法：分配律（<strong>Distributivity</strong>）：</p>
+<ul>
+<li>对于任意 a, b, c ∈ F，有 a ∘ (b + c) = (a ∘ b) + (a ∘ c) 和 (a + b) ∘ c = (a ∘ c) + (b ∘ c)</li>
+</ul>
+<h4 id="_13">分类</h4>
+<blockquote>
+<p>先列上，混个脸熟</p>
+</blockquote>
+<p><strong>无限域 (Infinite Fields)</strong></p>
+<ul>
+<li>有理数域 (Rational number field, ℚ)：包含所有形如 a/b 的数，其中 a, b ∈ ℤ，且 b ≠ 0。</li>
+<li>实数域 (Real number field, ℝ)：包含所有实数，包括有理数和无理数。</li>
+<li>复数域 (Complex number field, ℂ)：包含所有形如 a + bi 的数，其中 a, b ∈ ℝ，且 i² = -1。</li>
+<li>有理函数域 (Field of rational functions, ℝ(x) 或 ℂ(x))：由域上的有理函数（两个多项式的比）构成。</li>
+<li>p进数域 (p-adic number field, ℚₚ)：基于质数 p 的进制展开的有理数扩展。</li>
+</ul>
+<p><strong>有限域 (Finite Fields)</strong>，也称为伽罗瓦域（Galois Field），是指包含有限个元素的域。每个有限域的元素个数（阶，order）为某个质数
+p 的幂。注意所有的有限域都具有特征p，反之不成立。</p>
+<ul>
+<li>素域 (Prime field, 𝔽ₚ 或 ℤ/pℤ)：包含 p 个元素的有限域，其中 p 为质数。</li>
+<li>扩展有限域 (Extended finite field, 𝔽ₚⁿ)：包含 pⁿ 个元素的有限域，p 为质数，n 为正整数。</li>
+</ul>
+<p><strong>特征为 0 的域 (Fields of Characteristic 0)</strong>，是指一个域中的加法运算没有任何有限次的重复加法能够得到 0，也就是说，域中的单位元 1 不能通过有限次的加法得到 0。</p>
+<ul>
+<li>有理数域 (Rational number field, ℚ)：特征为 0，无法通过有限次加法得到 1。</li>
+<li>实数域 (Real number field, ℝ)：完备有序域，特征为 0。</li>
+<li>复数域 (Complex number field, ℂ)：代数闭域，特征为 0。</li>
+</ul>
+<p><strong>特征为 p 的域 (Fields of Characteristic p)</strong>，是指加法运算下，最小的正整数p 使得任意元素加自己p 次等于 0。</p>
+<ul>
+<li>有限域 (Finite field, 𝔽ₚ)：包含 p 个元素，特征为 p。</li>
+<li>扩展有限域 (Extended finite field, 𝔽ₚⁿ)：包含 pⁿ 个元素，特征为 p。</li>
+</ul>
+<p><strong>代数闭域 (Algebraically Closed Fields)</strong>，每个非常数多项式都可以在这个域中分解为一组一次多项式的乘积。这意味着多项式的所有根都在这个域中。</p>
+<ul>
+<li>复数域 (Complex number field, ℂ)：每个非零多项式在该域上都有解。</li>
+<li>有限域的代数闭包 (Algebraic closure of finite field, 𝔽̅ₚ)：包含所有有限域 𝔽ₚ 的代数扩展。</li>
+</ul>
+<p><strong>完备域 (Complete Fields)</strong>：是指在某种度量或拓扑结构下，所有的柯西序列（Cauchy sequences）都收敛到该域中的某个元素的域。有理数域不完备。</p>
+<ul>
+<li>实数域 (Real number field, ℝ)：完备有序域，所有柯西序列在该域中收敛。</li>
+<li>p进数域 (p-adic number field, ℚₚ)：在 p-进数度量下完备。</li>
+</ul>
+<p><strong>函数域 (Function Fields)</strong></p>
+<ul>
+<li>有理函数域 (Field of rational functions, ℝ(x) 或 ℂ(x))：由域上的 <strong>有理函数（两个多项式的比）</strong> 构成。</li>
+</ul>
+<p><strong>超复数域 (Hypercomplex Fields)</strong></p>
+<ul>
+<li>四元数域 (Quaternion field, ℍ)：由复数扩展而成，包含非交换乘法的代数结构。</li>
+<li>克利福德代数 (Clifford algebra)：实数或复数域的扩展，包含更高维的乘法结构。</li>
+</ul>
+<h2 id="space">空间（Space）</h2>
+<p>空间 (space) = 集合（set） + 结构（structure）</p>
+<p><img alt="space" src="https://blog.debao.me/images/science/math_basic_space.png"></p>
+<h3 id="_14">什么是空间？</h3>
+<p>一个空间是由一个集合以及定义在这个集合上的某种结构所组成的。根据不同的数学领域和研究的对象，结构的类型可以不同，从而产生不同类型的空间。</p>
+<ul>
+<li>集合：空间的基础是一个集合。集合中的元素可以是点、向量、函数、序列、矩阵等。集合本身只是元素的一个无序集合，它没有任何额外的结构或性质。</li>
+<li>结构：为了给集合引入更多的性质和规则，我们在集合上定义某种结构。不同的结构使得集合具备不同的几何或代数意义。</li>
+</ul>
+<p>结构的种类很多，常见的包括：</p>
+<ul>
+<li>拓扑结构(Topological Structure)：定义开集与闭集，研究点的邻域、收敛与连续等概念。</li>
+<li>度量结构(Metric Structure)：定义两个点之间的距离，研究距离相关的性质，如长度、极限、连续等。</li>
+<li>内积结构(Inner Product Structure)：定义向量之间的内积，研究角度、正交性、投影等问题。</li>
+<li>线性结构(Linear Structure)：定义向量的加法与标量乘法，研究线性组合、线性变换等。</li>
+<li>范数结构(Norm Structure)：定义向量的长度，研究向量的大小和收敛性等。</li>
+</ul>
+<p>注意：</p>
+<ul>
+<li>线性结构/向量结构 是一个代数结构，研究向量的线性组合、加法和标量乘法。</li>
+<li>拓扑结构 是一个几何结构，研究集合的拓扑性质，如连续性和收敛性。</li>
+</ul>
+<blockquote>
+<p>拓扑学是Topology的音译，如果意译的话，是不是会叫 连续形态学，或空间结构学？？</p>
+</blockquote>
+<h3 id="_15">距离，范数，内积</h3>
+<ul>
+<li>距离：用来度量两个点之间的“远近”。</li>
+<li>范数：用来衡量向量的长度或大小。</li>
+<li>内积：用来衡量两个向量之间的夹角或相似性。</li>
+</ul>
+<p>它们之间的关系是：<strong>内积</strong>可以导出<strong>范数</strong>，<strong>范数</strong>可以导出<strong>距离</strong>，而<strong>内积</strong>也可以直接定义<strong>距离</strong>。</p>
+<p>列个表：</p>
+<table>
+<thead>
+<tr>
+<th><strong>概念</strong></th>
+<th><strong>距离 (Distance)</strong></th>
+<th><strong>范数 (Norm)</strong></th>
+<th><strong>内积 (Inner Product)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>定义</strong></td>
+<td>两个点之间的度量，用来衡量它们之间的“远近”。通常定义在<strong>度量空间 (Metric Space)</strong> 中。</td>
+<td>向量的长度或大小的度量，定义在<strong>赋范向量空间 (Normed Vector Space)</strong></td>
+<td>两个向量之间的乘积，用来衡量它们的相似性或夹角。定义在<strong>内积空间 (Inner Product Space)</strong> 中。</td>
+</tr>
+<tr>
+<td><strong>主要性质</strong></td>
+<td>1.<strong>非负性</strong>: 𝑑(𝑥, 𝑦) ≥ 0 <br/>2. <strong>对称性</strong>: 𝑑(𝑥, 𝑦) = 𝑑(𝑦, 𝑥) <br/>3. <strong>同一性</strong>: 𝑑(𝑥, 𝑦) = 0 当且仅当 𝑥 = 𝑦 <br/>4. <strong>三角不等式</strong>: 𝑑(𝑥, 𝑧) ≤ 𝑑(𝑥, 𝑦) + 𝑑(𝑦, 𝑧)</td>
+<td>1.<strong>非负性</strong>: ∥𝑥∥ ≥ 0 <br/>2. <strong>齐次性</strong>: ∥𝛼𝑥∥ = |𝛼| ∥𝑥∥ <br/>3. <strong>三角不等式</strong>: ∥𝑥 + 𝑦∥ ≤ ∥𝑥∥ + ∥𝑦∥ <br/>4. <strong>同一性</strong>: ∥𝑥∥ = 0 当且仅当 𝑥 = 0</td>
+<td>1.<strong>共轭对称性</strong>: ⟨𝑥, 𝑦⟩ = ⟨𝑦, 𝑥⟩̅ <br/>2. <strong>线性性</strong>: 对第一个变量是线性的 <br/>3. <strong>正定性</strong>: ⟨𝑥, 𝑥⟩ ≥ 0，且 ⟨𝑥, 𝑥⟩ = 0 当且仅当 𝑥 = 0</td>
+</tr>
+<tr>
+<td><strong>作用</strong></td>
+<td>衡量点与点之间的距离，定义了空间中的几何结构。</td>
+<td>衡量向量的长度或大小，定义了向量空间中的几何结构。</td>
+<td>衡量两个向量之间的夹角或相似性，定义了向量空间中的角度和正交性。</td>
+</tr>
+<tr>
+<td><strong>与其他概念的关系</strong></td>
+<td>1. 距离可以从范数中导出：𝑑(𝑥, 𝑦) = ∥𝑥 − 𝑦∥（如果空间带有范数）。 <br/>2. 距离可以通过内积诱导：𝑑(𝑥, 𝑦) = √⟨𝑥 − 𝑦, 𝑥 − 𝑦⟩（如果空间带有内积）。</td>
+<td>1. 范数可以从内积中导出：∥𝑥∥ = √⟨𝑥, 𝑥⟩（如果空间带有内积）。 <br/>2. 范数可以诱导距离：𝑑(𝑥, 𝑦) = ∥𝑥 − 𝑦∥。</td>
+<td>1. 内积可以诱导范数：∥𝑥∥ = √⟨𝑥, 𝑥⟩ <br/>2. 内积可以诱导距离：𝑑(𝑥, 𝑦) = √⟨𝑥 − 𝑦, 𝑥 − 𝑦⟩。</td>
+</tr>
+<tr>
+<td><strong>例子</strong></td>
+<td>欧几里得空间中的距离：𝑑(𝑥, 𝑦) = √((𝑥₁ − 𝑦₁)² + (𝑥₂ − 𝑦₂)² + … + (𝑥ₙ − 𝑦ₙ)²)。</td>
+<td>欧几里得空间中的范数：∥𝑥∥ = √(𝑥₁² + 𝑥₂² + … + 𝑥ₙ²)。</td>
+<td>欧几里得空间中的内积：⟨𝑥, 𝑦⟩ = 𝑥₁𝑦₁ + 𝑥₂𝑦₂ + … + 𝑥ₙ𝑦ₙ。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_16">一些空间？</h3>
+<h4 id="vector-space"><strong>线性空间 (Vector Space)</strong></h4>
+<p>线性空间是一个由向量组成的集合，且在该集合中定义了向量的加法和标量乘法运算。它满足加法与标量乘法的封闭性、交换律、结合律、单位元和逆元等性质。</p>
+<p>比如：欧几里得空间 ℝⁿ 是一个线性空间。</p>
+<h4 id="topological-space"><strong>拓扑空间 (Topological Space)</strong></h4>
+<p>拓扑空间是一个集合 𝑋 和一组称为“开集”的子集构成的结构，满足以下条件：空集和整个集合都是开集；任意开集的并集是开集；有限个开集的交集是开集。这种结构允许我们讨论连续性、收敛性等概念。</p>
+<p>比如：实数集 ℝ 配备标准拓扑是一个拓扑空间。</p>
+<h4 id="metric-space"><strong>度量空间 (Metric Space)</strong></h4>
+<p>度量空间是一个集合 𝑋，配备了一个度量（或称距离函数） 𝑑(𝑥, 𝑦)，该度量函数满足非负性、同一性、对称性和三角不等式。度量空间定义了集合中元素之间的距离。</p>
+<p>比如：欧几里得空间 ℝⁿ 配备欧几里得度量 𝑑(𝑥, 𝑦) = √((𝑥₁ − 𝑦₁)² + … + (𝑥ₙ − 𝑦ₙ)²) 是一个度量空间。</p>
+<h4 id="hilbert-space"><strong>希尔伯特空间 (Hilbert Space)</strong></h4>
+<p>希尔伯特空间是带有内积的完备向量空间，其中内积定义了向量的长度和两个向量之间的夹角。完备性是指每个柯西序列在该空间中收敛。</p>
+<p>比如：有限维欧几里得空间 ℝⁿ 是一个希尔伯特空间；常见的无穷维希尔伯特空间是 𝐿² 空间（平方可积函数空间）。</p>
+<h4 id="euclidean-space"><strong>欧几里得空间 (Euclidean Space)</strong></h4>
+<p>欧几里得空间是一个带有标准内积的有限维实向量空间，通常表示为 ℝⁿ。它是我们日常几何直觉中的空间，具有内积、范数和距离的概念。</p>
+<p>比如：ℝ² 和 ℝ³ 是常见的欧几里得空间，用来描述平面和三维空间。</p>
+<h4 id="unitary-space"><strong>酉空间 (Unitary Space)</strong></h4>
+<p>酉空间是带有复数内积的向量空间，通常是复数域上的希尔伯特空间。它的内积满足共轭对称性和正定性。酉空间中的变换保持内积不变。</p>
+<p>比如：复数向量空间 ℂⁿ 配备标准复数内积是一个酉空间。</p>
+<h4 id="symplectic-space"><strong>辛空间 (Symplectic Space)</strong></h4>
+<p>辛空间是一个偶数维的实向量空间，配备一个非退化的、反对称的双线性形式（称为辛形式）。辛几何用于描述经典力学中的相空间。</p>
+<p>比如：在经典力学中，位置和动量的相空间 ℝ²ⁿ 配备辛形式 ω = ∑(dpᵢ ∧ dqᵢ) 是一个辛空间。</p></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-10-10T13:06:00+08:00" pubdate>Thu 10 October 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/science.html'>Science</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

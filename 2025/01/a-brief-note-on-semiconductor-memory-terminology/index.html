@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>半导体存储器术语小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/science.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">半导体存储器术语小记</h1>
+    <p class="meta">
+<time datetime="2025-01-23T23:15:00+08:00" pubdate>Thu 23 January 2025</time>    </p>
+</header>
+
+  <div class="entry-content"><div class="toc">
+<ul>
+<li><a href="#_1">术语</a></li>
+<li><a href="#nand-flash">NAND Flash</a><ul>
+<li><a href="#_2">时间线</a></li>
+<li><a href="#floating-gates-charge-traps">Floating Gates 与 Charge Traps</a><ul>
+<li><a href="#floating-gate">浮动栅（Floating Gate）</a></li>
+<li><a href="#charge-traps">电荷捕捉（Charge Traps）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#dram">DRAM</a><ul>
+<li><a href="#_3">时间线</a></li>
+</ul>
+</li>
+<li><a href="#bit-line-word-line">Bit Line 与 Word Line</a></li>
+<li><a href="#_4">参考</a></li>
+</ul>
+</div>
+<h2 id="_1">术语</h2>
+<p>借助AI，先整个表</p>
+<table>
+<thead>
+<tr>
+<th><strong>术语</strong></th>
+<th><strong>英文全称</strong></th>
+<th><strong>中文名称</strong></th>
+<th><strong>备注</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DRAM</strong></td>
+<td>Dynamic Random Access Memory</td>
+<td>动态随机存储器</td>
+<td>易失性，需刷新，速度快，容量大，常用于计算机主存（RAM）。</td>
+</tr>
+<tr>
+<td><strong>SRAM</strong></td>
+<td>Static Random Access Memory</td>
+<td>静态随机存储器</td>
+<td>易失性，无需刷新，速度快但成本高，常用于 CPU 缓存（L1/L2/L3）。</td>
+</tr>
+<tr>
+<td><strong>SDRAM</strong></td>
+<td>Synchronous Dynamic Random Access Memory</td>
+<td>同步动态随机存取存储器</td>
+<td>2000年，SDRAM已经取代了其他各种类型的DRAM</td>
+</tr>
+<tr>
+<td><strong>NAND Flash</strong></td>
+<td>NAND Flash Memory</td>
+<td>NAND 闪存</td>
+<td>非易失性，存储密度高，成本低，常用于 U 盘、SSD、存储卡和手机存储。</td>
+</tr>
+<tr>
+<td><strong>NOR Flash</strong></td>
+<td>NOR Flash Memory</td>
+<td>NOR 闪存</td>
+<td>非易失性，随机访问性能优异，常用于嵌入式系统固件（如 BIOS 芯片）。</td>
+</tr>
+<tr>
+<td><strong>3D NAND</strong></td>
+<td>3D NAND Flash</td>
+<td>三维堆叠式 NAND 闪存</td>
+<td>存储单元垂直堆叠，提升存储密度，降低成本，广泛用于现代 SSD 和存储卡中。</td>
+</tr>
+<tr>
+<td><strong>ROM</strong></td>
+<td>Read-Only Memory</td>
+<td>只读存储器</td>
+<td>非易失性，数据不可修改或仅可少量修改，常用于存储固件或不可变数据。</td>
+</tr>
+<tr>
+<td><strong>PROM</strong></td>
+<td>Programmable Read-Only Memory</td>
+<td>可编程只读存储器</td>
+<td>一次性可编程的 ROM 类型。</td>
+</tr>
+<tr>
+<td><strong>EPROM</strong></td>
+<td>Erasable Programmable Read-Only Memory</td>
+<td>可擦除可编程只读存储器</td>
+<td>可通过紫外光擦除数据后重新写入。</td>
+</tr>
+<tr>
+<td><strong>EEPROM</strong></td>
+<td>Electrically Erasable Programmable ROM</td>
+<td>电可擦除可编程只读存储器</td>
+<td>数据通过电信号擦除和写入，常用于存储小量可修改数据。</td>
+</tr>
+<tr>
+<td><strong>SLC</strong></td>
+<td>Single-Level Cell</td>
+<td>单层单元存储</td>
+<td>每存储单元存储 1 位数据，速度快、耐用性高、成本高，适合工业级和高性能存储应用。</td>
+</tr>
+<tr>
+<td><strong>MLC</strong></td>
+<td>Multi-Level Cell</td>
+<td>多层单元存储</td>
+<td>每存储单元存储 2 位数据，成本低于 SLC，耐用性和速度略低，适合消费级 SSD 和存储卡。</td>
+</tr>
+<tr>
+<td><strong>TLC</strong></td>
+<td>Triple-Level Cell</td>
+<td>三层单元存储</td>
+<td>每存储单元存储 3 位数据，成本更低，存储密度更高，适合大容量存储设备，如消费级 SSD 和 U 盘。</td>
+</tr>
+<tr>
+<td><strong>QLC</strong></td>
+<td>Quad-Level Cell</td>
+<td>四层单元存储</td>
+<td>每存储单元存储 4 位数据，成本最低，存储密度最高，但耐用性和速度较差，适合冷存储和大容量 SSD。</td>
+</tr>
+<tr>
+<td><strong>SD</strong></td>
+<td>Secure Digital Card</td>
+<td>安全数码卡</td>
+<td>一种基于 NAND Flash 的存储卡，广泛用于相机、便携设备和嵌入式设备。</td>
+</tr>
+<tr>
+<td><strong>TF</strong></td>
+<td>TransFlash</td>
+<td>微型存储卡</td>
+<td>又称 MicroSD 卡，比 SD 更小，常用于手机、无人机、智能设备扩展存储。</td>
+</tr>
+<tr>
+<td><strong>SSD</strong></td>
+<td>Solid-State Drive</td>
+<td>固态硬盘</td>
+<td>基于 NAND Flash 的存储设备，速度快、无机械部件，广泛用于笔记本电脑和服务器。</td>
+</tr>
+<tr>
+<td><strong>eMMC</strong></td>
+<td>Embedded MultiMedia Card</td>
+<td>嵌入式多媒体卡</td>
+<td>内嵌式 NAND 存储，常用于手机、平板电脑等设备，成本低，性能一般。</td>
+</tr>
+<tr>
+<td><strong>UFS</strong></td>
+<td>Universal Flash Storage</td>
+<td>通用闪存存储</td>
+<td>高性能嵌入式存储技术，比 eMMC 更快，常用于高端手机和平板设备。</td>
+</tr>
+<tr>
+<td><strong>NVMe</strong></td>
+<td>Non-Volatile Memory Express</td>
+<td>非易失性存储器主机控制器接口规范</td>
+<td>基于 PCIe 接口协议，专为高性能 SSD 设计，提供更高带宽和更低延迟。</td>
+</tr>
+<tr>
+<td><strong>ECC</strong></td>
+<td>Error-Correcting Code</td>
+<td>纠错码</td>
+<td>检测并修正存储器中数据错误，常用于服务器和关键任务系统，提高数据可靠性。</td>
+</tr>
+<tr>
+<td><strong>HBM</strong></td>
+<td>High Bandwidth Memory</td>
+<td>高带宽存储器</td>
+<td>多层 DRAM 堆叠，高带宽低功耗，常用于高性能计算和 GPU。</td>
+</tr>
+<tr>
+<td><strong>DDR</strong></td>
+<td>Double Data Rate</td>
+<td>双倍数据速率存储器</td>
+<td>DRAM 的改进版，速度更快，演进版本：DDR → DDR2 → DDR3 → DDR4 → DDR5。</td>
+</tr>
+<tr>
+<td><strong>LPDDR</strong></td>
+<td>Low Power Double Data Rate</td>
+<td>低功耗双倍数据速率存储器</td>
+<td>DDR 的低功耗版本，专为移动设备设计，演进版本：LPDDR → LPDDR2 → LPDDR3 → LPDDR5。</td>
+</tr>
+<tr>
+<td>SDR</td>
+<td>Single data rate</td>
+<td>单数据速率同步</td>
+<td>SDR SDRAM 是第一代 SDRAM。早已被 DDR 取代</td>
+</tr>
+</tbody>
+</table>
+<h2 id="nand-flash">NAND Flash</h2>
+<blockquote>
+<p>Flash 存储器从 1980 年代的发明到如今的全面普及，经历了架构演进（NOR vs NAND）、存储单元技术优化（SLC → QLC）、以及制造工艺的突破（2D → 3D NAND）。还改变了存储设备的形态（如 U 盘、SSD）。</p>
+</blockquote>
+<h3 id="_2">时间线</h3>
+<ul>
+<li>1980年：富士通（Fujitsu）的 Masuoka Fujio 提出 Flash Memory（闪存）概念。</li>
+<li>1988年：英特尔（Intel）推出首款商业化 NOR Flash，用于嵌入式代码存储。</li>
+<li>1989年：东芝（Toshiba）推出 NAND Flash，专注于高密度数据存储。</li>
+<li>1995年：CompactFlash (CF) 卡问世，基于 NAND Flash，进入消费市场。</li>
+<li>2000年：首款 USB Flash Drive（U盘）推出，推动 NAND Flash 的普及。</li>
+<li>2003年：第一款基于 NAND Flash 的 Solid-State Drive (SSD) 问世。</li>
+<li>2006年：Secure Digital (SD) 和 microSD 卡成为移动设备主要存储方式。</li>
+<li>2013年：三星（Samsung）推出 3D NAND 技术，存储单元实现垂直堆叠。</li>
+<li>2016年：3D NAND 成为主流，推动 SSD 容量提升、价格下降。</li>
+<li>2020年代：高层数 3D NAND（如 176 层）和 QLC (Quad-Level Cell) 技术逐步普及。</li>
+</ul>
+<h3 id="floating-gates-charge-traps">Floating Gates 与 Charge Traps</h3>
+<p><img alt="ctf" src="https://blog.debao.me/images/semi/CTF-from-skhynix.webp"></p>
+<h4 id="floating-gate">浮动栅（Floating Gate）</h4>
+<p><img alt="floating gate" src="https://blog.debao.me/images/semi/float-gate.png"></p>
+<p>浮动栅技术是 NAND Flash 的传统工作机制，它通过将电荷存储在一个<strong>隔离的浮动栅</strong>中来表示数据的“0”或“1”。</p>
+<p>每个存储单元由一个金属氧化物半导体场效应晶体管（MOSFET）组成，其栅极区域包含两个部分：</p>
+<ul>
+<li>浮动栅（Floating Gate）：一个被完全绝缘的区域，用于存储电荷。</li>
+<li>控制栅（Control Gate）：负责控制浮动栅中的电荷状态。</li>
+</ul>
+<p>术语，写入 叫 Program：</p>
+<ul>
+<li>编程（Program）：通过隧穿效应（Fowler-Nordheim Tunneling）或热电子注入，将电子注入到浮动栅中。浮动栅中是否存储了电荷决定存储单元的阈值电压（Vt）。</li>
+<li>擦除（Erase）：通过施加反向电压，使浮动栅中的电荷通过隧穿效应释放。</li>
+<li>读出（Read）：通过检测存储单元阈值电压，判断浮动栅中是否有电荷，从而确定存储的“0”或“1”。</li>
+</ul>
+<h4 id="charge-traps">电荷捕捉（Charge Traps）</h4>
+<p>用一个电介质（通常是氮化硅层）代替传统的浮动栅，用于存储电荷。电荷被“捕获”在电介质中，而不是存储在完全绝缘的浮动栅中。</p>
+<h2 id="dram">DRAM</h2>
+<p>罗伯特·丹纳德 （Robert Dennard）申请了MOS存储器的专利：</p>
+<blockquote>
+<p>"Each cell is formed, in one embodiment, using a single field-effect transistor and a single capacitor."</p>
+</blockquote>
+<h3 id="_3">时间线</h3>
+<ul>
+<li>1966年：IBM 的 Robert Dennard 发明 DRAM 技术。</li>
+<li>1970年：英特尔推出首款商用 DRAM 芯片 Intel 1103（1Kb）。</li>
+<li>1973年：Mostek 开发地址复用技术，降低 DRAM 成本。</li>
+<li>1980年代：1Mbit DRAM 芯片问世，日本厂商主导市场。</li>
+<li>1993年：三星推出 SDRAM，实现与处理器同步运行。</li>
+<li>1998年：DDR SDRAM 标准化，每时钟周期传输两次数据。</li>
+<li>2003年：DDR2 推出，功耗更低，频率更高。</li>
+<li>2007年：DDR3 推出，支持更高容量和频率，成为主流内存。</li>
+<li>2014年：DDR4 推出，提供更高带宽、更低功耗。</li>
+<li>2020年：DDR5 推出，满足 AI、大数据高带宽需求。</li>
+</ul>
+<h2 id="bit-line-word-line">Bit Line 与 Word Line</h2>
+<p>在存储器（如 DRAM 和 NAND Flash）的架构中，Bit Line 和 Word Line 是两种核心的互连线，负责控制和访问存储单元.</p>
+<p>Bit Line 和 Word Line 在存储阵列中交叉，每个交叉点对应一个存储单元。Word Line负责选中 负责选择存储单元；Bit Line 负责传输存储单元的数据。</p>
+<ul>
+<li>DRAM：<ul>
+<li>Word Line：控制存储单元（电容+晶体管）的晶体管栅极，选择行。</li>
+<li>Bit Line：传输存储单元电容中的电荷，进行数据读写。</li>
+</ul>
+</li>
+<li>NAND Flash：<ul>
+<li>Word Line：控制浮动栅晶体管的栅极，选择多个存储单元组成的页（Page）。</li>
+<li>Bit Line：传输数据到存储单元或从存储单元读取数据。</li>
+</ul>
+</li>
+</ul>
+<h2 id="_4">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/Dynamic_random-access_memory</li>
+<li>https://en.wikipedia.org/wiki/Flash_memory</li>
+<li>https://en.wikipedia.org/wiki/Charge_trap_flash</li>
+<li>https://en.wikipedia.org/wiki/Floating-gate_MOSFET</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2025-01-23T23:15:00+08:00" pubdate>Thu 23 January 2025</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/science.html'>Science</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

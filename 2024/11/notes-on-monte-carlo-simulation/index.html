@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>蒙特卡洛模拟小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/cax.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">蒙特卡洛模拟小记</h1>
+    <p class="meta">
+<time datetime="2024-11-03T00:08:00+08:00" pubdate>Sun 03 November 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>蒙特卡洛模拟(Monte  Carlo  simulation)的名称来自摩纳哥的蒙特卡洛赌场，因为模拟过程中使用了大量随机数，类似于赌博中的随机性。这种命名由美国数学家斯坦尼斯拉夫·乌拉姆（Stanislaw Ulam）和约翰·冯·诺依曼（John von Neumann）【就是提出冯·诺依曼结构的那个现在计算机之父】等人提出。</p>
+</blockquote>
+<h2 id="_1">什么是蒙特卡洛模拟?</h2>
+<p>蒙特卡洛模拟是一种计算方法，通过大量的随机抽样和概率统计来解决复杂问题。我们可以把它想象成一个不断“投骰子”的过程。每次投掷都得到不同的结果，通过多次重复，可以得出系统行为的可能性分布。这个过程让我们能够对系统的不确定性进行更细致的分析，最终获得可能的结果范围。</p>
+<p>蒙特卡洛模拟在20世纪40年代的曼哈顿计划中得到系统发展，当时科学家们需要模拟原子粒子的运动，这种运动充满随机性。</p>
+<h2 id="_2">基本步骤</h2>
+<p>尽管听起来很复杂,不过其过程相对直接。蒙特卡洛方法的主要步骤：</p>
+<ul>
+<li><strong>定义问题和模型</strong>：明确问题，把它转化为数学模型，包含随机变量。</li>
+<li><strong>确定输入的概率分布</strong>：定义模型中的不确定变量并给出其概率分布（如正态分布、三角形分布等）。</li>
+<li><strong>生成随机样本</strong>：利用计算机生成大量随机数，为每个随机变量创建大量可能的输入组合。</li>
+<li>运行模拟：将每一组随机样本代入模型进行计算，重复该过程数百甚至数千次。</li>
+<li>分析结果：收集所有模拟结果，计算出变量的分布情况、期望值、方差等统计数据，从而推测出不同结果的概率。</li>
+</ul>
+<p>用两个小例子看下步骤</p>
+<h3 id="_3">计算圆周率</h3>
+<blockquote>
+<p>似乎大家都喜欢用蒙特卡洛方法计算圆周率。</p>
+</blockquote>
+<p><img alt="monte carlo method pi" src="https://blog.debao.me/images/science/monte_carlo_method_pi.png"></p>
+<p>想象一个正方形中，内嵌一个与其边长相同的四分之一圆弧。假设该正方形的边长为 1，那么：</p>
+<ul>
+<li>四分之一圆的面积为 π/4​</li>
+<li>正方形的面积为 1</li>
+</ul>
+<p>因此，四分之一圆面积占正方形面积的比例为 π/4​。具体步骤：</p>
+<ol>
+<li><strong>生成随机点</strong>：在正方形中随机生成大量的点，每个点的 x 和 y 坐标在 0 到 1 之间。</li>
+<li><strong>判断是否在圆内</strong>：对于每个点，计算其到圆心 (0,0)的距离。</li>
+<li><strong>计算比例</strong>：统计所有点中落在圆内的比例。</li>
+<li><strong>估算 π</strong>：通过该比例乘以 4 来得到 π 的近似值。</li>
+</ol>
+<p>简单的python代码如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="k">def</span> <span class="nf">estimate_pi</span><span class="p">(</span><span class="n">num_points</span><span class="p">):</span>
+    <span class="n">inside_circle</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">points_inside_x</span><span class="p">,</span> <span class="n">points_inside_y</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">points_outside_x</span><span class="p">,</span> <span class="n">points_outside_y</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_points</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="c1"># Generate a random point</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Check if point is inside the circle</span>
+            <span class="n">inside_circle</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">points_inside_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">points_inside_y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">points_outside_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">points_outside_y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="n">pi_estimate</span> <span class="o">=</span> <span class="p">(</span><span class="n">inside_circle</span> <span class="o">/</span> <span class="n">num_points</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span>
+    <span class="k">return</span> <span class="n">pi_estimate</span><span class="p">,</span> <span class="n">points_inside_x</span><span class="p">,</span> <span class="n">points_inside_y</span><span class="p">,</span> <span class="n">points_outside_x</span><span class="p">,</span> <span class="n">points_outside_y</span>
+
+<span class="c1">#-----------------</span>
+
+<span class="c1"># Set the number of points</span>
+<span class="n">num_points</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">pi_estimate</span><span class="p">,</span> <span class="n">points_inside_x</span><span class="p">,</span> <span class="n">points_inside_y</span><span class="p">,</span> <span class="n">points_outside_x</span><span class="p">,</span> <span class="n">points_outside_y</span> <span class="o">=</span> <span class="n">estimate_pi</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span>
+
+<span class="c1"># Plot the results</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">points_inside_x</span><span class="p">,</span> <span class="n">points_inside_y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Inside&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">points_outside_x</span><span class="p">,</span> <span class="n">points_outside_y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Outside&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;π = </span><span class="si">{</span><span class="n">pi_estimate</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (Points: </span><span class="si">{</span><span class="n">num_points</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_4">计算多重积分</h3>
+<div class="math display">
+I = \int_0^1\int_0^1\int_0^1 (x + y^2 + z^3) dxdydz
+</div>
+
+<p>使用蒙特卡罗方法来估算这个积分，遵循以下步骤：</p>
+<ol>
+<li>在立方体内随机生成 N 个点。</li>
+<li>计算每个点的函数值 f(x,y,z)。</li>
+<li>取这些函数值的平均值，并乘以立方体的体积（此处为1），得到积分的近似值。</li>
+</ol>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">z</span><span class="o">**</span><span class="mi">3</span>
+
+<span class="k">def</span> <span class="nf">monte_carlo_integration</span><span class="p">(</span><span class="n">num_samples</span><span class="p">):</span>
+    <span class="c1"># 随机生成 num_samples 个点</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">)</span>
+
+    <span class="c1"># 计算每个点的函数值</span>
+    <span class="n">function_values</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+
+    <span class="c1"># 计算积分的近似值</span>
+    <span class="n">integral_estimate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">function_values</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">integral_estimate</span>
+
+<span class="c1"># 设置样本数量</span>
+<span class="n">num_samples</span> <span class="o">=</span> <span class="mi">100000</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">monte_carlo_integration</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>某次结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="mf">1.0834714194252095</span>
+</code></pre></div></td></tr></table></div>
+
+<p>可以和解析值（1+1/2+1/3 = 1.08333...）比较。</p>
+<h2 id="_5">应用</h2>
+<p>蒙特卡洛模拟应用广泛，几乎可以应用于任何含有不确定性的问题，比如：</p>
+<ul>
+<li>物理学和工程：用于核物理、材料科学、粒子物理的模拟。</li>
+<li>金融：应用于股票价格预测、期权定价等。</li>
+<li>项目管理：用于风险分析，进度预测等</li>
+<li>计算生物学：用于分子模拟和基因表达研究。</li>
+<li>医学物理：用于辐射治疗剂量计算和医疗影像分析。</li>
+</ul>
+<p>在电子显微镜和X射线分析中，通过蒙特卡洛模拟来研究电子束与样品之间的相互作用。在电子显微镜中,空间电荷效应(Boersch效应)一般也通过蒙特卡洛方法进行数值模拟.</p>
+<h2 id="_6">软件</h2>
+<blockquote>
+<p>先简单罗列</p>
+</blockquote>
+<p>Github也能搜到不少,但都挺小众...</p>
+<h3 id="geant4">Geant4</h3>
+<ul>
+<li>https://geant4.org/</li>
+<li>https://gitlab.cern.ch/geant4/geant4</li>
+</ul>
+<p>Geant4（GEometry ANd Tracking）是一个使用蒙特卡洛方法模拟“粒子穿过物质的过程”的平台。</p>
+<p><strong>功能</strong>：</p>
+<ul>
+<li>Geometry 是对实验物理布局的分析，包括探测器、吸收体等，考虑这些布局如何影响粒子在实验中的路径。</li>
+<li>Tracking 是模拟粒子穿过物质的过程，涉及可能的相互作用和衰变过程。</li>
+<li>Detector response 记录粒子通过探测器体积时的反应，并近似真实探测器的响应。</li>
+<li>Run management 记录每次运行（即一组事件）的详细信息，并在不同运行之间设置实验的不同配置。</li>
+</ul>
+<h3 id="penelope">PENELOPE</h3>
+<ul>
+<li>http://www.oecd-nea.org/tools/abstract/detail/nea-1525</li>
+</ul>
+<p>PENELOPE（PENetration and Energy LOss of Positrons and Electrons …and photons）是一款通用蒙特卡洛子程序包，用于模拟任意几何结构中的电子-光子耦合传输。该软件通过蒙特卡洛方法对正电子、电子和光子的穿透和能量损失进行精确建模，适用于多种科学和工程应用场景。</p>
+<h3 id="egsnrc">EGSnrc</h3>
+<ul>
+<li>https://github.com/nrc-cnrc/EGSnrc</li>
+</ul>
+<p>EGSnrc（Electron Gamma Shower, National Research Council），发音 "eggs-N-R-C"。</p>
+<p>EGSnrc 是一个软件工具包，用于进行电离辐射通过物质的蒙特卡罗模拟。它模拟光子、电子和正电子在 1 keV 到 10 GeV 动能范围内在均匀材料中的传播。</p>
+<p>EGSnrc 于 2000 年首次发布，是对原先在 1970 年代斯坦福线性加速器中心（SLAC）开发的Electron Gamma Shower（EGS）软件包的全面改进。</p>
+<p>EGSnrc 的一个显著特点是，它在带电粒子运输方面进行了重要的改进，提供了更好的低能截面，并包含 egs++ 类库以建模复杂的几何形状和粒子源。</p>
+<h3 id="mc-x-ray">MC X-Ray</h3>
+<ul>
+<li>https://montecarlomodeling.mcgill.ca/software/mcxray/mcxray.html</li>
+</ul>
+<p>MC X-Ray 是一款新的蒙特卡洛模拟软件，是 Casino 和 Win X-Ray 程序的扩展版。它通过模拟不同几何结构的固体中的电子散射，计算完整的 X 射线光谱。</p>
+<p>MC X-Ray 允许用户定义多达 256 个区域，这些区域可以是球体、圆柱体或水平与垂直平面的组合，每个区域都可以具有不同的成分。</p>
+<blockquote>
+<p>MCXRay 被集成到 3D 处理平台 Dragonfly（加拿大蒙特利尔 ORS），其运行速度比原始程序快 100 到 1000 倍！</p>
+</blockquote>
+<p><strong>功能</strong>：</p>
+<ul>
+<li>支持 3D 样品和复杂几何结构</li>
+<li>明场、暗场、高角环形暗场检测器</li>
+<li>3D 结果计算</li>
+<li>显示电子轨迹</li>
+<li>样品表面的电子与能量分布</li>
+<li>透射电子分布</li>
+<li>能量损失分布</li>
+<li>X 射线光谱</li>
+</ul>
+<h3 id="win-x-ray">Win X-Ray</h3>
+<ul>
+<li>https://montecarlomodeling.mcgill.ca/software/winxray/winxray.html</li>
+</ul>
+<p>Win X-Ray 是一款蒙特卡洛模拟程序，用于模拟固体中的电子轨迹。Ray 是一款新的蒙特卡洛模拟扩展程序，基于知名的 CASINO 程序，它增加了回散电子、吸收电子、能量损失和 X 射线 φρz 曲线的统计分布。Ray 的新增功能包括完整的 X 射线光谱模拟和绝缘样品的电荷效应。</p>
+<p><strong>功能</strong>：</p>
+<ul>
+<li>显示电子轨迹</li>
+<li>回散电子分布</li>
+<li>吸收电子分布</li>
+<li>能量损失分布</li>
+<li>特征 X 射线</li>
+<li>制动辐射 X 射线</li>
+<li>X 射线光谱</li>
+<li>可模拟非导电样品</li>
+</ul>
+<h3 id="casino">CASINO</h3>
+<blockquote>
+<p>Casino，发音 /kəˈsiːnəʊ/，原意是赌场的意思。这儿是刻意缩写。</p>
+</blockquote>
+<p>CASINO（"monte CArlo SImulation of electroN trajectory in sOlids"）是全球知名的电子轨迹蒙特卡洛模拟程序。由 Prof. Gauvin 和他的研究生（Pierre Hovington 和 Dominique Drouin）在 Sherbrooke 大学最初开发。此后，该程序一直由 Sherbrooke 大学的 Dominique Drouin 和来自 Hydro-Québec 研究所（IREQ）的 Hendrix Demers 维护并改进。</p>
+<p>不过软件似乎太老了，开发也不活跃，官网都已经无法访问。</p>
+<p>它的2.4和3.3 两个版本差异很大。后者支持3D功能，但有人只使用它的2系列。</p>
+<p><strong>功能</strong>：</p>
+<ul>
+<li>显示电子轨迹</li>
+<li>回散电子分布</li>
+<li>吸收电子分布</li>
+<li>能量分布</li>
+<li>φρz 曲线</li>
+<li>快速模拟</li>
+<li>回散和透射电子的角度检测器</li>
+<li>复杂的光束参数</li>
+<li>复杂几何结构</li>
+<li>二次电子生成</li>
+</ul>
+<h3 id="srimtrim">SRIM/TRIM</h3>
+<ul>
+<li>http://www.srim.org/</li>
+</ul>
+<p>SRIM（Stopping and Range of Ions in Matter）/ TRIM 是一款免费的蒙特卡洛模拟软件包，用于模拟固体中离子的轨迹。该程序能够计算离子的阻止本领和范围，被广泛应用于材料科学和辐照研究等领域。</p>
+<h3 id="hurricane">Hurricane</h3>
+<ul>
+<li>http://www.samx.com/</li>
+</ul>
+<p>SAMx 免费向社区提供蒙特卡洛程序 Hurricane。该软件包旨在基于蒙特卡洛方法模拟材料中的电子轨迹。Hurricane 拥有多种功能，特别的特点包括：</p>
+<ul>
+<li>对弹性和非弹性相互作用的个别处理，无任何近似</li>
+<li>支持矩阵中的多个成分</li>
+<li>支持所有几何形状的模拟样品：<ul>
+<li>大块样品</li>
+<li>基底上的薄膜</li>
+<li>垂直界面的多个成分</li>
+<li>由颗粒组成的矩阵样品</li>
+<li>粗糙样品</li>
+</ul>
+</li>
+<li>存储所有计算参数，包括发射强度。</li>
+</ul>
+<h3 id="_7">商业软件</h3>
+<ul>
+<li><a href="https://www.3ds.com/products/biovia/materials-studio">BIOVIA Materials Studio</a>：达索公司（Dassault Systèmes）</li>
+<li><a href="https://www.comsol.com/model/using-the-monte-carlo-method-to-estimate-the-value-of-pi-127901">COMSOL Multiphysics</a>：COMSOL</li>
+<li><a href="https://optics.ansys.com/hc/en-us/articles/360034403194-Monte-Carlo-analysis-utility">ANSYS</a>：ANSYS</li>
+<li><a href="https://silvaco.com/simulation-standard/mocasim-a-versatile-monte-carlo-simulator-for-iii-nitride-transport-properties/">Mocasim</a>：Silvaco</li>
+<li>...</li>
+</ul>
+<h2 id="_8">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/Monte_Carlo_method</li>
+<li>https://en.wikipedia.org/wiki/Geant4</li>
+<li>https://www.memrg.com/programs-download</li>
+<li>https://montecarlomodeling.mcgill.ca/links/Links_mcprgs.html</li>
+<li>https://www.lehigh.edu/~maw3/link/mssoft/mcsim.html</li>
+<li>https://www.microbeamanalysis.eu/links-resources</li>
+<li></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-11-03T00:08:00+08:00" pubdate>Sun 03 November 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/cax.html'>CAx</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

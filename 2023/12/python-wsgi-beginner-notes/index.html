@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Python WSGI入门笔记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/python.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Python WSGI入门笔记</h1>
+    <p class="meta">
+<time datetime="2023-12-15T21:19:00+08:00" pubdate>Fri 15 December 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><p>WSGI，是Web Server Gateway Interface首字符缩写， 发音 “whiz-gee”（g发硬/g/） 或者 “whiskey”。</p>
+<p>WSGI 历史很久了，2003年由PEP-333规范，2010年，PEP3333基于Python3进行了更新。由于出现比较早，没有Python3.5引入的async、await 等异步内容，这导致2019年出现了ASGI（Asynchronous Server Gateway Interface）。</p>
+<h2 id="_1">规范</h2>
+<p>WSGI 是一个规范，它遵循这种规范将一个Web组件抽象成三个部件层：</p>
+<ul>
+<li>服务器（server、gateway）</li>
+<li>中间件（middleware）</li>
+<li>应用程序（application、framework）</li>
+</ul>
+<p>要提升程序的可移植性，需要规范服务器和应用程序之间的交互操作，这就是WSGI做的事情。</p>
+<p><img alt="wsgi-server-application" src="https://blog.debao.me/images/wsgi-server-application.png"></p>
+<p>接下来只考虑应用程序端</p>
+<h2 id="_2">例子</h2>
+<p>通过简单例子，一点点看看</p>
+<h3 id="hello-world">Hello world</h3>
+<p>一个简单的WSGI的应用程序，大致这个样子：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/html&#39;</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="p">[</span><span class="sa">b</span><span class="s1">&#39;&lt;h1&gt;Hello World&lt;/h1&gt;&#39;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>而要执行它，需要将其告知WSGI服务器才行。</p>
+<p>在python标准库中有一个wsgi服务器的参考实现，我们可以启动它并告知其我们的应用程序入口：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">wsgiref.simple_server</span> <span class="k">as</span> <span class="nn">server</span>
+<span class="n">server</span><span class="o">.</span><span class="n">make_server</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="n">application</span><span class="p">)</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<p>此时用浏览器打开127.0.0.1:8000，即可看到程序运行内容。</p>
+<h3 id="_3">应用程序参数</h3>
+<ul>
+<li><code>environ</code>：一个dict类型对象。一般包含<ul>
+<li>浏览器相关的上下文信息</li>
+<li>CGI接口定义的环境变量：<code>REQUEST_METHOD</code>、<code>SCRIPT_NAME</code>、<code>PATH_INFO</code>、<code>QUERY_STRING</code> 等</li>
+<li>WSGI接口定义的环境变量：<code>wsgi.version</code>、<code>wsgi.input</code>等</li>
+<li>OS或Web服务器相关的环境变量</li>
+</ul>
+</li>
+<li><code>start_response</code>：一个在Server中定义的回调函数。这个回调函数接受两个必选参数status和<code>response_headers</code>，以及可选参数<code>exec_info</code>。<ul>
+<li><code>status</code>：字符串，标识HTTP响应状态。比如 <code>"200 OK"</code> 或<code>"404 Not Found"</code></li>
+<li><code>response_headers</code>：列表类型对应，列表元素是<code>(header_name, header_value)</code>。HTTP响应的headers。</li>
+<li><code>exec_info</code>：出错时，返回错误信息给浏览器</li>
+</ul>
+</li>
+<li>返回值：如果HTTP响应没有body，可以返回None，否则返回可迭代对象。</li>
+</ul>
+<p>我们稍微修改一下程序，输出些额外信息</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/html&#39;</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;&lt;h1&gt;Hello World: </span><span class="si">{</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH_INFO&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;/h1&gt;&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>此时用浏览器打开127.0.0.1:8000/aaa/bbb/ccc，即可在页面中看到路径信息。</p>
+<h3 id="middleware">中间件（Middleware）</h3>
+<p>中间件是一个运行在 Server 和 Application 之间的应用程序。它同时具备了 Server 和  Application 的角色功能：</p>
+<ul>
+<li>对于 Server 来说，它是一个 Application；</li>
+<li>对于 Application来说，它是一个  Server。</li>
+</ul>
+<p>中间件并不修改 Server 端和 Application 端的规范，只是需要同时实现了这两个角色的功能以便于两端之间起协调作用。中间件也可以将客户端 HTTP Request 路由给不同的 Application。中间件可以由很多层。</p>
+<p>比如，可以写一个简单的中间件，添加到前面的例子中，并告知wsgi服务器：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/html&#39;</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;&lt;h1&gt;Hello World: </span><span class="si">{</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH_INFO&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;/h1&gt;&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)]</span>
+
+<span class="k">def</span> <span class="nf">middleware</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH_INFO&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/secret&#39;</span><span class="p">:</span>
+        <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;403 Forbidden&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/html&#39;</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="p">[</span><span class="sa">b</span><span class="s1">&#39;&lt;h1&gt;Forbidden&lt;/h1&gt;&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">wsgiref.simple_server</span> <span class="k">as</span> <span class="nn">server</span>
+<span class="n">server</span><span class="o">.</span><span class="n">make_server</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="n">middleware</span><span class="p">)</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<p>装饰器模式可能更直观：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">middleware</span><span class="p">(</span><span class="n">application</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">mywrapper</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH_INFO&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/secret&#39;</span><span class="p">:</span>
+            <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;403 Forbidden&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/html&#39;</span><span class="p">)])</span>
+            <span class="k">return</span> <span class="p">[</span><span class="sa">b</span><span class="s1">&#39;&lt;h1&gt;Forbidden&lt;/h1&gt;&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mywrapper</span>
+
+<span class="nd">@middleware</span>
+<span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/html&#39;</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;&lt;h1&gt;Hello World: </span><span class="si">{</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH_INFO&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;/h1&gt;&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)]</span>
+
+<span class="kn">import</span> <span class="nn">wsgiref.simple_server</span> <span class="k">as</span> <span class="nn">server</span>
+<span class="n">server</span><span class="o">.</span><span class="n">make_server</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="n">application</span><span class="p">)</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="werkzeug">Werkzeug</h2>
+<ul>
+<li>https://werkzeug.palletsprojects.com</li>
+</ul>
+<p>Wekzeug，/ˈvɛrkʦɔyk/，德语，工具的意思。</p>
+<p>Werkzeug 这个python库，是一个WSGI（Web Server Gateway Interface）工具包，提供了一系列实用功能来帮助开发者处理HTTP请求、响应、URL等。</p>
+<p>Werkzeug 是WSGI的中间件。它也提供了WSGI的Server，这个Server只作为开发使用，不用于生产环境。</p>
+<h3 id="server">开发用 Server</h3>
+<p>既然是WSGI Server，可以用它跑前面的应用程序：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">werkzeug.serving</span> <span class="k">as</span> <span class="nn">serving</span>
+<span class="n">serving</span><span class="o">.</span><span class="n">run_simple</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="n">application</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>也可以为其启用ssl证书：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">werkzeug.serving</span> <span class="k">as</span> <span class="nn">serving</span>
+<span class="n">serving</span><span class="o">.</span><span class="n">run_simple</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="n">application</span><span class="p">,</span>
+                   <span class="n">ssl_context</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;111.cert&#39;</span><span class="p">,</span> <span class="s1">&#39;111.key&#39;</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_4">中间件</h3>
+<ul>
+<li>Werkzeug为HTTP请求和响应提供易于使用的包装器</li>
+</ul>
+<p>使用其提供的Request和Response，上面的例子可以改写成：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">werkzeug.wrappers</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
+
+<span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;h1&gt;Hello World: </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PATH_INFO&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">!&lt;/h1&gt;&#39;</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s1">&#39;text/html&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>Werkzeug提供了强大的URL路由功能。</li>
+</ul>
+<p>使用Map和Rule：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">werkzeug.wrappers</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">werkzeug.routing</span> <span class="kn">import</span> <span class="n">Map</span><span class="p">,</span> <span class="n">Rule</span>
+
+<span class="n">url_map</span> <span class="o">=</span> <span class="n">Map</span><span class="p">([</span>
+    <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">),</span>
+    <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">),</span>
+<span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
+
+    <span class="n">urls</span> <span class="o">=</span> <span class="n">url_map</span><span class="o">.</span><span class="n">bind_to_environ</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">environ</span><span class="p">)</span>
+    <span class="n">endpoint</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">match</span><span class="p">()</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;h1&gt;Hello World: </span><span class="si">{</span><span class="n">endpoint</span><span class="si">}</span><span class="s1"> with </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s1">!&lt;/h1&gt;&#39;</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s1">&#39;text/html&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="wsgi">WSGI服务器</h2>
+<p>生产用...</p>
+<p>不过，这些WSGI基本都要用 Nginx或Apache等http服务器作为反向代理服务器。</p>
+<h3 id="gunicorn">Gunicorn</h3>
+<ul>
+<li>https://gunicorn.org/</li>
+</ul>
+<p>不支持原生Windows（可通过WSL使用）。</p>
+<p>告知它如何加载我们的application。比如要等价于<code>from hello import application</code></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">$gunicorn</span><span class="w"> </span>-w<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="s1">&#39;hello:application&#39;</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li><code>-w</code>指定进程数（<code>--workers=4</code>）。默认是1，建议CPU * 2？</li>
+<li><code>-b</code>指定监听地址和端口（<code>--bind</code>)。格式<code>HOST</code>，<code>HOST:PORT</code>，默认是localhost和8000</li>
+<li>语法格式：<code>{module_import}:{app_variable}</code></li>
+</ul>
+<p>gunicorn使用root权限运行不安全（会让application以root运行），而不用root的话，会造成无妨绑定80和443端口。所以最好使用 nginx或apache作为反向代理服务器。</p>
+<h3 id="waitress">Waitress</h3>
+<ul>
+<li>https://docs.pylonsproject.org/projects/waitress/</li>
+</ul>
+<p>原生支持Windows。</p>
+<p>安装：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>waitress
+</code></pre></div></td></tr></table></div>
+
+<p>启动：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>waitress-serve<span class="w"> </span>hello:application<span class="w"> </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>参数格式<code>{module}:{app}</code></li>
+<li><code>--host</code>指定监听地址。默认监听 0.0.0.0:8080</li>
+</ul>
+<p>它不支持ssl，需要反向代理服务器。</p>
+<h3 id="mod_wsgi">mod_wsgi</h3>
+<ul>
+<li>https://modwsgi.readthedocs.io/</li>
+</ul>
+<p>与 apache httpd 集成使用。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip install mod_wsgi
+</code></pre></div></td></tr></table></div>
+
+<p>它由一个现代的命令<code>mod_wsgi-express</code>，用于启动server</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>mode_wsgi-express start-server wsgi.py --process 4
+</code></pre></div></td></tr></table></div>
+
+<p>其中 wsgi.py 是我们的程序，里面必须要包含<code>application</code> 这个对象：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># wsgi.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hello</span><span class="w"> </span><span class="kn">import</span><span class="w"> </span><span class="n">myapp</span>
+<span class="n">application</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">myapp</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="uwsgi">uwsgi</h3>
+<ul>
+<li>https://uwsgi-docs.readthedocs.io/en/latest/</li>
+</ul>
+<blockquote>
+<p>官网上说，The project is in maintenance mode (only bugfixes and updates for new languages apis).</p>
+</blockquote>
+<p>启动命令</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>uwsgi --http 127.0.0.1:8000 --master -p 4 -w hello:application
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_5">其他</h3>
+<ul>
+<li>gevent</li>
+<li>eventlet</li>
+</ul>
+<h2 id="_6">参考</h2>
+<ul>
+<li>https://peps.python.org/pep-3333/</li>
+<li>https://peps.python.org/pep-0333/</li>
+<li>https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface</li>
+<li>https://segmentfault.com/a/1190000003069785</li>
+<li>https://gunicorn.org/</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-12-15T21:19:00+08:00" pubdate>Fri 15 December 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/python.html'>Python</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/web.html">web</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

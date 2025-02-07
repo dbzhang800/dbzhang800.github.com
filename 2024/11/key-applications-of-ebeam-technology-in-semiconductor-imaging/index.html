@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>E-Beam技术在半导体影像（量检测）中的核心应用 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/sem.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">E-Beam技术在半导体影像（量检测）中的核心应用</h1>
+    <p class="meta">
+<time datetime="2024-11-27T14:52:00+08:00" pubdate>Wed 27 November 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>先简单整理一下，以后再慢慢完善</p>
+</blockquote>
+<p><img alt="sem" src="https://blog.debao.me/images/sem/db-semi-sem.png"></p>
+<h2 id="sem">SEM</h2>
+<p>扫描电子显微镜（SEM, Scanning Electron Microscope）是一种利用电子束扫描样品表面并收集信号生成高分辨率图像的显微技术。SEM通过电子与样品的相互作用，提供样品表面的形貌、结构和组成信息，图像分辨率可达（亚）纳米级。</p>
+<p>在半导体领域中，有三款重要的 SEM 设备：</p>
+<ul>
+<li>EBI：E-Beam Inspcetion（注意与光学Inspection进行区分）</li>
+<li>DR-SEM：Defect Review</li>
+<li>CD-SEM：Critical Dimension Scanning Electron Microscope</li>
+</ul>
+<p>三者分工明确，但又紧密配合，共同构成半导体制造中不可或缺的影像检测体系：</p>
+<ul>
+<li>EBI 是第一道关卡：<ul>
+<li>光学Inspection负责快速扫描整片晶圆，识别潜在缺陷，效率高但分辨率较低。</li>
+<li>EBI用于关键区域的高精度扫描，发现微小缺陷。</li>
+</ul>
+</li>
+<li>DR-SEM 是补充和验证：<ul>
+<li>EBI 发现的缺陷需要进一步确认和分类，DR-SEM 设备通过高分辨率成像，确认缺陷类型和成因。</li>
+</ul>
+</li>
+<li>CD-SEM专注于尺寸测量：<ul>
+<li>不直接参与缺陷检测，而是专注于关键尺寸的精确测量，确保工艺参数符合设计要求。</li>
+</ul>
+</li>
+</ul>
+<h2 id="metrology-inspection">Metrology 与 Inspection</h2>
+<ul>
+<li>Metrology: 指量测（Measurement）的科学和技术，用于测量半导体制造过程中关键参数（如尺寸、厚度、形貌等）。</li>
+<li>Inspection: 指检测（Inspection）设备，用于发现和识别晶圆或掩膜版上的缺陷（Defects）。</li>
+</ul>
+<p><img alt="Metrology inspection" src="https://blog.debao.me/images/science/metrology_inspection_in_semi.png"></p>
+<p>量检测设备在FAB中的应用（加黑的属于SEM）：</p>
+<table>
+<thead>
+<tr>
+<th>产品</th>
+<th>薄膜沉积</th>
+<th>光刻</th>
+<th>掩膜</th>
+<th>刻蚀</th>
+<th>离子注入</th>
+<th>CMP</th>
+<th>清洗</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>掩膜版缺陷检测设备</strong></td>
+<td>-</td>
+<td>-</td>
+<td>☆</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>无图形晶圆缺陷检测设备</td>
+<td>☆</td>
+<td>☆</td>
+<td>-</td>
+<td>☆</td>
+<td>☆</td>
+<td>☆</td>
+<td>☆</td>
+</tr>
+<tr>
+<td>图形晶圆缺陷检测设备</td>
+<td>-</td>
+<td>☆</td>
+<td>-</td>
+<td>☆</td>
+<td>☆</td>
+<td>☆</td>
+<td>☆</td>
+</tr>
+<tr>
+<td><strong>EBI</strong></td>
+<td>-</td>
+<td>★</td>
+<td>-</td>
+<td>★</td>
+<td>★</td>
+<td>★</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>DR-SEM</strong></td>
+<td>-</td>
+<td>★</td>
+<td>-</td>
+<td>★</td>
+<td>★</td>
+<td>★</td>
+<td>-</td>
+</tr>
+<tr>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>关键尺寸量测设备</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>☆</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>CD-SEM</strong></td>
+<td>-</td>
+<td>★</td>
+<td>-</td>
+<td>★</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>套刻精度量测设备</td>
+<td>-</td>
+<td>☆</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>晶圆介质薄膜量测设备</td>
+<td>☆</td>
+<td>☆</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>X光量测设备</td>
+<td>☆</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>☆</td>
+<td>-</td>
+<td>☆</td>
+</tr>
+<tr>
+<td><strong>掩膜版关键尺寸量测设备</strong></td>
+<td>-</td>
+<td>-</td>
+<td>☆</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>三维形貌量测设备</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>☆</td>
+<td>☆</td>
+</tr>
+<tr>
+<td>晶圆金属薄膜量测设备</td>
+<td>☆</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>☆</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cd-sem">CD-SEM</h2>
+<p>关键尺寸扫描电子显微镜（CD-SEM：Critical Dimension Scanning Electron Microscope）是一种专门用于测量半导体晶圆上形成的精细图形尺寸的设备。CD-SEM主要应用于半导体电子器件的生产线中。<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<p>关键尺寸测量主要在以下晶圆制造工艺环节中进行<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup>：</p>
+<ul>
+<li>光刻胶图形显影后的关键尺寸测量</li>
+<li>刻蚀后的接触孔直径/通孔直径及布线宽度测量</li>
+</ul>
+<h3 id="_1">术语</h3>
+<ul>
+<li><strong>CD</strong>：关键尺寸（critical dimension），是指半导体制造商能够在晶圆上可靠生产和测量的最小特征尺寸。在光刻工艺中，关键尺寸是形成集成电路（IC）中电气路径的线宽和间距。<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup><sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></li>
+<li><strong>WPH</strong>：Wafers/hour，每小时多少片</li>
+<li><strong>LER</strong>：Line Edge Roughness 线边缘粗糙度</li>
+<li><strong>LWR</strong>：Line Width Roughness 线宽粗糙度</li>
+</ul>
+<h3 id="_2">特点</h3>
+<p>与通用扫描电子显微镜相比，CD-SEM具有以下三个主要特点<sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup>：</p>
+<p><strong>CD-SEM使用低能电子束</strong></p>
+<p>CD-SEM用于样品照射的初级电子束能量较低，通常为1 keV或以下。
+低能电子束的应用可以有效减少样品因电荷累积（charge-up）或电子束照射而受到的损伤。</p>
+<p><strong>测量精度和重复性</strong></p>
+<p>CD-SEM通过最大限度地改进放大倍率的校准，确保测量精度和重复性的高度可靠。
+CD-SEM的测量重复性约为测量宽度的1%（3σ）。</p>
+<p><strong>自动化精细图形测量</strong></p>
+<p>CD-SEM对晶圆上的精细图形测量是自动化的。
+样品晶圆被放置在晶圆盒（或称Pod/FOUP）中，再放入CD-SEM设备。测量条件和操作步骤会提前通过“配方”（recipe）输入。启动测量后，CD-SEM会自动取出样品晶圆，将其加载到设备中，并测量指定位置。当测量完成后，晶圆会自动返回到晶圆盒中。</p>
+<h2 id="dr-sem">DR-SEM</h2>
+<p>缺陷复查扫描电子显微镜（Defect Review SEM）是一种配置用于复查晶圆上缺陷的扫描电子显微镜（SEM）。由半导体晶圆缺陷检测系统检测到的缺陷通过复查SEM放大为高倍图像，以便进行复查和分类。缺陷复查SEM主要与检测系统配合使用，应用于电子器件和其他半导体产品的生产线中。<sup id="fnref:10"><a class="footnote-ref" href="#fn:10">4</a></sup></p>
+<p>复查扫描电子显微镜（Review SEM）通常按照以下步骤工作<sup id="fnref2:10"><a class="footnote-ref" href="#fn:10">4</a></sup>：</p>
+<ul>
+<li><strong>使用Inspection提前检测晶圆缺陷</strong>：检测系统记录缺陷的坐标位置，并将其输出到一个文件中。</li>
+<li><strong>将已检测的晶圆和检测结果文件加载到复查SEM中</strong></li>
+<li><strong>拍摄列表中缺陷的图像</strong>：根据缺陷列表中的位置信息确定缺陷的位置。确定位置后，复查SEM拍摄缺陷图像并存储。</li>
+</ul>
+<blockquote>
+<p>检测系统通常会检测到几千到几万处缺陷，并将数据输出到文件中。在复查SEM的配方（recipe）操作设置中，可以指定是否复查并拍摄所有缺陷或只拍摄部分缺陷。</p>
+</blockquote>
+<p>为了缩短检测的通量时间（throughput），Review SEM通常采用以下两种方式：<sup id="fnref:11"><a class="footnote-ref" href="#fn:11">5</a></sup></p>
+<ul>
+<li><strong>选择性地检测晶圆上的5到几十个区域</strong>，而不是扫描整个直径300 mm的晶圆表面；</li>
+<li><strong>仅针对有限的关键工艺步骤进行检测</strong>，这些步骤中的外来物和缺陷会对芯片良率产生重大影响，例如晶体管栅极加工、接触孔刻蚀和高密度布线层的图案化。</li>
+</ul>
+<blockquote>
+<p>在许多情况下，晶圆在Review SEM检测时，晶体管和电容器已经被制造在晶圆上。为了防止入射电子影响晶体管的器件特性，加速电压通常保持在0.5-0.7 kV左右。为了收集形状和成分信息，使用镜筒内探测器（in-column detector），该探测器能够高效地收集二次电子和背散射电子。</p>
+</blockquote>
+<h3 id="_3">术语</h3>
+<ul>
+<li><strong>ADR功能</strong>：ADR（Automatic Defect Review，自动缺陷复查）用于自动获取缺陷检测系统检测到的缺陷图像，并存储至数据库中，用于更详细的观测、分类和分析。</li>
+<li><strong>ADC功能</strong>：ADC（Automatic Defect Classification，自动缺陷分类）通过分类软件按预设规则对缺陷图像进行分类，并存储至分类服务器，供良率管理系统（YMS）和IC制造商主机进行缺陷分析。</li>
+</ul>
+<h3 id="_4">特点</h3>
+<p>与常规SEM相比，DR-SEM具有如下特点：<sup id="fnref2:11"><a class="footnote-ref" href="#fn:11">5</a></sup></p>
+<ul>
+<li>系统配备了一个样品载台，可观察直径300 mm晶圆的整个表面。</li>
+<li>系统与前端工艺单元中的晶圆传输系统相连，实现晶圆的引入、检测、检测结果输出，以及晶圆传输（输出）到下一工艺的全自动化操作。</li>
+<li>检测结果通过行业标准“SEMI Standards”规定的格式和通信系统，传输到管理制造工艺数据的服务器。</li>
+<li>缺陷数量超过用户预设标准的晶圆不会被传输到下一个工艺步骤，而是处于待机状态。</li>
+<li>系统能够记录和映射缺陷的位置信息（坐标），根据缺陷的形状和成分进行分类，并通过映射比较不同晶圆上外来物的分布情况。</li>
+<li>在检测形成了电路图案的晶圆芯片表面时，系统通过对比相邻芯片相同区域的观察结果，检测并显示缺陷。</li>
+<li>系统配备了一项检测功能，可通过充电（电压对比）引起的图像质量变化，检测接触孔（填充金属材料以连接上下布线层和晶体管的垂直孔）中的高阻区域。</li>
+<li>与其他检测系统一样，Review SEM的设计确保检测过程中产生的外来物和缺陷不会影响芯片的良率和可靠性。</li>
+</ul>
+<h2 id="ebi">EBI</h2>
+<p>Inspection（检测）是指使用检测设备，根据特定标准检查晶圆是否符合要求，以及是否存在异常或不适合的情况。其主要目的是发现晶圆上的颗粒或缺陷，并确定缺陷的位置信息（X, Y 坐标）。缺陷的成因之一是灰尘或颗粒的附着，因此无法预测缺陷会出现在何处。如果晶圆表面出现大量缺陷，电路图案可能无法正确形成，导致图案缺失。大量缺陷还会阻碍电子电路的正常运行，从而使晶圆成为报废品（lot-out*产品）。<sup id="fnref:20"><a class="footnote-ref" href="#fn:20">6</a></sup></p>
+<p>缺陷可分为随机缺陷和系统性缺陷：<sup id="fnref:21"><a class="footnote-ref" href="#fn:21">7</a></sup></p>
+<ul>
+<li><strong>随机缺陷</strong>：主要由附着在晶圆表面的颗粒引起，因此其位置无法预测。晶圆缺陷检测系统的主要作用是检测晶圆上的缺陷并获取其位置信息（坐标）。</li>
+<li><strong>系统性缺陷</strong>：由掩膜和曝光工艺的条件引起，会在所有投影晶粒的电路图案的相同位置出现。这些缺陷通常发生在曝光条件非常苛刻且需要精细调整的位置。</li>
+</ul>
+<p>晶圆缺陷检测系统通过比较相邻晶粒的电路图案图像来检测缺陷。然而，传统的晶圆缺陷检测系统有时无法检测到系统性缺陷。</p>
+<p>检测可以在带图形的工艺晶圆（Patterned Wafer）或裸晶圆（Non-patterned Wafer）上进行，这两者的系统配置有所不同。</p>
+<h3 id="_5">术语</h3>
+<ul>
+<li>Die2Die：在半导体晶圆上，相同图案的电子器件会被并排制作。随机缺陷通常由颗粒（如灰尘）引起，随机出现在不同位置，其在某一特定位置反复出现的可能性极低。因此，带图形晶圆检测系统通过对比相邻芯片（也称为晶粒或die）的图案图像来检测缺陷，并通过差异检测发现缺陷。</li>
+<li>Voltage Contrast：电子束检测系统通过设备内部导线的导电性，检测二次电子的数量以形成图像对比（电压对比）。如果能够检测到高深宽比接触孔底部的导电性，则可以识别出超薄厚度的SiO₂残留。[21]</li>
+</ul>
+<h2 id="_6">对比</h2>
+<table>
+<thead>
+<tr>
+<th><strong>设备</strong></th>
+<th><strong>CD-SEM</strong></th>
+<th><strong>EBI</strong></th>
+<th><strong>DR-SEM</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>用途</strong></td>
+<td>- 定点量测关键尺寸，在线监测</td>
+<td>- 指定区域内缺陷检测</td>
+<td>- 缺陷复看，根因分析</td>
+</tr>
+<tr>
+<td><strong>特点</strong></td>
+<td>- 高精度量测、高稳定性、高吞吐量<br>- 多机台一致性</td>
+<td>- 高速成像，VC缺陷检测<br>- 多套拍摄条件，适应不同缺陷<br>- 自动缺陷分类(ADC)</td>
+<td>- 高分辨率成像<br>- 搭配高级制程控制（APC）</td>
+</tr>
+<tr>
+<td><strong>EOS</strong></td>
+<td>- 小束流、小视场、低噪声、低速扫描<br>- 有高能趋势</td>
+<td>- 大束流、大视场、高速扫描<br>- 多种荷电控制手段<br>- 有多束趋势</td>
+<td>- 高能量，高分辨率，多探测器<br>- 支持EDX分析、能量过滤成像</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_7">参考</h2>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>https://www.hitachi-hightech.com/global/en/knowledge/semiconductor/room/manufacturing/cd-sem.html&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>https://averroes.ai/blog/what-is-critical-dimension-sem&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>https://www.iso.org/obp/ui/en/#iso:std:iso:21466:ed-1:v1:en&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:10">
+<p>https://www.hitachi-hightech.com/global/en/knowledge/semiconductor/room/manufacturing/review-sem.html&#160;<a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 4 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:10" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:11">
+<p>https://www.jeol.com/words/semterms/20241018.php#gsc.tab=0&#160;<a class="footnote-backref" href="#fnref:11" title="Jump back to footnote 5 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:11" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:20">
+<p>https://www.hitachi-hightech.com/global/en/knowledge/semiconductor/room/manufacturing/metrology-inspection.html&#160;<a class="footnote-backref" href="#fnref:20" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+<li id="fn:21">
+<p>https://www.hitachi-hightech.com/global/en/knowledge/semiconductor/room/manufacturing/inspection.html&#160;<a class="footnote-backref" href="#fnref:21" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-11-27T14:52:00+08:00" pubdate>Wed 27 November 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/sem.html'>SEM</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

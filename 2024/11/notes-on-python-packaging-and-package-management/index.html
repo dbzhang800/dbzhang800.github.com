@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Python打包与包管理小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/python.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Python打包与包管理小记</h1>
+    <p class="meta">
+<time datetime="2024-11-09T12:29:00+08:00" pubdate>Sat 09 November 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>记忆力似乎越来越差，简单记一下</p>
+</blockquote>
+<h2 id="_1">历史</h2>
+<p>Python 包管理和打包技术经历了多个阶段的发展，从早期的简单手动分发到现代的 <code>.whl</code> 格式和 <code>pip</code> 工具。</p>
+<h3 id="2000">手动分发阶段（2000年代初期及之前）</h3>
+<p>最初，Python 包的分发和安装都是手动进行的，需要下载源代码并运行 <code>setup.py</code> 脚本来安装。</p>
+<p>2000年9月，Python1.6的标准库引入了 <code>distutils</code> 模块，使打包和分发 Python 模块更为规范。
+但 <code>distutils</code> 功能有限，对依赖关系管理能力较弱，扩展性不足。</p>
+<h3 id="setuptools-egg-2004">setuptools 和 .egg 格式（2004 年）</h3>
+<p>Philip J. Eby 在 2004 年发布了 <code>setuptools</code> 模块。 <code>distutils</code> 的扩展，增加了更强大的功能，如依赖管理和插件支持。</p>
+<p><code>setuptools</code> 引入了统一的 <code>.egg</code> 包格式以及安装工具 <code>easy_install</code>：</p>
+<ul>
+<li><strong><code>.egg</code> 格式</strong>：提供了包的归档和分发方式。包中包含代码和元数据，支持即用即装。</li>
+<li><strong><code>easy_install</code></strong>：用于安装和管理 <code>.egg</code> 包。简化了安装。</li>
+</ul>
+<p><code>easy_install</code>依赖管理较弱，难以处理复杂依赖。</p>
+<h3 id="pip-virtualenv2008">pip 和 virtualenv（2008 年）</h3>
+<p><code>pip</code> 于 2008年发布，它由 Ian Bicking 开发。相较于 <code>easy_install</code> ，<code>pip</code> 提供了更强大的依赖管理、卸载功能。</p>
+<p><strong><code>virtualenv</code></strong> 提供了一个工具来创建独立的 Python 环境，使开发者能够为每个项目创建隔离的环境，避免不同项目之间的依赖冲突。它由 Ian Bicking 和 Chris B. Wilson 等人开发，并在 2007 年发布。</p>
+<p>2011年pip 0.3版本引入 <code>pip freeze</code> 。用于生成当前环境中安装的所有包和版本的列表，通常用于创建 requirements.txt 文件，这对于项目的依赖管理和环境重建非常有用。</p>
+<h3 id="whl2012"><code>.whl</code>格式（2012 年）</h3>
+<ul>
+<li><a href="https://peps.python.org/pep-0427/">https://peps.python.org/pep-0427/</a></li>
+</ul>
+<p><code>.whl</code> 格式由 <code>PEP 427</code> 引入，成为标准化的打包格式。目的是克服 <code>.egg</code> 的缺陷，如兼容性问题和社区支持不足。</p>
+<p><code>.whl</code> 文件可直接安装，无需编译，安装速度快，与 <code>pip</code> 完全集成。<code>setuptools</code> 继续用于构建包，但打包输出格式支持 <code>.whl</code>。</p>
+<blockquote>
+<p><code>pip</code> 1.4 发布于2013年，提供了 <code>.whl</code>的全面支持。而后 <code>.egg</code> 逐渐不受待见。</p>
+</blockquote>
+<h3 id="build-pyprojecttoml2018">build 与 pyproject.toml（2018）</h3>
+<ul>
+<li><a href="https://peps.python.org/pep-0517/">PEP 517 – A build-system independent format for source trees</a></li>
+<li><a href="https://peps.python.org/pep-0518/">PEP 518 – Specifying Minimum Build System Requirements for Python Projects</a></li>
+</ul>
+<p><strong>PEP 517 和 PEP 518</strong> 引入了新的构建系统接口，允许项目定义自定义构建后端，如 <code>poetry</code> 或 <code>flit</code>，提升了打包和构建的灵活性。</p>
+<p><code>pyproject.toml</code> 文件成为了现代 Python 项目的标准配置文件，允许项目声明构建系统、依赖项以及其他相关元数据。</p>
+<p><code>build</code> 遵循 PEP 517 规范而设计的工具。build 提供了一个轻量级且标准化的方式来构建 .whl 和 .tar.gz 文件</p>
+<h2 id="_2">使用举例</h2>
+<h3 id="whl">生成 .whl 包</h3>
+<p>有多种方式可以生成 .whl 包</p>
+<h4 id="setuptools-wheel">使用 setuptools + wheel（已不推荐）</h4>
+<p>尽管（曾）是最常见的打包方式，但已经不被推荐使用，见：</p>
+<ul>
+<li><a href="https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html">https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html</a></li>
+</ul>
+<p>首先安装依赖</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>setuptools<span class="w"> </span>wheel
+</code></pre></div></td></tr></table></div>
+
+<p>确保存在 setup.py 文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">setuptools</span> <span class="kn">import</span> <span class="n">setup</span><span class="p">,</span> <span class="n">find_packages</span>
+
+<span class="n">setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_package&quot;</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+    <span class="n">packages</span><span class="o">=</span><span class="n">find_packages</span><span class="p">(),</span>
+    <span class="c1"># more ...</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>生成.whl包</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>python<span class="w"> </span>setup.py<span class="w"> </span>sdist<span class="w"> </span>bdist_wheel
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>尽管这个方式不被推荐，但并不是说 <code>setup.py</code> 已经被取缔。只是建议不要这么直接调用它！！所以，下面的 build 继续在用它</p>
+</blockquote>
+<h4 id="build">使用 build 工具</h4>
+<p>首先安装依赖</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>build
+</code></pre></div></td></tr></table></div>
+
+<p>生成 .whl 文件</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>build
+</code></pre></div></td></tr></table></div>
+
+<h4 id="flit">使用flit工具</h4>
+<p>安装依赖：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>filt
+</code></pre></div></td></tr></table></div>
+
+<p>生成</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>filt build
+</code></pre></div></td></tr></table></div>
+
+<h3 id="pypi">发布到 pypi</h3>
+<h4 id="_3">注册账户</h4>
+<ul>
+<li>正式：<a href="https://pypi.org/account/register/">https://pypi.org/account/register/</a></li>
+<li>测试：<a href="https://test.pypi.org/account/register/">https://test.pypi.org/account/register/</a></li>
+</ul>
+<p>注意，测试网站账户和正式的pypi账户不互通，需要分别注册。</p>
+<h4 id="pypirc">配置 .pypirc</h4>
+<p>配置用户配置文件 <code>~/.pypirc</code></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[distutils]</span>
+<span class="na">index-servers</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="na">pypi</span>
+<span class="w">    </span><span class="na">testpypi</span>
+
+<span class="k">[pypi]</span>
+<span class="na">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">__token__</span>
+<span class="na">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&lt;my-api-token-here&gt;</span>
+
+<span class="k">[testpypi]</span>
+<span class="na">repository</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">https://test.pypi.org/legacy/</span>
+<span class="na">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">__token__</span>
+<span class="na">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&lt;my-api-token-here&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>其中，api koken在网站上生成。</p>
+<h4 id="twine">twine 上传</h4>
+<p>安装</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>twine
+</code></pre></div></td></tr></table></div>
+
+<p>上传 <code>dist/</code> 下的所有文件</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">twine</span><span class="w"> </span><span class="n">upload</span><span class="w"> </span><span class="n">dist</span><span class="o">/*</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果要上传到test，需要使用</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">twine</span><span class="w"> </span><span class="n">upload</span><span class="w"> </span><span class="o">--</span><span class="n">repository</span><span class="w"> </span><span class="n">testpypi</span><span class="w"> </span><span class="n">dist</span><span class="o">/*</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_4">参考资料</h2>
+<ul>
+<li><a href="https://peps.python.org/pep-0427/">PEP 427 – The Wheel Binary Package Format 1.0</a></li>
+<li><a href="https://peps.python.org/pep-0517/">PEP 517 – A build-system independent format for source trees</a></li>
+<li><a href="https://peps.python.org/pep-0518/">PEP 518 – Specifying Minimum Build System Requirements for Python Projects</a></li>
+<li><a href="https://www.pypa.io/en/latest/">Python Packaging Authority (PyPA)</a></li>
+<li><a href="https://setuptools.pypa.io/en/latest/">Python 官方文档 - setuptools</a></li>
+<li><a href="https://pip.pypa.io/en/stable/">Python 官方文档 - pip</a></li>
+<li><a href="https://carpentries-incubator.github.io/python_packaging/instructor/04-history-of-packaging.html">https://carpentries-incubator.github.io/python_packaging/instructor/04-history-of-packaging.html</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-11-09T12:29:00+08:00" pubdate>Sat 09 November 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/python.html'>Python</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

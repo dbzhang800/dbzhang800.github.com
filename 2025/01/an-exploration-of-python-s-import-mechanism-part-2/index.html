@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Python Import机制乱谈（二） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/python.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Python Import机制乱谈（二）</h1>
+    <p class="meta">
+<time datetime="2025-01-01T20:14:00+08:00" pubdate>Wed 01 January 2025</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>接前面<a href="https://blog.debao.me/2024/12/an-exploration-of-python-s-import-mechanism-part-1/">Python Import机制乱谈（一）</a>，继续看看</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#syspath">sys.path</a><ul>
+<li><a href="#_1">初始化值受什么影响？</a></li>
+<li><a href="#_2">例子</a><ul>
+<li><a href="#site-1">执行 site 模块（1）</a></li>
+<li><a href="#site-2-p">执行 site 模块（2） 使用 -P</a></li>
+<li><a href="#site-3">执行 site 模块（3）</a></li>
+<li><a href="#site-4venv">执行 site 模块（4）venv环境</a></li>
+<li><a href="#site-5ubuntu">执行 site 模块（5）ubuntu</a></li>
+<li><a href="#site-6use-site">执行 site 模块（6）use-site</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sysprefix-sysexec_prefix">sys.prefix 与 sys.exec_prefix</a><ul>
+<li><a href="#_3">是什么？</a></li>
+<li><a href="#_4">例子</a></li>
+</ul>
+</li>
+<li><a href="#pyvenvcfg">pyvenv.cfg</a><ul>
+<li><a href="#_5">在哪里？</a></li>
+<li><a href="#_6">长什么样？</a></li>
+</ul>
+</li>
+<li><a href="#_pth-pth">._pth 与 .pth</a></li>
+<li><a href="#pip">PIP 安装包位置？</a><ul>
+<li><a href="#venv">venv环境中</a></li>
+<li><a href="#_7">全局环境中</a></li>
+<li><a href="#_8">用户级安装</a></li>
+<li><a href="#_9">查看包位置</a></li>
+</ul>
+</li>
+<li><a href="#python">便携式Python？</a><ul>
+<li><a href="#conda">conda</a></li>
+</ul>
+</li>
+<li><a href="#_10">参考</a></li>
+</ul>
+</div>
+<h2 id="syspath">sys.path</h2>
+<p>导入模块时，需要从这里面的路径开始，那么它里面到底有什么东西</p>
+<h3 id="_1">初始化值受什么影响？</h3>
+<blockquote>
+<p>这东西的生成逻辑太复杂了。</p>
+</blockquote>
+<ul>
+<li>脚本所在目录（如果执行的是脚本），或当前工作目录（如果使用 <code>-m</code> 或 <code>-c</code> 参数。【所谓的不安全路径？】</li>
+<li>环境变量PYTHONPATH设置的路径</li>
+<li>与PYTHONHOME相关的 <code>prefix</code> 和 <code>exec_prefix</code> </li>
+<li><code>python&lt;major&gt;&lt;minor&gt;.zip</code></li>
+<li>site模块 与 site-packages</li>
+</ul>
+<p>以及</p>
+<ul>
+<li>pyvenv.cfg 文件</li>
+<li><code>._pth</code> 文件</li>
+</ul>
+<h3 id="_2">例子</h3>
+<p>把 sys.path 当作黑盒子，直接执行看看</p>
+<h4 id="site-1">执行 site 模块（1）</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">python</span> <span class="n">-m</span> <span class="n">site</span>
+</code></pre></div></td></tr></table></div>
+
+<p>输出内容：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">PS</span><span class="w"> </span><span class="nx">C</span><span class="p">:</span><span class="err">\</span><span class="nx">Users</span><span class="err">\</span><span class="nx">dbzha</span><span class="p">&gt;</span><span class="w"> </span><span class="nx">C</span><span class="p">:</span><span class="err">\</span><span class="nx">Users</span><span class="err">\</span><span class="nx">dbzha</span><span class="p">&gt;</span><span class="nx">python</span><span class="w"> </span><span class="o">-</span><span class="nx">m</span><span class="w"> </span><span class="nx">site</span>
+<span class="nx">sys</span><span class="p">.</span><span class="nx">path</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Users</span><span class="err">\\</span><span class="nx">dbzha</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">python312</span><span class="p">.</span><span class="nx">zip</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">DLLs</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">Lib</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">Lib</span><span class="err">\\</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="nx">USER_BASE</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Users</span><span class="err">\\</span><span class="nx">dbzha</span><span class="err">\\</span><span class="nx">AppData</span><span class="err">\\</span><span class="nx">Roaming</span><span class="err">\\</span><span class="nx">Python</span><span class="err">&#39;</span><span class="w"> </span><span class="p">(</span><span class="nx">exists</span><span class="p">)</span>
+<span class="nx">USER_SITE</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Users</span><span class="err">\\</span><span class="nx">dbzha</span><span class="err">\\</span><span class="nx">AppData</span><span class="err">\\</span><span class="nx">Roaming</span><span class="err">\\</span><span class="nx">Python</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="err">&#39;</span><span class="w"> </span><span class="p">(</span><span class="nx">doesn</span><span class="err">&#39;</span><span class="nx">t</span><span class="w"> </span><span class="nx">exist</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="site-2-p">执行 site 模块（2） 使用 -P</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">python</span> <span class="n">-P</span> <span class="n">-m</span> <span class="n">site</span>
+</code></pre></div></td></tr></table></div>
+
+<p>添加 <code>-P</code> 参数，（或者设置环境变量  PYTHONSAFEPATH 为非空值，比如1），结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">sys</span><span class="p">.</span><span class="nx">path</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">python312</span><span class="p">.</span><span class="nx">zip</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">DLLs</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">Lib</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">Lib</span><span class="err">\\</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="nx">USER_BASE</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Users</span><span class="err">\\</span><span class="nx">dbzha</span><span class="err">\\</span><span class="nx">AppData</span><span class="err">\\</span><span class="nx">Roaming</span><span class="err">\\</span><span class="nx">Python</span><span class="err">&#39;</span><span class="w"> </span><span class="p">(</span><span class="nx">exists</span><span class="p">)</span>
+<span class="nx">USER_SITE</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Users</span><span class="err">\\</span><span class="nx">dbzha</span><span class="err">\\</span><span class="nx">AppData</span><span class="err">\\</span><span class="nx">Roaming</span><span class="err">\\</span><span class="nx">Python</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="err">&#39;</span><span class="w"> </span><span class="p">(</span><span class="nx">doesn</span><span class="err">&#39;</span><span class="nx">t</span><span class="w"> </span><span class="nx">exist</span><span class="p">)</span>
+<span class="nx">ENABLE_USER_SITE</span><span class="p">:</span><span class="w"> </span><span class="nx">True</span>
+</code></pre></div></td></tr></table></div>
+
+<p>容易注意到：里面没有自动添加不安全的当前工作目录。</p>
+<h4 id="site-3">执行 site 模块（3）</h4>
+<p>注意前面</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">USER_SITE</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Users</span><span class="err">\\</span><span class="nx">dbzha</span><span class="err">\\</span><span class="nx">AppData</span><span class="err">\\</span><span class="nx">Roaming</span><span class="err">\\</span><span class="nx">Python</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="err">&#39;</span><span class="w"> </span><span class="p">(</span><span class="nx">doesn</span><span class="err">&#39;</span><span class="nx">t</span><span class="w"> </span><span class="nx">exist</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果这个路径存在的话，输出结果会包含它</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">sys</span><span class="p">.</span><span class="nx">path</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">python312</span><span class="p">.</span><span class="nx">zip</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">DLLs</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">Lib</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Users</span><span class="err">\\</span><span class="nx">dbzha</span><span class="err">\\</span><span class="nx">AppData</span><span class="err">\\</span><span class="nx">Roaming</span><span class="err">\\</span><span class="nx">Python</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">Lib</span><span class="err">\\</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="nx">USER_BASE</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Users</span><span class="err">\\</span><span class="nx">dbzha</span><span class="err">\\</span><span class="nx">AppData</span><span class="err">\\</span><span class="nx">Roaming</span><span class="err">\\</span><span class="nx">Python</span><span class="err">&#39;</span><span class="w"> </span><span class="p">(</span><span class="nx">exists</span><span class="p">)</span>
+<span class="nx">USER_SITE</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Users</span><span class="err">\\</span><span class="nx">dbzha</span><span class="err">\\</span><span class="nx">AppData</span><span class="err">\\</span><span class="nx">Roaming</span><span class="err">\\</span><span class="nx">Python</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="err">&#39;</span><span class="w"> </span><span class="p">(</span><span class="nx">exists</span><span class="p">)</span>
+<span class="nx">ENABLE_USER_SITE</span><span class="p">:</span><span class="w"> </span><span class="nx">True</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="site-4venv">执行 site 模块（4）venv环境</h4>
+<p>在 venv 环境下，执行</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>python -m site
+</code></pre></div></td></tr></table></div>
+
+<p>会怎么样？</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">sys</span><span class="p">.</span><span class="nx">path</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">D</span><span class="p">:</span><span class="err">\\</span><span class="nx">Source</span><span class="err">\\</span><span class="nx">debao</span><span class="err">\\</span><span class="nx">debaoblog</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">python312</span><span class="p">.</span><span class="nx">zip</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">DLLs</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">Lib</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">D</span><span class="p">:</span><span class="err">\\</span><span class="nx">Source</span><span class="err">\\</span><span class="nx">debao</span><span class="err">\\</span><span class="nx">debaoblog</span><span class="err">\\</span><span class="p">.</span><span class="nx">venv</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;</span><span class="nx">D</span><span class="p">:</span><span class="err">\\</span><span class="nx">Source</span><span class="err">\\</span><span class="nx">debao</span><span class="err">\\</span><span class="nx">debaoblog</span><span class="err">\\</span><span class="p">.</span><span class="nx">venv</span><span class="err">\\</span><span class="nx">Lib</span><span class="err">\\</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="nx">USER_BASE</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Users</span><span class="err">\\</span><span class="nx">dbzha</span><span class="err">\\</span><span class="nx">AppData</span><span class="err">\\</span><span class="nx">Roaming</span><span class="err">\\</span><span class="nx">Python</span><span class="err">&#39;</span><span class="w"> </span><span class="p">(</span><span class="nx">exists</span><span class="p">)</span>
+<span class="nx">USER_SITE</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Users</span><span class="err">\\</span><span class="nx">dbzha</span><span class="err">\\</span><span class="nx">AppData</span><span class="err">\\</span><span class="nx">Roaming</span><span class="err">\\</span><span class="nx">Python</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="err">&#39;</span><span class="w"> </span><span class="p">(</span><span class="nx">exists</span><span class="p">)</span>
+<span class="nx">ENABLE_USER_SITE</span><span class="p">:</span><span class="w"> </span><span class="nx">False</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意，USER SITE禁用状态</p>
+<h4 id="site-5ubuntu">执行 site 模块（5）ubuntu</h4>
+<p>也可以对照Ubuntu下结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>python -m site
+</code></pre></div></td></tr></table></div>
+
+<p>如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s1">&#39;/home/debao&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;/usr/lib/python312.zip&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;/usr/lib/python3.12&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;/usr/lib/python3.12/lib-dynload&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;/usr/local/lib/python3.12/dist-packages&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;/usr/lib/python3/dist-packages&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">USER_BASE</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;/home/debao/.local&#39;</span><span class="w"> </span><span class="p">(</span><span class="n">doesn</span><span class="s1">&#39;t exist)</span>
+<span class="n">USER_SITE</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;/home/debao/.local/lib/python3.12/site-packages&#39;</span><span class="w"> </span><span class="p">(</span><span class="n">doesn</span><span class="s1">&#39;t exist)</span>
+<span class="n">ENABLE_USER_SITE</span><span class="p">:</span><span class="w"> </span><span class="n">True</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="site-6use-site">执行 site 模块（6）use-site</h4>
+<p>如果只关注 user级别的 site，可以用：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>site<span class="w"> </span>--user-site
+</code></pre></div></td></tr></table></div>
+
+<p>其输出</p>
+<p>在Ubuntu下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">/</span><span class="nx">home</span><span class="o">/</span><span class="nx">debao</span><span class="o">/</span><span class="p">.</span><span class="nx">local</span><span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">python3</span><span class="m m-Double">.12</span><span class="o">/</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在 Windows下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">C</span><span class="p">:</span><span class="err">\</span><span class="nx">Users</span><span class="err">\</span><span class="nx">dbzha</span><span class="err">\</span><span class="nx">AppData</span><span class="err">\</span><span class="nx">Roaming</span><span class="err">\</span><span class="nx">Python</span><span class="err">\</span><span class="nx">Python312</span><span class="err">\</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="sysprefix-sysexec_prefix">sys.prefix 与 sys.exec_prefix</h2>
+<h3 id="_3">是什么？</h3>
+<p>sys.prefix:</p>
+<ul>
+<li>表示 Python 的安装路径根目录</li>
+<li>包含与平台无关的 Python 文件，如标准库模块(.py文件)</li>
+<li>默认情况下，在类Unix系统中通常是 "/usr" 或 "/usr/local"</li>
+<li>在虚拟环境中，指向虚拟环境的根目录</li>
+</ul>
+<p>sys.exec_prefix:</p>
+<ul>
+<li>表示包含依赖平台的 Python 文件的根目录</li>
+<li>包含编译后的扩展模块(.so文件)、可执行文件等</li>
+<li>通常与 sys.prefix 相同</li>
+</ul>
+<h3 id="_4">例子</h3>
+<p>如下命令结果？</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import sys; print(sys.prefix, sys.exec_prefix)&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>Windows：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>C:\Python312 C:\Python312
+</code></pre></div></td></tr></table></div>
+
+<p>Windows 下 venv</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>D:\Source\debao\debaoblog\.venv D:\Source\debao\debaoblog\.venv
+</code></pre></div></td></tr></table></div>
+
+<p>Ubuntu:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>/usr /usr
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>依据 <code>sys.prefix != sys.base_prefix</code> 可判定当前是否在venv环境中执行</p>
+</blockquote>
+<h2 id="pyvenvcfg">pyvenv.cfg</h2>
+<h3 id="_5">在哪里？</h3>
+<p>使用 venv 创建虚拟环境，</p>
+<p>在Windows下</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">venv_name</span><span class="o">/</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">Scripts</span><span class="o">/</span><span class="w">                    </span><span class="err">#</span><span class="w"> </span><span class="nx">Windows下的可执行文件目录</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="nx">python</span><span class="p">.</span><span class="nx">exe</span><span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="nx">Python解释器</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="nx">pythonw</span><span class="p">.</span><span class="nx">exe</span><span class="w">          </span><span class="err">#</span><span class="w"> </span><span class="nx">无控制台的Python</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="nx">pip</span><span class="p">.</span><span class="nx">exe</span><span class="w">              </span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="nx">activate</span><span class="p">.</span><span class="nx">bat</span><span class="w">         </span><span class="err">#</span><span class="w"> </span><span class="nx">cmd激活脚本</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="nx">Activate</span><span class="p">.</span><span class="nx">ps1</span><span class="w">         </span><span class="err">#</span><span class="w"> </span><span class="nx">PowerShell激活脚本</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">Lib</span><span class="o">/</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="o">/</span><span class="w">       </span><span class="err">#</span><span class="w"> </span><span class="nx">第三方包目录</span>
+<span class="err">└──</span><span class="w"> </span><span class="nx">pyvenv</span><span class="p">.</span><span class="nx">cfg</span><span class="w">               </span><span class="err">#</span><span class="w"> </span><span class="nx">配置文件</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在 Ubuntu下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">venv_name</span><span class="o">/</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">bin</span><span class="o">/</span><span class="w">               </span><span class="err">#</span><span class="w"> </span><span class="nx">Unix系统</span><span class="err">，</span><span class="nx">存放可执行文件</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="nx">python</span><span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="nx">Python解释器的软链接</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="nx">pip</span><span class="w">          </span><span class="err">#</span><span class="w"> </span><span class="nx">pip的软链接</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="nx">activate</span><span class="w">     </span><span class="err">#</span><span class="w"> </span><span class="nx">激活脚本</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">lib</span><span class="o">/</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="nx">pythonX</span><span class="p">.</span><span class="nx">Y</span><span class="o">/</span>
+<span class="err">│</span><span class="w">       </span><span class="err">└──</span><span class="w"> </span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="o">/</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nx">第三方包安装位置</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">include</span><span class="o">/</span><span class="w">          </span><span class="err">#</span><span class="w"> </span><span class="nx">头文件目录</span>
+<span class="err">└──</span><span class="w"> </span><span class="nx">pyvenv</span><span class="p">.</span><span class="nx">cfg</span><span class="w">       </span><span class="err">#</span><span class="w"> </span><span class="nx">配置文件</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_6">长什么样？</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">home</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">C</span><span class="p">:</span><span class="err">\</span><span class="nx">Python312</span>
+<span class="nx">include</span><span class="o">-</span><span class="nx">system</span><span class="o">-</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">false</span>
+<span class="nx">version</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="m m-Double">3.12.1</span>
+<span class="nx">executable</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">C</span><span class="p">:</span><span class="err">\</span><span class="nx">Python312</span><span class="err">\</span><span class="nx">python</span><span class="p">.</span><span class="nx">exe</span>
+<span class="nx">command</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">C</span><span class="p">:</span><span class="err">\</span><span class="nx">Python312</span><span class="err">\</span><span class="nx">python</span><span class="p">.</span><span class="nx">exe</span><span class="w"> </span><span class="o">-</span><span class="nx">m</span><span class="w"> </span><span class="nx">venv</span><span class="w"> </span><span class="nx">D</span><span class="p">:</span><span class="err">\</span><span class="nx">Source</span><span class="err">\</span><span class="nx">debao</span><span class="err">\</span><span class="nx">debaoblog</span><span class="err">\</span><span class="p">.</span><span class="nx">venv</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>标记这是个虚拟环境，并指向原始Python解释器位置（home字段）</li>
+<li>控制是否可以使用系统安装的包（include-system-site-packages）</li>
+<li>影响Python的模块搜索路径（通过调整sys.prefix和sys.base_prefix）</li>
+<li>记录Python版本和环境创建信息（version和executable字段）</li>
+<li>为虚拟环境的隔离机制提供必要的配置信息</li>
+</ul>
+<h2 id="_pth-pth">._pth 与 .pth</h2>
+<p>注意区分二者</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>._pth</th>
+<th>.pth</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>文件名</td>
+<td>必须是 python版本号._pth</td>
+<td>任意名称，以 .pth 结尾</td>
+</tr>
+<tr>
+<td>位置</td>
+<td>python.exe 同目录</td>
+<td>site-packages 目录</td>
+</tr>
+<tr>
+<td>路径控制</td>
+<td>完全替换 sys.path</td>
+<td>追加到 sys.path</td>
+</tr>
+<tr>
+<td>默认路径</td>
+<td>禁用所有默认路径</td>
+<td>保留默认路径</td>
+</tr>
+<tr>
+<td>PYTHONPATH</td>
+<td>禁用</td>
+<td>保留有效</td>
+</tr>
+<tr>
+<td>主要用途</td>
+<td>嵌入式/便携版 Python</td>
+<td>添加额外包路径</td>
+</tr>
+<tr>
+<td>使用场景</td>
+<td>需要严格控制导入</td>
+<td>普通包管理</td>
+</tr>
+</tbody>
+</table>
+<p>Python的嵌入式版本，会提供一个 <code>._pth</code>文件，比如 <code>python312._pth</code>，内容如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">python312</span><span class="o">.</span><span class="n">zip</span>
+<span class="o">.</span>
+
+<span class="c1"># Uncomment to run site.main() automatically</span>
+<span class="c1">#import site</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="pip">PIP 安装包位置？</h2>
+<p>pip 安装包的位置取决于以下情况：</p>
+<h3 id="venv">venv环境中</h3>
+<ul>
+<li>venv/Lib/site-packages/</li>
+</ul>
+<p>比如：'D:\Source\debao\debaoblog\.venv\Lib\site-packages'</p>
+<h3 id="_7">全局环境中</h3>
+<ul>
+<li>Windows: C:\Python3x\Lib\site-packages\</li>
+<li>Linux: /usr/lib/python3.x/site-packages/</li>
+<li>macOS: /Library/Python/3.x/site-packages/</li>
+</ul>
+<h3 id="_8">用户级安装</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>--user
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>Windows: %APPDATA%\Python\Python3x\site-packages\</li>
+<li>Linux: ~/.local/lib/python3.x/site-packages/</li>
+<li>macOS: ~/Library/Python/3.x/site-packages/</li>
+</ul>
+<h3 id="_9">查看包位置</h3>
+<p>使用 <code>&lt;package&gt;.__path__</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">python</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="s2">&quot;import markdown as _; print(_.__path__)&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">[</span><span class="err">&#39;</span><span class="nx">D</span><span class="p">:</span><span class="err">\\</span><span class="nx">Source</span><span class="err">\\</span><span class="nx">debao</span><span class="err">\\</span><span class="nx">debaoblog</span><span class="err">\\</span><span class="p">.</span><span class="nx">venv</span><span class="err">\\</span><span class="nx">Lib</span><span class="err">\\</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="err">\\</span><span class="nx">markdown</span><span class="err">&#39;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>使用 <code>&lt;package&gt;.__file__</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">python</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="s2">&quot;import markdown as _; print(_.__file__)&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">D</span><span class="p">:</span><span class="err">\</span><span class="nx">Source</span><span class="err">\</span><span class="nx">debao</span><span class="err">\</span><span class="nx">debaoblog</span><span class="err">\</span><span class="p">.</span><span class="nx">venv</span><span class="err">\</span><span class="nx">Lib</span><span class="err">\</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="err">\</span><span class="nx">markdown</span><span class="err">\</span><span class="nx">__init__</span><span class="p">.</span><span class="nx">py</span>
+</code></pre></div></td></tr></table></div>
+
+<p>或者直接 pip show：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">pip</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="nv">markdown</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Name</span><span class="o">:</span><span class="w"> </span><span class="n">Markdown</span>
+<span class="n">Version</span><span class="o">:</span><span class="w"> </span><span class="mf">3.7</span>
+<span class="n">Summary</span><span class="o">:</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n">implementation</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">John</span><span class="w"> </span><span class="n">Gruber</span><span class="err">&#39;</span><span class="n">s</span><span class="w"> </span><span class="n">Markdown</span><span class="o">.</span>
+<span class="o">...</span>
+<span class="n">Location</span><span class="o">:</span><span class="w"> </span><span class="n">D</span><span class="o">:\</span><span class="n">Source</span><span class="o">\</span><span class="n">debao</span><span class="o">\</span><span class="n">debaoblog</span><span class="o">\.</span><span class="n">venv</span><span class="o">\</span><span class="n">Lib</span><span class="o">\</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span>
+<span class="n">Requires</span><span class="o">:</span>
+<span class="n">Required</span><span class="o">-</span><span class="n">by</span><span class="o">:</span><span class="w"> </span><span class="n">markdown</span><span class="o">-</span><span class="n">mermaidjs</span><span class="o">,</span><span class="w"> </span><span class="n">mdx</span><span class="o">-</span><span class="n">truly</span><span class="o">-</span><span class="n">sane</span><span class="o">-</span><span class="n">lists</span><span class="o">,</span><span class="w"> </span><span class="n">pelican</span><span class="o">-</span><span class="n">yaml</span><span class="o">-</span><span class="n">metadata</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="python">便携式Python？</h2>
+<p>默认Python需要安装，为了便携，不少人在搞，比如：</p>
+<ul>
+<li>https://winpython.github.io/</li>
+<li>https://github.com/codrsquad/portable-python</li>
+</ul>
+<p>另外还有 anaconda（miniconda）</p>
+<h3 id="conda">conda</h3>
+<blockquote>
+<p>似乎不直接相关，它可以管理不同版本的python。先放上</p>
+</blockquote>
+<p>比如Windows下，当前 <code>Miniconda3-latest-Windows-x86_64.exe</code> 对应的是 Python3.12：</p>
+<p>安装后可执行：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>path/to/conda init powershell
+</code></pre></div></td></tr></table></div>
+
+<p>以便于：</p>
+<ul>
+<li>修改 PowerShell 的配置文件（通常在 $PROFILE 位置）</li>
+<li>添加必要的脚本来初始化 conda</li>
+<li>使 conda activate 和 conda deactivate 命令在 PowerShell 中可用</li>
+</ul>
+<p>而后可以安装其他版本python：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>conda create -n py311 python=3.11
+conda create -n py310 python=3.10
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意和 conda install python=3.11 的不同，这是直接降级原来的 3.12。</p>
+</blockquote>
+<p>而后</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code># 使用 Python 3.11
+conda activate py311
+
+# 使用 Python 3.10
+conda activate py310
+
+# 回到基础环境，等同 conda activate
+conda activate base
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_10">参考</h2>
+<ul>
+<li>https://docs.python.org/3/library/sys_path_init.html</li>
+<li>https://github.com/python/cpython/blob/main/Modules/getpath.py</li>
+<li>https://docs.python.org/3/library/venv.html</li>
+<li>https://peps.python.org/pep-0370/</li>
+<li>https://pip.pypa.io/en/stable/cli/pip_install/</li>
+<li>https://docs.conda.io/en/latest/</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2025-01-01T20:14:00+08:00" pubdate>Wed 01 January 2025</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/python.html'>Python</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>现代CMake学习笔记（一） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">现代CMake学习笔记（一）</h1>
+    <p class="meta">
+<time datetime="2023-11-29T22:37:00+08:00" pubdate>Wed 29 November 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>从默默无闻，到成为C++跨平台构建工具的事实标准，不知道是因为C++太不争气了，还是cmake真的亮眼...</p>
+</blockquote>
+<p>作为Qt爱好者，还是喜欢从Qt的角度捋一捋 CMake（另外，CMake的gui界面本身就是用Qt开发的）</p>
+<h2 id="cmake">CMake 时间线</h2>
+<ul>
+<li>2000年，CMake 诞生，为 ITK 提供跨平台的构建工具</li>
+<li>2006年，KDE 这一Qt社区的重量级框架 确定将kde4构建工具从 autotools 切换为 cmake（这一事件对cmake来说应该影响深远，如果没有KDE决策者顶着各种异议做出的这一决定，估计也没有cmake的今天）</li>
+<li>2009年，Qt5开发阶段，Qt官方针对要不要将构建工具切换到cmake，展开的激烈的讨论，最终确定：不切换到cmake，自行开发Qt新的构建工具qbs。</li>
+<li>2014年，CMake 3.0 发布（传统cmake和现代的cmake的分界线）</li>
+<li>2017年，Visual Studio开始内置支持cmake。方便了Visual Studio下的Qt用户。</li>
+<li>2020年，Qt6正式将cmake作为自身的构建工具。</li>
+</ul>
+<h2 id="qt">Qt 时间线</h2>
+<ul>
+<li>Qt4：尽管KDE4（Qt4的程序库）选择了cmake，但是Qt官方并没有跟进。（这一时期，kde和cmake在共同成长。cmake单方面支持Qt。）<ul>
+<li>Qt4.5：Qt进入Nokia旗下后，开始急速扩张。该版本起Qt增加LGPL授权</li>
+<li>PySide：因与PyQt开发者就授权协议无法达成一致，Nokia的巴西团队开始自行开发Python绑定，取名PySide，采用LGPL授权。PySide采用cmake进行构建。</li>
+</ul>
+</li>
+<li>Qt5：社区经过激烈讨论，最终：Qt官方确定自行开发构建工具qbs，不用cmake。（不好评价这一决策对错。毕竟此时的cmake和几年后的cmake压根就不是一个东西。）<ul>
+<li>Qt5.5：Qt官方开始为Qt库提供cmake的支持，以便于cmake用户使用Qt。（在次之前，是cmake单方面支持Qt）</li>
+<li>Qt5.15：为了让Qt5用户向Qt6过渡，引入 Version-less CMake target</li>
+</ul>
+</li>
+<li>Qt6: 正式将cmake作为自身的构建工具</li>
+</ul>
+<h3 id="qmake">关于 qmake</h3>
+<p>对于简单的项目，qmake语法真的很简单，简单易学。</p>
+<p>不过，复杂的项目，qmake的工程文件真的像天书一样。本来我不这样认为，只是，当发现下面问题时，我改变了认知：</p>
+<ul>
+<li>当提到 .pro .pri .prf .prl 这四种文件，很多qmake用户只认识第一个的时候</li>
+<li>当提及 .pro文件中，如下变量有什么区别<code>$$varName</code>、<code>$${varName}</code>、<code>$$(varName)</code>、<code>$(varName)</code>、<code>$$[varName]</code>、<code>${varName}</code>，qmake用户脑袋嗡嗡的时候</li>
+<li>当问及一个由几十个.pri 和 .pro构成的工程，不少qmake用户没感觉的时候</li>
+<li>当看到qmake的官方维护人员，对于qmake相关的bug充满抱怨的时候</li>
+</ul>
+<p>所以，离开qmake是早晚的事情</p>
+<h3 id="qbs">关于 qbs</h3>
+<blockquote>
+<p>和Qt发音 Cute 相传承，qbs的官方发音是 Cubes</p>
+</blockquote>
+<ul>
+<li>2010年，qbs开始开发。这时候Qt在Nokia旗下，也是Qt飞速扩张的时候。（注意和前面的时间线对应，否决cmake的同时开始的qbs）</li>
+<li>2012年，qbs 正式发布。</li>
+<li>2018年，qbs 被官方废弃（deprecated ）。建议用户使用cmake</li>
+</ul>
+<p>qbs设计挺好的，但是只有Qt社区用，不像cmake有大量的用户群，生态不行。</p>
+<p>简单来说，这个东西就是因cmake不好而生，又因cmake上进而死的。</p>
+<h3 id="pyside">关于 PySide</h3>
+<p>PySide，据我所知，这是Qt官方最早使用CMake的公开项目。我最初学习cmake也正是因为PySide采用了cmake。</p>
+<ul>
+<li>2009，因无法与PyQt开发公司达成一致，Qt官方（Nokia）确定自己Qt4开发Pyhton 绑定，采用LGPL授权。采用cmake构建。</li>
+<li>201x，因为Nokia 的 xxxx xxx xxxx 问题，Qt分批出售，同时Qt旗下的大批项目关停，PySide是其中之一。</li>
+<li>2015，PySide2 开始复活，开始从Qt4向Qt5移植（个人猜测，应该是Python越来越火的原因）</li>
+<li>2018，PySide2 正式发布。基于Qt5 ，官方名字 <strong>Qt for Python</strong></li>
+<li>2020，PySide6 发布，版本号开始与 Qt6同步。</li>
+</ul>
+<h2 id="cmake_1">CMake</h2>
+<p>前面提到 CMake分为传统的cmake和现代cmake，但是中文资料似乎跟进很慢。所以：看资料，先看年份（不过，年份问题挡不住大家不加标注的来回转载 ）。</p>
+<p>尽管不喜欢CMake，在传统CMake时代，还是陆续记过一些笔记 <a href="https://blog.csdn.net/dbzhang800/article/details/6314073">cmake 学习笔记(一)</a> ... <a href="https://blog.csdn.net/dbzhang800/article/details/6341029">cmake学习笔记(五)</a></p>
+<p>这些cmake内容尽管放到现在仍然工作的很好，但是就像现在写C++98程序的一样，可以用，但新版本更简洁、易学。</p>
+<p>作为本系列笔记的第一篇，只扯些闲篇。希望能有时间续写后面的内容...</p>
+<blockquote>
+<p>本文有些内容我没有严格找资料考证，有错误之外，欢迎指正</p>
+</blockquote>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://lwn.net/Articles/188693/">Why the KDE project switched to CMake -- and how (continued)</a></li>
+<li>https://www.qt.io/blog/qt-and-cmake-the-past-the-present-and-the-future</li>
+<li>http://blog.gerryyang.com/gcc/clang/2022/07/31/modern-cmake-in-action.html</li>
+<li>https://www.qt.io/blog/qt-6-build-system</li>
+<li>https://www.kdab.com/using-cmake-with-qt-5/</li>
+<li>https://www.qt.io/blog/2009/10/12/to-make-or-not-to-make-qmake-and-beyond</li>
+<li>https://www.qt.io/blog/2009/10/14/to-make-or-not-to-make-qmake-and-beyond-redux</li>
+<li>https://steveire.wordpress.com/2017/11/05/embracing-modern-cmake/</li>
+<li>https://devblogs.microsoft.com/cppblog/cmake-support-in-visual-studio/</li>
+<li><a href="https://blog.csdn.net/dbzhang800/article/details/6348432">浅谈 qmake 之 pro、pri、prf、prl文件</a></li>
+<li><a href="https://blog.csdn.net/dbzhang800/article/details/6758204">qmake 乱乱乱谈(一)</a></li>
+<li>https://www.qt.io/blog/2018/10/29/deprecation-of-qbs</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-11-29T22:37:00+08:00" pubdate>Wed 29 November 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a class="category" href="https://blog.debao.me/tags/qt.html">qt</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

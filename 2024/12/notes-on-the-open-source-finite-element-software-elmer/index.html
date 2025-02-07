@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>开源有限元软件Elmer小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/cax.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">开源有限元软件Elmer小记</h1>
+    <p class="meta">
+<time datetime="2024-12-26T22:48:00+08:00" pubdate>Thu 26 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><div class="toc">
+<ul>
+<li><a href="#elmer">Elmer 是什么？</a><ul>
+<li><a href="#_1">历史</a></li>
+<li><a href="#_2">开发环境</a></li>
+<li><a href="#_3">授权协议</a></li>
+</ul>
+</li>
+<li><a href="#elmer_1">Elmer架构</a><ul>
+<li><a href="#elmergui">ElmerGUI</a></li>
+<li><a href="#elmersolver">ElmerSolver</a></li>
+<li><a href="#elmergrid">ElmerGrid</a></li>
+<li><a href="#paraview">ParaView</a></li>
+<li><a href="#_4">其他</a></li>
+</ul>
+</li>
+<li><a href="#_5">源码结构</a></li>
+<li><a href="#_6">参考</a></li>
+</ul>
+</div>
+<h2 id="elmer">Elmer 是什么？</h2>
+<p>官网是如下介绍Elmer的：</p>
+<p>Elmer是一个开源的多物理场仿真软件，主要由CSC - IT科学中心（CSC）开发。Elmer的开发最初作为芬兰大学、研究机构和工业界的国家合作项目启动。自其开源发布以来，Elmer的使用和开发已成为国际化。</p>
+<p>Elmer包含流体动力学、结构力学、电磁学、热传导和声学等物理模型。这些模型通过偏微分方程来描述，Elmer通过有限元法（FEM）求解。Elmer支持并行计算，并且在许多问题中，能够在数千个核心上达到良好的可扩展性。</p>
+<p><img alt="elmer" src="https://blog.debao.me/images/simu/elmer.png"></p>
+<h3 id="_1">历史</h3>
+<ul>
+<li>1995年，作为芬兰国家级项目启动</li>
+<li>2008年，在sf.net平台开源</li>
+<li>2015年，转移到GitHub平台</li>
+</ul>
+<h3 id="_2">开发环境</h3>
+<ul>
+<li>Fortran90/95（核心数值计算）</li>
+<li>C/C++（外围功能和性能优化）</li>
+<li>Python（脚本和后处理）</li>
+</ul>
+<p>GUI界面使用Qt(6)开发，使用ParaView，VTK等库或工具。</p>
+<p>使用CMake进行跨平台构建。</p>
+<p>它涉及到的一些开源库，如下：</p>
+<p><img alt="3rd tools" src="https://blog.debao.me/images/simu/elmer_3rd_tools.png"></p>
+<h3 id="_3">授权协议</h3>
+<p>整个软件是开源的，具体来说</p>
+<ul>
+<li>Library parts under LGPL</li>
+<li>Modules under GPL</li>
+</ul>
+<blockquote>
+<p>我没有仔细去看源码，不清楚它的Library 和 Modules的具体包含哪些。</p>
+</blockquote>
+<h2 id="elmer_1">Elmer架构</h2>
+<p>Elmer由一系列程序组成</p>
+<p><img alt="components" src="https://blog.debao.me/images/simu/elmer_components.png"></p>
+<ul>
+<li>ElmerGUI：界面，前处理（包含ElmerGrid，负责结构化网格和网格导入）</li>
+<li>ElmerSolver：有限元求解器，每个物理方程对应一个插件</li>
+<li>Paraview：结果展示？</li>
+</ul>
+<h3 id="elmergui">ElmerGUI</h3>
+<ul>
+<li>用户界面：使用 Qt 开发</li>
+<li>网格生成：Tetgen，Netgen，ElmerGrid等插件。CAD界面基于 OpenCascad</li>
+<li>新的求解器可以通过GUI集成</li>
+</ul>
+<h3 id="elmersolver">ElmerSolver</h3>
+<p>ElmerSolver的主体部分！</p>
+<h3 id="elmergrid">ElmerGrid</h3>
+<p>除了作为 ElmerGUI的插件使用外，也可以独立运行。</p>
+<p>支持</p>
+<ul>
+<li>2D、3D结构化网格的创建</li>
+<li>网格导入，支持Ansys，Abaqus，Fidap，Comsol，Gmsh等格式</li>
+<li>网格操作</li>
+<li>分割（Partitioning）</li>
+</ul>
+<h3 id="paraview">ParaView</h3>
+<p>ParaView是一个独立工具，让ElmerSolver生成它可识别的格式，而后用其打开。</p>
+<p>ParaView也可以通过ElmerGUI被调用。</p>
+<p>另外，ElmerGUI内置VTK以及老的ElmerPost，也可以用于可视化。但是ParaView是ElmerSolver 推荐的方式！！</p>
+<h3 id="_4">其他</h3>
+<ul>
+<li>ElmerPost：老的后处理，已不再维护</li>
+<li>ElmerFront：老的前端界面，已不再维护</li>
+<li>Mesh2D：老的Mesh软件，供ElmerFront调用</li>
+</ul>
+<h2 id="_5">源码结构</h2>
+<p>重点关注：</p>
+<ul>
+<li><strong>eio</strong>：Elmer输入/输出库，使用C++编写，并由ElmerSolver用于一些I/O操作。</li>
+<li><strong>elmergrid</strong>：ElmerGrid源代码，使用C语言编写，包括来自Karypis实验室的Metis库。</li>
+<li><strong>fem</strong>：ElmerSolver源代码，主要使用Fortran90编写。</li>
+<li><strong>hutiter</strong>：主要使用Fortran90编写的迭代线性代数求解器，由ElmerSolver调用。</li>
+<li><strong>matc</strong>：该库用于ElmerSolver命令文件解释器和ElmerPost命令窗口中，用于评估用C语言编写的数学表达式。</li>
+<li><strong>mathlibs</strong>：包括基本数学库，如Lapack、Blas、Arpack和Parpack。</li>
+<li><strong>ElmerGUI</strong>：新的前处理器ElmerGUI的源代码。</li>
+<li><strong>umfpack</strong>：包括加利福尼亚大学的Umfpack（GPL版本4.4）库的源代码。</li>
+</ul>
+<p>不再维护：</p>
+<ul>
+<li><strong>front</strong><br>
+  ElmerFront源代码，使用C++编写。</li>
+<li><strong>post</strong><br>
+  ElmerPost源代码，使用C语言编写。</li>
+<li><strong>meshgen2d</strong><br>
+  包括2D Delaunay网格生成器的源代码。</li>
+</ul>
+<h2 id="_6">参考</h2>
+<ul>
+<li>https://github.com/ElmerCSC/elmerfem</li>
+<li>https://research.csc.fi/web/elmer/elmer</li>
+<li>https://www.nic.funet.fi/pub/sci/physics/elmer/</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-12-26T22:48:00+08:00" pubdate>Thu 26 December 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/cax.html'>CAx</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a class="category" href="https://blog.debao.me/tags/vtk.html">vtk</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

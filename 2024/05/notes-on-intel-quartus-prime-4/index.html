@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Intel Quartus Prime Lite 小记（四） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/ee.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Intel Quartus Prime Lite 小记（四）</h1>
+    <p class="meta">
+<time datetime="2024-05-20T22:04:00+08:00" pubdate>Mon 20 May 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>接前面<a href="https://blog.debao.me/2024/05/notes-on-intel-quartus-prime-3/">Quartus Prime Lite小记三</a>，搞定git和Quartus整合后，了解一下Quartus下面的Questa Intel FPGA 这个仿真软件怎么用。</p>
+</blockquote>
+<h2 id="questa-intel-fpga">Questa Intel FPGA是什么东西？</h2>
+<blockquote>
+<p>ModelSim，Questa，都没有用过；VHDL、Verilog还没开始接触；碰到这一堆堆东西，想简单学学，还真有点不知道怎么入手。</p>
+</blockquote>
+<p>Quartus Prime从21版本开始，带了仿真软件 Questa Intel FPGA（在此之前带的是ModelSim Intel FPGA)。</p>
+<p>运行界面如下：</p>
+<p><img alt="quartus-questa-result" src="https://blog.debao.me/images/fpga/quartus-questa-result.png"></p>
+<h3 id="quartus-questa">Quartus 与 Questa</h3>
+<p>和Quartus的 Lite版本一样，Questa Intel也提供一个免费版本：</p>
+<ul>
+<li>Intel® Quartus® Prime Lite Edition</li>
+<li>Questa*-Intel® FPGA Starter Edition</li>
+</ul>
+<p>Quartus Lite无需License文件，Questa Starter需要在Intel官方免费申领License。</p>
+<h3 id="modelsim-questa">ModelSim 与 Questa</h3>
+<p>ModelSim 和 Questa 都是是硬件描述语言（HDL）仿真软件，目前都属于西门子。ModelSim最初是由 <strong>Model</strong> Technology开发，后来被 Mentor Graphics 收购，而 Mentor Graphics 又被 Siemens 收购。</p>
+<ul>
+<li>ModelSim 是一种更基础的仿真工具，适用于教育、小型到中型项目以及个人使用。</li>
+<li>Questa 是一个高级仿真和验证平台，专为大型项目和复杂的系统级验证设计。</li>
+</ul>
+<h3 id="modelsim-intel-questa-intel">ModelSim-Intel 与 Questa-Intel</h3>
+<blockquote>
+<p>这两个都是针对Intel FPGA设计优化的仿真软件。在Altera被Intel收购前，他们分别叫ModelSim-Altera与Questa-Altera。</p>
+</blockquote>
+<p>Quartus Prime 从版本 21开始，包含Questa-Intel仿真器。在21版本之前，它包含ModelSim仿真器。</p>
+<p>Quartus lites版本安装后，starter版本的<code>questasim.exe</code>位于<code>D:\intelFPGA_lite\23.1std\questa_fse\win64</code>。</p>
+<p>ModelSim-Intel 与 Questa-Intel 的 Starter版本都是免费使用的，在Intel官方可以下载。（安装包和标准版是同一个，安装时有选项可以选择Starter）</p>
+<blockquote>
+<p>ModelSim-Intel 只能下载到 20.1，可能也不会有21了。</p>
+</blockquote>
+<h2 id="questastarterlicense">Questa的starter版本的License问题</h2>
+<p>尽管是免费申领，但是这个操作挺繁琐...</p>
+<h3 id="license">申请License文件</h3>
+<p>访问官方，注册账户</p>
+<ul>
+<li><a href="https://licensing.intel.com/">https://licensing.intel.com/</a></li>
+<li><a href="https://licensing.intel.com/psg/s/sales-signup-evaluationlicenses">Sales_signup_evaluationLicenses (intel.com)</a></li>
+</ul>
+<p>选中如下项，点击继续<code>Questa*-Intel® FPGA Starter Edition (License: SW-QUESTA)</code></p>
+<p>添加计算机</p>
+<ul>
+<li>输入网卡地址NIC-ID（12个16进制数，不适用:或-分隔符。</li>
+</ul>
+<p>申请成功就会发送我们的email中。</p>
+<h3 id="license_1">添加 license 文件</h3>
+<p>在 Quartus 的 Tools菜单中，点击<code>License Setup...</code>调出设置页面。把license文件路径设置为环境变量<code>LM_LICENSE_FILE</code></p>
+<h3 id="questasim">启动 QuestaSim</h3>
+<p>此时就可以启动questasim了，不过，要注意，由于是starter版本，只能启动一个实例！！！</p>
+<p>可执行程序路径：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>D:\intelFPGA_lite\23.1std\questa_fse\win64\questasim.exe
+</code></pre></div></td></tr></table></div>
+
+<p><img alt="questa-intel-fpga-starter" src="https://blog.debao.me/images/fpga/questa-intel-fpga-starter.jpg"></p>
+<h3 id="quartus">配置 Quartus</h3>
+<p>在Quartus中创建新项目时，可以配置Simulation为Questa Intel FPGA。</p>
+<p>相关配置有几处</p>
+<ol>
+<li><code>Tools-&gt; Options...-&gt;EDA Tool Options</code> ，设置Questa Intel FPGA 的路径 ，大致 <code>d:/intelfpga_lite/23.1std/questa_fse/win64</code></li>
+<li><code>Assignments-&gt;EDA Tools Settings-&gt;Simulation</code> 选择 <code>Questa Intel FPDA</code></li>
+<li><code>Tools -&gt; Run simulation Tool -&gt; ...</code> 执行</li>
+</ol>
+<p>结果：</p>
+<ul>
+<li>.qsf 文件中出现<code>EDA_SIMULATION_TOOL</code>相关的assignment</li>
+<li>编译时生成 Questa 所需的文件，在 <code>simulation/questa</code> 目录下面</li>
+</ul>
+<h4 id="quartus_eda">quartus_eda</h4>
+<p>命令行工具<code>quartus_eda</code>用于生成仿真所需的文件（接之前的例子，项目名 mytest3.qpf，源文件mytest2.v），执行：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>quartus_eda --read_settings_files=off --write_settings_files=off mytest3 -c mytest3
+</code></pre></div></td></tr></table></div>
+
+<p>在文件夹<code>simulation/questa</code>下生成：</p>
+<ul>
+<li>mytest3.sft</li>
+<li>mytest3.vo</li>
+</ul>
+<p>当然，再此之前，必须先执行综合（如果没执行的话）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>quartus_map --read_settings_files=on --write_settings_files=off mytest3 -c mytest3
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意： eda使用的选型 <code>--read_settings_files=off</code>，并不是说这个命令和.qsf文件无关，而是因为map已经将.qsf的内容消化并写入到了db文件夹下面。eda会直接使用db文件夹中的内容。</p>
+</blockquote>
+<h2 id="quartusquesta">使用quartus和questa进行仿真</h2>
+<p>使用前面的简单的组合逻辑电路，试着在quartus界面下跑通questa仿真流程</p>
+<h3 id="_1">准备项目</h3>
+<p>创建一个quartus项目，并添加verilog文件。</p>
+<ul>
+<li>mytest4.qpf</li>
+<li>mytest4.qsf</li>
+<li>mytest2.v (继续使用之前的代码）</li>
+</ul>
+<p>mytest2.v的内容如下</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">module</span><span class="w"> </span><span class="n">mytest2</span><span class="w"> </span><span class="p">(</span><span class="k">input</span><span class="w"> </span><span class="kt">wire</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="k">input</span><span class="w"> </span><span class="kt">wire</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="w"> </span><span class="kt">wire</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
+<span class="w">    </span><span class="k">assign</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">x1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">x2</span><span class="p">)</span><span class="o">|</span><span class="p">(</span><span class="o">~</span><span class="n">x1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">x2</span><span class="p">);</span>
+<span class="k">endmodule</span>
+</code></pre></div></td></tr></table></div>
+
+<p>mytest4.qsf内容如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>FAMILY<span class="w"> </span><span class="s2">&quot;MAX 10&quot;</span>
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>DEVICE<span class="w"> </span><span class="mi">10</span>M50SAE144C8G
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>TOP_LEVEL_ENTITY<span class="w"> </span>mytest2
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>VERILOG_FILE<span class="w"> </span>mytest2.v
+
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>ORIGINAL_QUARTUS_VERSION<span class="w"> </span><span class="mf">23.1</span>STD.0
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>LAST_QUARTUS_VERSION<span class="w"> </span><span class="s2">&quot;23.1std.0 Lite Edition&quot;</span>
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>PROJECT_OUTPUT_DIRECTORY<span class="w"> </span>output_files
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>MIN_CORE_JUNCTION_TEMP<span class="w"> </span><span class="mi">0</span>
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>MAX_CORE_JUNCTION_TEMP<span class="w"> </span><span class="mi">85</span>
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>ERROR_CHECK_FREQUENCY_DIVISOR<span class="w"> </span><span class="mi">256</span>
+
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_SIMULATION_TOOL<span class="w"> </span><span class="s2">&quot;Questa Intel FPGA (Verilog)&quot;</span>
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_TIME_SCALE<span class="w"> </span><span class="s2">&quot;1 ps&quot;</span><span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_simulation
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_OUTPUT_DATA_FORMAT<span class="w"> </span><span class="s2">&quot;VERILOG HDL&quot;</span><span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_simulation
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_GENERATE_FUNCTIONAL_NETLIST<span class="w"> </span>OFF<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_board_design_timing
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_GENERATE_FUNCTIONAL_NETLIST<span class="w"> </span>OFF<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_board_design_symbol
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_GENERATE_FUNCTIONAL_NETLIST<span class="w"> </span>OFF<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_board_design_signal_integrity
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_GENERATE_FUNCTIONAL_NETLIST<span class="w"> </span>OFF<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_board_design_boundary_scan
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>有意义的主要是前4行。</p>
+</blockquote>
+<p>这时候可以编译项目了。</p>
+<h3 id="testbench">添加 testbench 文件</h3>
+<p>要仿真上面的模块，需要先创建一个testbench文件，比如<code>testbench_mytest2.v</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="no">`timescale</span><span class="w"> </span><span class="mh">1</span><span class="n">ns</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mh">1</span><span class="n">ps</span>
+
+<span class="k">module</span><span class="w"> </span><span class="n">testbench_mytest2</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Inputs</span>
+<span class="w">    </span><span class="kt">reg</span><span class="w"> </span><span class="n">x1</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">reg</span><span class="w"> </span><span class="n">x2</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Outputs</span>
+<span class="w">    </span><span class="kt">wire</span><span class="w"> </span><span class="n">f</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// 实例化要测试的模块</span>
+<span class="w">    </span><span class="n">mytest2</span><span class="w"> </span><span class="n">uut</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="p">.</span><span class="n">x1</span><span class="p">(</span><span class="n">x1</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="p">.</span><span class="n">x2</span><span class="p">(</span><span class="n">x2</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="p">.</span><span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="w">    </span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">initial</span><span class="w"> </span><span class="k">begin</span>
+<span class="w">        </span><span class="c1">// 初始化输入</span>
+<span class="w">        </span><span class="n">x1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0</span><span class="p">;</span>
+<span class="w">        </span><span class="n">x2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0</span><span class="p">;</span>
+
+<span class="w">        </span><span class="c1">// 激励序列</span>
+<span class="w">        </span><span class="p">#</span><span class="mh">10</span><span class="w"> </span><span class="n">x1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">1</span><span class="p">;</span><span class="w"> </span><span class="n">x2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0</span><span class="p">;</span>
+<span class="w">        </span><span class="p">#</span><span class="mh">10</span><span class="w"> </span><span class="n">x1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0</span><span class="p">;</span><span class="w"> </span><span class="n">x2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">1</span><span class="p">;</span>
+<span class="w">        </span><span class="p">#</span><span class="mh">10</span><span class="w"> </span><span class="n">x1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">1</span><span class="p">;</span><span class="w"> </span><span class="n">x2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">1</span><span class="p">;</span>
+<span class="w">        </span><span class="p">#</span><span class="mh">10</span><span class="w"> </span><span class="n">x1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0</span><span class="p">;</span><span class="w"> </span><span class="n">x2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">end</span>
+
+<span class="k">endmodule</span>
+</code></pre></div></td></tr></table></div>
+
+<p>而后进行配置，<code>Assignments-&gt;Settings...-&gt;EDA Tool Settings-&gt;Simulation-&gt;NativeLink setting-&gt; Compile test bench</code></p>
+<p><img alt="quartus-settings-eda-simulation" src="https://blog.debao.me/images/fpga/quartus-settings-eda-simulation.png"></p>
+<p>在该页面中，添加我们创建的 <code>testbench_mytest2.v</code>文件。</p>
+<p>一通操作过后，我们的.qsf文件长这样：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>FAMILY<span class="w"> </span><span class="s2">&quot;MAX 10&quot;</span>
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>DEVICE<span class="w"> </span><span class="mi">10</span>M50SAE144C8G
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>TOP_LEVEL_ENTITY<span class="w"> </span>mytest3
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>ORIGINAL_QUARTUS_VERSION<span class="w"> </span><span class="mf">23.1</span>STD.0
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>LAST_QUARTUS_VERSION<span class="w"> </span><span class="s2">&quot;23.1std.0 Lite Edition&quot;</span>
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>PROJECT_OUTPUT_DIRECTORY<span class="w"> </span>output_files
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>MIN_CORE_JUNCTION_TEMP<span class="w"> </span><span class="mi">0</span>
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>MAX_CORE_JUNCTION_TEMP<span class="w"> </span><span class="mi">85</span>
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>ERROR_CHECK_FREQUENCY_DIVISOR<span class="w"> </span><span class="mi">256</span>
+
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>VERILOG_FILE<span class="w"> </span>testbench_mytest2.v
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>VERILOG_FILE<span class="w"> </span>mytest2.v
+
+<span class="nv">set_location_assignment</span><span class="w"> </span>PIN_6<span class="w"> </span><span class="o">-</span>to<span class="w"> </span>x2
+<span class="nv">set_location_assignment</span><span class="w"> </span>PIN_7<span class="w"> </span><span class="o">-</span>to<span class="w"> </span>x1
+<span class="nv">set_location_assignment</span><span class="w"> </span>PIN_8<span class="w"> </span><span class="o">-</span>to<span class="w"> </span>f
+
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_SIMULATION_TOOL<span class="w"> </span><span class="s2">&quot;Questa Intel FPGA (Verilog)&quot;</span>
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_TIME_SCALE<span class="w"> </span><span class="s2">&quot;1 ns&quot;</span><span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_simulation
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_OUTPUT_DATA_FORMAT<span class="w"> </span><span class="s2">&quot;VERILOG HDL&quot;</span><span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_simulation
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_GENERATE_FUNCTIONAL_NETLIST<span class="w"> </span>OFF<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_board_design_timing
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_GENERATE_FUNCTIONAL_NETLIST<span class="w"> </span>OFF<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_board_design_symbol
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_GENERATE_FUNCTIONAL_NETLIST<span class="w"> </span>OFF<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_board_design_signal_integrity
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_GENERATE_FUNCTIONAL_NETLIST<span class="w"> </span>OFF<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_board_design_boundary_scan
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>PARTITION_NETLIST_TYPE<span class="w"> </span>SOURCE<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>Top
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>PARTITION_FITTER_PRESERVATION_LEVEL<span class="w"> </span>PLACEMENT_AND_ROUTING<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>Top
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>PARTITION_COLOR<span class="w"> </span><span class="mi">16764057</span><span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>Top
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>POWER_PRESET_COOLING_SOLUTION<span class="w"> </span><span class="s2">&quot;23 MM HEAT SINK WITH 200 LFPM AIRFLOW&quot;</span>
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>POWER_BOARD_THERMAL_MODEL<span class="w"> </span><span class="s2">&quot;NONE (CONSERVATIVE)&quot;</span>
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>FLOW_ENABLE_POWER_ANALYZER<span class="w"> </span>ON
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>POWER_DEFAULT_INPUT_IO_TOGGLE_RATE<span class="w"> </span><span class="s2">&quot;12.5 %&quot;</span>
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_TEST_BENCH_ENABLE_STATUS<span class="w"> </span>TEST_BENCH_MODE<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_simulation
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_NATIVELINK_SIMULATION_TEST_BENCH<span class="w"> </span>testbench_mytest2<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_simulation
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_TEST_BENCH_NAME<span class="w"> </span>testbench_mytest2<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_simulation
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_DESIGN_INSTANCE_NAME<span class="w"> </span>NA<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>testbench_mytest2
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_TEST_BENCH_MODULE_NAME<span class="w"> </span>testbench_mytest2<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>testbench_mytest2
+
+<span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_TEST_BENCH_FILE<span class="w"> </span>testbench_mytest2.v<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>testbench_mytest2
+
+<span class="nv">set_instance_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>PARTITION_HIERARCHY<span class="w"> </span>root_partition<span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>Top
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_2">运行仿真</h3>
+<p><code>Tools-&gt;Run simulation Tool-&gt;RTL Simulation</code> </p>
+<p><img alt="quartus-questa-result" src="https://blog.debao.me/images/fpga/quartus-questa-result.png"></p>
+<p>也可以和真值表对一下：</p>
+<p><img alt="light controller circuit" src="https://blog.debao.me/images/ee/fpga-light-controller.png"></p>
+<p>至此，简单的流程算是跑通了，但是背后调用的命令，暂时还是一头雾水。</p>
+<h2 id="_3">参考</h2>
+<ul>
+<li><a href="https://fpgacademy.org/tools.html">FPGAcademy</a></li>
+<li><a href="https://www.youtube.com/watch?v=fQD5QQL5UOE">FPGA 2 - Set up Intel Altera Quartus/Questa (free version) (youtube.com)</a></li>
+<li><a href="https://www.youtube.com/watch?v=TgH6mVZ0o3A">Using Testbenches in Quartus with Questa Intel FPGA edition (youtube.com)</a></li>
+<li><a href="https://www.cnblogs.com/jiaotaiyang/p/17644337.html">Quartus 和 Questa 版下载 激活 - 蕉太羊 - 博客园 (cnblogs.com)</a></li>
+<li></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-05-20T22:04:00+08:00" pubdate>Mon 20 May 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/ee.html'>EE</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a class="category" href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a class="category" href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a class="category" href="https://blog.debao.me/tags/git.html">Git</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>氢原子中电子云小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/science.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">氢原子中电子云小记</h1>
+    <p class="meta">
+<time datetime="2024-09-25T09:10:00+08:00" pubdate>Wed 25 September 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>只接触过大学物理，没学过量子力学，胡乱记录一些基础东西...</p>
+</blockquote>
+<p>在量子力学，通过薛定谔方程可以来理解电子云的分布。氢原子是最简单的原子系统，只有一个质子和一个电子，薛定谔方程可以有解析解。而氦原子有两个电子，就已经超级复杂，只能用近似方法求解了。</p>
+<h2 id="_1">概念</h2>
+<p>粒子的量子态是由波函数<span class="math inline">\psi(\mathbf{r}, t)</span>来描述的。这个波函数包含了这个粒子可能有的一切信息。</p>
+<p><img alt="spherical_harmonics_y_2_3" src="https://blog.debao.me/images/science/spherical_harmonics_y_2_3.png"></p>
+<h3 id="_2">薛定谔方程</h3>
+<p>薛定谔方程是量子力学的基本方程，它描述了量子系统中粒子的波动行为。其一般形式为：</p>
+<div class="math display">
+i\hbar \frac{\partial}{\partial t} \psi(\mathbf{r}, t) = \hat{H} \psi(\mathbf{r}, t)
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">i</span> 是虚数单位，</li>
+<li><span class="math inline">\hbar</span> 是约化普朗克常数，</li>
+<li><span class="math inline">\frac{\partial}{\partial t}</span> 是对时间的偏导数，</li>
+<li><span class="math inline">\psi(\mathbf{r}, t)</span> 是波函数，依赖于位置 <span class="math inline">\mathbf{r}</span> 和时间 <span class="math inline">t</span>，</li>
+<li><span class="math inline">\hat{H}</span> 是哈密顿算符，它描述了系统的总能量（包括动能和势能）。</li>
+</ul>
+<p>对于一个质量为<span class="math inline">m</span>的粒子在势场 <span class="math inline">V(\mathbf{r}, t)</span> 中运动的情况，哈密顿算符通常可以表示为：</p>
+<div class="math display">
+\hat{H} = -\frac{\hbar^2}{2m} \nabla^2 + V(\mathbf{r}, t)
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">m</span> 是粒子的质量，</li>
+<li><span class="math inline">\nabla^2</span> 是拉普拉斯算符（描述空间中的二阶导数），</li>
+<li><span class="math inline">V(\mathbf{r}, t)</span> 是势能函数，依赖于位置和时间。</li>
+</ul>
+<h3 id="_3">时间无关薛定谔方程</h3>
+<p>如果粒子的势能<span class="math inline">V(\mathbf{r})</span>与时间无关，那么，哈密顿算符可以表示</p>
+<div class="math display">
+\hat{H} = -\frac{\hbar^2}{2m} \nabla^2 + V(\mathbf{r}, t)
+</div>
+
+<p>可以证明此时薛定谔方程有如下形式的解：</p>
+<div class="math display">
+\psi(\mathbf{r}, t) = \phi(\mathbf{r})\chi(t)
+</div>
+
+<p>只考虑<span class="math inline">\phi(\mathbf{r})</span>，薛定谔方程可以简化为时间无关的形式：</p>
+<div class="math display">
+\hat{H}\phi(\mathbf{r}) = E\phi(\mathbf{r})
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">E</span> 是系统的总能量（一个常数），</li>
+<li><span class="math inline">\phi(\mathbf{r})</span> 是空间依赖的波函数，通常称为<strong>定态波函数</strong>。</li>
+</ul>
+<p>注意，简单起见，后面统一使用符号 <span class="math inline">\psi(\mathbf{r})</span> 表示此处的  <span class="math inline">\phi(\mathbf{r})</span></p>
+<h3 id="_4">球坐标系</h3>
+<p><img alt="3d_spherical" src="https://blog.debao.me/images/science/3d_spherical.svg"></p>
+<p>图片来自<a href="https://en.wikipedia.org/wiki/Spherical_coordinate_system">wikipedia</a>。</p>
+<blockquote>
+<p>注意此处用的物理中的使用惯例(ISO 80000-2:2019)，和数学中用的惯例的可能不一致。</p>
+</blockquote>
+<ul>
+<li><span class="math inline">r</span> 是径向坐标，表示原点到某一点的距离，</li>
+<li><span class="math inline">\theta</span> 是极角，表示从 <span class="math inline">z</span> 轴向下的夹角（在 <span class="math inline">[0, \pi]</span> 的范围内），</li>
+<li><span class="math inline">\phi</span> 是方位角，表示在 <span class="math inline">xy</span> 平面内从 <span class="math inline">x</span> 轴开始的夹角（在 <span class="math inline">[0, 2\pi]</span> 的范围内）。</li>
+</ul>
+<p>在<strong>球坐标系</strong> <span class="math inline">(r, \theta, \phi)</span> 下，<strong>拉普拉斯算符</strong> <span class="math inline">\nabla^2</span> 的形式比直角坐标系中的形式稍微复杂一些。它的具体表达式为：</p>
+<div class="math display">
+\nabla^2 = \frac{1}{r^2} \frac{\partial}{\partial r} \left( r^2 \frac{\partial}{\partial r} \right) + \frac{1}{r^2 \sin \theta} \frac{\partial}{\partial \theta} \left( \sin \theta \frac{\partial}{\partial \theta} \right) + \frac{1}{r^2 \sin^2 \theta} \frac{\partial^2}{\partial \phi^2}
+</div>
+
+<p>此时，时间无关的薛定谔方程，变成了：</p>
+<div class="math display">
+-\frac{\hbar^2}{2m} \left( \frac{1}{r^2} \frac{\partial}{\partial r} \left( r^2 \frac{\partial}{\partial r} \right) + \frac{1}{r^2 \sin \theta} \frac{\partial}{\partial \theta} \left( \sin \theta \frac{\partial}{\partial \theta} \right) + \frac{1}{r^2 \sin^2 \theta} \frac{\partial^2}{\partial \phi^2} \right) \psi(r, \theta, \phi)
++ V(r) \psi(r, \theta, \phi) = E \psi(r, \theta, \phi)
+</div>
+
+<h3 id="_5">径向方程与角度方程</h3>
+<p>使用<strong>分离变量法</strong>，假设波函数可以分离为径向部分和角度部分：</p>
+<p><span class="math inline">\psi(r, \theta, \phi) = R(r) Y(\theta, \phi)</span></p>
+<p>其中：</p>
+<ul>
+<li><span class="math inline">R(r)</span> 是径向波函数，</li>
+<li><span class="math inline">Y(\theta, \phi)</span> 是角度部分波函数（球谐函数）。</li>
+</ul>
+<p>代入薛定谔方程后，方程可以分离为两个独立的部分：一个是径向方程，另一个是角度方程。</p>
+<p><strong>径向方程</strong>：</p>
+<div class="math display">
+\frac{d}{dr} \left( r^2 \frac{dR(r)}{dr} \right) + \left( \frac{2mr^2}{\hbar^2} \left( E - V(r) \right) - l(l+1) \right) R(r) = 0
+</div>
+
+<p>这个方程描述了电子在径向方向上的行为，解这个方程可以得到电子在不同能级下的径向波函数。</p>
+<p><strong>角度方程</strong>：</p>
+<div class="math display">
+\frac{1}{\sin \theta} \frac{\partial}{\partial \theta} \left( \sin \theta \frac{\partial Y(\theta, \phi)}{\partial \theta} \right) + \frac{1}{\sin^2 \theta} \frac{\partial^2 Y(\theta, \phi)}{\partial \phi^2} = -l(l+1) Y(\theta, \phi)
+</div>
+
+<p>其解是<strong>球谐函数</strong> <span class="math inline">Y_l^m(\theta, \phi)</span>，其中 <span class="math inline">l</span> 是轨道角动量量子数，<span class="math inline">m</span> 是磁量子数。</p>
+<blockquote>
+<p><strong>球谐函数</strong>是定义在球面上的特殊函数，广泛用于物理和数学领域，尤其是在球对称问题中，如量子力学中的原子轨道、经典力学中的引力场和电场，以及计算机图形学中的全局光照。</p>
+</blockquote>
+<h2 id="_6">径向波函数</h2>
+<p>对于氢原子，前面的径向方程中</p>
+<ul>
+<li><span class="math inline">E</span> 是电子的能量，与量子数<span class="math inline">n</span>有关。对氢原子来说，能级公式<span class="math inline">E_n=-\frac{13.6\text{eV}}{n^2}</span></li>
+<li><span class="math inline">V(r) = -\frac{e^2}{4 \pi \epsilon_0 r}</span> 是库仑势能，</li>
+</ul>
+<p>通过一堆看不懂的数学技巧，最终可以解出来</p>
+<div class="math display">
+R_{n,l}(r) = N_{n,l} \left( \frac{r}{a_0} \right)^l e^{-\frac{r}{n a_0}} L_{n-l-1}^{2l+1} \left( \frac{2r}{n a_0} \right)
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">L_{n-l-1}^{2l+1} \left( \frac{2r}{n a_0} \right)</span> 是<strong>拉盖尔多项式</strong>，</li>
+<li><span class="math inline">n</span> 是主量子数，表示电子的能级。</li>
+<li><span class="math inline">a_0</span>是波尔半径 <span class="math inline">\frac{4 \pi \epsilon_0 \hbar^2}{me^2}</span></li>
+<li><span class="math inline">N_{n,l}</span> 是归一化系数，公式附下面：</li>
+</ul>
+<div class="math display">
+N_{n,l} = \left( \frac{2}{n a_0} \right)^{3/2} \sqrt{\frac{(n - l - 1)!}{2n (n + l)!}}
+</div>
+
+<p>这样一来，就可以写python代码了（AI基本可以直接生成）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">genlaguerre</span><span class="p">,</span> <span class="n">factorial</span>
+<span class="kn">from</span> <span class="nn">scipy.constants</span> <span class="kn">import</span> <span class="n">physical_constants</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># Get the Bohr radius a_0</span>
+<span class="n">a_0</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;Bohr radius&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Calculate the normalization constant N_{n,l}</span>
+<span class="k">def</span> <span class="nf">normalization_constant</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">a_0</span><span class="p">))</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">factorial</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">l</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="n">factorial</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="n">l</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">num</span> <span class="o">/</span> <span class="n">denom</span><span class="p">)</span>
+
+<span class="c1"># Define the radial wavefunction R_{n,l}(r)</span>
+<span class="k">def</span> <span class="nf">radial_wavefunction</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">a_0</span><span class="p">)</span>  <span class="c1"># Compute the dimensionless variable rho</span>
+    <span class="n">laguerre_polynomial</span> <span class="o">=</span> <span class="n">genlaguerre</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">l</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Generalized Laguerre polynomial</span>
+    <span class="n">normalization</span> <span class="o">=</span> <span class="n">normalization_constant</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>  <span class="c1"># Normalization constant</span>
+    <span class="n">radial_part</span> <span class="o">=</span> <span class="n">rho</span><span class="o">**</span><span class="n">l</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">rho</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">laguerre_polynomial</span><span class="p">(</span><span class="n">rho</span><span class="p">)</span>  <span class="c1"># Main part of the radial wavefunction</span>
+    <span class="k">return</span> <span class="n">normalization</span> <span class="o">*</span> <span class="n">radial_part</span>
+
+<span class="c1"># Function to plot the radial wavefunction for given n and l</span>
+<span class="k">def</span> <span class="nf">plot_radial_wavefunction</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+    <span class="c1"># Define the range of r values</span>
+    <span class="n">r_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">a_0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>  <span class="c1"># From 0 to 50 * a_0</span>
+
+    <span class="c1"># Compute the radial wavefunction</span>
+    <span class="n">R_values</span> <span class="o">=</span> <span class="n">radial_wavefunction</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">r_values</span><span class="p">)</span>
+
+    <span class="c1"># Plot the result</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">r_values</span> <span class="o">/</span> <span class="n">a_0</span><span class="p">,</span> <span class="n">R_values</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;R_</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">(r)&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$r / a_0$&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$R_{n,l}(r)$&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Radial Wavefunction for n=</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">, l=</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Example usage: Plot for n = 2, l = 0</span>
+<span class="n">plot_radial_wavefunction</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_7">角向波函数（球谐函数）</h2>
+<p>球谐函数 <span class="math inline">Y_{l}^{m}(\theta, \phi)</span> 是球坐标系下的两变量函数，定义在角度变量 <span class="math inline">\theta</span> 和 <span class="math inline">\phi</span> 上。其一般形式为：</p>
+<div class="math display">
+Y_{l}^{m}(\theta, \phi) = \sqrt{\frac{(2l+1)}{4\pi} \frac{(l-m)!}{(l+m)!}} P_{l}^{m}(\cos\theta) e^{im\phi}
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">l</span> 是非负整数，称为<strong>角量子数</strong>或<strong>多极子阶数</strong>。</li>
+<li><span class="math inline">m</span> 是整数，满足 <span class="math inline">-l \leq m \leq l</span>，称为<strong>磁量子数</strong>。</li>
+<li><span class="math inline">\theta</span> 是极角，取值范围 <span class="math inline">[0, \pi]</span>。</li>
+<li><span class="math inline">\phi</span> 是方位角，取值范围 <span class="math inline">[0, 2\pi]</span>。</li>
+<li><span class="math inline">P_{l}^{m}(\cos\theta)</span> 是<strong>连带勒让德多项式</strong>。</li>
+</ul>
+<p>这个函数在python中有现成的，所以AI直接给出代码</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">sph_harm</span>
+
+<span class="c1"># Function to visualize both the magnitude and real part of the spherical harmonic</span>
+<span class="k">def</span> <span class="nf">plot_spherical_harmonic</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+    <span class="c1"># Generate the range of angles</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>  <span class="c1"># Polar angle θ from 0 to π</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>  <span class="c1"># Azimuthal angle φ from 0 to 2π</span>
+    <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>  <span class="c1"># Create a meshgrid of angles</span>
+
+    <span class="c1"># Compute the spherical harmonic Y_l^m(θ, φ)</span>
+    <span class="n">Y_lm</span> <span class="o">=</span> <span class="n">sph_harm</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+
+    <span class="c1"># Calculate the magnitude |Y_l^m| (for one plot)</span>
+    <span class="n">r_magnitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Y_lm</span><span class="p">)</span>
+
+    <span class="c1"># Calculate the real part Re(Y_l^m) (for the other plot)</span>
+    <span class="n">r_real</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">Y_lm</span><span class="p">)</span>
+
+    <span class="c1"># Convert spherical coordinates to Cartesian coordinates for magnitude plot</span>
+    <span class="n">x_mag</span> <span class="o">=</span> <span class="n">r_magnitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">y_mag</span> <span class="o">=</span> <span class="n">r_magnitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">z_mag</span> <span class="o">=</span> <span class="n">r_magnitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+    <span class="c1"># Convert spherical coordinates to Cartesian coordinates for real part plot</span>
+    <span class="n">x_real</span> <span class="o">=</span> <span class="n">r_real</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">y_real</span> <span class="o">=</span> <span class="n">r_real</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">z_real</span> <span class="o">=</span> <span class="n">r_real</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+    <span class="c1"># Create a figure with two subplots</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+    <span class="c1"># Subplot 1: Magnitude |Y_l^m|</span>
+    <span class="n">ax1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">x_mag</span><span class="p">,</span> <span class="n">y_mag</span><span class="p">,</span> <span class="n">z_mag</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">(</span><span class="n">r_magnitude</span> <span class="o">/</span> <span class="n">r_magnitude</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> 
+                     <span class="n">rstride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cstride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spherical Harmonic Magnitude: $|Y_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">^</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">|$&quot;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_zlim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Subplot 2: Real part Re(Y_l^m)</span>
+    <span class="n">ax2</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">x_real</span><span class="p">,</span> <span class="n">y_real</span><span class="p">,</span> <span class="n">z_real</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">((</span><span class="n">r_real</span> <span class="o">-</span> <span class="n">r_real</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">r_real</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">r_real</span><span class="o">.</span><span class="n">min</span><span class="p">())),</span> 
+                     <span class="n">rstride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cstride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spherical Harmonic Real Part: $Re(Y_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">^</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">)$&quot;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_zlim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Show the figure</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Example: Plot both magnitude and real part for l = 3, m = 2</span>
+<span class="n">plot_spherical_harmonic</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p><img alt="spherical_harmonics_y_2_3" src="https://blog.debao.me/images/science/spherical_harmonics_y_2_3.png"></p>
+<h2 id="_8">氢原子电子云</h2>
+<p>电子云图是电子在原子内的概率分布的可视化，它展示了电子在不同位置出现的概率。需要同时考虑径向和角向波函数。概率密度与波函数模平方成正比。</p>
+<ul>
+<li>生成随机点（三维坐标下，用球坐标表示）</li>
+<li>计算每个点的概率密度（计算波函数模值）</li>
+<li>概率筛选（删除概率小的点）</li>
+<li>转换为笛卡尔坐标</li>
+<li>绘制点云</li>
+</ul>
+<h3 id="_9">复数轨道</h3>
+<p>注意：此处绘制的是复数轨道的模平方，因为球谐函数通常是复数，具有实部和虚部。复数波函数带有相位信息，但其物理含义通常通过波函数模平方来体现。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">sph_harm</span><span class="p">,</span> <span class="n">genlaguerre</span><span class="p">,</span> <span class="n">factorial</span>
+
+<span class="c1"># Constants</span>
+<span class="n">a0</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Bohr radius (in atomic units)</span>
+
+<span class="c1"># Radial wavefunction R_{n,l}(r) for hydrogen atom</span>
+<span class="k">def</span> <span class="nf">hydrogen_radial_wavefunction</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+    <span class="c1"># Radial part of the wavefunction for hydrogen atom</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">a0</span><span class="p">)</span>
+    <span class="c1"># Normalization constant</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">a0</span><span class="p">))</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">factorial</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">l</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="n">factorial</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="n">l</span><span class="p">)))</span>
+    <span class="c1"># Radial wavefunction</span>
+    <span class="n">radial_part</span> <span class="o">=</span> <span class="n">norm</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">rho</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">rho</span><span class="o">**</span><span class="n">l</span> <span class="o">*</span> <span class="n">genlaguerre</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">l</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)(</span><span class="n">rho</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">radial_part</span>
+
+<span class="c1"># Probability density function for hydrogen atom</span>
+<span class="k">def</span> <span class="nf">hydrogen_wavefunction_squared</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+    <span class="c1"># Radial part</span>
+    <span class="n">R_nl</span> <span class="o">=</span> <span class="n">hydrogen_radial_wavefunction</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+    <span class="c1"># Angular part (spherical harmonics)</span>
+    <span class="n">Y_lm</span> <span class="o">=</span> <span class="n">sph_harm</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+    <span class="c1"># Return the square of the wavefunction (probability density)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">R_nl</span> <span class="o">*</span> <span class="n">Y_lm</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="c1"># Generate random points in spherical coordinates</span>
+<span class="k">def</span> <span class="nf">random_points_in_sphere</span><span class="p">(</span><span class="n">num_points</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+    <span class="c1"># Generate random spherical coordinates</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">a0</span>  <span class="c1"># Random radius within a reasonable range</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Uniformly distributed cos(theta)</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>  <span class="c1"># Uniformly distributed phi</span>
+
+    <span class="c1"># Compute the probability density at each point</span>
+    <span class="n">prob_density</span> <span class="o">=</span> <span class="n">hydrogen_wavefunction_squared</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+
+    <span class="c1"># Normalize the probabilities</span>
+    <span class="n">prob_density</span> <span class="o">/=</span> <span class="n">prob_density</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="c1"># Filter points based on probability density (Monte Carlo sampling)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">prob_density</span>
+
+    <span class="c1"># Keep only the points that passed the filter</span>
+    <span class="k">return</span> <span class="n">r</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">theta</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">phi</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+<span class="c1"># Convert spherical to Cartesian coordinates</span>
+<span class="k">def</span> <span class="nf">spherical_to_cartesian</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span>
+
+<span class="c1"># Main function to plot the hydrogen atom electron cloud</span>
+<span class="k">def</span> <span class="nf">plot_hydrogen_cloud</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">num_points</span><span class="o">=</span><span class="mi">100000</span><span class="p">):</span>
+    <span class="c1"># Generate random points in spherical coordinates</span>
+    <span class="n">r</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">random_points_in_sphere</span><span class="p">(</span><span class="n">num_points</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+
+    <span class="c1"># Convert spherical coordinates to Cartesian</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">spherical_to_cartesian</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+
+    <span class="c1"># Plot the points</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Hydrogen Atom Electron Cloud: n=</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1">, l=</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">, m=</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Example: Plot the electron cloud for the 2p orbital (n=2, l=1, m=0)</span>
+<span class="n">plot_hydrogen_cloud</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p><img alt="hydrogen_electron_cloud_2_1_0" src="https://blog.debao.me/images/science/hydrogen_electron_cloud_2_1_0.png"></p>
+<h3 id="_10">实数轨道</h3>
+<p>实轨道是通过将复数球谐函数的线性组合转换为实数形式来表示的。虽然球谐函数本质上是复数函数，但通过适当的线性组合，可以得到仅包含实数的轨道，这些轨道更符合直观的物理图像。</p>
+<p><strong>s-轨道</strong>：球对称的，只有 <span class="math inline">l=0</span> 的情况，没有角动量方向，波函数是实数。</p>
+<p><strong>p-轨道</strong>：通过将复数球谐函数的线性组合转换为实数形式，我们可以得到三个常用的实轨道 <span class="math inline">p_x</span>、<span class="math inline">p_y</span>、<span class="math inline">p_z</span>：</p>
+<ul>
+<li><span class="math inline">p_x</span>: 对应 <span class="math inline">Y_1^1 + Y_1^{-1}</span> 的线性组合。（需要归一化？）</li>
+<li><span class="math inline">p_y</span>: 对应 <span class="math inline">Y_1^1 - Y_1^{-1}</span> 的线性组合。</li>
+<li><span class="math inline">p_z</span>: 对应 <span class="math inline">Y_1^0</span>。</li>
+</ul>
+<p>这些轨道是直观的、方向明确的电子云形状，分别沿着 <span class="math inline">x</span>、<span class="math inline">y</span>、<span class="math inline">z</span> 轴方向对称。</p>
+<p><strong>d-轨道</strong>：类似地，<span class="math inline">d</span>-轨道可以通过 <span class="math inline">l=2</span> 的复数球谐函数的线性组合得到五个实数轨道，如 <span class="math inline">d_{xy}</span>、<span class="math inline">d_{xz}</span>、<span class="math inline">d_{yz}</span>、<span class="math inline">d_{z^2}</span>、<span class="math inline">d_{x^2 - y^2}</span>。</p>
+<p>AI给出参考代码如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">sph_harm</span><span class="p">,</span> <span class="n">factorial</span>
+
+<span class="c1"># Constants</span>
+<span class="n">a0</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Bohr radius (in atomic units)</span>
+
+<span class="c1"># Radial wavefunction R_{n,l}(r) for hydrogen atom</span>
+<span class="k">def</span> <span class="nf">hydrogen_radial_wavefunction</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">a0</span><span class="p">)</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">a0</span><span class="p">))</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">factorial</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">l</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="n">factorial</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="n">l</span><span class="p">)))</span>
+    <span class="n">radial_part</span> <span class="o">=</span> <span class="n">norm</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">rho</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">rho</span><span class="o">**</span><span class="n">l</span>
+    <span class="k">return</span> <span class="n">radial_part</span>
+
+<span class="c1"># Probability density function for hydrogen atom</span>
+<span class="k">def</span> <span class="nf">hydrogen_wavefunction_squared</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+    <span class="n">R_nl</span> <span class="o">=</span> <span class="n">hydrogen_radial_wavefunction</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+    <span class="n">Y_lm</span> <span class="o">=</span> <span class="n">sph_harm</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">R_nl</span> <span class="o">*</span> <span class="n">Y_lm</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="c1"># Generate random points in spherical coordinates</span>
+<span class="k">def</span> <span class="nf">random_points_in_sphere</span><span class="p">(</span><span class="n">num_points</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">a0</span>  <span class="c1"># Random radius within a reasonable range</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Uniformly distributed cos(theta)</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>  <span class="c1"># Uniformly distributed phi</span>
+    <span class="n">prob_density</span> <span class="o">=</span> <span class="n">hydrogen_wavefunction_squared</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+
+    <span class="c1"># Check if max(prob_density) is non-zero before normalizing</span>
+    <span class="n">max_density</span> <span class="o">=</span> <span class="n">prob_density</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">max_density</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Avoid division by zero</span>
+        <span class="n">prob_density</span> <span class="o">/=</span> <span class="n">max_density</span>
+
+    <span class="c1"># Loosen filtering condition</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">prob_density</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># Loosen the filtering condition</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of points before filtering: </span><span class="si">{</span><span class="n">num_points</span><span class="si">}</span><span class="s2">, after filtering: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">theta</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">phi</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+<span class="c1"># Convert spherical to Cartesian coordinates</span>
+<span class="k">def</span> <span class="nf">spherical_to_cartesian</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span>
+
+<span class="c1"># Real spherical harmonics (p_x, p_y, p_z orbitals)</span>
+<span class="k">def</span> <span class="nf">real_spherical_harmonics</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="s1">&#39;p_x&#39;</span><span class="p">:</span>
+            <span class="c1"># p_x: Re(Y_1^1 + Y_1^-1)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">sph_harm</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">real</span> <span class="o">+</span> <span class="n">sph_harm</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">==</span> <span class="s1">&#39;p_y&#39;</span><span class="p">:</span>
+            <span class="c1"># p_y: Im(Y_1^1 - Y_1^-1)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">sph_harm</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span> <span class="o">-</span> <span class="n">sph_harm</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">==</span> <span class="s1">&#39;p_z&#39;</span><span class="p">:</span>
+            <span class="c1"># p_z: Re(Y_1^0)</span>
+            <span class="k">return</span> <span class="n">sph_harm</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">elif</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="s1">&#39;d_xy&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sph_harm</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">==</span> <span class="s1">&#39;d_xz&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sph_harm</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">==</span> <span class="s1">&#39;d_yz&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sph_harm</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">==</span> <span class="s1">&#39;d_z2&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sph_harm</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">==</span> <span class="s1">&#39;d_x2_y2&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sph_harm</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unsupported orbital&quot;</span><span class="p">)</span>
+
+<span class="c1"># Main function to plot the hydrogen atom real orbitals</span>
+<span class="k">def</span> <span class="nf">plot_real_hydrogen_orbital</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">num_points</span><span class="o">=</span><span class="mi">100000</span><span class="p">):</span>
+    <span class="n">r</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">random_points_in_sphere</span><span class="p">(</span><span class="n">num_points</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># m=0, radial sampling</span>
+    <span class="c1"># Real spherical harmonics</span>
+    <span class="n">Y_lm_real</span> <span class="o">=</span> <span class="n">real_spherical_harmonics</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+    <span class="n">prob_density</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">hydrogen_radial_wavefunction</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="n">Y_lm_real</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+
+    <span class="c1"># Check if max(prob_density) is non-zero before normalizing</span>
+    <span class="n">max_density</span> <span class="o">=</span> <span class="n">prob_density</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">max_density</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Avoid division by zero</span>
+        <span class="n">prob_density</span> <span class="o">/=</span> <span class="n">max_density</span>
+
+    <span class="c1"># Convert spherical to Cartesian coordinates</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">spherical_to_cartesian</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+
+    <span class="c1"># Plot the points</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Hydrogen Atom Real Orbital: n=</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1">, l=</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1">, m=</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Example: Plot the real orbital for the p_x orbital (n=2, l=1, m=&#39;p_x&#39;)</span>
+<span class="n">plot_real_hydrogen_orbital</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="s1">&#39;p_x&#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_11">参考</h2>
+<ul>
+<li>https://liam-ilan.github.io/electron-orbitals/</li>
+<li>https://en.wikipedia.org/wiki/Wave_function#Hydrogen_atom</li>
+<li>https://ssebastianmag.medium.com/computational-physics-with-python-hydrogen-wavefunctions-electron-density-plots-8fede44b7b12</li>
+<li>https://www.researchgate.net/publication/375039550_Quantum_Mechanical_Hydrogen_Atom_Model_Visualised_using_Python</li>
+<li>https://physics.stackexchange.com/questions/190726/what-is-the-difference-between-real-orbital-complex-orbital/190730#190730</li>
+<li>https://github.com/PyCOMPLETE/PyECLOUD</li>
+<li>https://github.com/Niuskir/Electron-Orbitals-Blender-3D</li>
+<li>https://github.com/damontallen/Orbitals/blob/master/Hydrogen%20Orbitals%20(Feb%2018,%202014)%20(dynamic%20entry).ipynb</li>
+<li>https://in2infinity.com/2d-orbital-geometry-of-the-electron-cloud/</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-09-25T09:10:00+08:00" pubdate>Wed 25 September 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/science.html'>Science</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

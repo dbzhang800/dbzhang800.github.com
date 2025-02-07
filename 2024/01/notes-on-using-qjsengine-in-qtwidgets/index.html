@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>QJSEngine在QtWidgets下使用小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">QJSEngine在QtWidgets下使用小记</h1>
+    <p class="meta">
+<time datetime="2024-01-09T20:13:00+08:00" pubdate>Tue 09 January 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>接前面<a href="https://blog.debao.me/2024/01/notes-on-the-javascript-engine-in-qt/">Qt中的JavaScript引擎小记</a>，继续了解QtQml模块中的QJSEngine。QJSEngine因QML而生，但是在QML中，javascript已开始被边缘化——<a href="https://www.qt.io/blog/2019/08/07/technical-vision-qt-6">Make JavaScript an optional feature of QML</a>，同时对QtWidgets的支持，又不如原来QtScript模块中的QScriptEngine。</p>
+<h2 id="_1">概念？</h2>
+<p>对于基本的一些概念，QJSEngine手册中说明还算比较详细了。此处只记录几个临时用到的。</p>
+<h3 id="_2">引擎配置</h3>
+<p>要在JavaScript脚本中能访问Qt程序中的对象（即提供API供JavaScript使用），需要先对QJSEngine进行配置：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">QJSValue</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">globalObject</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+</code></pre></div></td></tr></table></div>
+
+<p><strong>将要暴露的对象，设置为globalObject的属性</strong>。而后就可以在脚本中才能访问。</p>
+<h3 id="qobject">QObject</h3>
+<p>如要将QObject及其派生类的对象暴露出去，需先转成QJSValue类型。（只能这么用，因为QJSValue也没有对应QObject的构造函数）。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">QJSValue</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">newQObject</span><span class="p">(</span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">object</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>而后将其设置为globalObject属性。在脚本中即可访问对象的信号、槽 和 属性。</p>
+<blockquote>
+<p>注意，调用这个函数后，对应的 object 如果没有parent的话，将由对应的引擎负责销毁。即，其ownership是JavaScriptOwnership。</p>
+</blockquote>
+<p>如果对象暴露给多个JSEngine，或者对象压根就不在堆上，就需要设置为<code>CppOwnership</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">setObjectOwnership</span><span class="p">(</span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">ObjectOwnership</span><span class="w"> </span><span class="n">ownership</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意，这个函数在Qt5中，位于QQmlEngine中，Qt6中才放到这个该有的位置上。尽管有些古怪，在Qt5下使用QJSEngine时，是可以直接使用QQmlEngine的setObjectOwnership()成员的。</p>
+</blockquote>
+<h2 id="_3">例子？</h2>
+<p>网络上这部分内容，太少了...</p>
+<blockquote>
+<p>简单起见，每个例子都是完整的Qt程序，且只包含一个main.cpp。只需要配合一个qmake或cmake工程文件，即可编译运行。</p>
+</blockquote>
+<h3 id="1">例子1</h3>
+<p>最简单的场景，把Qt应用程序中的一些对象暴露出来，通过js脚本直接修改其内容和属性。</p>
+<p>比如，修改QLabel的大小和文字：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QLabel&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">    label.text = &quot;Hello &lt;font color=\&quot;red\&quot;&gt;1+1=10&lt;/font&gt; from js!&quot;;</span>
+<span class="s">    label.size = &quot;400x300&quot;;</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QLabel</span><span class="w"> </span><span class="n">label</span><span class="p">(</span><span class="s">&quot;Hello 1+1=10&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">setObjectOwnership</span><span class="p">(</span><span class="o">&amp;</span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">CppOwnership</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;label&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">label</span><span class="p">));</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">label</span><span class="p">.</span><span class="n">show</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>label在栈上，所以手动设置ownership为 CppOwnership。不然会程序崩溃</li>
+<li>设置label的大小时，使用了 width<code>x</code>height" 字符串。注：<code>Qt.size(400, 300)</code>只能配合QQmlEngine使用。</li>
+</ul>
+<h3 id="2">例子2</h3>
+<p>在js中，可以使用Qt对象的信号。</p>
+<p>比如，为两个独立的slider，建立联动关系：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QSlider&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">    slider1.valueChanged.connect(function(value) {</span>
+<span class="s">        slider2.value = value;</span>
+<span class="s">    });</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QSlider</span><span class="w"> </span><span class="n">slider1</span><span class="p">(</span><span class="n">Qt</span><span class="o">::</span><span class="n">Horizontal</span><span class="p">);</span>
+<span class="w">    </span><span class="n">QSlider</span><span class="w"> </span><span class="n">slider2</span><span class="p">(</span><span class="n">Qt</span><span class="o">::</span><span class="n">Horizontal</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">setObjectOwnership</span><span class="p">(</span><span class="o">&amp;</span><span class="n">slider1</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">CppOwnership</span><span class="p">);</span>
+<span class="w">    </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">setObjectOwnership</span><span class="p">(</span><span class="o">&amp;</span><span class="n">slider2</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">CppOwnership</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;slider1&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">slider1</span><span class="p">));</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;slider2&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">slider2</span><span class="p">));</span>
+
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">slider1</span><span class="p">.</span><span class="n">show</span><span class="p">();</span>
+<span class="w">    </span><span class="n">slider2</span><span class="p">.</span><span class="n">show</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>我们将Qt信号连接到一个js的函数，以便于函数中做更多操作。</p>
+<p>如果不需要其他操作，对于这个例子来说，直接连接信号槽更简单：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;slider1.valueChanged.connect(slider2.setValue);&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果双向联动，只需要：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">    slider1.valueChanged.connect(slider2.setValue);</span>
+<span class="s">    slider2.valueChanged.connect(slider1.setValue);</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意：要保持连接关系，QJSEngine 必须保持有效。</p>
+<p>要验证，可以将上面的QJSEngine engine 放入局部块作用域：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">        </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;slider1&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">slider1</span><span class="p">));</span>
+<span class="w">        </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;slider2&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">slider2</span><span class="p">));</span>
+
+<span class="w">        </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="3">例子3</h3>
+<p>如果我们在C++中定义了一个类，比如MySpinBox，然后想在js中直接创建该类型的对象并显式出来。为了有意义，再建立该对象和其他对象的联动关系：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QSpinBox&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">    var spinBox1 = new MySpinBox;</span>
+<span class="s">    var spinBox2 = new MySpinBox;</span>
+<span class="s">    spinBox1.valueChanged.connect(spinBox2.setValue);</span>
+<span class="s">    spinBox2.valueChanged.connect(spinBox1.setValue);</span>
+<span class="s">    spinBox1.show();</span>
+<span class="s">    spinBox2.show();</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MySpinBox</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QSpinBox</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Q_OBJECT</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">Q_INVOKABLE</span><span class="w"> </span><span class="n">MySpinBox</span><span class="p">(</span><span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="n">parent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">)</span>
+<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">QSpinBox</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;MySpinBox&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQMetaObject</span><span class="o">&lt;</span><span class="n">MySpinBox</span><span class="o">&gt;</span><span class="p">());</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意：</p>
+<ol>
+<li>
+<p>只支持包含<code>Q_OBJECT</code>的QObject的派生类</p>
+</li>
+<li>
+<p>要在js中创建对象，需要先使用<code>newQMetaObject()</code>注册该类型的staticMetaObject：</p>
+</li>
+</ol>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">QJSValue</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">newQMetaObject</span><span class="p">()</span>
+<span class="n">QJSValue</span><span class="w"> </span><span class="n">newQMetaObject</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">QMetaObject</span><span class="w"> </span><span class="o">*</span><span class="n">metaObject</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这两个写法都可以，所以例子中的注册语句也可以写成：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;MySpinBox&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQMetaObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">MySpinBox</span><span class="o">::</span><span class="n">staticMetaObject</span><span class="p">));</span>
+</code></pre></div></td></tr></table></div>
+
+<ol>
+<li>同时，确保构造函数前面使用 <code>Q_INVOKABLE</code> 在元对象系统中进行了注册。 例子中使用MySpinBox而不是QSpinBox就是因为它不满足构造函数这个条件。</li>
+</ol>
+<h3 id="4">例子4</h3>
+<p>对于简单类型，QJSValue提供有构造函数，所以<code>setProperty()</code>时直接传入就可以了，对于javascript中的对象和数组，必须使用<code>newArray()</code> 或 <code>newObject</code>进行创建。</p>
+<p>在下面程序中，js直接读取c++中创建的array，遍历并将其显示在QPlainTextEdit中：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QPlainTextEdit&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">    edit.appendPlainText(header);</span>
+<span class="s">    for (const i in jsArray)</span>
+<span class="s">        edit.appendPlainText(&quot;jsArray[&quot; + i + &quot;] = &quot; + jsArray[i]);</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QPlainTextEdit</span><span class="w"> </span><span class="n">edit</span><span class="p">;</span>
+<span class="w">    </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">setObjectOwnership</span><span class="p">(</span><span class="o">&amp;</span><span class="n">edit</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">CppOwnership</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">jsArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newArray</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">        </span><span class="n">jsArray</span><span class="p">.</span><span class="n">setProperty</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="o">*</span><span class="mi">10</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;jsArray&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">jsArray</span><span class="p">);</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;header&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Array demo:&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;edit&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">edit</span><span class="p">));</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">edit</span><span class="p">.</span><span class="n">show</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>使用newObject的操作基本一致，就不写C++代码了，js部分可以改成下面这样：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">    let obj = {</span>
+<span class="s">        a: 1,</span>
+<span class="s">        b: 2,</span>
+<span class="s">        c: 3,</span>
+<span class="s">        d: 4,</span>
+<span class="s">        e: 5</span>
+<span class="s">    };</span>
+
+<span class="s">    for (const p in obj)</span>
+<span class="s">        edit.appendPlainText(p + &quot;: &quot; + obj[p]);</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="5">例子5</h3>
+<ul>
+<li>简单类型，QJSValue()可以直接构造</li>
+<li>QObject类型， 可以使用newQObject()</li>
+<li>js中的Array和Object，可以newObject()和newArray</li>
+</ul>
+<p>那么，如果要把一个QSize传入js引擎，如何办？</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QPlainTextEdit&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">    edit.size = editSize;</span>
+<span class="s">    edit.appendPlainText(&quot;size: &quot; + editSize.toString());</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QPlainTextEdit</span><span class="w"> </span><span class="n">edit</span><span class="p">;</span>
+<span class="w">    </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">setObjectOwnership</span><span class="p">(</span><span class="o">&amp;</span><span class="n">edit</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">CppOwnership</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;edit&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">edit</span><span class="p">));</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;editSize&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">toScriptValue</span><span class="p">(</span><span class="n">QSize</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span><span class="w"> </span><span class="mi">300</span><span class="p">)));</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">edit</span><span class="p">.</span><span class="n">show</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="6">例子6</h3>
+<p>如果想定义一个函数，它接受一个QList，并返回另一个QList。那么该函数在js中如何调用？</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QPlainTextEdit&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">    mytest.hello();</span>
+
+<span class="s">    let l = mytest.transformList([1, 2, 3, 4, 5]);</span>
+<span class="s">    edit.appendPlainText(&quot;------add from js --------&quot;);</span>
+<span class="s">    for (let v of l)</span>
+<span class="s">        edit.appendPlainText(v);</span>
+
+<span class="s">    l; // return the value to c++</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Test</span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QObject</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Q_OBJECT</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">Test</span><span class="p">(</span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">parent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">)</span>
+<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">QObject</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="n">Q_INVOKABLE</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">hello</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Hello 1+1=10!&quot;</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="n">Q_INVOKABLE</span><span class="w"> </span><span class="n">QList</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">transformList</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">QList</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">l</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">QList</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ret</span><span class="p">;</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">l</span><span class="p">)</span>
+<span class="w">            </span><span class="n">ret</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">v</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ret</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QPlainTextEdit</span><span class="w"> </span><span class="n">edit</span><span class="p">;</span>
+<span class="w">    </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">setObjectOwnership</span><span class="p">(</span><span class="o">&amp;</span><span class="n">edit</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">CppOwnership</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;edit&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">edit</span><span class="p">));</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;mytest&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Test</span><span class="p">));</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">edit</span><span class="p">.</span><span class="n">appendPlainText</span><span class="p">(</span><span class="s">&quot;------add from c++ --------&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">toVariant</span><span class="p">().</span><span class="n">toList</span><span class="p">();</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">l</span><span class="p">)</span>
+<span class="w">            </span><span class="n">edit</span><span class="p">.</span><span class="n">appendPlainText</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">toString</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">edit</span><span class="p">.</span><span class="n">show</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>由于QJSEngine只接受QObject成员函数，所以需要先定义一个类，而后注册。</p>
+<p>运行结果直接显示在QPlainTextEdit中。</p>
+<h3 id="7">例子7</h3>
+<p>在js中定义了多个function，在C++中如何使用：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QPlainTextEdit&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QFile&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">export function hello() {</span>
+<span class="s">    edit.appendPlainText(&quot;---- Hello from js! ----&quot;);</span>
+<span class="s">}</span>
+
+<span class="s">export function transformList(l) {</span>
+<span class="s">    let ret = [];</span>
+<span class="s">    for (let v of l)</span>
+<span class="s">        ret.push(v * v);</span>
+<span class="s">    return ret;</span>
+<span class="s">}</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">QFile</span><span class="w"> </span><span class="n">f</span><span class="p">(</span><span class="s">&quot;test.mjs&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">f</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">QFile</span><span class="o">::</span><span class="n">WriteOnly</span><span class="p">);</span>
+<span class="w">        </span><span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">js</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">QPlainTextEdit</span><span class="w"> </span><span class="n">edit</span><span class="p">;</span>
+<span class="w">    </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">setObjectOwnership</span><span class="p">(</span><span class="o">&amp;</span><span class="n">edit</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">CppOwnership</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;edit&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">edit</span><span class="p">));</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">importModule</span><span class="p">(</span><span class="s">&quot;test.mjs&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">hello</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">hello</span><span class="p">.</span><span class="n">call</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">trans</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;transformList&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newArray</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">        </span><span class="n">data</span><span class="p">.</span><span class="n">setProperty</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trans</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="n">QJSValueList</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">data</span><span class="p">);</span>
+<span class="w">    </span><span class="n">edit</span><span class="p">.</span><span class="n">appendPlainText</span><span class="p">(</span><span class="s">&quot;---- Hello from c++ ----&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span>
+<span class="w">        </span><span class="n">edit</span><span class="p">.</span><span class="n">appendPlainText</span><span class="p">(</span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">());</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">toVariant</span><span class="p">().</span><span class="n">toList</span><span class="p">();</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">l</span><span class="p">)</span>
+<span class="w">        </span><span class="n">edit</span><span class="p">.</span><span class="n">appendPlainText</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">toString</span><span class="p">());</span>
+
+<span class="w">    </span><span class="n">edit</span><span class="p">.</span><span class="n">show</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>将js文件作为模块导入，而后调用模块中的函数。结果显示在QPlainTextEdit中。</p>
+<h3 id="8">例子8</h3>
+<p>在浏览器环境中，有个叫window的对象。</p>
+<p>与此类似，在Qt下，我们将主窗口（甚至将Applicaiton）作为API暴露出去，应该也是合理的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QMainWindow&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QSplitter&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QPlainTextEdit&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">    // we can change the properties of main window</span>
+<span class="s">    window.windowTitle = &quot;Hello 1+1=10&quot;;</span>
+<span class="s">    window.geometry = &quot;100,100,600x400&quot;;</span>
+
+<span class="s">    window.findMyChild(&quot;leftEdit&quot;).appendPlainText(JSON.stringify(window, undefined, 4));</span>
+<span class="s">    window.findMyChild(&quot;rightEdit&quot;).appendPlainText(&quot;---- Hello from js ----&quot;);</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MainWindow</span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QMainWindow</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Q_OBJECT</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">MainWindow</span><span class="p">(</span><span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="n">parent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">)</span>
+<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">QMainWindow</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">setObjectOwnership</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">CppOwnership</span><span class="p">);</span>
+
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">spliter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QSplitter</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="w">        </span><span class="n">spliter</span><span class="o">-&gt;</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;spliter&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">setCentralWidget</span><span class="p">(</span><span class="n">spliter</span><span class="p">);</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">leftEdit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QPlainTextEdit</span><span class="p">;</span>
+<span class="w">        </span><span class="n">leftEdit</span><span class="o">-&gt;</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;leftEdit&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">rightEdit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QPlainTextEdit</span><span class="p">;</span>
+<span class="w">        </span><span class="n">rightEdit</span><span class="o">-&gt;</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;rightEdit&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">spliter</span><span class="o">-&gt;</span><span class="n">addWidget</span><span class="p">(</span><span class="n">leftEdit</span><span class="p">);</span>
+<span class="w">        </span><span class="n">spliter</span><span class="o">-&gt;</span><span class="n">addWidget</span><span class="p">(</span><span class="n">rightEdit</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">Q_INVOKABLE</span><span class="w"> </span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">findMyChild</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">findChild</span><span class="o">&lt;</span><span class="n">QWidget</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">FindChildrenRecursively</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">MainWindow</span><span class="w"> </span><span class="n">mw</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">installExtensions</span><span class="p">(</span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">ConsoleExtension</span><span class="p">);</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;window&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mw</span><span class="p">));</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">);</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Uncaught exception at line&quot;</span>
+<span class="w">                 </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;lineNumber&quot;</span><span class="p">).</span><span class="n">toInt</span><span class="p">()</span>
+<span class="w">                 </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;:&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">mw</span><span class="p">.</span><span class="n">show</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>findChild 没有对应的js绑定，需要手动封装一下，以便于访问界面上的其他控件。</li>
+</ul>
+<p>效果如下：</p>
+<p><img alt="qt-qjsengine-mainwindow-api" src="https://blog.debao.me/images/qt-qjsengine-mainwindow-api.png"></p>
+<h2 id="_4">参考</h2>
+<ul>
+<li>https://doc.qt.io/qt-6/qjsengine.html</li>
+<li>https://doc.qt.io/qt-6/qtjavascript.html</li>
+<li>https://doc.qt.io/qt-6/qtqml-javascript-functionlist.html</li>
+<li>https://doc.qt.io/qt-6/qtqml-cppintegration-data.html</li>
+<li>https://doc.qt.io/qt-6/qml-qtqml-qt.html</li>
+<li>https://doc.qt.io/qt-5/qtscript-index.html</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-01-09T20:13:00+08:00" pubdate>Tue 09 January 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/javascript.html">javascript</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

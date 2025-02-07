@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Hello Pelican Again &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Hello Pelican Again</h1>
+    <p class="meta">
+<time datetime="2023-11-13T21:16:00+08:00" pubdate>Mon 13 November 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><p>Again，为什么说again？？早在2015年接触了到Pelican和GitHub Pages，结果架子搭好了，见：<a href="https://blog.debao.me/2015/04/hello-pelican/">Hello Pelican</a>，但8年间却一直没写东西。希望这次能坚持住。</p>
+<p>OK，先升级pelican使得 blog重新工作。</p>
+<blockquote>
+<p>注：只关注在pelican下的markdown的使用。</p>
+</blockquote>
+<h2 id="pelican">安装Pelican</h2>
+<p>好在pelican从python2到python3基本没有变化。</p>
+<p>直接安装安装python3，并启用创建虚拟环境</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+</code></pre></div></td></tr></table></div>
+
+<p>激活虚拟环境</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>.venv<span class="se">\S</span>cripts<span class="se">\a</span>ctivate.bat
+</code></pre></div></td></tr></table></div>
+
+<p>安装软件包</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pelican[markdown]&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>安装后记得生成新的 requirements.txt 文件</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>freeze<span class="w"> </span>&gt;<span class="w"> </span>requirements.txt
+</code></pre></div></td></tr></table></div>
+
+<p>以便于后期使用(比如GitHub Actions中)</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</code></pre></div></td></tr></table></div>
+
+<h2 id="pelican_1">Pelican常用命令</h2>
+<p>直接执行pelican即可让它工作(生成静态页面)</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pelican
+</code></pre></div></td></tr></table></div>
+
+<p>它默认加载当前目录下的 <code>pelicanconf.py</code>文件。如果要使用其他配置文件，可以通过命令行选项 <code>-s</code>指定</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pelican<span class="w"> </span>-s<span class="w"> </span>publishconf.py
+</code></pre></div></td></tr></table></div>
+
+<p>运行结束后，用浏览器直接打开生成目录(output)下的文件即可看到效果。</p>
+<p>也可以启动一个http server：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pelican<span class="w"> </span>--listen
+</code></pre></div></td></tr></table></div>
+
+<p>而后用浏览器访问 http://localhost:8000/</p>
+<p>如果从头开始创建一个blog，可以使用quickstart命令</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pelican-quickstart
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>它生成的文件中包含makefile（供make使用）和task.py文件（供invoke使用），都可以直接删掉。</p>
+</blockquote>
+<h2 id="pelican_2">Pelican配置</h2>
+<p>Pelican默认生成2个配置文件pelicanconf.py和publicconf.py。前者默认使用，后者需要通过命令行使用（用于生成发布用的站点）。</p>
+<ul>
+<li>详见 https://docs.getpelican.com/en/latest/settings.html</li>
+</ul>
+<p>后者一般基于前者进行些改动，比如，它一般都包含：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">pelicanconf</span> <span class="kn">import</span> <span class="o">*</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_1">插件</h3>
+<blockquote>
+<p>注意：Pelican 老的插件位于 https://github.com/getpelican/pelican-plugins。如果别的文章，介绍插件时直接指向这个东西，需要注意内容其是否过时。 2023-11-13。</p>
+</blockquote>
+<p>新的插件(位于 https://github.com/pelican-plugins )，可以直接使用 pip 安装，比如</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pelican-search
+</code></pre></div></td></tr></table></div>
+
+<p>安装后，pelican会自动识别它，也无需在pelicanconf.py中配置PLUGINS变量。</p>
+<blockquote>
+<p>注意pelican-search 依赖另外一个名为Stork的东西（Stork作者声明不再更新，但是pelican-search作者认为短期没有替换必要）。</p>
+</blockquote>
+<p>执行如下命令，查看当前安装的插件</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pelican-plugins
+</code></pre></div></td></tr></table></div>
+
+<h3 id="articlepage">Article与Page</h3>
+<p>Blog的内容，一般都有时间属性，pelican将其归类于 article；而"关于"，“联系方式” 等页面则不常变化，归于pages。</p>
+<h2 id="pelican-markdown">Pelican Markdown 语法</h2>
+<ul>
+<li>https://docs.getpelican.com/en/stable/content.html</li>
+</ul>
+<h3 id="_2">链接格式</h3>
+<p>主要关注下内部链接的语法，它支持变量。</p>
+<ul>
+<li>filename</li>
+</ul>
+<p>要在一篇博客中引用另外的站内博客，需要使用 filename</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>[a link relative to the current file]({filename}category/debao.md)
+[a link relative to the content root]({filename}/category/article1.md)
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>static</li>
+</ul>
+<p>要在博客中显示静态资源中的图像，需要指定static 。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">!</span><span class="p">[</span><span class="n">Alt</span><span class="w"> </span><span class="n">Text</span><span class="p">]({</span><span class="k">static</span><span class="p">}</span><span class="o">/</span><span class="n">images</span><span class="o">/</span><span class="n">han</span><span class="p">.</span><span class="n">jpg</span><span class="p">)</span>
+<span class="p">[</span><span class="n">Our</span><span class="w"> </span><span class="n">Menu</span><span class="p">]({</span><span class="k">static</span><span class="p">}</span><span class="o">/</span><span class="n">pdfs</span><span class="o">/</span><span class="n">menu</span><span class="p">.</span><span class="n">pdf</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>attach</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">!</span><span class="p">[</span><span class="n">Icon</span><span class="p">]({</span><span class="n">attach</span><span class="p">}</span><span class="n">icons</span><span class="o">/</span><span class="n">icon</span><span class="p">.</span><span class="n">png</span><span class="p">)</span>
+<span class="o">!</span><span class="p">[</span><span class="n">Photo</span><span class="p">]({</span><span class="n">attach</span><span class="p">}</span><span class="n">photo</span><span class="p">.</span><span class="n">jpg</span><span class="p">)</span>
+<span class="p">[</span><span class="n">Downloadable</span><span class="w"> </span><span class="n">File</span><span class="p">]({</span><span class="n">attach</span><span class="p">}</span><span class="o">/</span><span class="n">downloads</span><span class="o">/</span><span class="n">archive</span><span class="p">.</span><span class="n">zip</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意：pelican的变量格式，和常规的各个markdown编辑器支持的格式不一样。</p>
+</blockquote>
+<p>建议方案：编写 Python Markdown 的 ProProcesser扩展，在内存中自动添加这些变量，以便于让pelican满意。</p>
+<h3 id="meta">Meta信息</h3>
+<p>需要在文件头部添加一些信息，比如：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">title</span><span class="o">:</span><span class="w">  </span><span class="n">Github</span><span class="w"> </span><span class="n">Actions从0到1笔记</span><span class="err">（基于</span><span class="n">Python</span><span class="err">）</span>
+<span class="n">slug</span><span class="o">:</span><span class="w"> </span><span class="n">python</span><span class="o">-</span><span class="n">examples</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">github</span><span class="o">-</span><span class="n">actions</span>
+<span class="n">date</span><span class="o">:</span><span class="w"> </span><span class="mi">2023</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">12</span><span class="w"> </span><span class="mi">22</span><span class="o">:</span><span class="mi">31</span>
+<span class="n">category</span><span class="o">:</span><span class="w"> </span><span class="n">python</span>
+<span class="n">tags</span><span class="o">:</span><span class="w"> </span><span class="n">python</span><span class="o">,</span><span class="w"> </span><span class="n">github</span><span class="o">,</span><span class="w"> </span><span class="n">CI</span>
+</code></pre></div></td></tr></table></div>
+
+<p>或者用yaml格式【需要使用相应扩展】</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>---
+title:  Github Actions从0到1笔记（基于Python）
+slug: python-examples-with-github-actions
+date: 2023-11-12 22:31
+category: python
+tags: [python, github, CI]
+---
+</code></pre></div></td></tr></table></div>
+
+<p>可用的 MetaData列表：</p>
+<table>
+<thead>
+<tr>
+<th>MetaData</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>title</code></td>
+<td>标题（Article 或 Page)</td>
+</tr>
+<tr>
+<td><code>date</code></td>
+<td>发布日期， (<code>YYYY-MM-DD HH:SS</code>)</td>
+</tr>
+<tr>
+<td><code>modified</code></td>
+<td>修改日期 (<code>YYYY-MM-DD HH:SS</code>)</td>
+</tr>
+<tr>
+<td><code>tags</code></td>
+<td>逗号分隔</td>
+</tr>
+<tr>
+<td><code>keywords</code></td>
+<td>逗号分隔 (HTML content only)</td>
+</tr>
+<tr>
+<td><code>category</code></td>
+<td>每个article只能指定一个类别)</td>
+</tr>
+<tr>
+<td><code>slug</code></td>
+<td>ID，当title有中文时，最好指定它（不然url中会用拼音）。</td>
+</tr>
+<tr>
+<td><code>author</code></td>
+<td>作者</td>
+</tr>
+<tr>
+<td><code>authors</code></td>
+<td>作者们</td>
+</tr>
+<tr>
+<td><code>summary</code></td>
+<td>Brief description of content for index pages</td>
+</tr>
+<tr>
+<td><code>lang</code></td>
+<td>语言 (<code>en</code>, <code>fr</code>, etc.)</td>
+</tr>
+<tr>
+<td><code>translation</code></td>
+<td>当前article是否是另一个的翻译 (<code>true</code> or <code>false</code>)</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>状态:<code>draft</code>, <code>hidden</code>, or <code>published</code></td>
+</tr>
+<tr>
+<td><code>template</code></td>
+<td>Name of template to use to generate content (without extension)</td>
+</tr>
+<tr>
+<td><code>save_as</code></td>
+<td>Save content to this relative file path</td>
+</tr>
+<tr>
+<td><code>url</code></td>
+<td>URL to use for this article/page</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>注意</strong>：title必须出现在第一行，不然会有下面这样的错误：<code>could not find information about 'title'</code></p>
+</blockquote>
+<h3 id="katex">katex 支持</h3>
+<p>getpelican使用的python-markdown，理论上用其扩展markdown-katex就行了。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>markdown_katex
+</code></pre></div></td></tr></table></div>
+
+<p>安装后，在getpelican下的启用方式：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># pelicanconf.py</span>
+<span class="n">MARKDOWN</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;extension_configs&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;markdown.extensions.codehilite&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;css_class&#39;</span><span class="p">:</span> <span class="s1">&#39;highlight&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;markdown.extensions.extra&#39;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s1">&#39;markdown.extensions.meta&#39;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s1">&#39;markdown_katex&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;no_inline_svg&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;insert_fonts_css&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;output_format&#39;</span><span class="p">:</span> <span class="s1">&#39;html5&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意，此处只添加了 <code>markdown_katex</code>，之所以写这么多，是因为其他的是getplican的默认值，不能直接覆盖MARKDOWN变量，不然table、code 都会解析不正常。</p>
+</blockquote>
+<h4 id="20241024">20241024更新</h4>
+<p>当前blog 自己编写Markdown插件，不进行离线转换。速度只需数秒。</p>
+<p>配置文件内容如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">current_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_dir</span><span class="p">,</span> <span class="s1">&#39;plugins&#39;</span><span class="p">,</span> <span class="s1">&#39;debaomdkatex&#39;</span><span class="p">))</span>
+<span class="kn">from</span> <span class="nn">debaomdkatex</span> <span class="kn">import</span> <span class="n">DebaoMdKatexExtension</span>
+
+<span class="n">MARKDOWN</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;extensions&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">DebaoMdKatexExtension</span><span class="p">()],</span>
+    <span class="s1">&#39;extension_configs&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;extra&#39;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s1">&#39;codehilite&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;css_class&#39;</span><span class="p">:</span> <span class="s1">&#39;highlight&#39;</span><span class="p">,</span> <span class="s1">&#39;linenums&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">},</span>
+        <span class="s1">&#39;meta&#39;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s1">&#39;toc&#39;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="c1">#&#39;markdown_katex&#39;: {&#39;no_inline_svg&#39;: False, &#39;insert_fonts_css&#39;: True},</span>
+        <span class="s1">&#39;markdown_mermaidjs&#39;</span><span class="p">:</span> <span class="p">{}</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;output_format&#39;</span><span class="p">:</span> <span class="s1">&#39;html5&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<span class="n">EXTRA_HEADER</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css&quot; integrity=&quot;sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+&quot; crossorigin=&quot;anonymous&quot;&gt;</span>
+<span class="s2">&lt;script defer src=&quot;https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js&quot; integrity=&quot;sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg&quot; crossorigin=&quot;anonymous&quot;&gt;&lt;/script&gt;</span>
+<span class="s2">&lt;script defer src=&quot;https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js&quot; integrity=&quot;sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk&quot; crossorigin=&quot;anonymous&quot;</span>
+<span class="s2">    onload=&quot;renderMathInElement(document.body);&quot;&gt;&lt;/script&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="mermaid">mermaid 支持</h3>
+<p>同katex类似，python中的markdown有对merimad的扩展支持</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>markdown-mermaidjs
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>https://pypi.org/project/markdown-mermaidjs/</li>
+</ul>
+<p>getpelican下，配置pelicanconf.py进行启用：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># pelicanconf.py</span>
+<span class="n">MARKDOWN</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;extension_configs&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;markdown_mermaidjs&quot;</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="github-action">使用GitHub Action发布</h2>
+<p>目标：自动将生成的静态站点，发布到另外一个仓库中。</p>
+<blockquote>
+<p>GitHub actions的market中有一些其他人些的action，用于发布pelican站点到pages。使用它会大大简化workflow文件，不过这儿用最原始的方式，希望可控性好一些。</p>
+</blockquote>
+<p>在当前仓库中添加一个workflow文件：<code>.github/workflows/pelican.yml</code></p>
+<p>内容如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">pelican</span><span class="w"> </span><span class="n">CI</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">debao</span><span class="w"> </span><span class="n">blog</span>
+
+<span class="n">on</span><span class="o">:</span>
+<span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Trigger</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">workflow</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">push</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="n">branch</span><span class="o">,</span>
+<span class="w">  </span><span class="n">push</span><span class="o">:</span>
+<span class="w">    </span><span class="n">branches</span><span class="o">:</span>
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">main</span>
+
+<span class="n">jobs</span><span class="o">:</span>
+<span class="w">  </span><span class="n">build</span><span class="o">:</span>
+<span class="w">    </span><span class="n">runs</span><span class="o">-</span><span class="n">on</span><span class="o">:</span><span class="w"> </span><span class="n">ubuntu</span><span class="o">-</span><span class="n">latest</span>
+<span class="w">    </span><span class="n">steps</span><span class="o">:</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">uses</span><span class="o">:</span><span class="w"> </span><span class="n">actions</span><span class="o">/</span><span class="n">checkout</span><span class="err">@</span><span class="n">v4</span>
+<span class="w">      </span><span class="k">with</span><span class="o">:</span><span class="w"> </span>
+<span class="w">        </span><span class="n">submodules</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;true&#39;</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">up</span><span class="w"> </span><span class="n">Python</span>
+<span class="w">      </span><span class="n">uses</span><span class="o">:</span><span class="w"> </span><span class="n">actions</span><span class="o">/</span><span class="n">setup</span><span class="o">-</span><span class="n">python</span><span class="err">@</span><span class="n">v5</span>
+<span class="w">      </span><span class="k">with</span><span class="o">:</span>
+<span class="w">        </span><span class="n">python</span><span class="o">-</span><span class="n">version</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;3.11&#39;</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">Install</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">pelican</span>
+<span class="w">      </span><span class="n">run</span><span class="o">:</span><span class="w"> </span><span class="o">|</span>
+<span class="w">        </span><span class="n">python</span><span class="w"> </span><span class="o">-</span><span class="n">m</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="o">--</span><span class="n">upgrade</span><span class="w"> </span><span class="n">pip</span>
+<span class="w">        </span><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="o">-</span><span class="n">r</span><span class="w"> </span><span class="n">requirements</span><span class="o">.</span><span class="na">txt</span>
+<span class="w">        </span><span class="n">pelican</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">depoly</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">gh</span><span class="w"> </span><span class="n">pages</span>
+<span class="w">      </span><span class="n">working</span><span class="o">-</span><span class="n">directory</span><span class="o">:</span><span class="w"> </span><span class="o">./</span><span class="n">output</span>
+<span class="w">      </span><span class="n">run</span><span class="o">:</span><span class="w"> </span><span class="o">|</span>
+<span class="w">        </span><span class="n">git</span><span class="w"> </span><span class="n">init</span>
+<span class="w">        </span><span class="n">git</span><span class="w"> </span><span class="n">remote</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="n">blog</span><span class="w"> </span><span class="n">https</span><span class="o">://</span><span class="n">x</span><span class="o">-</span><span class="n">access</span><span class="o">-</span><span class="n">token</span><span class="o">:</span><span class="n">$</span><span class="o">{{</span><span class="n">secrets</span><span class="o">.</span><span class="na">MYBLOG_TOKEN</span><span class="o">}}</span><span class="err">@</span><span class="n">github</span><span class="o">.</span><span class="na">com</span><span class="sr">/dbzhang800/</span><span class="n">myrepoXxxxxxx</span><span class="o">.</span><span class="na">git</span>
+<span class="w">        </span><span class="n">git</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="na">name</span><span class="w"> </span><span class="s2">&quot;Debao Zhang&quot;</span>
+<span class="w">        </span><span class="n">git</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="na">email</span><span class="w"> </span><span class="s2">&quot;hello@debao.me&quot;</span>
+<span class="w">        </span><span class="n">git</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="o">.</span>
+<span class="w">        </span><span class="n">git</span><span class="w"> </span><span class="n">commit</span><span class="w"> </span><span class="o">-</span><span class="n">m</span><span class="w"> </span><span class="s2">&quot;Automated deployment to github pages&quot;</span>
+<span class="w">        </span><span class="n">git</span><span class="w"> </span><span class="n">push</span><span class="w"> </span><span class="n">blog</span><span class="w"> </span><span class="n">HEAD</span><span class="o">:</span><span class="n">main</span><span class="w"> </span><span class="o">--</span><span class="n">force</span>
+<span class="w">        </span><span class="n">rm</span><span class="w"> </span><span class="o">-</span><span class="n">fr</span><span class="w"> </span><span class="o">.</span><span class="na">git</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>为了将代码推送进另一个仓库，创建一个用于目标仓库的<code>Access Token</code>，而后将其作为secrets变量设置到当前仓库中<code>MYBLOG_TOKEN</code>。</p>
+<p>Access Token创建方式（点击账户头像）：<code>&lt;Avatar&gt; =&gt; Settings =&gt; Developer settings =&gt; Personal access tokens</code></p>
+</blockquote>
+<h2 id="_3">参考</h2>
+<ul>
+<li>https://docs.getpelican.com/en/latest/index.html
+*</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-11-13T21:16:00+08:00" pubdate>Mon 13 November 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a class="category" href="https://blog.debao.me/tags/ci.html">CI</a>,    <a class="category" href="https://blog.debao.me/tags/python.html">python</a>,    <a class="category" href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a class="category" href="https://blog.debao.me/tags/katex.html">katex</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

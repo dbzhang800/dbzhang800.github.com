@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Qt下控件库小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Qt下控件库小记</h1>
+    <p class="meta">
+<time datetime="2024-11-18T19:39:00+08:00" pubdate>Mon 18 November 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>接前面<a href="https://blog.debao.me/2024/09/a-brief-note-on-chart-libraries-in-qt/">Qt下图表库小记</a>与<a href="https://blog.debao.me/2024/10/notes-on-qt-stylesheets/">Qt样式表小记</a>，再简单记录一下控件库</p>
+<div class="toc">
+<ul>
+<li><a href="#material">Material风格</a><ul>
+<li><a href="#laserpantsqt-material-widgets">laserpants/qt-material-widgets</a></li>
+<li><a href="#un-gcpdsqt-meterial">UN-GCPDS/qt-meterial</a></li>
+</ul>
+</li>
+<li><a href="#fluent">Fluent风格</a><ul>
+<li><a href="#githubuser0xffffqtfluentdesign">githubuser0xFFFF/QtFluentDesign</a></li>
+<li><a href="#zhiyiyopyqt-fluent-widgets">zhiyiYo/PyQt-Fluent-Widgets</a></li>
+</ul>
+</li>
+<li><a href="#ribbon">ribbon</a><ul>
+<li><a href="#czyt1988saribbon">czyt1988/SARibbon</a></li>
+<li><a href="#haiiliinpyqtribbon">haiiliin/pyqtribbon</a></li>
+<li><a href="#seriousalexejtabtoolbar">SeriousAlexej/TabToolbar</a></li>
+<li><a href="#martijnkoopmanqt-ribbon-widget">martijnkoopman/Qt-Ribbon-Widget</a></li>
+<li><a href="#nedrysoftqt-ribbon">nedrysoft/qt-ribbon</a></li>
+</ul>
+</li>
+<li><a href="#docking">停靠窗口（Docking）</a><ul>
+<li><a href="#githubuser0xffffqt-advanced-docking-system">githubuser0xFFFF/Qt-Advanced-Docking-System</a></li>
+<li><a href="#jackydingqtflex5">JackyDing/QtFlex5</a></li>
+<li><a href="#kddockwidgets">KDDockWidgets</a></li>
+</ul>
+</li>
+<li><a href="#_1">编辑器</a><ul>
+<li><a href="#qscintilla">QScintilla</a></li>
+<li><a href="#megaxelaqcodeeditor">Megaxela/QCodeEditor</a></li>
+<li><a href="#dax89qhexview">Dax89/QHexView</a></li>
+<li><a href="#simsysqhexedit2">Simsys/qhexedit2</a></li>
+<li><a href="#pbekqmarkdowntextedit">pbek/QMarkdownTextEdit</a></li>
+<li><a href="#hustleiqssstylesheeteditor">hustlei/QssStylesheetEditor</a></li>
+<li><a href="#happyseafoxqsseditor">HappySeaFox/qsseditor</a></li>
+</ul>
+</li>
+<li><a href="#_2">常规控件集</a><ul>
+<li><a href="#pyapp-kitsuperqt">pyapp-kit/superqt</a></li>
+<li><a href="#kadir014pyqt5-custom-widgets">kadir014/pyqt5-custom-widgets</a></li>
+<li><a href="#khamisikibetqt-pyqt-pyside-custom-widgets">KhamisiKibet/QT-PyQt-PySide-Custom-Widgets</a></li>
+<li><a href="#pyqt5customwidgets">PyQt5/CustomWidgets</a></li>
+</ul>
+</li>
+<li><a href="#_3">无边框窗口</a><ul>
+<li><a href="#jorgen-vikinggodqt-frameless-window-darkstyle">Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle</a></li>
+<li><a href="#bringer-of-lightqt-nice-frameless-window">Bringer-of-Light/Qt-Nice-Frameless-Window</a></li>
+<li><a href="#wangwenx190framelesshelper">wangwenx190/framelesshelper</a></li>
+<li><a href="#zhiyiyopyqt-frameless-window">zhiyiYo/PyQt-Frameless-Window</a></li>
+</ul>
+</li>
+<li><a href="#cef">CEF</a><ul>
+<li><a href="#cefviewqcefview">CefView/QCefView</a></li>
+<li><a href="#winsoft666qcefwidget">winsoft666/QCefWidget</a></li>
+</ul>
+</li>
+<li><a href="#_4">其他</a><ul>
+<li><a href="#qt-solutions">qt-solutions</a></li>
+<li><a href="#lxqtqtermwidget">lxqt/QTermWidget</a></li>
+<li><a href="#gwihlidalqnodeview">gwihlidal/QNodeView</a></li>
+<li><a href="#marcel-goldschen-ohmpyqtimageviewer">marcel-goldschen-ohm/PyQtImageViewer</a></li>
+<li><a href="#akascapepy-window-styles">Akascape/py-window-styles</a></li>
+</ul>
+</li>
+<li><a href="#_5">参考</a></li>
+</ul>
+</div>
+<h2 id="material">Material风格</h2>
+<p><a href="https://material.io">Google Material Design Guidelines</a> 是一套由谷歌发布的设计规范，旨在帮助设计师和开发者创建一致、直观和美观的用户界面。该指南提供了详细的设计原则、组件定义和实现方法，以确保开发人员可以创建符合 Material Design 设计语言的产品。</p>
+<p>在Qt中，官方的<a href="https://doc.qt.io/qt-6/qtquickcontrols-material.html">Qt Quick Controls</a>支持Material风格。但是官方 QtWidgets不支持这套风格。</p>
+<p>一些第三方的库：</p>
+<h3 id="laserpantsqt-material-widgets">laserpants/qt-material-widgets</h3>
+<ul>
+<li><a href="https://github.com/laserpants/qt-material-widgets">https://github.com/laserpants/qt-material-widgets</a></li>
+</ul>
+<p>BSD授权，近几年开发不活跃。</p>
+<h3 id="un-gcpdsqt-meterial">UN-GCPDS/qt-meterial</h3>
+<ul>
+<li><a href="https://github.com/UN-GCPDS/qt-material">https://github.com/UN-GCPDS/qt-material</a></li>
+<li><a href="https://pypi.org/project/qt-material/">https://pypi.org/project/qt-material/</a></li>
+<li><a href="https://qt-material.readthedocs.io/en/latest/">https://qt-material.readthedocs.io/en/latest/</a></li>
+</ul>
+<p>采用BSD协议。这个不是控件，是用于PySide、PyQt的一套主题。</p>
+<h2 id="fluent">Fluent风格</h2>
+<p><a href="https://fluent2.microsoft.design/">Fluent Design System</a> 是由微软在 2017 年推出的一种设计语言和框架，旨在为 Windows 应用程序和其他平台创建一致、直观和现代的用户界面体验。</p>
+<p>在Qt中，官方的<a href="https://doc.qt.io/qt-6/qtquickcontrols-fluentwinui3.html">Qt Qucik controls</a>自 Qt6.8起，开始支持 Fluent 风格，但是Qt Widgets并不支持。</p>
+<p>一些第三方的库：</p>
+<h3 id="githubuser0xffffqtfluentdesign">githubuser0xFFFF/QtFluentDesign</h3>
+<ul>
+<li><a href="https://github.com/githubuser0xFFFF/QtFluentDesign">https://github.com/githubuser0xFFFF/QtFluentDesign</a></li>
+</ul>
+<p>LGPL 授权</p>
+<h3 id="zhiyiyopyqt-fluent-widgets">zhiyiYo/PyQt-Fluent-Widgets</h3>
+<ul>
+<li><a href="https://github.com/zhiyiYo/PyQt-Fluent-Widgets">https://github.com/zhiyiYo/PyQt-Fluent-Widgets</a></li>
+<li><a href="https://qfluentwidgets.com">https://qfluentwidgets.com</a></li>
+<li><a href="https://pyqt-fluent-widgets.readthedocs.io/en/latest/">https://pyqt-fluent-widgets.readthedocs.io/en/latest/</a></li>
+</ul>
+<p>国内开发，采用 <strong>GPL</strong> 授权和商业授权。</p>
+<h2 id="ribbon">ribbon</h2>
+<p>Ribbon 是一种用户界面设计元素，首次由微软在 Microsoft Office 2007 中引入，后来扩展到其他微软产品以及第三方应用中。它旨在替代传统的菜单和工具栏，通过更直观的布局来提高用户的操作效率和可用性。Ribbon 通过将功能和命令组织成一系列标签页和分组，帮助用户更快地找到所需的工具。</p>
+<h3 id="czyt1988saribbon">czyt1988/SARibbon</h3>
+<ul>
+<li><a href="https://github.com/czyt1988/SARibbon">https://github.com/czyt1988/SARibbon</a></li>
+</ul>
+<p>国产，MIT授权</p>
+<h3 id="haiiliinpyqtribbon">haiiliin/pyqtribbon</h3>
+<ul>
+<li><a href="https://github.com/haiiliin/pyqtribbon">https://github.com/haiiliin/pyqtribbon</a></li>
+</ul>
+<p>MIT授权</p>
+<h3 id="seriousalexejtabtoolbar">SeriousAlexej/TabToolbar</h3>
+<ul>
+<li><a href="https://github.com/SeriousAlexej/TabToolbar">https://github.com/SeriousAlexej/TabToolbar</a></li>
+</ul>
+<p>LGPL授权</p>
+<h3 id="martijnkoopmanqt-ribbon-widget">martijnkoopman/Qt-Ribbon-Widget</h3>
+<ul>
+<li><a href="https://github.com/martijnkoopman/Qt-Ribbon-Widget">https://github.com/martijnkoopman/Qt-Ribbon-Widget</a></li>
+</ul>
+<p>LGPL授权，还不成熟。</p>
+<h3 id="nedrysoftqt-ribbon">nedrysoft/qt-ribbon</h3>
+<ul>
+<li><a href="https://github.com/nedrysoft/qt-ribbon">https://github.com/nedrysoft/qt-ribbon</a></li>
+</ul>
+<p>GPL授权</p>
+<h2 id="docking">停靠窗口（Docking）</h2>
+<h3 id="githubuser0xffffqt-advanced-docking-system">githubuser0xFFFF/Qt-Advanced-Docking-System</h3>
+<ul>
+<li><a href="https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System">https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System</a></li>
+</ul>
+<p>LGPL 授权</p>
+<h3 id="jackydingqtflex5">JackyDing/QtFlex5</h3>
+<ul>
+<li><a href="https://github.com/JackyDing/QtFlex5">https://github.com/JackyDing/QtFlex5</a></li>
+</ul>
+<p>MIT授权，仿 Visual Studio 201x 的停靠控件（Flexible and dockable widgets）。</p>
+<p>只支持 Windows</p>
+<h3 id="kddockwidgets">KDDockWidgets</h3>
+<ul>
+<li><a href="https://github.com/KDAB/KDDockWidgets">https://github.com/KDAB/KDDockWidgets</a></li>
+</ul>
+<p>采用 <strong>GPL</strong> 和商业授权</p>
+<h2 id="_1">编辑器</h2>
+<h3 id="qscintilla">QScintilla</h3>
+<ul>
+<li><a href="https://riverbankcomputing.com/software/qscintilla">https://riverbankcomputing.com/software/qscintilla</a></li>
+<li><a href="https://qscintilla.com/">https://qscintilla.com/</a></li>
+</ul>
+<p>采用 <strong>GPL</strong> 和商业授权。是pyQt的作者开发的文本编辑器。</p>
+<h3 id="megaxelaqcodeeditor">Megaxela/QCodeEditor</h3>
+<ul>
+<li><a href="https://github.com/Megaxela/QCodeEditor">https://github.com/Megaxela/QCodeEditor</a></li>
+</ul>
+<p>MIT授权</p>
+<h3 id="dax89qhexview">Dax89/QHexView</h3>
+<ul>
+<li><a href="https://github.com/Dax89/QHexView">https://github.com/Dax89/QHexView</a></li>
+</ul>
+<p>MIT授权</p>
+<h3 id="simsysqhexedit2">Simsys/qhexedit2</h3>
+<ul>
+<li><a href="https://github.com/Simsys/qhexedit2">https://github.com/Simsys/qhexedit2</a></li>
+</ul>
+<p>LGPL协议</p>
+<h3 id="pbekqmarkdowntextedit">pbek/QMarkdownTextEdit</h3>
+<ul>
+<li><a href="https://github.com/pbek/qmarkdowntextedit">https://github.com/pbek/qmarkdowntextedit</a></li>
+</ul>
+<p>MIT协议</p>
+<h3 id="hustleiqssstylesheeteditor">hustlei/QssStylesheetEditor</h3>
+<ul>
+<li><a href="https://github.com/hustlei/QssStylesheetEditor">https://github.com/hustlei/QssStylesheetEditor</a></li>
+</ul>
+<p>GPL协议</p>
+<h3 id="happyseafoxqsseditor">HappySeaFox/qsseditor</h3>
+<ul>
+<li><a href="https://github.com/HappySeaFox/qsseditor">https://github.com/HappySeaFox/qsseditor</a></li>
+</ul>
+<p>GPL协议，已停止维护</p>
+<h2 id="_2">常规控件集</h2>
+<h3 id="pyapp-kitsuperqt">pyapp-kit/superqt</h3>
+<ul>
+<li><a href="https://github.com/pyapp-kit/superqt">https://github.com/pyapp-kit/superqt</a></li>
+<li><a href="https://pypi.org/project/superqt/">https://pypi.org/project/superqt/</a></li>
+</ul>
+<p>用于 PyQt/PySide 的控件，QtWidget 的补充。</p>
+<p>采用BSD授权协议</p>
+<h3 id="kadir014pyqt5-custom-widgets">kadir014/pyqt5-custom-widgets</h3>
+<ul>
+<li><a href="https://github.com/kadir014/pyqt5-custom-widgets">https://github.com/kadir014/pyqt5-custom-widgets</a></li>
+</ul>
+<p>采用 <strong>GPL</strong> 授权</p>
+<h3 id="khamisikibetqt-pyqt-pyside-custom-widgets">KhamisiKibet/QT-PyQt-PySide-Custom-Widgets</h3>
+<ul>
+<li><a href="https://github.com/KhamisiKibet/QT-PyQt-PySide-Custom-Widgets">https://github.com/KhamisiKibet/QT-PyQt-PySide-Custom-Widgets</a></li>
+</ul>
+<p>采用 <strong>GPL</strong> 授权</p>
+<h3 id="pyqt5customwidgets">PyQt5/CustomWidgets</h3>
+<ul>
+<li><a href="https://github.com/PyQt5/CustomWidgets">https://github.com/PyQt5/CustomWidgets</a></li>
+</ul>
+<p>采用 <strong>GPL</strong> 授权</p>
+<h2 id="_3">无边框窗口</h2>
+<h3 id="jorgen-vikinggodqt-frameless-window-darkstyle">Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle</h3>
+<ul>
+<li><a href="https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle">https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle</a></li>
+</ul>
+<p>MIT协议</p>
+<h3 id="bringer-of-lightqt-nice-frameless-window">Bringer-of-Light/Qt-Nice-Frameless-Window</h3>
+<ul>
+<li><a href="https://github.com/Bringer-of-Light/Qt-Nice-Frameless-Window">https://github.com/Bringer-of-Light/Qt-Nice-Frameless-Window</a></li>
+</ul>
+<p>国内，采用 MIT协议</p>
+<h3 id="wangwenx190framelesshelper">wangwenx190/framelesshelper</h3>
+<ul>
+<li><a href="https://github.com/wangwenx190/framelesshelper">https://github.com/wangwenx190/framelesshelper</a></li>
+</ul>
+<p>MIT协议</p>
+<h3 id="zhiyiyopyqt-frameless-window">zhiyiYo/PyQt-Frameless-Window</h3>
+<ul>
+<li><a href="https://github.com/zhiyiYo/PyQt-Frameless-Window">https://github.com/zhiyiYo/PyQt-Frameless-Window</a></li>
+</ul>
+<p>国内开发，采用 <strong>GPL</strong> 授权</p>
+<h2 id="cef">CEF</h2>
+<h3 id="cefviewqcefview">CefView/QCefView</h3>
+<ul>
+<li><a href="https://github.com/CefView/QCefView">https://github.com/CefView/QCefView</a></li>
+</ul>
+<p>LGPL授权，QCefView is a Qt based QWidget which encapsulates CEF。</p>
+<h3 id="winsoft666qcefwidget">winsoft666/QCefWidget</h3>
+<ul>
+<li><a href="https://github.com/winsoft666/QCefWidget">https://github.com/winsoft666/QCefWidget</a></li>
+</ul>
+<p>LGPL授权</p>
+<h2 id="_4">其他</h2>
+<h3 id="qt-solutions">qt-solutions</h3>
+<ul>
+<li><a href="https://github.com/qtproject/qt-solutions">https://github.com/qtproject/qt-solutions</a></li>
+</ul>
+<p>Qt官方早期的商业版扩展模块。已经停止维护，采用BSD授权。</p>
+<p>里面可能只有 qtpropertybrowser 和 qtservice 有些意义。</p>
+<h3 id="lxqtqtermwidget">lxqt/QTermWidget</h3>
+<ul>
+<li><a href="https://github.com/lxqt/qtermwidget">https://github.com/lxqt/qtermwidget</a></li>
+</ul>
+<ul>
+<li>采用 <strong>GPL</strong> 授权。一个终端控件，类似 KDE4 Konsole。</li>
+</ul>
+<h3 id="gwihlidalqnodeview">gwihlidal/QNodeView</h3>
+<ul>
+<li><a href="https://github.com/gwihlidal/QNodeView">https://github.com/gwihlidal/QNodeView</a></li>
+</ul>
+<p>Apache协议</p>
+<h3 id="marcel-goldschen-ohmpyqtimageviewer">marcel-goldschen-ohm/PyQtImageViewer</h3>
+<ul>
+<li><a href="https://github.com/marcel-goldschen-ohm/PyQtImageViewer">https://github.com/marcel-goldschen-ohm/PyQtImageViewer</a></li>
+</ul>
+<p>MIT协议</p>
+<h3 id="akascapepy-window-styles">Akascape/py-window-styles</h3>
+<ul>
+<li><a href="https://github.com/Akascape/py-window-styles">https://github.com/Akascape/py-window-styles</a></li>
+</ul>
+<p>和Qt没有直接关系，号称对Windows下python如下库通吃：</p>
+<ul>
+<li>Tkinter</li>
+<li>Customtkinter</li>
+<li>PyQt</li>
+<li>PySide</li>
+<li>WxPython</li>
+<li>Pygame</li>
+<li>Kivy</li>
+<li>PySimpleGUI</li>
+<li>DearPyGui</li>
+</ul>
+<p>采用CC0协议(Creative Commons Zero)。</p>
+<h2 id="_5">参考</h2>
+<ul>
+<li><a href="https://doc.qt.io/qt-6/qtquickcontrols-material.html">https://doc.qt.io/qt-6/qtquickcontrols-material.html</a></li>
+<li><a href="https://material.io">https://material.io</a></li>
+<li><a href="https://www.devmachines.com/qtitanribbon-overview.html">https://www.devmachines.com/qtitanribbon-overview.html</a></li>
+<li><a href="https://github.com/JPNaude/Qtilities">https://github.com/JPNaude/Qtilities</a></li>
+<li><a href="https://github.com/Qt-Widgets">https://github.com/Qt-Widgets</a></li>
+<li><a href="https://doc.qt.io/qt-6/gallery.html">https://doc.qt.io/qt-6/gallery.html</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-11-18T19:39:00+08:00" pubdate>Mon 18 November 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/qt.html">Qt</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

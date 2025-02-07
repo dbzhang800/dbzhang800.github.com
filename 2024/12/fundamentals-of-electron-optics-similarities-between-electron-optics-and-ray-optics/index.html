@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>电子光学基础：电子光学与光线光学相似性 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/sem.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">电子光学基础：电子光学与光线光学相似性</h1>
+    <p class="meta">
+<time datetime="2024-12-05T00:42:00+08:00" pubdate>Thu 05 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>接前面 <a href="https://blog.debao.me/2024/11/fundamentals-of-electron-optics-electron-velocity-and-wavelength/">电子光学基础：电子的速度与波长</a>，继续看看...</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#_1">电子光学折射定律</a></li>
+<li><a href="#_2">费马原理与哈密顿原理</a></li>
+<li><a href="#_3">透镜术语与概念</a></li>
+<li><a href="#_4">与几何光学主要差异</a></li>
+</ul>
+</div>
+<p>和光子一样，电子也具有波粒二象性，而且电子的德布罗意波长一般很短，较少涉及到衍射、干涉等波动光学的内容，所以可以和光线光学（几何光学）的光线传播类比。</p>
+<h2 id="_1">电子光学折射定律</h2>
+<p>几何光学是描述光束行程的。光线通过均匀的、各向同性的透明介质时是沿直线传播的，而当通过不均匀处，比如两种介质的交界面时，会产生反射和折射现象。如果我们把真空中的折射率取为1，则可以用相对折射率来表征光线通过的介质。</p>
+<p>假设光线由折射率为 <span class="math inline">n_1</span> 的介质通过交界面进入折射率为 <span class="math inline">n_2</span> 的介质，按照斯涅尔定律（Snell's Law），有：</p>
+<div class="math display">
+\frac{\sin \alpha_1}{\sin \alpha_2} = \frac{n_2}{n_1}
+</div>
+<p>式中 <span class="math inline">\alpha_1</span> 和 <span class="math inline">\alpha_2</span> 分别是光线的入射角和折射角。<span class="math inline">n_1</span> 和 <span class="math inline">n_2</span> 则分别是对应介质的折射率。</p>
+<p><img alt="光线与电子的折射" src="https://blog.debao.me/images/sem/snell_law.png"></p>
+<p>现在考虑电子进入两个不同电位 <span class="math inline">U_1</span> 和 <span class="math inline">U_2</span> 空间的交界面 <span class="math inline">S_1 S_2</span> 时的行为。设等电位区 <span class="math inline">I</span> 和 等电位区 <span class="math inline">II</span> 的电位分别为 <span class="math inline">U_1</span> 和 <span class="math inline">U_2</span>，且 <span class="math inline">U_1 &gt; U_2</span>，平面 <span class="math inline">S_1</span> 和 <span class="math inline">S_2</span> 之间的距离为 <span class="math inline">d</span>，则平面间的电场强度为：</p>
+<div class="math display">
+\mathbf{E} = \frac{U_2 - U_1}{d}
+</div>
+<p>在等位空间 <span class="math inline">I</span> 和 <span class="math inline">II</span> 中，电位梯度为零；而在交界面  <span class="math inline">S_1</span> 和 <span class="math inline">S_2</span> 之间存在电场，且垂直于界面。因此，电子穿过这一空间时，其速度会收到影响。由于电场力垂直界面，所以电子只在界面的额法向方向上加速（或减速），而切向速度保持不变，即：</p>
+<div class="math display">
+v_1\sin \alpha_1 = v_2 \sin \alpha_2
+</div>
+<p>因而：</p>
+<div class="math display">
+\frac{\sin \alpha_1}{\sin \alpha_2} = \frac{v_2}{v_1}
+</div>
+<p>在非相对论情况下，当电子从初速、电位均为零的点开始运动，到达电位 <span class="math inline">U</span> 处时，我们已知：</p>
+<div class="math display">
+v = \sqrt{\frac{2 \lvert e \rvert U}{m_0}}
+</div>
+<p>可得</p>
+<div class="math display">
+\frac{\sin \alpha_1}{\sin \alpha_2} = \frac{\sqrt{U_2}}{\sqrt{U_1}}
+</div>
+<p>与斯涅尔定律相比较，可知 <span class="math inline">\sqrt{U}</span> 在电子光学中对应于几何光学中的折射率 <span class="math inline">n</span>。该式子反映了电子在电场中的折射规律，称为 <strong>电子光学的折射定律</strong>。</p>
+<p>研究表明，电子穿越磁场时，也发生折射。这时折射率和入射角有关，和磁场等效的折射率不仅是不均匀的，还是各向异性的。在电磁场存在时，非相对论下 <strong>折射率</strong> 具有下面的形式：</p>
+<div class="math display">
+n = \sqrt{\frac{2 \lvert e \rvert U}{m_0}} + \frac{e}{m_0}\mathbf{A}\cdot\mathbf{s^0}
+</div>
+<p>式中 <span class="math inline">\mathbf{A}</span> 是矢量磁位，<span class="math inline">\mathbf{s^0}</span> 是与轨迹相切的单位矢量。</p>
+<p>其实，这个式子是通过对比电子在电磁场中运动的最小作用量原理（哈密顿原理）与几何光学中的费马原理的相似性得出。</p>
+<h2 id="_2">费马原理与哈密顿原理</h2>
+<p>费马由于提出了光线传播的费马原理而称为现代几何光学的奠基人之一。费马原理从光程的观点来描述光传播的规律。它具有普遍的意义。</p>
+<p>所谓光程（optical path)，是指光在介质中所经过的几何路程 <span class="math inline">l</span> 与该介质折射率 <span class="math inline">n</span> 乘积，相当于光在介质中走过 <span class="math inline">l</span> 这段路程的时间 <span class="math inline">t</span> 内，在真空中所走过的路程。</p>
+<p>费马原理（Fermat's principle）：光从一点到另一点是沿光程（optical path）为极值的路径传播的。即光沿着光程为极小、极大或常量的路径传播。其数学表达式如下：</p>
+<div class="math display">
+\delta \int_{P_0}^{P_1} n \mathrm{d}s = 0
+</div>
+<p>受费马原理的最小化思想启发，莫培督、拉格朗日和哈密顿等路径最小化的思想逐步扩展到力学和到更广泛的物理学中，提出了哈密顿原理。</p>
+<p>哈密顿原理（Hamilton's Principle）是经典力学中的一个基本变分原理。其核心是，物理系统从一个状态演化到另一个状态时，总是沿着使得作用量（action）极值的路径进行运动。  其数学表述为：</p>
+<div class="math display">
+\delta S = \delta \int_{t_0}^{t_1} L \mathrm{d}t = 0
+</div>
+<p>在经典力学中，作用量 <span class="math inline">S</span> 被定义为拉格朗日量 <span class="math inline">L=T-V</span> 在时间 <span class="math inline">t</span> 上的积分，其中 <span class="math inline">T</span> 为动能，<span class="math inline">V</span> 为势能。在磁场与静电场存在境况下，对于以非相对论速度运动的粒子，其拉格朗日函数：</p>
+<div class="math display">
+L = \frac{m_0v^2}{2} -e U + e\mathbf{A} \cdot v
+</div>
+<p>尽管上面哈密顿原理的式子在力学中如此基本与简洁，但是在电子光学中直接应用并不多。因为带电粒子光学关系的是粒子运动的轨迹，各坐标随时间的变化关系尚属次要问题。所以，希望泛函积分中以空间坐标而不是以时间坐标为自变量。</p>
+<div class="math display">
+\delta \int_{P_0}^{P_1}\bigg[\sqrt{\frac{2 \lvert e \rvert U}{m_0}} + \frac{e}{m_0}\mathbf{A}\cdot\mathbf{s^0}\bigg]\mathrm{d}s = 0
+</div>
+<p>式中 <span class="math inline">P_0</span> 及 <span class="math inline">P_1</span> 为粒子开始 <span class="math inline">t_0</span> 及结束 <span class="math inline">t_1</span> 的坐标，<span class="math inline">\mathbf{s}^0</span> 是与轨迹相切的单位矢量，即速度方向的单位矢量。</p>
+<blockquote>
+<p>这个式子和费马原理就比较对称了。进而得到上一节提到的存在磁场时的电子光学折射率。</p>
+</blockquote>
+<h2 id="_3">透镜术语与概念</h2>
+<p>电子光学从几何光学中借鉴的了大量的术语，所以也有透镜、焦面、主面、焦点、焦距、像差等概念。</p>
+<p><img alt="Image relationship" src="https://blog.debao.me/images/sem/optical_imaging_relationship.png"></p>
+<ul>
+<li>基点 (Cardinal point)：光学系统中关键的几何点，通常包括主点、焦点等，用来描述物体与图像之间的关系。<ul>
+<li>主点 (Principal point)：光学系统的一个参考点，通常位于透镜的光轴上，代表光学系统的虚拟或实际光源。</li>
+<li>焦点 (Focal point)：光学系统中的一个关键点，所有平行入射的光线会聚集或发散至焦点。</li>
+<li>节点 (Nodal point)：光学系统中一对特殊点，通过这些点的光线不会改变其方向，经过光学系统后，物体和图像位置保持几何相似。</li>
+</ul>
+</li>
+<li>基面 (Cardinal plane)：与基点对应的平面，通常是主面和焦面等，用于描述光学系统的成像性质。<ul>
+<li>主面 (Principal plane)：光学系统中的参考平面，包含光轴和主点，通常用于透镜系统的几何描述。</li>
+<li>焦面 (Focal plane)：与焦点平行并通过焦点的平面，所有聚焦的光线都位于此平面上。</li>
+</ul>
+</li>
+</ul>
+<p>对于旋转对称的薄透镜，先关注一下其焦距</p>
+<p><strong>静电透镜聚焦能力</strong>：</p>
+<p><img alt="thin lens" src="https://blog.debao.me/images/sem/elens_thin_lens.png"></p>
+<p>轴对称电场对电子轨迹有聚焦成像的作用，成为之静电透镜。当透镜厚度（透镜场的作用范围）比焦距小的多时，可以近似看作物主面与像主面在透镜中心处重合，称为薄透镜。</p>
+<div class="math display">
+\frac{1}{f_b} = \frac{1}{4}\frac{1}{\sqrt{U_0(z_b)}}\int_{z_a}^{z_b}\frac{U''_0(z)}{\sqrt{U_0(z)}}\mathrm{d}z
+</div>
+<p>静电透镜的聚焦能力与带电粒子的电荷和质量无关，通用性强。不过考虑到强电场时容易引发击穿和放电等问题，对真空以及电极间绝缘要求高一些。</p>
+<p>对上式，借助分部积分，小区二阶导，还可以写作：</p>
+<div class="math display">
+\frac{1}{f_b} = \frac{1}{8}\frac{1}{\sqrt{U_0(z_b)}}\int_{z_a}^{z_b}\frac{U'^2_0(z)}{{U_0(z)}^{\frac{3}{2}}}\mathrm{d}z
+</div>
+<p>注意：加速电压很大时，由于电极间电压受击穿限制又不能很大，静电透镜聚焦本领会急剧降低。所以对于高能带电粒子束，会使用非旋转对称的四极透镜。</p>
+<p><strong>磁透镜聚焦能力</strong>：</p>
+<div class="math display">
+\frac{1}{f} = \frac{e}{m}\frac{1}{8U}\int_{-\infty}^{+\infty}\boldsymbol{B}_{0z}^2(z)\mathrm{d}z
+</div>
+<p>带电粒子在磁场中受洛伦兹力下运动，远不如在电场下直观，所以磁透镜比较复杂：</p>
+<ol>
+<li>磁透镜是聚焦透镜，无论线圈中电流方向如何</li>
+<li>磁透镜会聚能力与轴上磁场积分成正比，磁场越强，会聚能力越强</li>
+<li>磁透镜的聚焦能力与电压成反比，带电粒子轴向速度越快，受力时间越短，聚焦能力越弱</li>
+<li>磁透镜的聚焦能力与带电粒子的荷质比有关。<strong>质量越大，聚焦力越弱</strong>。</li>
+<li>磁透镜存在像转角，它与线圈中电流方向有关。</li>
+</ol>
+<p>正由于磁透镜这种性质，使得其对于远比电子质量重的离子，聚焦能力变得很弱。所以<strong>离子光学</strong>中，不使用磁透镜。</p>
+<p>另外，注意到<span class="math inline">U</span>增大时，其聚焦本领也会迅速变小，而轴上磁场受磁饱和限制也不能很大，所以对于高能带电粒子束，磁透镜也不好使。</p>
+<h2 id="_4">与几何光学主要差异</h2>
+<p>尽管有电子与光线有一定的相似性，但是，也有很大不同</p>
+<ul>
+<li>电位 <span class="math inline">U</span> 空间中是连续的，不同于几何光学可以在交界面上突变。</li>
+<li>电位 <span class="math inline">U</span> 分布符合泊松方程，等位面到处相关，不同于几何光学可以对透镜表面进行局部修正或任意组合以减少像差。</li>
+<li>电位 <span class="math inline">\sqrt{U}</span> 的数值可以自由调节，且调整范围很大，不同于几何光学中折射率由材料决定，且受介质天然性质限制（可见光段不超过2.5，红外段不超过5）。</li>
+<li>有磁场存在时，电子光学折射率是非均匀的和各向异性的，不同于几何光学中的光线可逆。</li>
+<li>电子之间存在相互作用的排斥力（空间电荷效应），在强流是必须考虑，这在几何光学中的光子中是不存在的。</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-12-05T00:42:00+08:00" pubdate>Thu 05 December 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/sem.html'>SEM</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

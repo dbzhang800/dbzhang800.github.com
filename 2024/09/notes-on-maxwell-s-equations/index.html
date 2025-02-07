@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>麦克斯韦方程小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/science.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">麦克斯韦方程小记</h1>
+    <p class="meta">
+<time datetime="2024-09-02T20:10:00+08:00" pubdate>Mon 02 September 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>看看入门书，温习一下电磁场相关的内容，简单做个整理。从麦克斯韦方程（Maxwell's equations)开始吧，顺便再熟悉一下LaTeX/Katex写法...</p>
+</blockquote>
+<p>麦克斯韦方程是英国科学家麦克斯韦（James Clerk Maxwell）根据法拉第（Michael Faraday）等人关于电磁现象的试验定律创建的电子学的基本定律，反映了宏观电磁现象的普遍规律。</p>
+<h2 id="_1">高校三门课？</h2>
+<p>除了大学物理之外，大学有多门课涉及麦克斯韦方程，主要的有三个：</p>
+<ul>
+<li><strong>电磁学 (Electromagnetism)</strong>：基础课程。基于各种实验归纳出电现象、磁现象、电磁感应，最终总结到麦克斯韦方程。</li>
+</ul>
+<p>电磁学介绍了电荷 (charge)、电流 (current)、电场 (electric field)、磁场 (magnetic field) 等基本概念及其相互作用，涵盖库仑定律 (Coulomb's law)、安培定律 (Ampère's law)、法拉第定律 (Faraday's law) 等，构建了电磁现象的基础理论。</p>
+<ul>
+<li><strong>电动力学 (Electrodynamics)</strong>：理论物理课程，有经典电动力学和量子电动力学之分。</li>
+</ul>
+<p>以麦克斯韦方程组 (Maxwell's equations) 为核心，电动力学探讨随时间变化的电磁场 (time-varying electromagnetic fields)，引入狭义相对论 (special relativity) 以分析高速运动下的电磁现象，涉及洛伦兹变换 (Lorentz transformation) 和四维矢量 (four-vectors) 等高级理论。</p>
+<ul>
+<li><strong>电磁场与电磁波 (Electromagnetic Fields and Waves)</strong>：面向工科的课程，和经典电动力学相比，去掉了相对论，增加了应用例子。</li>
+</ul>
+<p>专注于电磁场 (electromagnetic field) 性质和电磁波 (electromagnetic wave) 传播，从理论到应用，深入探讨电磁波在不同介质中的行为，广泛应用于通信 (communication)、雷达 (radar) 和光学 (optics) 等领域。</p>
+<blockquote>
+<p>大致可以认为：电磁学是基础，电动力学是深化，电磁场与电磁波是应用。</p>
+</blockquote>
+<h2 id="_2">麦克斯韦方程</h2>
+<h3 id="_3">历史</h3>
+<p>在1861到1862年间，麦克斯韦陆续发表了名为《论电磁场的物理力线》 (On Physical Lines of Force)的四篇论文（part1到part4）。由于当时向量分析上不成熟，麦克斯韦的方程是以电场和磁场在 <span class="math inline">x y z</span> 三个方向上的分量形式给出的。</p>
+<p>1865年，麦克斯韦发表的著名论文《电磁场的动力学理论》（A Dynamical Theory of the Electromagnetic Field）中，他使用分量形式，共有包含20个未知数的20个标量方程，分别描述了电场和磁场的各个分量之间的关系。其中18个方程按分量可以6组，共给出了A、B、C、D、E、F、G、H八组方程。</p>
+<p>19世纪后期，奥利弗·海维赛（Oliver Heaviside）和乔西亚·威拉德·吉布斯（Josiah Willard Gibbs）发展了矢量分析，并将麦克斯韦的方程简化为我们今天所熟悉的4个矢量形式的方程组。</p>
+<ul>
+<li>高斯电场定律（Gauss‘s Law for Electricity）：电场的散度与电荷密度成正比</li>
+<li>高斯磁场定律（Gauss's Law for Magnetism）：没有磁单极子，磁场线总是闭合的</li>
+<li>法拉第定律（Faraday's Law of Induction）：变化的磁场产生电场</li>
+<li>安培-麦克斯韦定律（Ampère's Law with Maxwell's Correction）：变化的电场和电流产生磁场</li>
+</ul>
+<h3 id="_4">方程</h3>
+<blockquote>
+<p>麦克斯韦方程有许多表现形式，而且当时也没有SI单位制，不同书中给出的记法可能不同。我们考虑一种真空下的记法：</p>
+</blockquote>
+<h4 id="_5">积分形式</h4>
+<div class="math display">
+\oint_{S} \mathbf{E} \cdot d\mathbf{S} = \frac{q_{\text{enc}}}{\epsilon_0}
+
+\\
+
+\oint_{S} \mathbf{B} \cdot d\mathbf{S} = 0
+
+\\
+
+\oint_{C} \mathbf{E} \cdot d\mathbf{l} = -\frac{d}{dt} \int_S \mathbf{B} \cdot d\mathbf{S}
+
+\\
+
+\oint_{C} \mathbf{B} \cdot d\mathbf{l} = \mu_0 I_{\text{enc}} + \mu_0 \epsilon_0 \frac{d}{dt} \int_S \mathbf{E} \cdot d\mathbf{S}
+</div>
+
+<h4 id="_6">微分形式</h4>
+<div class="math display">
+\nabla \cdot \mathbf{E} = \frac{\rho}{\epsilon_0}
+
+\\
+
+\nabla \cdot \mathbf{B} = 0
+
+\\
+
+\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}
+
+\\
+
+\nabla \times \mathbf{B} = \mu_0 \mathbf{J} + \mu_0 \epsilon_0 \frac{\partial \mathbf{E}}{\partial t}
+</div>
+
+<p>逐一看看</p>
+<h3 id="-gausss-law-for-electricity">高斯电场定律 - Gauss's Law for Electricity</h3>
+<p>积分形式处理的是电场在整个曲面的法线方向上的积分。微分形式处理的是空间中一点处电场散度。</p>
+<h4 id="_7">积分形式</h4>
+<blockquote>
+<p>电荷产生电场，电场通过任意闭合曲面的通量与曲面包围的电荷总量成正比。</p>
+</blockquote>
+<div class="math display">
+\oint_{S} \mathbf{E} \cdot d\mathbf{S} = \frac{q_{\text{enc}}}{\epsilon_0}
+</div>
+
+<p>在一个闭合曲面 <span class="math inline">S</span> 上，电场 <span class="math inline"> \mathbf{E} </span> 的通量等于该曲面包围的电荷总量 <span class="math inline"> q_{\text{enc}} </span> 除以真空介电常数 <span class="math inline"> \epsilon_0 </span>。</p>
+<ul>
+<li>电荷包含自由电荷和束缚电荷。</li>
+</ul>
+<h4 id="_8">微分形式</h4>
+<blockquote>
+<p>电荷产生的电场从正电荷散开，汇集到负电荷。</p>
+</blockquote>
+<div class="math display">
+\nabla \cdot \mathbf{E} = \frac{\rho}{\epsilon_0}
+</div>
+
+<p>电场的散度与电荷密度成正比。</p>
+<ul>
+<li>散度不为零的地方有电荷，正电荷存在的地方散度为正（流出），负电荷存在的地方散度为负（流入）。</li>
+<li>避免认为：场线发散的地方散度不为零。比如点电荷形成的电场，处处都是散开的。</li>
+</ul>
+<h3 id="-gausss-law-for-magnetism">高斯磁场定律 - Gauss's Law for Magnetism</h3>
+<p>积分形式关注场穿过闭合曲面的通量，微分形式关注场在某一点的散度。</p>
+<p>正负电荷可以分离，但不存在磁单极子，影响高斯磁场定律与电场定律不同。</p>
+<h4 id="_9">积分形式</h4>
+<blockquote>
+<p>穿过任意闭合曲面的总磁通量为0。</p>
+</blockquote>
+<div class="math display">
+\oint_{S} \mathbf{B} \cdot d\mathbf{S} = 0
+</div>
+
+<p>在一个闭合曲面 <span class="math inline">S</span> 上，磁场 <span class="math inline"> \mathbf{B} </span> 的通量总是为零。</p>
+<h4 id="_10">微分形式</h4>
+<blockquote>
+<p>磁场散度处处为零。</p>
+</blockquote>
+<div class="math display">
+\nabla \cdot \mathbf{B} = 0
+</div>
+
+<h3 id="-faradays-law-of-induction">法拉第电磁感应定律 - Faraday's Law of Induction</h3>
+<h4 id="_11">积分形式</h4>
+<blockquote>
+<p>穿过一个曲面的磁通量的变化会在该曲面的任意边界路径上感生出电动势，并且变化的磁场会感生出环绕的电场。</p>
+</blockquote>
+<div class="math display">
+\oint_{C} \mathbf{E} \cdot d\mathbf{l} = -\frac{d}{dt} \int_S \mathbf{B} \cdot d\mathbf{S}
+</div>
+
+<p>在一个闭合路径 <span class="math inline">C</span> 上，电场 <span class="math inline"> \mathbf{E} </span> 的环量积分等于穿过该路径所围成的曲面 <span class="math inline">S</span> 的磁感应强度 <span class="math inline"> \mathbf{B} </span> 的变化率。</p>
+<p>公式中的负号：感生电动势与磁通量的变化相反，其趋向于保持磁通量不变。楞次定律。</p>
+<h4 id="_12">微分形式</h4>
+<blockquote>
+<p>随时间变化的磁场产生环绕的电场。</p>
+</blockquote>
+<div class="math display">
+\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}
+</div>
+
+<h3 id="-amperes-law-with-maxwells-correction">安培-麦克斯韦定律 - Ampère's Law with Maxwell's Correction</h3>
+<h4 id="_13">积分形式</h4>
+<blockquote>
+<p>穿过曲面的电流或变化的电通量会产生沿曲面边界的环绕磁场。</p>
+</blockquote>
+<div class="math display">
+\oint_{C} \mathbf{B} \cdot d\mathbf{l} = \mu_0 I_{\text{enc}} + \mu_0 \epsilon_0 \frac{d}{dt} \int_S \mathbf{E} \cdot d\mathbf{S}
+</div>
+
+<p>在一个闭合路径 <span class="math inline">C</span> 上，磁场 <span class="math inline"> \mathbf{B} </span> 的环量积分等于通过该路径所围成的曲面 <span class="math inline">S</span> 的电流 <span class="math inline"> I_{\text{enc}} </span> 和电场 <span class="math inline"> \mathbf{E} </span> 的变化率。</p>
+<h4 id="_14">微分形式</h4>
+<blockquote>
+<p>电流和随时间变化的电场会产生环绕的磁场。</p>
+</blockquote>
+<div class="math display">
+\nabla \times \mathbf{B} = \mu_0 \mathbf{J} + \mu_0 \epsilon_0 \frac{\partial \mathbf{E}}{\partial t}
+</div>
+
+<ul>
+<li><span class="math inline">\mathbf{B}</span>的旋度在有电流流动或电场变化的位置不为零。</li>
+<li>避免认为：场弯曲的地方旋度就不为零。比如无限长导线上电流产生的磁场，处处都是弯曲的。</li>
+</ul>
+<h4 id="_15">麦克斯韦修正</h4>
+<p>安培定律原始形式：</p>
+<div class="math display">
+\nabla \times \mathbf{B} = \mu_0 \mathbf{J}
+</div>
+
+<p>这个方程说明，电流 <span class="math inline">J</span>能够产生旋转的磁场<span class="math inline">B</span>。然而，如果考虑到电路中的电容器，就会有个问题。</p>
+<p>设想一个带电的电容器正在充电，电流流经导线进入电容器的极板。然而，在电容器内部（即两极板之间的区域），没有传导电流<span class="math inline">J=0</span>，根据原始的安培定律，这意味着在这个区域内不会有磁场变化。这显然与实验观察到的现象不符，因为在电容器间隙的区域，磁场确实存在并且随时间变化。</p>
+<p>加入一个额外的项，即所谓的“位移电流”，它与电场的变化率有关。</p>
+<p>修正的意义：</p>
+<ul>
+<li>电荷守恒：麦克斯韦引入的位移电流项确保了电荷守恒定律的自洽性。没有这个项，电荷守恒定律在某些情况下会被破坏。</li>
+<li>统一电磁场理论：麦克斯韦的修正使得电场和磁场之间的对称性更加明显。这表明，电场和磁场在本质上是相互关联的，变化的电场可以产生磁场，反之亦然。</li>
+<li>预测电磁波的存在：麦克斯韦的修正直接导致了电磁波方程的出现，预测了光是电磁波的一种形式。</li>
+</ul>
+<h2 id="_16">真空介电常数 与 真空磁导率</h2>
+<blockquote>
+<p>真空介电常数和真空磁导率这两个常数是在SI单位制中引入的。麦克斯韦时期用的是其他单位制，所以没有直接使用这两个系数。</p>
+</blockquote>
+<ul>
+<li>真空介电常数 <span class="math inline">\epsilon_0</span>：描述了真空中电场的响应能力——即单位电荷在真空中产生的电场强度。</li>
+<li>真空磁导率 <span class="math inline">\mu_0</span>：描述了真空中磁场的响应能力——即单位电流在真空中产生的磁场强度。</li>
+</ul>
+<h3 id="_17">测量？</h3>
+<ul>
+<li><span class="math inline">\epsilon_0</span> 可以试验测量</li>
+<li><span class="math inline">\mu_0</span> 不能试验测量？？</li>
+<li><span class="math inline">\frac{1}{\sqrt{\mu_0 \epsilon_0}}</span> 可以试验测量</li>
+</ul>
+<p>历史上，<span class="math inline">\epsilon_0</span> 可以通过试验进行测量。具体来说，库仑定律描述了真空中两个电荷之间的静电力：</p>
+<div class="math display">
+F = \frac{1}{4\pi \epsilon_0} \frac{q_1 q_2}{r^2}
+</div>
+
+<p>早期通过电学实验，测量电荷之间的力和距离，科学家能够较为准确地确定真空介电常数。</p>
+<p>与真空介电常数不同，真空磁导率 <span class="math inline">\mu_0</span> 并不能通过简单的实验直接测量出来。</p>
+<p>1855年，威廉·爱德华·韦伯（Wilhelm Eduard Weber）和鲁道夫·科尔劳施（Rudolf Kohlrausch）比较了电磁单位制中的电量和静电单位制中的电量，发现它们的比值具有速度的量纲。他们测出来对应于 <span class="math inline">\frac{1}{\sqrt{\mu_0 \epsilon_0}}</span> 的数值。测量值 <span class="math inline">3.107×10^8 m/s</span>，这个数值与当时光速测量值很接近。</p>
+<h3 id="_18">现代</h3>
+<p>在现代国际单位制（SI）中，1948年~2019年之间：</p>
+<ul>
+<li><span class="math inline">\mu_0</span> 实际上是被<strong>定义为</strong> <span class="math inline">4\pi \times 10^{-7} \ \text{N/A}^2</span>。数值被<strong>固定下来</strong>，</li>
+<li><span class="math inline">\epsilon_0</span> 则通过光速 <span class="math inline">c</span> 和 <span class="math inline">\mu_0</span> 的关系间接确定。数值 <span class="math inline">8.854187817×10^{−12} F/m</span></li>
+</ul>
+<p>而2019年开始，因为安培的定义发生变化，<span class="math inline">\mu_0</span>变成了测量值：<code>μ₀ = 4π × 0.99999999987(16)×10⁻⁷ H/m</code></p>
+<p>二者都可以基于测量精细结构 <span class="math inline">\alpha</span> 获得：</p>
+<div class="math display">
+\alpha = \frac{2 \varepsilon_0 h c}{e^2} = \frac{2 h}{\mu_0 e^2 c}
+</div>
+
+<h2 id="_19">波动方程</h2>
+<blockquote>
+<p>通过麦克斯韦方程，可以预言电磁波的存在，那么波动方程...</p>
+</blockquote>
+<p>波动方程是一种描述波动现象的偏微分方程，广泛应用于物理学中的声波、光波、电磁波等各种波动现象。</p>
+<h3 id="_20">波动方程一般形式</h3>
+<p>在三维空间中，描述一个以速度 <span class="math inline">v</span> 传播的矢量场<span class="math inline">A</span> 的波动行为</p>
+<div class="math display">
+\nabla^2 \mathbf{A} = \frac{1}{v^2} \frac{\partial^2 \mathbf{A}}{\partial t^2}
+</div>
+
+<ul>
+<li><strong>左边</strong>：<span class="math inline"> \nabla^2 A </span> 描述了波在空间中的扩散或曲率（空间三个方向上的二阶导数之和）。</li>
+<li><strong>右边</strong>：<span class="math inline"> \frac{1}{v^2} \frac{\partial^2 A}{\partial t^2} </span> 描述了波动随时间的变化（随时间的二阶导数，即它的加速度）。</li>
+</ul>
+<p>这个波动方程意味着<strong>波的扰动会以速度 <span class="math inline"> v </span> 在空间中传播</strong>，并且波的传播速度和空间中的变化率以及时间上的变化率密切相关。</p>
+<p>波动方程的一维形式，可以写为</p>
+<div class="math display">
+\frac{\partial^2 A}{\partial x^2} = \frac{1}{v^2} \frac{\partial^2 A}{\partial t^2}
+</div>
+
+<p>其中 <span class="math inline">A(x, t)</span> 是波的位移或振幅，<span class="math inline">v</span> 是波速。</p>
+<h3 id="_21">电磁场波动方程</h3>
+<p>电磁波的波动方程可以从麦克斯韦方程组推导出来。在自由空间（即没有电荷和电流的区域）中，电场和磁场满足以下波动方程：</p>
+<div class="math display">
+\nabla^2 \mathbf{E} - \mu_0 \epsilon_0 \frac{\partial^2 \mathbf{E}}{\partial t^2} = 0
+</div>
+
+<div class="math display">
+\nabla^2 \mathbf{B} - \mu_0 \epsilon_0 \frac{\partial^2 \mathbf{B}}{\partial t^2} = 0
+</div>
+
+<blockquote>
+<p>由于当时试验已经测出 <span class="math inline">\frac{1}{\sqrt{\mu_0 \epsilon_0}}</span> 的值 与当时光速测量值很接近。使得麦克斯韦猜测光也是电磁波的一种形式。</p>
+</blockquote>
+<ul>
+<li><span class="math inline">\mathbf{E}(\mathbf{r}, t)</span> 表示电场强度矢量，依赖于位置 <span class="math inline">\mathbf{r}</span> 和时间 <span class="math inline">t</span>。</li>
+<li><span class="math inline">\mathbf{B}(\mathbf{r}, t)</span> 表示磁场强度矢量，依赖于位置 <span class="math inline">\mathbf{r}</span> 和时间 <span class="math inline">t</span>。</li>
+<li><span class="math inline">\mu_0</span> 是真空磁导率，<span class="math inline">\epsilon_0</span> 是真空介电常数。</li>
+<li><span class="math inline">c = \frac{1}{\sqrt{\mu_0 \epsilon_0}}</span> 是电磁波在真空中的传播速度，即光速。</li>
+</ul>
+<h3 id="_22">电磁波验证</h3>
+<p>在1887年至1888年间，赫兹（Heinrich Hertz）通过一系列巧妙的实验成功地产生和探测到了电磁波。验证了麦克斯韦的理论，并证明了电磁波确实可以在空间中传播。</p>
+<div class="mermaid">
+graph TD
+    subgraph 发射器
+        A1[高压电源] 
+        A2[电火花间隙]
+        A3[振荡电路]
+    end
+
+    A1 --> A2
+    A2 --> A3
+    A3 -->|发射电磁波| B((电磁波))
+
+    B -->|电磁波传播| C[接收器]
+
+    subgraph 接收器
+        C1[金属环] 
+        C2[火花间隙]
+    end
+
+    C1 --> C2
+    C2 -->|产生微小火花| D[观察火花]
+
+    style A1 fill:#f9f,stroke:#333,stroke-width:2px
+    style A2 fill:#f9f,stroke:#333,stroke-width:2px
+    style A3 fill:#9f9,stroke:#333,stroke-width:2px
+    style B fill:#9f9,stroke:#333,stroke-width:2px
+    style C1 fill:#f99,stroke:#333,stroke-width:2px
+    style C2 fill:#f99,stroke:#333,stroke-width:2px
+    style D fill:#99f,stroke:#333,stroke-width:2px
+</div>
+
+<h2 id="_23">洛伦兹变换下的麦克斯韦方程</h2>
+<blockquote>
+<p>麦克斯韦方程组预言了光速在真空中是恒定的，而伽利略变换假设速度是可以简单相加的。为了解释这个矛盾，物理学家们提出了一个假设，即光是通过一种被称为“以太”（Ether）的介质传播的，类似于声波通过空气传播。</p>
+</blockquote>
+<p>洛伦兹变换最初是由洛伦兹和菲茨杰拉德等人提出的，他们试图将其作为一种数学修正工具来调和以太假设与光速恒定原则。洛伦兹设想，光是通过某种假设的介质——“以太”传播的，物体相对于以太的运动会导致时间和空间的变化（如“时间膨胀”和“长度收缩”）。</p>
+<p>但是1887年迈克尔逊-莫雷实验（Michelson-Morley Experiment）通过测量光速在不同方向上的差异，未能发现以太风的存在，这表明光速在不同方向上没有变化，强烈暗示了以太假说的错误。这一结果动摇了经典物理学对以太的信仰，并为爱因斯坦的狭义相对论铺平了道路。</p>
+<p>为了解释麦克斯韦方程与实验结果的矛盾，爱因斯坦提出了狭义相对论。狭义相对论赋予了洛伦兹变换新的物理意义，使其成为描述时空结构的核心工具，而不再依赖于“以太”假设。</p>
+<h3 id="_24">洛伦兹变换</h3>
+<blockquote>
+<p>洛伦兹变换在最初的提出是为了调和光速恒定与经典力学中的“以太”假说而引入的一种数学工具，尽管在某种程度上可以理解为是“硬凑出来”的，但最终被证明是时空的基本特性。</p>
+</blockquote>
+<h4 id="_25">空间和时间坐标变换</h4>
+<div class="math display">
+t' = \gamma \left( t - \frac{v x}{c^2} \right)
+
+\\
+
+x' = \gamma (x - v t)
+
+\\
+
+y' = y
+
+\\
+
+z' = z
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">\gamma = \frac{1}{\sqrt{1 - \frac{v^2}{c^2}}}</span> 是洛伦兹因子，</li>
+<li><span class="math inline">v</span> 是两个参考系之间的相对速度，</li>
+<li><span class="math inline">c</span> 是光速，</li>
+<li><span class="math inline">t</span>, <span class="math inline">t'</span> 表示两个不同参考系中的时间，</li>
+<li><span class="math inline">x</span>, <span class="math inline">x'</span>, <span class="math inline">y</span>, <span class="math inline">y'</span>, <span class="math inline">z</span>, <span class="math inline">z'</span> 表示两个不同参考系中的空间坐标。</li>
+</ul>
+<h4 id="_26">速度变换</h4>
+<p>沿 <span class="math inline">x</span> 方向的速度变换公式为：</p>
+<div class="math display">
+u_x' = \frac{u_x - v}{1 - \frac{u_x v}{c^2}}
+</div>
+
+<p>沿 <span class="math inline">y</span> 和 <span class="math inline">z</span> 方向的速度变换公式为：</p>
+<div class="math display">
+u_y' = \frac{u_y}{\gamma \left( 1 - \frac{u_x v}{c^2} \right)}
+
+\\
+
+u_z' = \frac{u_z}{\gamma \left( 1 - \frac{u_x v}{c^2} \right)}
+</div>
+
+<h4 id="_27">洛伦兹变换的矩阵形式</h4>
+<p>洛伦兹变换可以用矩阵表示为：</p>
+<div class="math display">
+x'^\mu = \Lambda^\mu_{\ \nu} x^\nu
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">x^\mu = (ct, x, y, z)</span> 是事件在参考系 <span class="math inline">S</span> 中的四维时空坐标。</li>
+<li><span class="math inline">x'^\mu = (ct', x', y', z')</span> 是事件在参考系 <span class="math inline">S'</span> 中的四维时空坐标。</li>
+</ul>
+<p>对于沿 <span class="math inline">x</span>-轴方向的运动，洛伦兹变换矩阵 <span class="math inline">\Lambda^\mu_{\ \nu}</span> 的形式为：</p>
+<div class="math display">
+\Lambda^\mu_{\ \nu} =
+\begin{pmatrix}
+\gamma & -\gamma \frac{v}{c} & 0 & 0 \\
+-\gamma \frac{v}{c} & \gamma & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1
+\end{pmatrix}
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">\gamma = \frac{1}{\sqrt{1 - \frac{v^2}{c^2}}}</span> 是<strong>洛伦兹因子</strong>。</li>
+<li><span class="math inline">v</span> 是参考系 <span class="math inline">S'</span> 相对于参考系 <span class="math inline">S</span> 的相对速度。</li>
+<li><span class="math inline">c</span> 是光速。</li>
+</ul>
+<p>该矩阵变换描述了两个惯性参考系 <span class="math inline">S</span> 和 <span class="math inline">S'</span> 之间的坐标变换，其中 <span class="math inline">S'</span> 以速度 <span class="math inline">v</span> 沿 <span class="math inline">x</span>-轴相对运动。</p>
+<h3 id="_28">电磁场张量</h3>
+<p>电磁场张量的引入是为了统一描述电场和磁场在不同参考系下的变化，确保它们在洛伦兹变换下保持协变形式。</p>
+<p>在狭义相对论中，电场和磁场并不是完全独立的。在不同的参考系中，电场和磁场会相互混合：一个参考系中的电场在另一个相对运动的参考系中可能会部分表现为磁场，反之亦然。为了在不同参考系中保持麦克斯韦方程组的形式不变，需要引入了电磁场张量。</p>
+<p>电磁场张量 <span class="math inline">F_{\mu\nu}</span> 是一个 <span class="math inline">4 \times 4</span> 的反对称矩阵，它统一描述了电场 <span class="math inline">\mathbf{E}</span> 和磁场 <span class="math inline">\mathbf{B}</span>。在洛伦兹变换下，<span class="math inline">F_{\mu\nu}</span> 的形式保持不变，这意味着电磁场的描述在所有惯性参考系中都是一致的。</p>
+<p>张量 <span class="math inline">F_{\mu\nu}</span> 的具体形式为：</p>
+<div class="math display">
+F_{\mu\nu} =
+\begin{pmatrix}
+0 & -E_x/c & -E_y/c & -E_z/c \\
+E_x/c & 0 & B_z & -B_y \\
+E_y/c & -B_z & 0 & B_x \\
+E_z/c & B_y & -B_x & 0
+\end{pmatrix}
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">E_x, E_y, E_z</span> 是电场 <span class="math inline">\mathbf{E}</span> 的分量。</li>
+<li><span class="math inline">B_x, B_y, B_z</span> 是磁场 <span class="math inline">\mathbf{B}</span> 的分量。</li>
+<li><span class="math inline">c</span> 是光速。</li>
+</ul>
+<p>这个张量是反对称的，即 <span class="math inline">F_{\mu\nu} = -F_{\nu\mu}</span>，因此它只有 6 个独立的分量，分别对应于电场和磁场的 3 个分量。</p>
+<h3 id="_29">协变形式的麦克斯韦方程</h3>
+<p>通过引入电磁场张量，麦克斯韦方程组可以简洁地写成协变形式。这种表示方式不仅大大简化了麦克斯韦方程的表达，还确保了它们在不同参考系中的形式不变（即协变性），揭示了电磁学与狭义相对论的深刻联系。</p>
+<h4 id="_30">方程一</h4>
+<p>这一方程是麦克斯韦方程组中的高斯定律和安培-麦克斯韦定律的协变形式。它说明了电荷和电流是电磁场的源，并且在不同参考系中，这一关系保持不变。</p>
+<div class="math display">
+\partial^\mu F_{\mu\nu} = \mu_0 J_\nu
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">\partial^\mu = \left( \frac{\partial}{\partial t}, \nabla \right)</span> 是四维导数。</li>
+<li><span class="math inline">J_\nu</span> 是四维电流密度 <span class="math inline">J^\nu = (\rho c, \mathbf{J})</span>。</li>
+<li><span class="math inline">\mu_0</span> 是真空磁导率。</li>
+</ul>
+<h4 id="_31">方程二</h4>
+<p>这一方程是完全反对称的，并包含了法拉第电磁感应定律和磁场的高斯定律。它表明了磁场和电场的相互关系，以及磁场没有单极子（即磁场的散度为零）。</p>
+<div class="math display">
+\partial_\lambda F_{\mu\nu} + \partial_\mu F_{\nu\lambda} + \partial_\nu F_{\lambda\mu} = 0
+</div>
+
+<h2 id="_32">数学基础？？</h2>
+<p>前面19世纪后期，奥利弗·海维赛（Oliver Heaviside）和乔西亚·威拉德·吉布斯（Josiah Willard Gibbs）发展了矢量分析，并将麦克斯韦的方程简化为我们今天所熟悉的4个矢量形式的方程组。</p>
+<blockquote>
+<p>简单起见，各个公式只考虑笛卡尔坐标系，不列出圆柱坐标系和球坐标系。</p>
+</blockquote>
+<h3 id="_33">散度、旋度、梯度</h3>
+<p>它们是矢量分析（矢量微积分）中的三个重要概念：</p>
+<ul>
+<li><strong>散度（Divergence）</strong>：描述矢量场的“源”或“汇”的强度，表示矢量场从一点“发散”或“汇集”的程度。(矢量 <code>-&gt;</code> 标量)</li>
+<li><strong>旋度（Curl）</strong>：描述矢量场的旋转趋势，表示矢量场在某点附近的旋转性质。（矢量 <code>-&gt;</code> 矢量）</li>
+<li><strong>梯度（Gradient）</strong>：描述标量场在各个方向上的变化率和方向。（标量 <code>-&gt;</code> 矢量）</li>
+</ul>
+<h4 id="divergence">散度（Divergence）</h4>
+<p>散度是描述一个矢量场（<strong>Vector Field</strong>）在某一点的“源”或“汇”的强度。它是一个标量，表示矢量场在该点的发散程度。如果散度为正，这表明在这个点有“源”；散度为负，则表明有“汇”</p>
+<p>对于一个矢量场 <span class="math inline">\mathbf{F}(x, y, z) = (F_x, F_y, F_z)</span>，它的散度表示为：</p>
+<div class="math display">
+\mathbf{div}\, \mathbf{F} = \nabla \cdot \mathbf{F} = \frac{\partial F_x}{\partial x} + \frac{\partial F_y}{\partial y} + \frac{\partial F_z}{\partial z}
+</div>
+
+<blockquote>
+<p>电场的散度与电荷密度直接相关（即高斯定律）。在流体力学中，流体的速度场的散度如果为零，意味着流体是不可压缩的（没有净流出或流入）。</p>
+</blockquote>
+<h4 id="curl">旋度（Curl）</h4>
+<p>旋度描述一个矢量场在某一点的旋转程度或旋转趋势。它是一个矢量，表示矢量场的局部旋转。如果旋度为零，说明矢量场在该点没有旋转（例如静止或线性流动）；如果非零，说明有旋转或涡流。</p>
+<p>对于一个矢量场 <span class="math inline">\mathbf{F}(x, y, z) = (F_x, F_y, F_z)</span>，它的旋度表示为：</p>
+<div class="math display">
+\mathbf{curl}\, \mathbf{F} = \nabla \times \mathbf{F} = \left( \frac{\partial F_z}{\partial y} - \frac{\partial F_y}{\partial z}, \frac{\partial F_x}{\partial z} - \frac{\partial F_z}{\partial x}, \frac{\partial F_y}{\partial x} - \frac{\partial F_x}{\partial y} \right)
+</div>
+
+<blockquote>
+<p>磁场的旋度与电流密度及时间变化的电场有关（即安培-麦克斯韦定律）。在流体力学中，流体速度场的旋度为零表示流体没有旋转或涡流。</p>
+</blockquote>
+<h4 id="gradient">梯度（Gradient）</h4>
+<p>梯度是一个标量场（<strong>Scalar Field</strong>）变化最快的方向和变化率。它将标量场转换为矢量场。它的方向是标量场增加最快的方向，大小则是变化的速率。</p>
+<p>对于一个标量场 <span class="math inline">f(x, y, z)</span>，它的梯度是一个矢量场，表示为：</p>
+<div class="math display">
+\mathbf{grad}\, f = \nabla f = \left( \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y}, \frac{\partial f}{\partial z} \right)
+</div>
+
+<blockquote>
+<p>在一个温度场中，温度梯度表示温度升高最快的方向。风通常从高压区吹向低压区，这个方向与气压梯度相反。</p>
+</blockquote>
+<h3 id="_34">几个恒等式</h3>
+<h4 id="_35">梯度的旋度</h4>
+<p>对于任意标量场 <span class="math inline"> \phi </span>，其梯度的旋度为零：</p>
+<div class="math display">
+\nabla \times (\nabla \phi) = \mathbf{0}
+</div>
+
+<h4 id="_36">旋度的散度</h4>
+<p>对于任意向量场 <span class="math inline"> \mathbf{F} </span>，其旋度的散度为零：</p>
+<div class="math display">
+\nabla \cdot (\nabla \times \mathbf{F}) = 0
+</div>
+
+<h4 id="_37">旋度的旋度</h4>
+<p>对于任意向量场 <span class="math inline"> \mathbf{F} </span>，其旋度的旋度可以表示如下：</p>
+<div class="math display">
+\nabla \times (\nabla \times \mathbf{F}) = \nabla(\nabla \cdot \mathbf{F}) - \nabla^2 \mathbf{F}
+</div>
+
+<p>其中，<span class="math inline"> \nabla^2 </span> 是拉普拉斯算子</p>
+<h4 id="_38">梯度的散度（拉普拉斯算子）</h4>
+<p>对于任意标量场 <span class="math inline"> \phi </span>，其梯度的散度称为拉普拉斯算子：</p>
+<div class="math display">
+\nabla \cdot (\nabla \phi) = \nabla^2 \phi
+</div>
+
+<h3 id="_39">散度与面积分，旋度与线积分的关系</h3>
+<p>散度与面积分，以及旋度与线积分之间有着深刻的关系。</p>
+<ul>
+<li><strong>高斯散度定理（Gauss's Divergence Theorem）</strong> ：建立了向量场在一个体积内的散度（体积积分）与向量场通过该体积边界的通量（<strong>Flux</strong>，面积分）之间的关系。。</li>
+<li><strong>斯托克斯定理（Stokes' Theorem）</strong> ：建立了一个向量场在一个曲面边界上的循环（线积分）与该向量场在该曲面上旋度的总量（面积积分）之间的关系。</li>
+</ul>
+<h4 id="_40">散度与面积分：高斯散度定理</h4>
+<p>数学表达：</p>
+<p>设 <span class="math inline">\mathbf{F}</span> 是一个矢量场，<span class="math inline">V</span> 是一个三维空间中的体积，<span class="math inline">S</span> 是包围 <span class="math inline">V</span> 的封闭曲面，那么高斯散度定理表示为：</p>
+<div class="math display">
+\int_V (\nabla \cdot \mathbf{F}) \, dV = \oint_S \mathbf{F} \cdot d\mathbf{A}
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">\nabla \cdot \mathbf{F}</span> 是矢量场 <span class="math inline">\mathbf{F}</span> 的散度。</li>
+<li><span class="math inline">dV</span> 是体积元素。</li>
+<li><span class="math inline">d\mathbf{A}</span> 是封闭曲面 <span class="math inline">S</span> 上的微小面积元素，方向与曲面的外法线一致。</li>
+<li><span class="math inline">\oint_S</span> 表示对封闭曲面 <span class="math inline">S</span> 的面积分。</li>
+</ul>
+<p>物理意义：</p>
+<p>高斯散度定理表明，通过一个封闭曲面的矢量场的总通量等于该曲面包围的体积内的散度的积分。直观地说，散度描述了矢量场在某点“发散”或“汇集”的程度，而通过曲面的通量表示矢量场“穿过”该曲面的流量。</p>
+<blockquote>
+<p>在电场中，高斯定理与高斯定律直接相关：电场的散度与电荷密度成正比，而电场通过一个封闭曲面的通量与封闭曲面内部的净电荷成正比。</p>
+</blockquote>
+<h4 id="_41">旋度与线积分：斯托克斯定理</h4>
+<p>数学表达：</p>
+<p>设 <span class="math inline">\mathbf{F}</span> 是一个矢量场，<span class="math inline">S</span> 是一个具有边界 <span class="math inline">\partial S</span> 的开放曲面，那么斯托克斯定理表示为：</p>
+<div class="math display">
+\oint_{\partial S} \mathbf{F} \cdot d\mathbf{r} = \int_S (\nabla \times \mathbf{F}) \cdot d\mathbf{A}
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">\nabla \times \mathbf{F}</span> 是矢量场 <span class="math inline">\mathbf{F}</span> 的旋度。</li>
+<li><span class="math inline">d\mathbf{r}</span> 是沿闭合曲线 <span class="math inline">\partial S</span> 的微小线段。</li>
+<li><span class="math inline">d\mathbf{A}</span> 是曲面 <span class="math inline">S</span> 上的微小面积元素，方向与曲面的法线一致。</li>
+<li><span class="math inline">\oint_{\partial S}</span> 表示沿闭合曲线 <span class="math inline">\partial S</span> 的线积分。</li>
+</ul>
+<p>物理意义：</p>
+<p>斯托克斯定理表明，沿一个闭合曲线的矢量场的线积分等于该曲线所包围的曲面上旋度的面积分。旋度描述了矢量场在某点附近的旋转趋势，而线积分表示矢量场沿路径的累积作用。</p>
+<blockquote>
+<p>在电磁学中，安培-麦克斯韦定律可以通过斯托克斯定理进行描述，表明磁场的环路积分与电流和电场的变化率相关。在流体力学中，斯托克斯定理与旋度直接相关，描述了流体的环流强度与流体速度场的旋度之间的关系。</p>
+</blockquote>
+<h3 id="tensor">张量（Tensor）</h3>
+<p><strong>张量</strong>是数学和物理学中描述多维数据和线性变换的工具，可以看作是<strong>标量</strong>、<strong>向量</strong>和<strong>矩阵</strong>的推广。</p>
+<p>张量的<strong>阶</strong>（Rank）表示它有多少个下标或上标，也就是它描述了多少个方向。不同阶的张量对应于不同的对象：</p>
+<ul>
+<li><strong>0阶张量</strong>：标量，没有下标。例子：<span class="math inline">5</span>、<span class="math inline">\pi</span> 等。</li>
+<li><strong>1阶张量</strong>：向量，有一个下标。例子：<span class="math inline">\mathbf{v}_i</span>，如位置向量、速度向量等。</li>
+<li><strong>2阶张量</strong>：矩阵，有两个下标。例子：<span class="math inline">A_{ij}</span>，如应力或惯性矩等。</li>
+<li><strong>3阶及以上的张量</strong>：高阶张量，有三个或更多下标。</li>
+</ul>
+<p>张量的分量可以分为<strong>协变分量</strong>（下标）和<strong>逆变分量</strong>（上标）。协变与逆变的区别在于它们在坐标变换下的行为不同：</p>
+<ul>
+<li><strong>协变张量</strong>：分量用下标表示，在坐标变换中按照基向量的反向变换。一个常见的例子是梯度 <span class="math inline">\partial_i</span>。</li>
+<li><strong>逆变张量</strong>：分量用上标表示，在坐标变换中按照基向量的同向变换。向量 <span class="math inline">v^i</span> 是一个逆变张量的例子。</li>
+</ul>
+<p>高阶张量可以同时有协变和逆变分量。例如，<span class="math inline">T_i^j</span> 是一个混合张量，有一个下标和一个上标。</p>
+<p>张量通常使用爱因斯坦求和约定，其中重复的上标和下标表示求和。例如，假设 <span class="math inline">A_{ij}</span> 是一个二阶张量（矩阵），<span class="math inline">v^j</span> 是一个一阶张量（向量），则它们的乘积可以写作：</p>
+<div class="math display">
+u_i = A_{ij} v^j
+</div>
+
+<p>根据爱因斯坦求和约定，上下标相同的 <span class="math inline">j</span> 表示对 <span class="math inline">j</span> 进行求和，这样 <span class="math inline">u_i</span> 也是一个向量。</p>
+<h2 id="_42">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/Maxwell%27s_equations</li>
+<li>https://en.wikipedia.org/wiki/History_of_Maxwell%27s_equations</li>
+<li>https://www.researchgate.net/publication/302966559_Maxwell%27s_Original_Equations</li>
+</ul>
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+</script></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-09-02T20:10:00+08:00" pubdate>Mon 02 September 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/science.html'>Science</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

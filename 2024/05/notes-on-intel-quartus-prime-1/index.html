@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Intel Quartus Prime Lite 小记（一） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/ee.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Intel Quartus Prime Lite 小记（一）</h1>
+    <p class="meta">
+<time datetime="2024-05-12T20:36:00+08:00" pubdate>Sun 12 May 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>接前面<a href="https://blog.debao.me/2024/04/notes-on-fpga/">FGPA小记</a>，试着学习一下FGPA基础知识。Intel提供了免费的Quartus Prime Lite版本，不妨从它开始。Quartus Prime 是 Quartus II的后续产品，首次发布于2015年，紧随Intel收购Altera之后。</p>
+</blockquote>
+<h2 id="_1">从哪儿开始</h2>
+<blockquote>
+<p>本文内容使用 Quartus Prime Lite 23.1 进行测试，从Quaruts的GUI操作开始，看看其后台是如何工作的</p>
+</blockquote>
+<p><img alt="light controller circuit" src="https://blog.debao.me/images/ee/fpga-light-controller.png"></p>
+<p>不妨，先从一个最简单的Verilog程序开始</p>
+<h3 id="_2">一步一步操作看看</h3>
+<ul>
+<li>创建工程：.qpf/.qsf</li>
+<li>添加源码文件：.v</li>
+<li>编译：生成 .sof</li>
+<li>引脚分配：修改.qsf</li>
+<li>再次编译</li>
+<li>编程和配置</li>
+</ul>
+<h4 id="_3">通过向导创建一个空工程</h4>
+<p>会生成2个文件</p>
+<ul>
+<li>mytest1.qpf</li>
+<li>mytest1.qsf</li>
+</ul>
+<p>这两个都是文本文件。</p>
+<p>前者工程文件，只有三行：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>QUARTUS_VERSION = &quot;23.1&quot;
+DATE = &quot;20:59:03  May 11, 2024&quot;
+
+<span class="gh">#</span> Revisions
+PROJECT_REVISION = &quot;mytest1&quot;
+</code></pre></div></td></tr></table></div>
+
+<p>后者是设置文件。包含使用的FPGA芯片，顶层入口名<code>TOP_LEVEL_ENTITY</code>，以及要支持的第三方EDA软件等：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">FAMILY</span><span class="w"> </span><span class="s2">&quot;Cyclone IV GX&quot;</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">DEVICE</span><span class="w"> </span><span class="n">AUTO</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">TOP_LEVEL_ENTITY</span><span class="w"> </span><span class="n">mytest1</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">ORIGINAL_QUARTUS_VERSION</span><span class="w"> </span><span class="mf">23.1</span><span class="n">STD</span><span class="o">.</span><span class="mi">0</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">PROJECT_CREATION_TIME_DATE</span><span class="w"> </span><span class="s2">&quot;20:59:03  MAY 11, 2024&quot;</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">LAST_QUARTUS_VERSION</span><span class="w"> </span><span class="s2">&quot;23.1std.0 Lite Edition&quot;</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">PROJECT_OUTPUT_DIRECTORY</span><span class="w"> </span><span class="n">output_files</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">EDA_GENERATE_FUNCTIONAL_NETLIST</span><span class="w"> </span><span class="n">OFF</span><span class="w"> </span><span class="o">-</span><span class="n">section_id</span><span class="w"> </span><span class="n">eda_board_design_timing</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">EDA_GENERATE_FUNCTIONAL_NETLIST</span><span class="w"> </span><span class="n">OFF</span><span class="w"> </span><span class="o">-</span><span class="n">section_id</span><span class="w"> </span><span class="n">eda_board_design_symbol</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">EDA_GENERATE_FUNCTIONAL_NETLIST</span><span class="w"> </span><span class="n">OFF</span><span class="w"> </span><span class="o">-</span><span class="n">section_id</span><span class="w"> </span><span class="n">eda_board_design_signal_integrity</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">EDA_GENERATE_FUNCTIONAL_NETLIST</span><span class="w"> </span><span class="n">OFF</span><span class="w"> </span><span class="o">-</span><span class="n">section_id</span><span class="w"> </span><span class="n">eda_board_design_boundary_scan</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_4">添加设计输入文件</h4>
+<p>添加一个verilog文件，mytest1.v，内容如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">module</span><span class="w"> </span><span class="n">mytest1</span><span class="w"> </span><span class="p">(</span><span class="k">input</span><span class="w"> </span><span class="kt">wire</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="k">input</span><span class="w"> </span><span class="kt">wire</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="k">output</span><span class="w"> </span><span class="kt">wire</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
+<span class="w">    </span><span class="k">assign</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">x1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">x2</span><span class="p">)</span><span class="o">|</span><span class="p">(</span><span class="o">~</span><span class="n">x1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">x2</span><span class="p">);</span>
+<span class="k">endmodule</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意，网上很多资料中，模块定义都是采用如下（标准化之前的 Verilog-95 风格）的写法，信号类型<code>wire</code>可以省略：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">module</span><span class="w"> </span><span class="n">mytest1</span><span class="w"> </span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">;</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="n">f</span><span class="p">;</span>
+<span class="w">    </span><span class="k">assign</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">x1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">x2</span><span class="p">)</span><span class="o">|</span><span class="p">(</span><span class="o">~</span><span class="n">x1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">x2</span><span class="p">);</span>
+<span class="k">endmodule</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意：这个模块名要和qsf配置文件中<code>TOP_LEVEL_ENTITY</code>设置的一样！（类似于C中的入口函数）</p>
+</blockquote>
+<p>加入工程之后，qsf文件中多了如下一行：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">VERILOG_FILE</span><span class="w"> </span><span class="n">mytest1</span><span class="p">.</span><span class="n">v</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_5">执行编译</h4>
+<p>直接点击菜单中的开始编译。后台会执行如下命令：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>quartus_map<span class="w"> </span>--read_settings_files<span class="o">=</span>on<span class="w"> </span>--write_settings_files<span class="o">=</span>off<span class="w"> </span>mytest1<span class="w"> </span>-c<span class="w"> </span>mytest1
+quartus_fit<span class="w"> </span>--read_settings_files<span class="o">=</span>off<span class="w"> </span>--write_settings_files<span class="o">=</span>off<span class="w"> </span>mytest1<span class="w"> </span>-c<span class="w"> </span>mytest1
+quartus_asm<span class="w"> </span>--read_settings_files<span class="o">=</span>off<span class="w"> </span>--write_settings_files<span class="o">=</span>off<span class="w"> </span>mytest1<span class="w"> </span>-c<span class="w"> </span>mytest1
+quartus_sta<span class="w"> </span>mytest1<span class="w"> </span>-c<span class="w"> </span>mytest1
+</code></pre></div></td></tr></table></div>
+
+<p>命令介绍：</p>
+<ul>
+<li>map：映射(mapping)，将源代码（Verilog或VHDL）转换成某种内部表示。</li>
+<li>fit：适配(fitting)，根据目标FPGA设备的资源和约束来优化和防止设置逻辑</li>
+<li>asm：汇编，将适配阶段生成的数据转换成可用于FPGA的二进制文件</li>
+<li>sta：静态时序仿真（static timng analysis）,检查时钟速度、延迟等是否满足设计要求。</li>
+</ul>
+<p>选项介绍：</p>
+<ul>
+<li><code>--read_settings_files=on</code>读取qsf配置文件，比如用到里面的<code>TOP_LEVEL_ENTITY</code></li>
+<li><code>--write_settings_files=off</code>不写入qsf配置文件，避免配置文件被修改</li>
+<li><code>xxxxx</code>：项目名称或顶层文件名</li>
+<li><code>-c xxxxx</code>：指定配置文件名</li>
+</ul>
+<p>编译结果：</p>
+<ul>
+<li>产生 <code>db</code>、<code>incremental_db</code>、<code>output_files</code> 三个目录</li>
+<li>在<code>output_files</code>中生成：mytst1.<strong>sof</strong> 文件！！</li>
+</ul>
+<h4 id="pin-assignment">引脚分配（Pin Assignment)</h4>
+<p>在上面的编译过程中，我们没有分配引脚，Quartus会自动选择了引脚。引脚指定通过菜单<code>Assignments-&gt;Assignment Editor</code>或<code>Assignments-&gt;Pin Planner</code>。</p>
+<p>指定结果存在qsf配置文件中</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">FAMILY</span><span class="w"> </span><span class="s2">&quot;Cyclone IV GX&quot;</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">DEVICE</span><span class="w"> </span><span class="n">EP4CGX15BF14A7</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">TOP_LEVEL_ENTITY</span><span class="w"> </span><span class="n">mytest1</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">ORIGINAL_QUARTUS_VERSION</span><span class="w"> </span><span class="mf">23.1</span><span class="n">STD</span><span class="o">.</span><span class="mi">0</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">PROJECT_CREATION_TIME_DATE</span><span class="w"> </span><span class="s2">&quot;08:59:03  MAY 11, 2024&quot;</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">LAST_QUARTUS_VERSION</span><span class="w"> </span><span class="s2">&quot;23.1std.0 Lite Edition&quot;</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">PROJECT_OUTPUT_DIRECTORY</span><span class="w"> </span><span class="n">output_files</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">EDA_GENERATE_FUNCTIONAL_NETLIST</span><span class="w"> </span><span class="n">OFF</span><span class="w"> </span><span class="o">-</span><span class="n">section_id</span><span class="w"> </span><span class="n">eda_board_design_timing</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">EDA_GENERATE_FUNCTIONAL_NETLIST</span><span class="w"> </span><span class="n">OFF</span><span class="w"> </span><span class="o">-</span><span class="n">section_id</span><span class="w"> </span><span class="n">eda_board_design_symbol</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">EDA_GENERATE_FUNCTIONAL_NETLIST</span><span class="w"> </span><span class="n">OFF</span><span class="w"> </span><span class="o">-</span><span class="n">section_id</span><span class="w"> </span><span class="n">eda_board_design_signal_integrity</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">EDA_GENERATE_FUNCTIONAL_NETLIST</span><span class="w"> </span><span class="n">OFF</span><span class="w"> </span><span class="o">-</span><span class="n">section_id</span><span class="w"> </span><span class="n">eda_board_design_boundary_scan</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">VERILOG_FILE</span><span class="w"> </span><span class="n">mytest1</span><span class="o">.</span><span class="n">v</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">PARTITION_NETLIST_TYPE</span><span class="w"> </span><span class="n">SOURCE</span><span class="w"> </span><span class="o">-</span><span class="n">section_id</span><span class="w"> </span><span class="n">Top</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">PARTITION_FITTER_PRESERVATION_LEVEL</span><span class="w"> </span><span class="n">PLACEMENT_AND_ROUTING</span><span class="w"> </span><span class="o">-</span><span class="n">section_id</span><span class="w"> </span><span class="n">Top</span>
+<span class="n">set_global_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">PARTITION_COLOR</span><span class="w"> </span><span class="mi">16764057</span><span class="w"> </span><span class="o">-</span><span class="n">section_id</span><span class="w"> </span><span class="n">Top</span>
+<span class="n">set_location_assignment</span><span class="w"> </span><span class="n">PIN_A8</span><span class="w"> </span><span class="o">-</span><span class="n">to</span><span class="w"> </span><span class="n">f</span>
+<span class="n">set_location_assignment</span><span class="w"> </span><span class="n">PIN_A6</span><span class="w"> </span><span class="o">-</span><span class="n">to</span><span class="w"> </span><span class="n">x1</span>
+<span class="n">set_location_assignment</span><span class="w"> </span><span class="n">PIN_A7</span><span class="w"> </span><span class="o">-</span><span class="n">to</span><span class="w"> </span><span class="n">x2</span>
+<span class="n">set_instance_assignment</span><span class="w"> </span><span class="o">-</span><span class="n">name</span><span class="w"> </span><span class="n">PARTITION_HIERARCHY</span><span class="w"> </span><span class="n">root_partition</span><span class="w"> </span><span class="o">-</span><span class="n">to</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="n">section_id</span><span class="w"> </span><span class="n">Top</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意看其中<code>set_location_assignment</code>那几行。</p>
+<blockquote>
+<p>为了指定引脚，我们DEVICE也不能选择AUTO，注意对比<code>set_global_assignment -name DEVI</code>那一行。</p>
+</blockquote>
+<h4 id="_6">综合后结果查看</h4>
+<p>通过<code>Tools-&gt;NetList Viewers-&gt;RTL Viewer</code>，可以查看综合后结果：</p>
+<p><img alt="quartus-tools-rtlviewer" src="https://blog.debao.me/images/fpga/quartus-tools-rtlviewer.png"></p>
+<h4 id="programming-and-configuring">编程和配置（Programming and Configuring）</h4>
+<p>编译后的结果可以通过<code>USB-Blaster</code>烧写器配置到FPGA中。使用Quartus中的Programming工具。</p>
+<h3 id="tcl">为工程生成Tcl文件</h3>
+<p>通过 <code>Project-&gt;Generate Tcl file for Project...</code> 可以生成如下一个tcl文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c"># Load Quartus Prime Tcl Project package</span>
+<span class="nb">package</span><span class="w"> </span>require<span class="w"> </span><span class="o">::</span>quartus::project
+
+<span class="k">set</span><span class="w"> </span>need_to_close_project<span class="w"> </span><span class="mi">0</span>
+<span class="k">set</span><span class="w"> </span>make_assignments<span class="w"> </span><span class="mi">1</span>
+
+<span class="c"># Check that the right project is open</span>
+<span class="k">if</span><span class="w"> </span><span class="k">{[</span><span class="nv">is_project_open</span><span class="k">]}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">{[</span><span class="nb">string</span><span class="w"> </span>compare<span class="w"> </span><span class="nv">$quartus</span><span class="k">(</span><span class="nv">project</span><span class="k">)</span><span class="w"> </span><span class="s2">&quot;mytest1&quot;</span><span class="k">]}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Project mytest1 is not open&quot;</span>
+<span class="w">        </span><span class="k">set</span><span class="w"> </span>make_assignments<span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="k">}</span>
+<span class="k">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="c"># Only open if not already open</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">{[</span><span class="nv">project_exists</span><span class="w"> </span>mytest1<span class="k">]}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">        </span><span class="nv">project_open</span><span class="w"> </span><span class="o">-</span>revision<span class="w"> </span>mytest1<span class="w"> </span>mytest1
+<span class="w">    </span><span class="k">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">{</span>
+<span class="w">        </span><span class="nv">project_new</span><span class="w"> </span><span class="o">-</span>revision<span class="w"> </span>mytest1<span class="w"> </span>mytest1
+<span class="w">    </span><span class="k">}</span>
+<span class="w">    </span><span class="k">set</span><span class="w"> </span>need_to_close_project<span class="w"> </span><span class="mi">1</span>
+<span class="k">}</span>
+
+<span class="c"># Make assignments</span>
+<span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="nv">$make_assignments</span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>FAMILY<span class="w"> </span><span class="s2">&quot;Cyclone IV GX&quot;</span>
+<span class="w">    </span><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>DEVICE<span class="w"> </span>EP4CGX15BF14A7
+<span class="w">    </span><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>ORIGINAL_QUARTUS_VERSION<span class="w"> </span><span class="mf">23.1</span>STD.0
+<span class="w">    </span><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>PROJECT_CREATION_TIME_DATE<span class="w"> </span><span class="s2">&quot;20:59:03  MAY 11, 2024&quot;</span>
+<span class="w">    </span><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>LAST_QUARTUS_VERSION<span class="w"> </span><span class="s2">&quot;23.1std.0 Lite Edition&quot;</span>
+<span class="w">    </span><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>PROJECT_OUTPUT_DIRECTORY<span class="w"> </span>output_files
+<span class="w">    </span><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_GENERATE_FUNCTIONAL_NETLIST<span class="w"> </span>OFF<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_board_design_timing
+<span class="w">    </span><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_GENERATE_FUNCTIONAL_NETLIST<span class="w"> </span>OFF<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_board_design_symbol
+<span class="w">    </span><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_GENERATE_FUNCTIONAL_NETLIST<span class="w"> </span>OFF<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_board_design_signal_integrity
+<span class="w">    </span><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>EDA_GENERATE_FUNCTIONAL_NETLIST<span class="w"> </span>OFF<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>eda_board_design_boundary_scan
+<span class="w">    </span><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>VERILOG_FILE<span class="w"> </span>mytest1.v
+<span class="w">    </span><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>PARTITION_NETLIST_TYPE<span class="w"> </span>SOURCE<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>Top
+<span class="w">    </span><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>PARTITION_FITTER_PRESERVATION_LEVEL<span class="w"> </span>PLACEMENT_AND_ROUTING<span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>Top
+<span class="w">    </span><span class="nv">set_global_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>PARTITION_COLOR<span class="w"> </span><span class="mi">16764057</span><span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>Top
+<span class="w">    </span><span class="nv">set_location_assignment</span><span class="w"> </span>PIN_A8<span class="w"> </span><span class="o">-</span>to<span class="w"> </span>f
+<span class="w">    </span><span class="nv">set_location_assignment</span><span class="w"> </span>PIN_A6<span class="w"> </span><span class="o">-</span>to<span class="w"> </span>x1
+<span class="w">    </span><span class="nv">set_location_assignment</span><span class="w"> </span>PIN_A7<span class="w"> </span><span class="o">-</span>to<span class="w"> </span>x2
+<span class="w">    </span><span class="nv">set_instance_assignment</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>PARTITION_HIERARCHY<span class="w"> </span>root_partition<span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span>section_id<span class="w"> </span>Top
+
+<span class="w">    </span><span class="c"># Commit assignments</span>
+<span class="w">    </span><span class="nv">export_assignments</span>
+
+<span class="w">    </span><span class="c"># Close project</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="nv">$need_to_close_project</span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">        </span><span class="nv">project_close</span>
+<span class="w">    </span><span class="k">}</span>
+<span class="k">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>除了可以再Quartus Prime 界面中执行这个脚本。还可以直接在命令行下面执行</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>quartus_sh.exe -t mytest1.tcl
+</code></pre></div></td></tr></table></div>
+
+<p>其实，我们只需要保留这个.tcl文件和.v文件就够了。项目文件可以由这个脚本自动生成。</p>
+<h3 id="qar">归档文件 .qar</h3>
+<blockquote>
+<p>.qar 文件是为了在 Quartus Prime 内部使用而设计的，<strong>不同于通用压缩格式</strong> 如 zip 或 rar，因此需要通过 Quartus Prime 软件来创建和解压。</p>
+</blockquote>
+<p>它弹出的对话框，对我们理解文件类别会有帮助</p>
+<h4 id="qar_1">创建 .qar 文件：</h4>
+<p>在 Quartus Prime 中，可以通过项目菜单选择“Archive Project”（归档项目）来创建 .qar 文件。这将打开一个对话框，允许用户选择要包括在归档中的特定文件和设置。</p>
+<h4 id="qar_2">还原 .qar 文件：</h4>
+<p>要还原 .qar 文件，只需在 Quartus Prime 中选择“File”（文件）菜单下的“Open Project”（打开项目），然后选择 .qar 文件。Quartus 将解压缩归档并还原项目的所有内容。</p>
+<h3 id="_7">配置文件（烧写文件）</h3>
+<p>前面编译的结果是 .sof文件，这个文件通常调试，正式发布的话，一般需要转成.pof文件或.jic文件</p>
+<ul>
+<li>.sof 文件（SRAM Object File）：这是一个二进制文件，包含 FPGA 的配置数据，通常在开发阶段用于直接通过 JTAG 或其他接口将配置下载到 FPGA 的 SRAM。</li>
+</ul>
+<ul>
+<li>.pof 文件（Programmer Object File）：这是一个用于永久编程 FPGA 或 CPLD 的二进制文件，适用于需要将配置数据永久存储在设备中的情况。</li>
+</ul>
+<ul>
+<li>.jic文件（JTAG Indirect Configuration File）：这个文件用于定义通过 JTAG 间接配置 FPGA 时所需的数据和参数。</li>
+</ul>
+<p>通过 Quartus Prime菜单<code>File-&gt;Convert Programming Files...</code> 可以调出这个转换页面。</p>
+<h2 id="_8">一些表格</h2>
+<h3 id="_9">文件后缀</h3>
+<p>通过<code>File -&gt; Open</code>菜单，可以看到它支持如下众多的文件类型：</p>
+<table>
+<thead>
+<tr>
+<th>类别名称</th>
+<th>文件后缀</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Design Files</strong></td>
+<td>.tdf <em>.vhd </em>.vhdl <em>.v </em>.vlg <em>.verilog </em>.sv <em>.vqm </em>.edf <em>.edif </em>.edn <em>.cpp </em>.mdl <em>.h </em>.gdf <em>.bdf </em>.qip <em>.qdb </em>.cmp <em>.qxp </em>.smf <em>.qsys </em>.ip</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Project Files</strong></td>
+<td>*.qpf</td>
+<td></td>
+</tr>
+<tr>
+<td>Quartus Prime Archive Files</td>
+<td>*.gar</td>
+<td></td>
+</tr>
+<tr>
+<td>Quartus Prime Design Template Files</td>
+<td>*.par</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Other Source Files</strong></td>
+<td><em>.inc </em>.v <em>.vlg </em>.vh <em>.verilog </em>.pkg <em>.bsf </em>.sym <em>.stp </em>.lai <em>.mif </em>.hex <em>.lmf </em>.dpf *.ipx</td>
+<td></td>
+</tr>
+<tr>
+<td>Graphic Files</td>
+<td><em>.gdf </em>.bdf <em>.bsf </em>.sym</td>
+<td></td>
+</tr>
+<tr>
+<td>Signal Tap Logic Analyzer Files</td>
+<td>*.stp</td>
+<td></td>
+</tr>
+<tr>
+<td>IP Variation Files</td>
+<td><em>.gip </em>.qsys <em>.sip </em>.ip</td>
+<td></td>
+</tr>
+<tr>
+<td>Logic Analyzer Interface Files</td>
+<td>*.lai</td>
+<td></td>
+</tr>
+<tr>
+<td>In-System Sources and Probes Files</td>
+<td>*.spf</td>
+<td></td>
+</tr>
+<tr>
+<td>State Machine Editor Files</td>
+<td>*.smf</td>
+<td></td>
+</tr>
+<tr>
+<td>Test Bench Output Files</td>
+<td><em>.wht </em>.vt</td>
+<td></td>
+</tr>
+<tr>
+<td>Memory Files</td>
+<td><em>.mif </em>.hex</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Programming Files</strong></td>
+<td><em>.cdf </em>.sof <em>.pof </em>.jam <em>.jbc </em>.jic <em>.jcf </em>.fcf</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Script Files</strong></td>
+<td><em>.tcl </em>.sdc <em>.pdc </em>.gip *.sip</td>
+<td></td>
+</tr>
+<tr>
+<td>HTML/Text-format Report Files</td>
+<td><em>.rpt </em>.csfrpt <em>.sim.rpt </em>.pao <em>.summary </em>.htm <em>.html </em>.csfhtm <em>.csfhtml </em>.sim.htm *.sim.html</td>
+<td></td>
+</tr>
+<tr>
+<td>Output Files</td>
+<td><em>.qmsg </em>.vo <em>.who </em>.tdo <em>.sdo </em>.tao *.pin</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>手册中的表格对后缀解释更详细：</p>
+<table>
+<thead>
+<tr>
+<th>文件类型</th>
+<th>扩展名</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AHDL Include File</td>
+<td>.inc</td>
+<td></td>
+</tr>
+<tr>
+<td>ATOM Netlist File</td>
+<td>.atm</td>
+<td></td>
+</tr>
+<tr>
+<td>Block Design File</td>
+<td>.bdf</td>
+<td></td>
+</tr>
+<tr>
+<td>Block Symbol File</td>
+<td>.bsf</td>
+<td></td>
+</tr>
+<tr>
+<td>BSDL file</td>
+<td>.bsd</td>
+<td></td>
+</tr>
+<tr>
+<td>Chain Description File</td>
+<td>.cdf</td>
+<td></td>
+</tr>
+<tr>
+<td>Comma-Separated Value File</td>
+<td>.csv</td>
+<td></td>
+</tr>
+<tr>
+<td>Component Declaration File</td>
+<td>.cmp</td>
+<td></td>
+</tr>
+<tr>
+<td>Component Description File</td>
+<td>_hw.tcl</td>
+<td></td>
+</tr>
+<tr>
+<td>Compressed Vector Waveform File</td>
+<td>.cvwf</td>
+<td></td>
+</tr>
+<tr>
+<td>Conversion Setup File</td>
+<td>.cof</td>
+<td></td>
+</tr>
+<tr>
+<td>Cross-Reference File</td>
+<td>.xrf</td>
+<td></td>
+</tr>
+<tr>
+<td>database files</td>
+<td>.cdb, .hdb, .rdb, .tdb</td>
+<td></td>
+</tr>
+<tr>
+<td>Design Protocol File</td>
+<td>.dpf</td>
+<td></td>
+</tr>
+<tr>
+<td>Graphic Design File</td>
+<td>.gdf</td>
+<td></td>
+</tr>
+<tr>
+<td>Hexadecimal (Intel-Format) File</td>
+<td>.hex</td>
+<td></td>
+</tr>
+<tr>
+<td>Hexadecimal (Intel-Format) Output File</td>
+<td>.hexout</td>
+<td></td>
+</tr>
+<tr>
+<td>HSPICE Simulation Deck File</td>
+<td>.sp</td>
+<td></td>
+</tr>
+<tr>
+<td>HTML-Format Report File</td>
+<td>.htm</td>
+<td></td>
+</tr>
+<tr>
+<td>I/O Pin State File</td>
+<td>.ips</td>
+<td></td>
+</tr>
+<tr>
+<td>IBIS Output File</td>
+<td>.ibs</td>
+<td></td>
+</tr>
+<tr>
+<td>In System Configuration File</td>
+<td>.isc</td>
+<td></td>
+</tr>
+<tr>
+<td>IP Index File</td>
+<td>.ipx</td>
+<td></td>
+</tr>
+<tr>
+<td>Jam Byte Code File</td>
+<td>.jbc</td>
+<td></td>
+</tr>
+<tr>
+<td>Jam File</td>
+<td>.jam</td>
+<td></td>
+</tr>
+<tr>
+<td>JTAG Debugging Information File</td>
+<td>.jdi</td>
+<td></td>
+</tr>
+<tr>
+<td>JTAG Indirect Configuration File</td>
+<td>.jic</td>
+<td></td>
+</tr>
+<tr>
+<td>Library Mapping File</td>
+<td>.lmf</td>
+<td></td>
+</tr>
+<tr>
+<td>License File</td>
+<td>license.dat</td>
+<td></td>
+</tr>
+<tr>
+<td>Logic Analyzer Interface File</td>
+<td>.lai</td>
+<td></td>
+</tr>
+<tr>
+<td>Memory Initialization File</td>
+<td>.mif</td>
+<td></td>
+</tr>
+<tr>
+<td>Memory Map File</td>
+<td>.map</td>
+<td></td>
+</tr>
+<tr>
+<td>PartMiner edaXML-Format File</td>
+<td>.xml</td>
+<td></td>
+</tr>
+<tr>
+<td>Pin-Out File</td>
+<td>.pin</td>
+<td></td>
+</tr>
+<tr>
+<td>Pin Planner File</td>
+<td>.ppf</td>
+<td></td>
+</tr>
+<tr>
+<td>Programmer Object File</td>
+<td>.pof</td>
+<td></td>
+</tr>
+<tr>
+<td>Programming files</td>
+<td>.cdf, .cof</td>
+<td></td>
+</tr>
+<tr>
+<td>QMSG File</td>
+<td>.qmsg</td>
+<td></td>
+</tr>
+<tr>
+<td>Intel® Quartus® Prime IP File</td>
+<td>.qip</td>
+<td></td>
+</tr>
+<tr>
+<td>Intel® Quartus® Prime Archive File</td>
+<td>.qar</td>
+<td></td>
+</tr>
+<tr>
+<td>Intel® Quartus® Prime Archive Log File</td>
+<td>.qarlog</td>
+<td></td>
+</tr>
+<tr>
+<td>Quartus User-Defined Device File</td>
+<td>.qud</td>
+<td></td>
+</tr>
+<tr>
+<td>Intel® Quartus® Prime Default Settings File</td>
+<td>.qdf</td>
+<td></td>
+</tr>
+<tr>
+<td>Intel® Quartus® Prime Exported Partition File</td>
+<td>.qxp</td>
+<td></td>
+</tr>
+<tr>
+<td>Intel® Quartus® Prime Message Flag Rule File</td>
+<td>.frf</td>
+<td></td>
+</tr>
+<tr>
+<td>Intel® Quartus® Prime Message Suppression Rule File</td>
+<td>.srf</td>
+<td></td>
+</tr>
+<tr>
+<td>Intel® Quartus® Prime Project File</td>
+<td>.qpf</td>
+<td></td>
+</tr>
+<tr>
+<td>Intel® Quartus® Prime Settings File</td>
+<td>.qsf</td>
+<td></td>
+</tr>
+<tr>
+<td>Intel® Quartus® Prime Workspace File</td>
+<td>.qws</td>
+<td></td>
+</tr>
+<tr>
+<td>Raw Binary File</td>
+<td>.rbf</td>
+<td></td>
+</tr>
+<tr>
+<td>Raw Programming Data File</td>
+<td>.rpd</td>
+<td></td>
+</tr>
+<tr>
+<td>Routing Constraints File</td>
+<td>.rcf</td>
+<td></td>
+</tr>
+<tr>
+<td>Signal Activity File</td>
+<td>.saf</td>
+<td></td>
+</tr>
+<tr>
+<td>Signal Tap File</td>
+<td>.stp</td>
+<td></td>
+</tr>
+<tr>
+<td>Sources and Probes File</td>
+<td>.spf</td>
+<td></td>
+</tr>
+<tr>
+<td>SRAM Object File</td>
+<td>.sof</td>
+<td></td>
+</tr>
+<tr>
+<td>State Machine File</td>
+<td>.smf</td>
+<td></td>
+</tr>
+<tr>
+<td>Symbol File</td>
+<td>.sym</td>
+<td></td>
+</tr>
+<tr>
+<td>Synopsys® Design Constraints File</td>
+<td>.sdc</td>
+<td></td>
+</tr>
+<tr>
+<td>Tab-Separated Value File</td>
+<td>.txt</td>
+<td></td>
+</tr>
+<tr>
+<td>Tabular Text File</td>
+<td>.ttf</td>
+<td></td>
+</tr>
+<tr>
+<td>Tcl Script File</td>
+<td>.tcl</td>
+<td></td>
+</tr>
+<tr>
+<td>Text Design File</td>
+<td>.tdf</td>
+<td></td>
+</tr>
+<tr>
+<td>Text-Format Report File</td>
+<td>.rpt</td>
+<td></td>
+</tr>
+<tr>
+<td>Token File</td>
+<td>ted.tok</td>
+<td></td>
+</tr>
+<tr>
+<td>Vector Table Output File</td>
+<td>.tbl</td>
+<td></td>
+</tr>
+<tr>
+<td>Vector source files</td>
+<td>.tbl, .vwf, .vec</td>
+<td></td>
+</tr>
+<tr>
+<td>Vector Waveform File</td>
+<td>.vwf</td>
+<td></td>
+</tr>
+<tr>
+<td>Verilog Design File</td>
+<td>.v, .vh, .verilog, .vlg</td>
+<td></td>
+</tr>
+<tr>
+<td>Verilog Output File</td>
+<td>.vo</td>
+<td></td>
+</tr>
+<tr>
+<td>Verilog Quartus Mapping File</td>
+<td>.vqm</td>
+<td></td>
+</tr>
+<tr>
+<td>Verilog Test Bench File</td>
+<td>.vt</td>
+<td></td>
+</tr>
+<tr>
+<td>Value Change Dump File</td>
+<td>.vcd</td>
+<td></td>
+</tr>
+<tr>
+<td>Version-compatible database files</td>
+<td>.atm, .hdbx, .rcf, .xml</td>
+<td></td>
+</tr>
+<tr>
+<td>VHDL Design File</td>
+<td>.vhd, .vhdl</td>
+<td></td>
+</tr>
+<tr>
+<td>VHDL Output File</td>
+<td>.vho</td>
+<td></td>
+</tr>
+<tr>
+<td>VHDL Test Bench File</td>
+<td>.vht</td>
+<td></td>
+</tr>
+<tr>
+<td>XML files</td>
+<td>.cof, .stp, .xml</td>
+<td></td>
+</tr>
+<tr>
+<td>Waveform files</td>
+<td>.scf, .stp, .tbl, .vec, .vwf</td>
+<td></td>
+</tr>
+<tr>
+<td>Waveform Settings File</td>
+<td>.wsf</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">补遗：名字变化</h3>
+<p>在Intel收购Altera之后，一些工具和组件的名称发生了变化：</p>
+<table>
+<thead>
+<tr>
+<th>Altera 名称</th>
+<th>Intel® 名称</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qsys</td>
+<td>Platform Designer</td>
+<td>用于设计和配置FPGA内的IP组件和连接的系统集成工具。</td>
+</tr>
+<tr>
+<td>TimeQuest</td>
+<td>Timing Analyzer</td>
+<td>进行时序验证和分析，确保设计满足时序要求的工具。</td>
+</tr>
+<tr>
+<td>EyeQ</td>
+<td>Eye Viewer</td>
+<td>用于分析高速串行通道眼图的模拟工具。</td>
+</tr>
+<tr>
+<td>JNEye</td>
+<td>Advanced Link Analyzer</td>
+<td>高级链路分析工具，适用于复杂的高速数据传输系统设计分析。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_11">参考</h2>
+<ul>
+<li><a href="https://www.intel.com/content/www/us/en/programmable/quartushelp/21.3/index.htm#reference/glossary/def_file_types.htm">Intel® Quartus® Prime Pro Edition Help version 21.3 - file types Definition</a></li>
+<li><a href="https://www.intel.cn/content/www/cn/zh/support/programmable/support-resources/design-guidance/quartus-support.html">英特尔® Quartus® Prime 设计软件支持中心资源 |英特尔 (intel.cn)</a></li>
+<li>https://community.intel.com/t5/Intel-Quartus-Prime-Software/Quartus-version-control-methodology/m-p/1479729</li>
+<li><a href="https://www.intel.com/content/www/us/en/programmable/quartushelp/23.1/index.htm#tafs/tafs/tcl_pkg_project_ver_7.0.htm">Intel® Quartus® Prime Pro Edition Help version 23.1 - ::quartus::project</a></li>
+<li><a href="https://github.com/intel/fpga-partial-reconfig">GitHub - intel/fpga-partial-reconfig: Tutorials, scripts and reference designs for the Intel FPGA partial reconfiguration (PR) design flow</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-05-12T20:36:00+08:00" pubdate>Sun 12 May 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/ee.html'>EE</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a class="category" href="https://blog.debao.me/tags/quartus.html">Quartus</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

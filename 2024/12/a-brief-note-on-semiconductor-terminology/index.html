@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>半导体术语小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/science.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">半导体术语小记</h1>
+    <p class="meta">
+<time datetime="2024-12-02T19:42:00+08:00" pubdate>Mon 02 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>简单梳理一下</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#_1">前道、后道？？ 前段（端）、后段（端）？？</a></li>
+<li><a href="#idm-fablessfoundryosat">IDM 与 Fabless、Foundry、OSAT</a></li>
+<li><a href="#die-chip">Die 与 Chip</a><ul>
+<li><a href="#die-bonding-eutectic-bonding">Die Bonding 与 Eutectic Bonding</a></li>
+</ul>
+</li>
+<li><a href="#ingot">Ingot</a><ul>
+<li><a href="#_2">生产方式</a></li>
+<li><a href="#flat-notch">Flat 与 Notch</a></li>
+</ul>
+</li>
+<li><a href="#_3">换个角度</a><ul>
+<li><a href="#wafer-manufacturing">晶圆制造（Wafer Manufacturing）</a></li>
+<li><a href="#front-end-of-line-feol">前道工艺（Front-End of Line, FEOL）</a></li>
+<li><a href="#middle-end-of-line-meol">中道工艺（Middle-End of Line, MEOL）</a></li>
+<li><a href="#back-end-of-line-beol">后道工艺（Back-End of Line, BEOL）</a></li>
+<li><a href="#wafer-testing">晶圆测试（Wafer Testing）</a></li>
+<li><a href="#packaging-final-testing">封装与测试（Packaging &amp; Final Testing）</a></li>
+</ul>
+</li>
+<li><a href="#_4">其他</a><ul>
+<li><a href="#opc">OPC</a></li>
+<li><a href="#metrology-inspection">Metrology 与 Inspection</a></li>
+<li><a href="#logic-memory-analog">Logic, Memory 与 Analog 芯片</a></li>
+</ul>
+</li>
+<li><a href="#_5">参考</a></li>
+</ul>
+</div>
+<h2 id="_1">前道、后道？？ 前段（端）、后段（端）？？</h2>
+<blockquote>
+<p>这几个术语在中文语境中似乎用的很乱。</p>
+</blockquote>
+<p><img alt="cmos_chip_structure_in2000s" src="https://blog.debao.me/images/science/cmos_chip_structure_in2000s.png"></p>
+<ul>
+<li>【前道工艺】FEOL（Front end of line）：集成电路制造的第一阶段，在半导体基底上会被加工出各种单个元件（如晶体管、电容、电阻等）的图案。通常涵盖从工艺开始到金属互连层沉积之前的所有步骤（不包括金属互连层的沉积）<sup id="fnref:feol"><a class="footnote-ref" href="#fn:feol">1</a></sup><sup id="fnref:usjpc"><a class="footnote-ref" href="#fn:usjpc">3</a></sup></li>
+<li>【后道工艺】BEOL（Back end of line）：集成电路制造的第二阶段，主要在已经完成器件图案化的晶圆上沉积金属互连层（将单个器件（如晶体管、电容、电阻等）互连起来，形成完整的电路）。<sup id="fnref:beol"><a class="footnote-ref" href="#fn:beol">2</a></sup><sup id="fnref2:usjpc"><a class="footnote-ref" href="#fn:usjpc">3</a></sup></li>
+<li>【前端工艺】Front end process：包括FEOL和EBOL。在晶圆厂（fab）的洁净室内完成。</li>
+<li>【后端工艺】Back end process：在EBOL之后，也叫后制造工艺（post-fab），通常不在洁净室内完成，且往往由不同的公司负责。后端工艺包括晶圆测试、晶圆背面研磨、芯片分离、芯片测试、IC封装以及最终测试。<sup id="fnref2:beol"><a class="footnote-ref" href="#fn:beol">2</a></sup></li>
+</ul>
+<p><img alt="pd" src="https://blog.debao.me/images/science/pd_chap1_fig.png"></p>
+<p>图片来源：<a href="https://www.ifte.de/books/pd/index.html"> Fundamentals of Layout Design for Electronic Circuits
+</a></p>
+<ul>
+<li>【中道工艺】MEOL（Middle End of Line）：随着工艺节点的缩小，制造流程变得更加复杂，将FEOL和BEOL中某些工艺独立出来。主要任务是连接 FEOL 阶段中制造完成的器件（如晶体管）与 BEOL 阶段中的金属互连层，为信号传输和电路连接打下基础。</li>
+</ul>
+<h2 id="idm-fablessfoundryosat">IDM 与 Fabless、Foundry、OSAT</h2>
+<ul>
+<li>IDM（Integrated Device Manufacturer）：设计和制造都在公司内部完成。早期的半导体公司（如英特尔、德州仪器）采用该模式</li>
+<li>Fabless：指专注于集成电路设计的公司，不拥有自己的晶圆制造工厂（fab），而是将芯片的制造外包给第三方晶圆代工厂（Foundry）。<sup id="fnref:febless"><a class="footnote-ref" href="#fn:febless">4</a></sup></li>
+<li>Foundry：指专门提供芯片制造服务的公司。拥有自己的晶圆制造工厂，并为Fabless公司提供芯片代工服务。<sup id="fnref:foundry"><a class="footnote-ref" href="#fn:foundry">5</a></sup></li>
+<li>OSAT（Outsourced Semiconductor Assembly and Test）：外包半导体封装与测试服务商。OSAT 公司专门为半导体设计公司（Fabless）和晶圆代工厂（Foundry）提供芯片的封装（Assembly）和测试（Test）服务。</li>
+</ul>
+<ul>
+<li>【流片】Tapeout：指代芯片设计完成后，正式将设计数据（通常是 GDSII 或 OASIS 格式文件）交付给晶圆代工厂（Foundry）进行制造的过程。<sup id="fnref:tapeout"><a class="footnote-ref" href="#fn:tapeout">6</a></sup></li>
+</ul>
+<blockquote>
+<p>由来：在早期，芯片设计完成后，设计文件会被物理记录在磁带（tape）上，然后交付给代工厂。</p>
+</blockquote>
+<h2 id="die-chip">Die 与 Chip</h2>
+<p>在晶圆（Wafer）上制造完成的电路单元称为 Die。将晶圆切割成单个 Die。对 Die 进行封装和测试，成为成品 Chip。</p>
+<ul>
+<li>Die：是芯片的核心部分，通常由晶体管、电阻、电容等组成，完成了设计所需的全部电路功能。它是晶圆（Wafer）制造完成后，通过切割（Dicing）得到的最小功能单元。</li>
+<li>Chip：对 Die 进行封装（Packaging）和测试（Testing）后的最终产品。它还包括引脚（Pins）或焊球（Balls），用于与外部电路（如 PCB）连接。一个Chip中可以封装多个Die。</li>
+</ul>
+<h3 id="die-bonding-eutectic-bonding">Die Bonding 与 Eutectic Bonding</h3>
+<ul>
+<li>【共晶】Eutectic Bonding：一种利用 共晶合金 的熔点特性，将芯片（Die）通过焊料（例如金锡合金）与基板连接的工艺。在这个过程中，共晶材料在特定的温度下熔化并形成牢固的金属结合。</li>
+<li>【固晶】Die Attach, Die Bonding：将芯片（Die）通过非金属粘接材料（如导电银胶或绝缘环氧树脂）固定到封装基板或支架上的工艺。与共晶不同，固晶主要使用胶体而非金属作为粘接材料。</li>
+</ul>
+<blockquote>
+<p>Eutectic  /juːˈtɛktɪk/ 是一个来自希腊语的术语，意为“容易熔化”（希腊语中 eu- 表示“好”或“容易”，tectos 表示“熔化”）。在材料科学和半导体领域，Eutectic 通常翻译为 “共晶”，具体是指一种 多组分合金或混合物，它在某一特定比例下具有最低的熔点，并能以液相直接凝固为固相，而不经历其他中间相的生成。例如，金锡合金（Au-Sn）的共晶点是 280°C。</p>
+</blockquote>
+<h2 id="ingot">Ingot</h2>
+<p><img alt="Ingot from wikipedia" src="https://blog.debao.me/images/science/Monokristalines_Silizium_fur_die_Waferherstellung.jpg"></p>
+<p>Ingot（硅单晶锭） 是通过半导体工艺生产的高纯度硅单晶棒。通常是直拉法或区熔法。上图来自wikipedia<sup id="fnref:cz"><a class="footnote-ref" href="#fn:cz">7</a></sup>。</p>
+<h3 id="_2">生产方式</h3>
+<ul>
+<li><strong>直拉法（Czochralski, CZ）</strong>：最常见的硅单晶生长工艺。通过将种子晶体浸入熔融硅中，然后缓慢旋转和拉升，形成单晶硅锭。适用于大尺寸晶圆（如 200mm、300mm）。<sup id="fnref2:cz"><a class="footnote-ref" href="#fn:cz">7</a></sup></li>
+<li><strong>区熔法（Float Zone, FZ）</strong>：通过电磁感应将硅棒局部加热至熔化，逐段移动熔区以提纯并生长单晶。纯度更高。</li>
+</ul>
+<blockquote>
+<p>直拉法由波兰科学家 Jan Czochralski 于 1916 年发明。在波兰语中，Czochralski 的标准发音为 /tʂɔˈxral.ski/，类似于“楚克拉尔斯基”或“乔克拉尔斯基”。</p>
+</blockquote>
+<h3 id="flat-notch">Flat 与 Notch</h3>
+<p>Flat 和 Notch 是半导体制造中用于标识和定位晶圆（Wafer）方向和晶体取向的特定结构。早期晶圆（6寸及以下）用Flat，但随着晶圆尺寸的增大和自动化设备的普及，Notch 已成为主流标识方式。</p>
+<p><img alt="flat notch" src="https://blog.debao.me/images/science/ingot_flat_notch.png"></p>
+<ul>
+<li>Flat（平边）：是指在晶圆边缘切去的一段平直的部分。位于晶圆的边缘，占据一段相对较长的直线。</li>
+<li>Notch（凹槽）：是指在晶圆边缘刻出的一个小的 V 型缺口或凹槽。位于晶圆的边缘，占据很小的区域。</li>
+</ul>
+<h2 id="_3">换个角度</h2>
+<p>半导体 FAB 工艺包括从 晶圆制造 到 晶圆加工（FEOL/MEOL/BEOL） 再到 封装与测试 的完整流程。关键环节包括 光刻（Photolithography）、刻蚀（Etching）、薄膜沉积（Deposition） 和 金属互连（Interconnects），这些工艺共同支持芯片的高性能和高集成度。</p>
+<p><img alt="process" src="https://blog.debao.me/images/science/wafer_feol_beol.png"></p>
+<p>图片来源：<a href="https://news.skhynix.com/semiconductor-front-end-process-episode-2/">Semiconductor Front-End Process Episode 2</a></p>
+<h3 id="wafer-manufacturing">晶圆制造（Wafer Manufacturing）</h3>
+<p>将高纯度 多晶硅（Polysilicon） 制备成 单晶硅锭（Ingot），然后切割成 晶圆（Wafer）。</p>
+<ul>
+<li>Czochralski Method (CZ)：直拉法，用于生长单晶硅。</li>
+<li>Wafer Polishing：晶圆抛光，确保表面平整。</li>
+</ul>
+<h3 id="front-end-of-line-feol">前道工艺（Front-End of Line, FEOL）</h3>
+<p>在晶圆上制造晶体管（Transistor）等基本器件。</p>
+<ul>
+<li>氧化（Oxidation）：在晶圆表面生长一层氧化硅（SiO₂）作为绝缘层。</li>
+<li>光刻（Photolithography）：使用光刻胶（Photoresist）和掩膜版（Mask）将电路图案转移到晶圆上。</li>
+<li>刻蚀（Etching）：去除不需要的材料，形成所需的图案。包括<ul>
+<li>Dry Etching：干法刻蚀（等离子刻蚀）。</li>
+<li>Wet Etching：湿法刻蚀（化学溶液刻蚀）。</li>
+</ul>
+</li>
+<li>离子注入（Ion Implantation）：注入掺杂剂（如硼或磷）调节硅的电学特性。掺杂（Doping）。</li>
+<li>薄膜沉积（Thin Film Deposition）：在晶圆表面沉积导电或绝缘薄膜。<ul>
+<li>CVD (Chemical Vapor Deposition)：化学气相沉积。</li>
+<li>PVD (Physical Vapor Deposition)：物理气相沉积。</li>
+<li>Epitaxial Growth：外延生长。</li>
+</ul>
+</li>
+<li>退火（Annealing）：通过加热修复晶体结构，激活掺杂剂。</li>
+</ul>
+<h3 id="middle-end-of-line-meol">中道工艺（Middle-End of Line, MEOL）</h3>
+<p>连接晶体管的源极、漏极和栅极，形成基本电路单元。</p>
+<p>术语：</p>
+<ul>
+<li>Contact Formation：接触孔制作。</li>
+<li>Local Interconnects：局部互连。</li>
+</ul>
+<h3 id="back-end-of-line-beol">后道工艺（Back-End of Line, BEOL）</h3>
+<p>构建多层金属互连网络，将器件连接成完整电路。</p>
+<ul>
+<li>金属沉积（Metal Deposition）：在晶圆上沉积金属层（如铜或铝）作为导电路径。铜互连（Copper Interconnects）。</li>
+<li>化学机械平坦化（CMP）：Chemical Mechanical Polishing，平整金属层和介电层，确保多层结构均匀。</li>
+<li>通孔制作（Via Formation）：在金属层之间刻蚀通孔并填充金属实现垂直连接。</li>
+</ul>
+<h3 id="wafer-testing">晶圆测试（Wafer Testing）</h3>
+<p>在晶圆阶段对每个芯片（Die）进行电学测试。</p>
+<p>术语：</p>
+<ul>
+<li>Probe Test：探针测试。</li>
+<li>Yield：良品率。</li>
+</ul>
+<h3 id="packaging-final-testing">封装与测试（Packaging &amp; Final Testing）</h3>
+<p>将切割后的芯片（Die）封装为可用的成品。</p>
+<p>术语：</p>
+<ul>
+<li>Dicing：晶圆切割。</li>
+<li>Wire Bonding：焊线。</li>
+<li>Micro-Bump：微凸点。</li>
+<li>Flip-Chip：倒装芯片。</li>
+<li>Final Test：最终测试。</li>
+</ul>
+<h2 id="_4">其他</h2>
+<h3 id="opc">OPC</h3>
+<p>光学临近效应（Optical Proximity Correction，OPC）是一种基于模型的数学技术，用于修正光刻过程中由于光学效应（如衍射、干涉）和工艺效应（如刻蚀、抗蚀剂行为）导致的图形失真。</p>
+<p><img alt="pd" src="https://blog.debao.me/images/science/pd_chap2_fig.png"></p>
+<p>图片来源：<a href="https://www.ifte.de/books/pd/index.html"> Fundamentals of Layout Design for Electronic Circuits
+</a></p>
+<p>OPC 有两种类型：</p>
+<p><strong>Rule-Based OPC（基于规则的 OPC）</strong></p>
+<p>基于一组预定义规则（如线宽调整、边缘偏移）进行简单的修正。快速且计算需求低。适用于早期工艺节点或简单图案。但是对复杂图形的修正能力有限，精度较低。</p>
+<p><strong>Model-Based OPC（基于模型的 OPC）</strong></p>
+<p>使用光学仿真工具，基于光学模型和刻蚀模型对掩膜版图案进行优化。精度高，可处理复杂图形，是现代先进工艺（如 7nm、5nm）中主流的 OPC 方法。但是计算复杂度高，耗时较长。</p>
+<h3 id="metrology-inspection">Metrology 与 Inspection</h3>
+<ul>
+<li>Metrology: 指量测（Measurement）的科学和技术，用于测量半导体制造过程中关键参数（如尺寸、厚度、形貌等）。</li>
+<li>Inspection: 指检测（Inspection）设备，用于发现和识别晶圆或掩膜版上的缺陷（Defects）。</li>
+</ul>
+<p><img alt="Metrology inspection" src="https://blog.debao.me/images/science/metrology_inspection_in_semi.png"></p>
+<p>量检测设备在FAB中的应用（加黑的属于SEM）：</p>
+<table>
+<thead>
+<tr>
+<th>产品</th>
+<th>薄膜沉积</th>
+<th>光刻</th>
+<th>掩膜</th>
+<th>刻蚀</th>
+<th>离子注入</th>
+<th>CMP</th>
+<th>清洗</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>掩膜版缺陷检测设备</strong></td>
+<td>-</td>
+<td>-</td>
+<td>☆</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>无图形晶圆缺陷检测设备</td>
+<td>☆</td>
+<td>☆</td>
+<td>-</td>
+<td>☆</td>
+<td>☆</td>
+<td>☆</td>
+<td>☆</td>
+</tr>
+<tr>
+<td>图形晶圆缺陷检测设备</td>
+<td>-</td>
+<td>☆</td>
+<td>-</td>
+<td>☆</td>
+<td>☆</td>
+<td>☆</td>
+<td>☆</td>
+</tr>
+<tr>
+<td><strong>EBI</strong></td>
+<td>-</td>
+<td>★</td>
+<td>-</td>
+<td>★</td>
+<td>★</td>
+<td>★</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>DR-SEM</strong></td>
+<td>-</td>
+<td>★</td>
+<td>-</td>
+<td>★</td>
+<td>★</td>
+<td>★</td>
+<td>-</td>
+</tr>
+<tr>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>关键尺寸量测设备</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>☆</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>CD-SEM</strong></td>
+<td>-</td>
+<td>★</td>
+<td>-</td>
+<td>★</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>套刻精度量测设备</td>
+<td>-</td>
+<td>☆</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>晶圆介质薄膜量测设备</td>
+<td>☆</td>
+<td>☆</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>X光量测设备</td>
+<td>☆</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>☆</td>
+<td>-</td>
+<td>☆</td>
+</tr>
+<tr>
+<td><strong>掩膜版关键尺寸量测设备</strong></td>
+<td>-</td>
+<td>-</td>
+<td>☆</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>三维形貌量测设备</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>☆</td>
+<td>☆</td>
+</tr>
+<tr>
+<td>晶圆金属薄膜量测设备</td>
+<td>☆</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>☆</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="logic-memory-analog">Logic, Memory 与 Analog 芯片</h3>
+<ul>
+<li>逻辑芯片（Logic Chips）：处理数字信号，执行布尔逻辑（Boolean Logic）运算，如CPU、GPU等。</li>
+<li>存储芯片（Memory Chips）：存储和检索数据，包括DRAM（动态内存）和NAND（闪存）。</li>
+<li>模拟芯片（Analog Chips）：处理连续信号，如电压和电流，应用于音频设备和传感器。</li>
+<li>数字-模拟混合芯片（Mixed-Signal Chips）：实现数字信号和模拟信号间的转换，如ADC和DAC。</li>
+<li>专用集成电路（ASIC）：为特定用途设计的高效定制芯片，如加密挖矿芯片。</li>
+<li>现场可编程门阵列（FPGA）：可重配置芯片，适用于测试和灵活应用开发。</li>
+</ul>
+<p><img alt="logic memory analog" src="https://blog.debao.me/images/science/logic_memory_analog_chips.png"></p>
+<p>图片来源: https://techovedas.com/13-semiconductor-terms-everyone-must-know/</p>
+<h2 id="_5">参考</h2>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:feol">
+<p>https://en.wikipedia.org/wiki/Front_end_of_line&#160;<a class="footnote-backref" href="#fnref:feol" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:beol">
+<p>https://en.wikipedia.org/wiki/Back_end_of_line&#160;<a class="footnote-backref" href="#fnref:beol" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:beol" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:usjpc">
+<p>https://www.usjpc.com/en/column/&#160;<a class="footnote-backref" href="#fnref:usjpc" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:usjpc" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:febless">
+<p>https://en.wikipedia.org/wiki/Fabless_manufacturing&#160;<a class="footnote-backref" href="#fnref:febless" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:foundry">
+<p>https://en.wikipedia.org/wiki/Foundry_model&#160;<a class="footnote-backref" href="#fnref:foundry" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:tapeout">
+<p>https://en.wikipedia.org/wiki/Tape-out&#160;<a class="footnote-backref" href="#fnref:tapeout" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+<li id="fn:cz">
+<p>https://en.wikipedia.org/wiki/Czochralski_method&#160;<a class="footnote-backref" href="#fnref:cz" title="Jump back to footnote 7 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:cz" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+</li>
+<li id="fn:waferpro">
+<p>https://waferpro.com/what-do-silicon-wafers-have-flats-or-notch/&#160;<a class="footnote-backref" href="#fnref:waferpro" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-12-02T19:42:00+08:00" pubdate>Mon 02 December 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/science.html'>Science</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/sem.html">SEM</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

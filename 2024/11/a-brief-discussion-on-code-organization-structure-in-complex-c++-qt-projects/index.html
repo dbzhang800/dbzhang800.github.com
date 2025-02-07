@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>浅谈复杂C++ Qt项目代码组织结构 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">浅谈复杂C++ Qt项目代码组织结构</h1>
+    <p class="meta">
+<time datetime="2024-11-14T09:07:00+08:00" pubdate>Thu 14 November 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>接前面的开胃菜 <a href="https://blog.debao.me/2024/11/how-to-elegantly-configure-third-party-libraries-in-qt-creator/">QtCreator 下如何优雅使用第三方库</a>，继续聊聊C++ Qt程序中众多的动态库(共享库)如何管理。</p>
+</blockquote>
+<p><img alt="c++ qt libraries structure" src="https://blog.debao.me/images/qt/cpp-qt-libraries-structure.png"></p>
+<h2 id="_1">缘起</h2>
+<p>用Qt开发一个程序，需要几十上百个的动态库。如果没有可心的包管理工具，那么这些动态库如何管理，还真的让人倍感头疼...</p>
+<p>如果还有些强迫症，需要一个跨平台（Windows，Linux，MacOS，Embedded Linux）的方案，且同时支持cmake和qmake，...</p>
+<p>同时，这个项目的开发和维护期需要保证5年以上...</p>
+<blockquote>
+<p>注：本文介绍的是一个经过验证的手搓方案。新的应用程序直接考虑conan或者vcpkg可能更好一些。不管怎样，希望文中涉及四种不同的动态库使用方式，能对大家有一定参考意义。</p>
+</blockquote>
+<h2 id="_2">动态库分类</h2>
+<p>首先，综合考虑动态库的接口稳定性，是否需要自行维护，是否自行开发，是否通用等因素，将动态库分成几类：</p>
+<ul>
+<li>第三方代码库：稳定的第三方库，不需要自行维护。直接使用预编译的二进制库，作为开发环境的基本配置。不需要git管理代码，直接体现在脚本和README中即可。</li>
+<li>基础代码库（框架库）：自行开发的稳定的代码库，一些需要适配或魔改的采用MIT、BSD、LGPL等商业友好协议的比较小的三方库。每个框架（framework）一个git仓库，按版本号发布为动态库，以便于其他程序使用。</li>
+<li>业务代码库（可复用模组库）：自行开发的模组库，每个模组一个git仓库，每一个库可以独立测试，库中的example可以直接作为公司某些业务的正式程序使用。主要用途还是供上层应用程序使用。</li>
+<li>应用程序（特定库）：应用程序自身使用的代码库，位于应用程序自身的代码仓库中。</li>
+</ul>
+<h2 id="_3">下一步呢？</h2>
+<p>分类之后，针对不同库，采用不同的应对策略就可以了。本身不复杂...</p>
+<h3 id="_4">应用程序代码库</h3>
+<p>这个最简单，一个git仓库中的应用程序逻辑代码的直接拆分而已。qmake项目的代码结构大致如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code>MyApp/
+├── README.md
+├── src/
+│   ├── mycommon.pri
+│   ├── src.pro
+│   ├── app/
+│   │   ├── main.cpp
+│   │   └── app.pro
+│   ├── libs/
+│   │   ├── mylibs.pri
+│   │   ├── lib1/
+│   │   │   ├── main.cpp
+│   │   │   └── lib1.pro
+│   │   └── lib2/
+│   │       ├── main.cpp
+│   │       └── lib2.pro
+├── tests/
+└── scripts/
+</code></pre></div></td></tr></table></div>
+
+<p>主要点：</p>
+<ul>
+<li>各个不同 <code>.pro</code>，通过 <code>.pri</code> 文件进行沟通和共享配置。各个.pro文件内容都很少</li>
+<li>比如动态库输出到什么地方，统一宏定义等，统一放到之 mylibs.pri 文件中</li>
+<li>尽可能使用qmake的函数定义等功能，以简化项目工程文件中的重复内容</li>
+</ul>
+<p>比如，在 src.pro 负责管理这些库（生成到合适位置）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>TEMPLATE = subdirs
+
+SUBDIRS += libs/lib1/lib1.pro
+SUBDIRS += libs/lib2/lib2.pro
+</code></pre></div></td></tr></table></div>
+
+<p>app需要使用（找到）这些动态库和头文件，偷懒做法，写qmake函数将其隐藏起来，项目中直接用：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>MYAPP_LIBS += lib1 lib2
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>cmake做类似事情，比qmake简单一些。每个文件夹下面放置一个CMakeLists.txt文件，再适当定义符合自己口味的cmake函数可以简化书写。</p>
+</blockquote>
+<h3 id="git">业务代码库，每个独立业务模块一个git代码仓库</h3>
+<p>假定我有数十个来自不同部门的的独立模块需要控制。每个模块对应一个git仓库，应该还比较自然吧。</p>
+<ul>
+<li>这个仓库，直接对应这个模块。里面的example可以直接反馈给模组开发部门使用。</li>
+<li>一系列的这种仓库，单独测试通过后，可以作为git submodule，在上层应用程序中直接使用。</li>
+</ul>
+<h4 id="git_1">单个git仓库结构</h4>
+<p>以qmake为例，单个代码的git仓库结构大致如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code>MyLib/
+├── README.md
+├── mylib_top.pro
+├── mylib_common.pri
+├── src/
+│   └── mylib/
+│       ├── mylib.h
+│       ├── main.cpp
+│       ├── mylib.pri
+│       └── mylib.pro
+├── tests/
+├── docs/
+└── examples/
+</code></pre></div></td></tr></table></div>
+
+<p>在这个仓库内，可以独立完成单元测试，编译验证。example中的例子也可以直接供其他部分使用。</p>
+<p>这个example的好处是：不需要严格的版本号进行管控。About对话框中，只需要显示构建时间、构建所用源码的SHA值，仓库提交记录总数等，可用于追溯即可。</p>
+<h4 id="_5">集成方式</h4>
+<blockquote>
+<p>不同的业务逻辑代码库进行组合，可以完成一些更复杂的功能，用于构筑上层用户应用程序。</p>
+</blockquote>
+<p>可以将上面的各个git子仓库，直接以git submodule方式，集成到应用程序仓库中，一种组织结构如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code>MyApp/
+├── README.md
+├── src/
+│   ├── mycommon.pri
+│   ├── src.pro
+│   ├── app/
+│   │    ├──app.pro
+│   │ 
+│   ├── libs/
+│   ├── submodulelibs/
+│   │   ├── app_submodulelibs.pri
+│   │   ├── mylib1/
+│   │   │   ├── mylib1_top.pro
+│   │   │   └── src\
+│   │   │       └── mylib1\
+│   │   │           ├── mylib1.h
+│   │   │           ├── main.cpp
+│   │   │           ├── mylib1.pri
+│   │   │           └── mylib1.pro
+│   │   └── mylib2/
+│   │       ├── mylib2_top.pro
+│   │       └── src\
+│   │           └── mylib2\
+│   │               ├── mylib2.h
+│   │               ├── main.cpp
+│   │               ├── mylib2.pri
+│   │               └── mylib2.pro
+├── tests/
+└── scripts/
+</code></pre></div></td></tr></table></div>
+
+<p>所有的子仓库，统一放置到某个submoduleLibs目录下，在<code>src.pro</code>中，我们告诉它一下（让它统一管理）就好了：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>TEMPLATE = subdirs
+
+SUBDIRS += submodulelibs/mylib1/src/mylib1/mylib1.pro
+SUBDIRS += submodulelibs/mylib2/src/mylib2/mylib2.pro
+</code></pre></div></td></tr></table></div>
+
+<p>然后我们需要告诉app.pro，动态库和头文件在什么地方。偷懒的话，自己定义变量，直接写成下面这样：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>MY_SUBMOD_LIBS += mylib1 mylib2
+</code></pre></div></td></tr></table></div>
+
+<p>源码中，直接用</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;mylib1/mylib1.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;mylib2/mylib2.h&quot;</span>
+<span class="c1">//bala bala...</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意：但是这儿我们新增加了一个<code>app_submodulelibs.pri</code>文件。该文件用于对所有的子仓库进行统一控制：</p>
+<ul>
+<li>控制动态库输出到什么地方</li>
+<li>控制统一使用哪一个版本基础库</li>
+</ul>
+<p>所以，前面的业务代码库中的pri文件内，有类似下面的钩子代码（以保证作为子仓库集成时，行为受控）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code>exists(../app_submodulelibs.pri) {
+    # USER app should provide the .pri file
+    include(../app_submodulelibs.pri)
+
+    xxx_BIN_PATH = $$APP_BIN_PATH
+    xxx_LIB_PATH = $$APP_LIB_PATH
+}else{
+    xxx_BIN_PATH = xxx_BUILD_TREE/bin
+    xxx_LIB_PATH = xxx_BUILD_TREE/lib
+
+    CONFIG += myqtaddons100
+}
+</code></pre></div></td></tr></table></div>
+
+<h4 id="cmake">cmake</h4>
+<p>以上使用qmake举例，cmake其实差不多。整个代码完全结构不动，每个文件夹下面添加 CMakeLists.txt 文件，可以保持qmake和cmake两套系统同时工作的（尽管不建议这种左右手互博）。</p>
+<h3 id="_6">基础代码库，公司框架库，使用动态库形式发布</h3>
+<p>这个比较纠结，不能所有代码都用子仓库以源码形式集成到应用程序仓库啊。</p>
+<p>那么怎么办？我们可以将其做成framework，采用动态库的形式进行发布。</p>
+<h4 id="_7">代码组织结构</h4>
+<p>这和前面的业务代码库有点相似，只是更繁杂一些/简单一些？？：</p>
+<ul>
+<li>不用考虑作为子仓库使用，不需要留钩子(hook)</li>
+<li>需要作为动态库发布，质量要求更高，不能老改，乱改</li>
+<li>如果不能保证ABI兼容，需要支持多版本并存</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code>MyQtAddons/
+├── README.md
+├── myqtaddons.pro
+├── myqtaddons_common.pri
+├── src/
+│   ├── mycore/
+│   │   ├── mycore.h
+│   │   ├── mycore.pri
+│   │   └── mycore.pro
+│   ├── mygui/
+│   │   ├── mygui.h
+│   │   ├── mygui.pri
+│   │   └── mygui.pro
+│   ├── mywidgets/
+│   │   ├── mywidgets.h
+│   │   ├── mywidgets.pri
+│       └── mywidgets.pro
+├── tests/
+├── docs/
+└── examples/
+</code></pre></div></td></tr></table></div>
+
+<p>这个没多少可说的，我们看看打包后结构</p>
+<h4 id="_8">发布包结构</h4>
+<p>为了保持多版本并存，需要注意：</p>
+<ul>
+<li>所有头文件放置到以版本号命令的文件夹中</li>
+<li>所有动态库添加版本号作为后缀</li>
+<li>提供给qmake或cmake使用的文件，包含版本号。</li>
+</ul>
+<p>以Windows为例，代码包发布结构：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code>├── bin/
+│   ├── myqtcore100.dll
+│   ├── myqtcore100d.dll
+│   ├── myqtgui100.dll
+│   └── myqtgui100d.dll
+│
+├── include/
+│   └── myqtaddons/
+│       └── 1.0.0/
+│           ├── myqtcore/
+│           │   ├── xxxx1.h
+│           │   └── xxxx2.h
+│           │
+│           └── myqtgui/
+│               ├── yyyy1.h
+│               └── yyyy2.h
+│
+├── lib/
+│   ├── cmake/
+│   │   └── myqtaddons100/
+│   │       └── myqtaddons100-config.cmake
+│   │
+│   ├── myqtcore100.lib
+│   ├── myqtcore100d.lib
+│   ├── myqtgui100.lib
+│   └── myqtgui100d.lib
+│
+└── mkspecs/
+    └── features/
+        ├── myqtaddons_moduels100.prf
+        └── myqtaddons100.prf
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意：这里面分别为 cmake和qmake提供了 myqtaddons100-config.cmake 和 myqtaddons100.prf，需要什么黑魔法，尽情往里面放就可以。</p>
+</blockquote>
+<p>只不过你能看到，到处充斥着这么多版本号，使用起来麻烦吗？？？</p>
+<h4 id="_9">使用不麻烦</h4>
+<p>在程序代码中，不体现任何版本号</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;myqtcore/xxxx1.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;myqtgui/yyyy2.h&gt;</span>
+<span class="c1">//bala bala ...</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在工程文件中，只需要出现一次版本号</p>
+<p>对于cmake工程来说，只需要</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">find_package</span><span class="p">(</span><span class="nx">myqtaddons100</span><span class="w"> </span><span class="nx">COMPONENTS</span><span class="w"> </span><span class="nx">core</span><span class="w"> </span><span class="nx">gui</span><span class="w"> </span><span class="nx">REQUIRED</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>对于qmake工程来说</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>CONFIG += myqtaddons100
+MYQTADDONS += core gui
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_10">不用统一升级</h4>
+<p>我们前面提到，业务代码库数十个仓库，都依赖基础框架库，如果框架升级，那不得所有的仓库都变更啊？？</p>
+<p>其实不需要，比如：</p>
+<ul>
+<li>submodulelibs/mylib1 使用 myqtaddons100</li>
+<li>submodulelibs/mylib2 使用 myqtaddons130</li>
+<li>myapp 使用 myqtaddons150</li>
+</ul>
+<p>各个业务库子仓库，单独编译时，比如mylib1会使用它自己指定的 100版本。</p>
+<p>但是当它作为myapp的子仓库使用时，会自动使用myapp指定的150版本。</p>
+<blockquote>
+<p>不要求ABI。只需要基础框架库保持源码级别兼容即可。只有做了不兼容的变更时，其他涉及到的业务逻辑库，才需要升级。</p>
+</blockquote>
+<h3 id="_11">第三方库，配置到基本开发环境中</h3>
+<p>OpenCV是一个很大个头的C++库。把它放置到某个具体的Qt应用程序中不太现实。更不用说这东西迭代挺快，有好多版本。而且即使同一个版本，还有不同的编译选项，造成的不同动态库。</p>
+<ul>
+<li>OpenCV4.10</li>
+<li>OpenCV4.10-with-Cuda</li>
+<li>...</li>
+</ul>
+<p>简单起见，这些统统在外围屏蔽掉，我们项目中只需要直接启用opencv，然后源码中：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;opencv2/opencv2&gt;</span>
+<span class="c1">// bala bala</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="cmake_1">cmake工程</h4>
+<p>OpenCV提供cmake支持，不用手动编写搜索逻辑。直接在CMakeLists.txt中用就行了：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>find_package(OpenCV<span class="w"> </span>REQUIRED<span class="w"> </span>)
+
+target_link_libraries(hello112<span class="w">  </span><span class="cp">${</span><span class="n">OpenCV_LIBS</span><span class="cp">}</span>)
+</code></pre></div></td></tr></table></div>
+
+<p>主打一个：应用程序不关心opencv的具体版本，以及在什么位置。</p>
+<h4 id="qmake">qmake工程</h4>
+<blockquote>
+<p>qmake稍微复杂一下，使用.pri/.prf/.prl“魔法”就行了。</p>
+</blockquote>
+<p>.pro文件中，使用一行代码来启用：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>CONFIG += opencv
+</code></pre></div></td></tr></table></div>
+
+<p>或者友好点，找不到时，让他报错：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">!</span><span class="nb">load</span><span class="p">(</span><span class="n">opencv</span><span class="p">):</span><span class="w"> </span><span class="n">message</span><span class="p">(</span><span class="n">Fail</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">find</span><span class="w"> </span><span class="n">opencv</span><span class="o">.</span><span class="n">prf</span><span class="w"> </span><span class="n">file</span><span class="o">!</span><span class="p">)</span><span class="w"> </span>
+</code></pre></div></td></tr></table></div>
+
+<p>总之，将配置基础环境时，将其封装到一个opencv.prf文件中，然后配置qmake能找到这个文件就行（所以，系统中有多套OpenCV库，就可以有很多个opencv.prf文件）。</p>
+<p>在Windows下，opencv.prf手动创建就可，Linux下，可以使用类似代码</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">unix</span><span class="p">{</span>
+<span class="w">    </span><span class="nx">packagesExist</span><span class="p">(</span><span class="nx">opencv4</span><span class="p">){</span>
+<span class="w">        </span><span class="nx">PKGCONFIG</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nx">opencv4</span>
+<span class="w">    </span><span class="p">}</span><span class="k">else</span><span class="p">:</span><span class="nx">packagesExist</span><span class="p">(</span><span class="nx">opencv</span><span class="p">){</span>
+<span class="w">        </span><span class="nx">PKGCONFIG</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nx">opencv</span>
+<span class="w">    </span><span class="p">}</span><span class="k">else</span><span class="p">{</span>
+<span class="w">        </span><span class="nx">error</span><span class="p">(</span><span class="s">&quot;Fail to find opencv.pc file!&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_12">其他</h2>
+<p>东西太杂，以上只做了简单整理和介绍。实际上，在整个项目中，尽管和构建无关，还有一些python写的向导脚本。</p>
+<ul>
+<li>用于生成各个库的模板（取个名字，直接填肉即可，不用考虑qmake，cmake细节）</li>
+<li>构建时，让qmake或cmake将关键的环境变量和变量信息记录到一个文件中（如果电脑上有多套Qt、OpenCV等库时这点很重要）</li>
+<li>打包脚本根据构建信息，自动提取所有依赖文件，生成安装包</li>
+</ul>
+<p>另外如上所有内容，均不依赖于QtCreator，在命令行下都可正常工作（便于CI/CD集成）。</p></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-11-14T09:07:00+08:00" pubdate>Thu 14 November 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a class="category" href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a class="category" href="https://blog.debao.me/tags/qmake.html">qmake</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

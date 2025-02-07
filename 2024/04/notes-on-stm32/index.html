@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>STM32小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/ee.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">STM32小记</h1>
+    <p class="meta">
+<time datetime="2024-04-16T22:04:00+08:00" pubdate>Tue 16 April 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>需要补充一点单片机开发的知识，从STM32开始吧...</p>
+</blockquote>
+<p>STM32是意法半导体（STMicroelectronics）推出的一系列32位ARM Cortex-M微控制器产品线。</p>
+<p>这些微控制器采用了ARM Cortex-M内核，并具有丰富的外设和功能，可用于各种应用领域，包括工业控制、汽车电子、医疗设备、消费电子等。</p>
+<h2 id="stm32">STM32</h2>
+<p>STM32 引脚</p>
+<p><img alt="stm32-pinout-diagram" src="https://blog.debao.me/images/stm32-pinout-diagram.png"></p>
+<p>图片来源：https://www.wellpcb.com/STM32-pinout.html</p>
+<p>STM32系列微控制器产品线包括多个系列和型号，以满足不同应用和需求。这些系列包括：</p>
+<ul>
+<li>STM32F系列：主流系列</li>
+<li>STM32L系列：超低功耗系列</li>
+<li>STM32H系列：高性能系列</li>
+<li>STM32G系列：通用系列</li>
+<li>STM32W系列</li>
+<li>...</li>
+</ul>
+<p><img alt="arm-cortex-mcu-portfolio" src="https://blog.debao.me/images/arm-cortex-mcu-portfolio-1.jpg"></p>
+<p>图片来源：https://www.st.com/en/microcontrollers-microprocessors/stm32-32-bit-arm-cortex-mcus.html</p>
+<h3 id="_1">命名格式</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>STM32&lt;Family&gt;&lt;Line&gt;&lt;Memory&gt;&lt;Package&gt;&lt;Temp&gt;&lt;Option&gt;
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>Family：表示 MCU 所属的系列。</li>
+<li>Line：表示具体的产品线或子系列。</li>
+<li>Memory：表示闪存和 RAM 容量。</li>
+<li>Package：表示封装类型。</li>
+<li>Temp：表示工作温度范围。</li>
+<li>Option：表示其他可选特性。</li>
+</ul>
+<p>以 STM32F103C8T6 为例，解析如下：</p>
+<p>STM32：表示这是一个 STM32 系列的微控制器。</p>
+<ul>
+<li>F：表示家族，F 代表 Cortex-M3 内核的主流系列。</li>
+<li>103：表示具体的产品线，103 是 STM32F1 系列中的一条线，通常表示基本的特性和性能。</li>
+<li>C8：表示存储容量和某些特性：<ul>
+<li>C 表示 48 引脚封装。</li>
+<li>8 表示 64KB 闪存和 20KB RAM。</li>
+</ul>
+</li>
+<li>T：表示封装类型，T 代表 LQFP 封装。</li>
+<li>6：表示工作温度范围，6 代表 -40°C 至 +85°C。</li>
+</ul>
+<h2 id="arm">ARM 是什么？</h2>
+<p>ARM是 Advanced RISC Machine的缩写，<strong>是指</strong>一家名为ARM的公司，<strong>也指</strong>该公司设计的处理器内核ARM。</p>
+<ul>
+<li>ARM公司是全球领先的半导体知识产权（IP）提供商，只设计内核不生产实物</li>
+<li>ARM公司设计ARM内核，其他半导体厂商完善内核周边电路并生产芯片，意法半导体的STM32。</li>
+</ul>
+<p>ARM传统上采用数字命名:</p>
+<ul>
+<li>ARM7</li>
+<li>ARM9</li>
+<li>ARM11</li>
+</ul>
+<p>后来出了新的CORTEX家族，其又可以分为分为三个系列：</p>
+<ul>
+<li>CORTEX <strong>A</strong>x：高端应用领域，性能最高</li>
+<li>CORTEX <strong>R</strong>x：实时性高的产品</li>
+<li>CORTEX <strong>M</strong>x：嵌入式，单片机</li>
+</ul>
+<p><img alt="ArmRoadMap" src="https://blog.debao.me/images/ArmRoadMap.png"></p>
+<p>图片来源：https://emcu.it/CortexFamily/CortexFamily.html</p>
+<h2 id="_2">集成开发环境</h2>
+<p>STM32CubeIDE是意法半导体提供的免费IDE，2019年发布。Keil 历史比较久远，支持ARM的芯片更广泛。</p>
+<p>20240531更新链接：</p>
+<ul>
+<li><a href="https://blog.debao.me/2024/04/notes-on-arm-development/">ARM开发环境小记</a></li>
+<li><a href="https://blog.debao.me/2024/05/notes-on-keil-mdk-community/">Keil MDK 社区版小记</a></li>
+<li><a href="https://blog.debao.me/2024/05/notes-on-stm32cubemx/">STM32CubeMX小记</a></li>
+</ul>
+<h3 id="stm32cubeide">STM32CubeIDE</h3>
+<p>STM32CubeIDE 是一个全面的开发环境，集成了代码编写、编译、调试和程序烧写功能。它基于开源的 Eclipse IDE、CDT（C/C++ Development Tooling）和 GDB（GNU Debugger）构建，并集成了ST专有的HAL（硬件抽象层）库和LL（低层）驱动器。
+包括 STM32CubeMX，用于配置微控制器的各种硬件特性如时钟、中断、外设等，并自动生成初始化代码。</p>
+<p>除了CubeIDE，还经常看到另外三个名字。在典型的开发流程中，</p>
+<ul>
+<li>STM32CubeMX 用于生成初始化代码和配置项目，然后在 </li>
+<li>STM32CubeIDE 中编辑、编译和调试这些代码</li>
+<li>STM32CubeProgrammer 用于将编译好的程序烧写到微控制器上</li>
+<li>STM32CubeMonitor 可用于进一步的运行时分析和性能调优。</li>
+</ul>
+<p>列个表格：</p>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>主要功能</th>
+<th>用途说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>STM32CubeMX</strong></td>
+<td>- 图形化的微控制器配置工具<br>- 生成初始化代码</td>
+<td>- 配置微控制器外设和功能<br>- 为 IDE 设置项目基础</td>
+</tr>
+<tr>
+<td><strong>STM32CubeProgrammer</strong></td>
+<td>- 微控制器的编程和固件升级工具<br>- 支持多种编程接口</td>
+<td>- 上传编译后的程序到微控制器<br>- 执行固件升级和备份操作</td>
+</tr>
+<tr>
+<td><strong>STM32CubeMonitor</strong></td>
+<td>- 实时数据监控和可视化工具</td>
+<td>- 监控和分析微控制器应用程序的运行时数据</td>
+</tr>
+<tr>
+<td><strong>STM32CubeIDE</strong></td>
+<td>- 集成开发环境<br>- 包含代码编辑、编译、调试功能<br>- 集成 STM32CubeMX 和 STM32CubeProgrammer</td>
+<td>- 开发、编译、调试 STM32 应用程序</td>
+</tr>
+</tbody>
+</table>
+<h3 id="keil-mdk-arm">Keil MDK-ARM</h3>
+<blockquote>
+<p>注：它的编译器之前是armcc，2014年起逐步变更为armclang编译器（二者共存），2020年已不再包含armcc，它们是ARM 公司提供的专门针对 ARM 处理器的编译器。</p>
+</blockquote>
+<p>Keil MDK-ARM 是一个强大的微控制器开发环境，专为 ARM Cortex-M 微处理器设计。它提供了包括 µVision IDE、编译器、调试器和必要的中间件组件。具有高级的代码编辑功能、项目管理工具和强大的调试功能。它也支持 RTOS（实时操作系统）和提供了广泛的中间件库。</p>
+<ul>
+<li>1982年，Keil Elektronic GmbH在德国成立，专注于8051微处理器的开发工具。</li>
+<li>1990年代末，随着ARM架构兴起，Keil开始开发面向ARM的编译器和调试工具。</li>
+<li>2005年，ARM公司收购了Keil。</li>
+<li>Keil MDK-ARM：随着 ARM 微控制器的普及，Keil 发布了 Microcontroller Development Kit (MDK)，专为 ARM Cortex-M 和 Cortex-R 系列设计。</li>
+<li>2014年：Keil MDK-ARM 版本5发布，引入了许多新功能和改进，包括对 ARM Cortex-M 内核的全面支持，以及全新的软件包管理功能。</li>
+</ul>
+<p>注意：Keil 有4套东西</p>
+<ul>
+<li>Keil MDK：Keil for ARM，Keil MDK-ARM，用于ARM微处理器</li>
+<li>Keil PK51：Keil C51, 用于 8051微处理器</li>
+<li>Keil PK166：Keil C166，用于 XC16x, C16x, ST10微处理器</li>
+<li>Keil DK251：Keil C251，用于 C251微处理器</li>
+</ul>
+<p>不用于商业开发的话，<strong>Keil MDK社区版本</strong> 可以免费使用。</p>
+<h3 id="iar-embedded-workbench">IAR Embedded Workbench</h3>
+<p>IAR Embedded Workbench 是一个集成开发环境和工具链，支持包括 STM32 在内的多种 ARM Cortex-M 微控制器。它以其编译器优化技术和高效的代码生成而闻名。提供了高级的代码优化功能，包括对代码大小和执行速度的优化，以及全面的调试工具。</p>
+<blockquote>
+<p>IAR Embedded Workbench 使用的编译器通常被称为 IAR C/C++ Compiler。这个编译器是 IAR Systems 提供的，专门为嵌入式系统的开发设计。IAR C/C++ Compiler 针对多种微处理器架构提供优化，支持包括 ARM、AVR、MSP430、RX、RISC-V、8051 等多种流行的微控制器。</p>
+</blockquote>
+<h2 id="jtag-swd">JTAG 与 SWD</h2>
+<ul>
+<li>JTAG (Joint Test Action Group) </li>
+<li>SWD (Serial Wire Debug) </li>
+</ul>
+<p>这是两种常用的调试和编程接口，用于微控制器和其他集成电路的开发。</p>
+<p>JTAG 和 SWD 的主要特性和区别：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>JTAG</th>
+<th>SWD</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>引脚数量</strong></td>
+<td>通常需要 4 个或更多引脚</td>
+<td>只需要 2 个引脚</td>
+</tr>
+<tr>
+<td><strong>引脚功能</strong></td>
+<td>- TCK (时钟)<br>- TMS (模式选择)<br>- TDI (数据输入)<br>- TDO (数据输出)<br>- (可选) TRST (复位)</td>
+<td>- SWCLK (时钟)<br>- SWDIO (数据输入/输出)</td>
+</tr>
+<tr>
+<td><strong>协议复杂性</strong></td>
+<td>较复杂，因为提供了链式连接多个设备的能力</td>
+<td>较简单，专注于单一设备的调试和编程</td>
+</tr>
+<tr>
+<td><strong>通用性</strong></td>
+<td>支持多种设备，不限于 ARM 架构</td>
+<td>主要用于 ARM 架构的设备</td>
+</tr>
+<tr>
+<td><strong>调试能力</strong></td>
+<td>支持复杂的调试功能，如边界扫描等</td>
+<td>专注于核心的调试功能，如断点和观察点</td>
+</tr>
+<tr>
+<td><strong>速度</strong></td>
+<td>通常较慢，受限于链路中的最慢设备</td>
+<td>通常较快，因为只连接单个设备</td>
+</tr>
+<tr>
+<td><strong>硬件成本</strong></td>
+<td>较高，因为需要多个引脚和复杂的接口</td>
+<td>较低，因为接口简单，引脚数少</td>
+</tr>
+<tr>
+<td><strong>易用性</strong></td>
+<td>配置较为复杂，尤其在多设备系统中</td>
+<td>配置简单，易于实现和使用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_3">如何用？</h3>
+<p>如果使用ST官方的板子(Nucleo或Discovery)，不需要额外的调试器，因为板子上自带了ST-LINK的调试器。直接用USB连接到PC主机即可。</p>
+<p>中国大陆的开发的板子，通过不包含ST-LINK。需要使用外置的调试器来烧写或调试。</p>
+<p>ST官方 ST-LINK/V2的接口如下，它包含一个20针接头（板子上需要这么留接口）：</p>
+<p><img alt="Typical ARM JTAG SWD Header" src="https://blog.debao.me/images/ARM_JTAG_SWD_Header.png"></p>
+<p>但是，中国克隆的ST-LINK/V2接口可能只使用10针接头：</p>
+<p><img alt="ST-LINK Clone Header" src="https://blog.debao.me/images/ST-LINK_V2_Clone_Header.png"></p>
+<p>图片来源：https://stm32-base.org/guides/connecting-your-debugger.html</p>
+<blockquote>
+<p>不管几针，都是要接到STM32的对应的引脚上。</p>
+</blockquote>
+<h3 id="st-link">烧写器ST-Link</h3>
+<h4 id="st-link_1">ST-LINK</h4>
+<p><img alt="st-link-v2" src="https://blog.debao.me/images/st-link-v2.png"></p>
+<h4 id="st-link-utility">ST-LINK Utility</h4>
+<blockquote>
+<p>与烧写器对应的上位机软件：STM32 ST-LINK Utility。Keil MDK-ARM 也使用 ST-LINK Utility 对 STM32进行烧写。</p>
+</blockquote>
+<h4 id="stm32cubeprogrammer">STM32CubeProgrammer</h4>
+<p>STM32CubeProgrammer 是一个独立的软件工具，它不依赖于 ST-LINK Utility 来执行其功能。对比：</p>
+<ul>
+<li>ST-LINK Utility 是一个更简单、更专注的工具，主要用于通过 ST-LINK 调试器进行设备的编程和基本调试。</li>
+<li>STM32CubeProgrammer 提供了更广泛的功能，不仅支持 ST-LINK，还支持其他调试适配器和通信协议，同时集成了更多高级功能，例如安全编程和更复杂的内存操作。</li>
+</ul>
+<h3 id="st-link-j-link">ST-Link 与 J-Link</h3>
+<p>ST-Link 功能有限，但是便宜！J-Link功能强</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>ST-Link</th>
+<th>J-Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>厂商</strong></td>
+<td>STMicroelectronics</td>
+<td>SEGGER</td>
+</tr>
+<tr>
+<td><strong>兼容性</strong></td>
+<td>主要针对 STM32 系列</td>
+<td>支持多种架构，如 ARM Cortex-M/A/R, RX, PPC, MIPS</td>
+</tr>
+<tr>
+<td><strong>接口</strong></td>
+<td>主要是 SWD</td>
+<td>JTAG, SWD, Fine, cJTAG, SPI 等</td>
+</tr>
+<tr>
+<td><strong>功能</strong></td>
+<td>基本功能：下载、调试、单步执行等</td>
+<td>包括高级功能：实时终端、系统查看器、无限断点等</td>
+</tr>
+<tr>
+<td><strong>价格</strong></td>
+<td>较低</td>
+<td>较高</td>
+</tr>
+<tr>
+<td><strong>软件支持</strong></td>
+<td>STM32CubeIDE, Keil, IAR, Eclipse</td>
+<td>Ozone Debugger, J-Flash, 多数第三方IDE</td>
+</tr>
+<tr>
+<td><strong>适用场景</strong></td>
+<td>STM32开发、预算有限的项目</td>
+<td>多平台开发、需要高级调试功能的复杂项目</td>
+</tr>
+</tbody>
+</table>
+<h2 id="boot">Boot引脚</h2>
+<p>STM32 微控制器系列通常具有一个或多个用于控制启动模式的引脚，称为 BOOT 引脚。这些 BOOT 引脚的状态（高电平或低电平）在微控制器上电重置时决定了 CPU 从哪里开始执行代码。这一功能对于程序开发、调试以及固件升级非常重要。</p>
+<p>对于大多数 STM32 微控制器，常见的配置包括 BOOT0 和有时的 BOOT1 引脚。具体的 BOOT 引脚配置和行为可能会根据不同的 STM32 系列和具体型号有所不同。</p>
+<ul>
+<li>BOOT0: 这是最常见的启动模式选择引脚。它通常需要在上电或复位时设置为高电平或低电平，以选择启动模式。</li>
+<li>BOOT1（如果存在）: 这个引脚与 BOOT0 结合使用，提供更多的启动配置选项。</li>
+</ul>
+<h3 id="_4">启动模式</h3>
+<p>STM32 微控制器的启动模式通常可以分为以下几种：</p>
+<ul>
+<li>主闪存模式（Main Flash Memory）:</li>
+</ul>
+<p>当 BOOT0 设置为低电平时，微控制器从主闪存（用户程序存储区）启动。
+这是大多数应用程序的正常运行模式。</p>
+<ul>
+<li>系统内存模式（System Memory）:</li>
+</ul>
+<p>当 BOOT0 设置为高电平（并且 BOOT1 为低电平，如果有的话）时，微控制器从系统内存启动。
+系统内存通常包含了一个由 ST 提供的引导加载程序（bootloader），可用于通过特定的通信接口（如 USART、USB、CAN 等）进行固件升级。</p>
+<ul>
+<li>嵌入式SRAM模式（Embedded SRAM）:</li>
+</ul>
+<p>在某些 STM32 配置中，当 BOOT0 和 BOOT1 都设置为高电平时，微控制器可能从内嵌的 SRAM 启动。这种模式主要用于特殊的调试目的。</p>
+<h2 id="esp32">与 ESP32对比</h2>
+<blockquote>
+<p>ESP32 不是ARM架构！</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>ESP32</th>
+<th>STM32</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>制造商</strong></td>
+<td>Espressif Systems</td>
+<td>STMicroelectronics</td>
+</tr>
+<tr>
+<td><strong>处理器架构</strong></td>
+<td>Xtensa LX6 微处理器</td>
+<td>ARM Cortex-M 系列</td>
+</tr>
+<tr>
+<td><strong>核心数和频率</strong></td>
+<td>双核，最高 240 MHz</td>
+<td>从单核到双核，频率从 48 MHz 到 480 MHz 不等</td>
+</tr>
+<tr>
+<td><strong>内置无线</strong></td>
+<td>Wi-Fi 802.11 b/g/n, 蓝牙 4.2/BLE</td>
+<td>多数型号无内置无线，STM32WB 系列支持蓝牙和其他无线通信</td>
+</tr>
+<tr>
+<td><strong>内存</strong></td>
+<td>520 KB SRAM, 外部通过 SPI 连接的 Flash</td>
+<td>RAM 从几 KB 到 1 MB 以上，Flash 从几十 KB 到几 MB 不等</td>
+</tr>
+<tr>
+<td><strong>外设</strong></td>
+<td>GPIO, ADC, DAC, UART, SPI, I2C, CAN, Ethernet MAC</td>
+<td>GPIO, ADC, DAC, UART, SPI, I2C, USB, CAN, Ethernet 等</td>
+</tr>
+<tr>
+<td><strong>低功耗模式</strong></td>
+<td>支持深度睡眠模式</td>
+<td>提供丰富的低功耗模式，适用于超低功耗应用</td>
+</tr>
+<tr>
+<td><strong>开发环境</strong></td>
+<td>ESP-IDF, Arduino IDE, MicroPython</td>
+<td>STM32CubeIDE, Keil, IAR, Arduino IDE</td>
+</tr>
+<tr>
+<td><strong>应用领域</strong></td>
+<td>物联网设备，智能家居，智能城市</td>
+<td>广泛的应用，包括工业控制、汽车电子、低功耗便携设备等</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">参考</h2>
+<ul>
+<li>https://wiki.st.com/stm32mcu/wiki/STM32CubeIDE</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-04-16T22:04:00+08:00" pubdate>Tue 16 April 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/ee.html'>EE</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/stm32.html">STM32</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

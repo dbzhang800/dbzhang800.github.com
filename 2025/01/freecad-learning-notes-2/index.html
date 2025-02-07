@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>FreeCAD学习小记（二） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/cax.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">FreeCAD学习小记（二）</h1>
+    <p class="meta">
+<time datetime="2025-01-12T20:36:00+08:00" pubdate>Sun 12 January 2025</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>接前面<a href="{filename}freecad-learning-notes-1.md">FreeCAD学习小记（一）</a>，继续看看 FreeCAD 的python接口 与 PySide</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#pyside">PySide 走马观花</a><ul>
+<li><a href="#aboutqt">控制台下调出 aboutQt 对话框</a></li>
+<li><a href="#gui-app">Gui 和 App</a></li>
+<li><a href="#_1">修改主窗口</a></li>
+<li><a href="#workbench">添加自定义控制台（Workbench）</a></li>
+</ul>
+</li>
+<li><a href="#freecad-freecadcmd">freecad 与 freecadcmd</a><ul>
+<li><a href="#freecadcmd">freecadcmd</a></li>
+</ul>
+</li>
+<li><a href="#api">API文档</a><ul>
+<li><a href="#app">APP 模块</a><ul>
+<li><a href="#document">Document 类</a></li>
+<li><a href="#documentobject">DocumentObject 类</a></li>
+<li><a href="#expressions-framework">Expressions Framework</a></li>
+</ul>
+</li>
+<li><a href="#gui">Gui 模块</a><ul>
+<li><a href="#gui-document">GUI Document</a></li>
+<li><a href="#objects">Objects</a></li>
+<li><a href="#view">View 视图</a></li>
+<li><a href="#command-framework">Command Framework?</a></li>
+<li><a href="#workbench_1">workbench</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_2">参考</a></li>
+</ul>
+</div>
+<h2 id="pyside">PySide 走马观花</h2>
+<blockquote>
+<p>FreeCAD 早期使用 PyQt，2013年换成了 PySide，而后随着Qt5升级到PySide2，现在源码中已经适配到了PySide6。</p>
+</blockquote>
+<p>FreeCAD 深度使用 Qt 和 PySide。FreeCAD 1.0 在 Windows下安装包使用的是 Qt 5.15.15和PySide2 5.15.15。</p>
+<h3 id="aboutqt">控制台下调出 aboutQt 对话框</h3>
+<p>FreeCAD 提供了一个 Python 控制台，在该控制台下，我们可以直接输如python和pyside代码：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">PySide2.QtWidgets</span> <span class="kn">import</span> <span class="n">QMessageBox</span>
+<span class="n">QMessageBox</span><span class="o">.</span><span class="n">aboutQt</span><span class="p">(</span><span class="n">Gui</span><span class="o">.</span><span class="n">getMainWindow</span><span class="p">(),</span> <span class="s1">&#39;1+1=10&#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>两行代码，即可调用Qt的关于对话框，显示效果如下：</p>
+<p><img alt="console" src="https://blog.debao.me/images/simu/freecad-console-pyside.png"></p>
+<p>注意，代码中我们调用了 FreeCAD 的 <code>Gui</code> 模块，以获取当前的主窗口。当然，此处简单传入一个None也是可以的。</p>
+<p>注意，为了兼容PySide、PySide2、PySide6，FreeCAD做了如下变换：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">PySide2</span><span class="p">.</span><span class="n">QtCore</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">PySide</span><span class="p">.</span><span class="n">QtCore</span>
+<span class="n">PySide2</span><span class="p">.</span><span class="n">QtGui</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">PySide</span><span class="p">.</span><span class="n">QtGui</span>
+<span class="n">PySide2</span><span class="p">.</span><span class="n">QtSvg</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">PySide</span><span class="p">.</span><span class="n">QtSvg</span>
+<span class="n">PySide2</span><span class="p">.</span><span class="n">QtUiTools</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">PySide</span><span class="p">.</span><span class="n">QtUiTools</span>
+
+<span class="n">PySide2</span><span class="p">.</span><span class="n">QtWidgets</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">PySide</span><span class="p">.</span><span class="n">QtGui</span>
+</code></pre></div></td></tr></table></div>
+
+<p>所以上面的代码，可以写作（建议写成？）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">PySide.QtGui</span> <span class="kn">import</span> <span class="n">QMessageBox</span>
+<span class="n">QMessageBox</span><span class="o">.</span><span class="n">aboutQt</span><span class="p">(</span><span class="n">Gui</span><span class="o">.</span><span class="n">getMainWindow</span><span class="p">(),</span> <span class="s1">&#39;1+1=10&#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>除了在控制台下面直接输入，我们还可以将其保存到文件（一个名为 .FCMacro 文件），而后通过 菜单中的 <code>宏</code> 来执行它。</p>
+<p><img alt="macro aboutQt" src="https://blog.debao.me/images/simu/freecad-macro-pyside.png"></p>
+<h3 id="gui-app">Gui 和 App</h3>
+<p>这两个兄弟是 FreeCADGui 和 FreeCAD 的别名，控制台下容易验证它：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>&gt;&gt;&gt;<span class="w"> </span>Gui
+&lt;module<span class="w"> </span><span class="s1">&#39;FreeCADGui&#39;</span>&gt;
+&gt;&gt;&gt;<span class="w"> </span>App
+&lt;module<span class="w"> </span><span class="s1">&#39;FreeCAD&#39;</span><span class="w"> </span><span class="o">(</span>built-in<span class="o">)</span>&gt;
+&gt;&gt;&gt;<span class="w"> </span>FreeCAD.Gui
+&lt;module<span class="w"> </span><span class="s1">&#39;FreeCADGui&#39;</span>&gt;
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>另外，可以看出 FreeCAD.Gui 也是 FreeCADGui的别名。这些别名是在什么位置取的？我们可以从源码中找到...</p>
+</blockquote>
+<p>在源码文件 <code>FreeCAD/src/Gui/FreeCADGuiInit.py</code>中，有：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># shortcuts</span>
+<span class="n">Gui</span> <span class="o">=</span> <span class="n">FreeCADGui</span>
+</code></pre></div></td></tr></table></div>
+
+<p>和</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># init the gui</span>
+
+<span class="c1"># signal that the gui is up</span>
+<span class="n">App</span><span class="o">.</span><span class="n">GuiUp</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">App</span><span class="o">.</span><span class="n">Gui</span> <span class="o">=</span> <span class="n">FreeCADGui</span>
+<span class="n">FreeCADGui</span><span class="o">.</span><span class="n">Workbench</span> <span class="o">=</span> <span class="n">Workbench</span>
+
+<span class="n">Gui</span><span class="o">.</span><span class="n">addWorkbench</span><span class="p">(</span><span class="n">NoneWorkbench</span><span class="p">())</span>
+
+<span class="c1"># init modules</span>
+<span class="n">InitApplications</span><span class="p">()</span>
+
+<span class="c1"># set standard workbench (needed as fallback)</span>
+<span class="n">Gui</span><span class="o">.</span><span class="n">activateWorkbench</span><span class="p">(</span><span class="s2">&quot;NoneWorkbench&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在源码 <code>FreeCAD/src/App/FreeCADInit.py</code> 中，可以看到：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># some often used shortcuts (for lazy people like me  ;-)</span>
+<span class="n">App</span> <span class="o">=</span> <span class="n">FreeCAD</span>
+<span class="n">Log</span> <span class="o">=</span> <span class="n">FreeCAD</span><span class="o">.</span><span class="n">Console</span><span class="o">.</span><span class="n">PrintLog</span>
+<span class="n">Msg</span> <span class="o">=</span> <span class="n">FreeCAD</span><span class="o">.</span><span class="n">Console</span><span class="o">.</span><span class="n">PrintMessage</span>
+<span class="n">Err</span> <span class="o">=</span> <span class="n">FreeCAD</span><span class="o">.</span><span class="n">Console</span><span class="o">.</span><span class="n">PrintError</span>
+<span class="n">Wrn</span> <span class="o">=</span> <span class="n">FreeCAD</span><span class="o">.</span><span class="n">Console</span><span class="o">.</span><span class="n">PrintWarning</span>
+<span class="n">Crt</span> <span class="o">=</span> <span class="n">FreeCAD</span><span class="o">.</span><span class="n">Console</span><span class="o">.</span><span class="n">PrintCritical</span>
+<span class="n">Ntf</span> <span class="o">=</span> <span class="n">FreeCAD</span><span class="o">.</span><span class="n">Console</span><span class="o">.</span><span class="n">PrintNotification</span>
+<span class="n">Tnf</span> <span class="o">=</span> <span class="n">FreeCAD</span><span class="o">.</span><span class="n">Console</span><span class="o">.</span><span class="n">PrintTranslatedNotification</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_1">修改主窗口</h3>
+<p>上面的例子中通过Gui可以获得主窗口对象，根据PySide的经验，借助它，我们可以做试着做些简单的事情</p>
+<p>控制窗口全屏显示或正常显示</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Gui</span><span class="o">.</span><span class="n">getMainWindow</span><span class="p">()</span><span class="o">.</span><span class="n">showFullScreen</span><span class="p">()</span>
+<span class="n">Gui</span><span class="o">.</span><span class="n">getMainWindow</span><span class="p">()</span><span class="o">.</span><span class="n">showNormal</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<p>改变标题</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Gui</span><span class="o">.</span><span class="n">getMainWindow</span><span class="p">()</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Hello 1+1=10&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>也可以直接放置一个停靠窗口</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">PySide.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span>
+<span class="kn">from</span> <span class="nn">PySide</span> <span class="kn">import</span> <span class="n">QtGui</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QDockWidget</span><span class="p">(</span><span class="s2">&quot;Hello Dock&quot;</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;1+1=10&quot;</span><span class="p">))</span>
+
+<span class="n">mw</span> <span class="o">=</span> <span class="n">Gui</span><span class="o">.</span><span class="n">getMainWindow</span><span class="p">()</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">addDockWidget</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p><img alt="dock widget" src="https://blog.debao.me/images/simu/freecad-dockwidget.png"></p>
+<h3 id="workbench">添加自定义控制台（Workbench）</h3>
+<p>先找找感觉，添加自定义控制台<code>Hello 1+1=10</code>，并增加一个自定义的菜单，对应代码如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">w</span><span class="o">=</span><span class="n">Workbench</span><span class="p">()</span>
+<span class="n">w</span><span class="o">.</span><span class="n">MenuText</span> <span class="o">=</span> <span class="s2">&quot;Hello 1+1=10&quot;</span>
+<span class="n">Gui</span><span class="o">.</span><span class="n">addWorkbench</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+<span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Std_Test1&quot;</span><span class="p">,</span> <span class="s2">&quot;Std_Test2&quot;</span><span class="p">,</span> <span class="s2">&quot;Std_Test3&quot;</span><span class="p">]</span>
+<span class="n">w</span><span class="o">.</span><span class="n">appendMenu</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p><img alt="workbench" src="https://blog.debao.me/images/simu/freecad-custom_workbench.png"></p>
+<p>对界面的所有操作，都在Gui模块中。</p>
+<h2 id="freecad-freecadcmd">freecad 与 freecadcmd</h2>
+<p>FreeCAD 有两个可执行程序</p>
+<ul>
+<li>freecad：界面程序</li>
+<li>freecadcmd：命令行程序</li>
+</ul>
+<p>前者是常用的主程序，源码的入口文件在：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>src/Main/MainGui.cpp
+</code></pre></div></td></tr></table></div>
+
+<p>后者是一个全功能的命令行程序，入口文件位于：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>src/Main/MainCmd.cpp
+</code></pre></div></td></tr></table></div>
+
+<p>简单看一下后者</p>
+<h3 id="freecadcmd">freecadcmd</h3>
+<p>FreeCADCmd 是 FreeCAD 的命令行模式（无图形界面模式），主要用于在没有图形用户界面（GUI）的情况下运行 FreeCAD 脚本、执行自动化任务、或者处理 CAD 文件。它适用于服务器环境、后台任务或只需要 FreeCAD 核心功能的场景。</p>
+<p>直接运行起来之后，它直接就是一个python命令行：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">PS </span><span class="n">D</span><span class="p">:\</span><span class="n">Program</span> <span class="n">Files</span><span class="p">\</span><span class="n">FreeCAD</span> <span class="n">1</span><span class="p">.</span><span class="n">0</span><span class="p">\</span><span class="n">bin</span><span class="p">&gt;</span> <span class="p">./</span><span class="n">freecadcmd</span>
+<span class="n">FreeCAD</span> <span class="n">1</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">0</span><span class="p">,</span> <span class="n">Libs</span><span class="p">:</span> <span class="n">1</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">0R39109</span> <span class="p">(</span><span class="n">Git</span><span class="p">)</span>
+<span class="p">(</span><span class="n">C</span><span class="p">)</span> <span class="n">2001</span><span class="p">-</span><span class="n">2024</span> <span class="n">FreeCAD</span> <span class="n">contributors</span>
+<span class="n">FreeCAD</span> <span class="n">is</span> <span class="n">free</span> <span class="n">and</span> <span class="nb">open-source</span> <span class="n">software</span> <span class="n">licensed</span> <span class="n">under</span> <span class="n">the</span> <span class="n">terms</span> <span class="n">of</span> <span class="n">LGPL2</span><span class="p">+</span> <span class="n">license</span><span class="p">.</span>
+
+<span class="p">[</span><span class="n">FreeCAD</span> <span class="n">Console</span> <span class="n">mode</span> <span class="p">&lt;</span><span class="n">Use</span> <span class="n">Ctrl-Z</span> <span class="n">plus</span> <span class="k">Return</span> <span class="n">to</span> <span class="n">exit</span><span class="p">.&gt;]</span>
+<span class="p">&gt;&gt;&gt;</span> <span class="n">dir</span><span class="p">(</span><span class="n">App</span><span class="p">)</span>
+<span class="p">[</span><span class="s1">&#39;ActiveDocument&#39;</span><span class="p">,</span> <span class="s1">&#39;Axis&#39;</span><span class="p">,</span> <span class="s1">&#39;Base&#39;</span><span class="p">,</span> <span class="s1">&#39;BoundBox&#39;</span><span class="p">,</span> <span class="s1">&#39;ConfigDump&#39;</span><span class="p">,</span> <span class="s1">&#39;ConfigGet&#39;</span><span class="p">,</span> <span class="s1">&#39;ConfigSet&#39;</span><span class="p">,</span> <span class="s1">&#39;Console&#39;</span><span class="p">,</span> <span class="s1">&#39;Document&#39;</span><span class="p">,</span> <span class="s1">&#39;DocumentObject&#39;</span><span class="p">,</span> <span class="s1">&#39;DocumentObjectExtension&#39;</span><span class="p">,</span> <span class="s1">&#39;DocumentObjectGroup&#39;</span><span class="p">,</span> <span class="s1">&#39;Extension&#39;</span><span class="p">,</span> <span class="s1">&#39;ExtensionContainer&#39;</span><span class="p">,</span> <span class="s1">&#39;GeoFeature&#39;</span><span class="p">,</span> <span class="s1">&#39;GeoFeatureGroupExtension&#39;</span><span class="p">,</span> <span class="s1">&#39;GroupExtension&#39;</span><span class="p">,</span> <span class="s1">&#39;GuiUp&#39;</span><span class="p">,</span> <span class="s1">&#39;LinkBaseExtension&#39;</span><span class="p">,</span> <span class="s1">&#39;Logger&#39;</span><span class="p">,</span> <span class="s1">&#39;Material&#39;</span><span class="p">,</span> <span class="s1">&#39;Matrix&#39;</span><span class="p">,</span> <span class="s1">&#39;MeasureManager&#39;</span><span class="p">,</span> <span class="s1">&#39;Metadata&#39;</span><span class="p">,</span> <span class="s1">&#39;OriginGroupExtension&#39;</span><span class="p">,</span> <span class="s1">&#39;ParamGet&#39;</span><span class="p">,</span> <span class="s1">&#39;Placement&#39;</span><span class="p">,</span> <span class="s1">&#39;PropertyContainer&#39;</span><span class="p">,</span> <span class="s1">&#39;PropertyType&#39;</span><span class="p">,</span> <span class="s1">&#39;Qt&#39;</span><span class="p">,</span> <span class="s1">&#39;ReturnType&#39;</span><span class="p">,</span> <span class="s1">&#39;Rotation&#39;</span><span class="p">,</span> <span class="s1">&#39;ScaleType&#39;</span><span class="p">,</span> <span class="s1">&#39;StringHasher&#39;</span><span class="p">,</span> <span class="s1">&#39;StringID&#39;</span><span class="p">,</span> <span class="s1">&#39;Units&#39;</span><span class="p">,</span> <span class="s1">&#39;Vector&#39;</span><span class="p">,</span> <span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="s1">&#39;__ModDirs__&#39;</span><span class="p">,</span> <span class="s1">&#39;__cmake__&#39;</span><span class="p">,</span> <span class="s1">&#39;__doc__&#39;</span><span class="p">,</span> <span class="s1">&#39;__loader__&#39;</span><span class="p">,</span> <span class="s1">&#39;__name__&#39;</span><span class="p">,</span> <span class="s1">&#39;__package__&#39;</span><span class="p">,</span> <span class="s1">&#39;__path__&#39;</span><span class="p">,</span> <span class="s1">&#39;__spec__&#39;</span><span class="p">,</span> <span class="s1">&#39;__unit_test__&#39;</span><span class="p">,</span> <span class="s1">&#39;_importFromFreeCAD&#39;</span><span class="p">,</span> <span class="s1">&#39;activeDocument&#39;</span><span class="p">,</span> <span class="s1">&#39;addDocumentObserver&#39;</span><span class="p">,</span> <span class="s1">&#39;addExportType&#39;</span><span class="p">,</span> <span class="s1">&#39;addImportType&#39;</span><span class="p">,</span> <span class="s1">&#39;changeExportModule&#39;</span><span class="p">,</span> <span class="s1">&#39;changeImportModule&#39;</span><span class="p">,</span> <span class="s1">&#39;checkAbort&#39;</span><span class="p">,</span> <span class="s1">&#39;checkLinkDepth&#39;</span><span class="p">,</span> <span class="s1">&#39;closeActiveTransaction&#39;</span><span class="p">,</span> <span class="s1">&#39;closeDocument&#39;</span><span class="p">,</span> <span class="s1">&#39;getActiveTransaction&#39;</span><span class="p">,</span> <span class="s1">&#39;getDependentObjects&#39;</span><span class="p">,</span> <span class="s1">&#39;getDocument&#39;</span><span class="p">,</span> <span class="s1">&#39;getExportType&#39;</span><span class="p">,</span> <span class="s1">&#39;getHelpDir&#39;</span><span class="p">,</span> <span class="s1">&#39;getHomePath&#39;</span><span class="p">,</span> <span class="s1">&#39;getImportType&#39;</span><span class="p">,</span> <span class="s1">&#39;getLibraryDir&#39;</span><span class="p">,</span> <span class="s1">&#39;getLinksTo&#39;</span><span class="p">,</span> <span class="s1">&#39;getLogLevel&#39;</span><span class="p">,</span> <span class="s1">&#39;getResourceDir&#39;</span><span class="p">,</span> <span class="s1">&#39;getTempPath&#39;</span><span class="p">,</span> <span class="s1">&#39;getUserAppDataDir&#39;</span><span class="p">,</span> <span class="s1">&#39;getUserCachePath&#39;</span><span class="p">,</span> <span class="s1">&#39;getUserConfigDir&#39;</span><span class="p">,</span> <span class="s1">&#39;getUserMacroDir&#39;</span><span class="p">,</span> <span class="s1">&#39;isRestoring&#39;</span><span class="p">,</span> <span class="s1">&#39;listDocuments&#39;</span><span class="p">,</span> <span class="s1">&#39;loadFile&#39;</span><span class="p">,</span> <span class="s1">&#39;newDocument&#39;</span><span class="p">,</span> <span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="s1">&#39;openDocument&#39;</span><span class="p">,</span> <span class="s1">&#39;removeDocumentObserver&#39;</span><span class="p">,</span> <span class="s1">&#39;saveParameter&#39;</span><span class="p">,</span> <span class="s1">&#39;setActiveDocument&#39;</span><span class="p">,</span> <span class="s1">&#39;setActiveTransaction&#39;</span><span class="p">,</span> <span class="s1">&#39;setLogLevel&#39;</span><span class="p">]</span>
+<span class="p">&gt;&gt;&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在这个界面下，可以绘制一个立方体（操作的核心类是 document）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">&gt;</span> <span class="p">./</span><span class="n">freecadcmd</span>
+<span class="n">FreeCAD</span> <span class="n">1</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">0</span><span class="p">,</span> <span class="n">Libs</span><span class="p">:</span> <span class="n">1</span><span class="p">.</span><span class="n">0</span><span class="p">.</span><span class="n">0R39109</span> <span class="p">(</span><span class="n">Git</span><span class="p">)</span>
+<span class="p">(</span><span class="n">C</span><span class="p">)</span> <span class="n">2001</span><span class="p">-</span><span class="n">2024</span> <span class="n">FreeCAD</span> <span class="n">contributors</span>
+<span class="n">FreeCAD</span> <span class="n">is</span> <span class="n">free</span> <span class="n">and</span> <span class="nb">open-source</span> <span class="n">software</span> <span class="n">licensed</span> <span class="n">under</span> <span class="n">the</span> <span class="n">terms</span> <span class="n">of</span> <span class="n">LGPL2</span><span class="p">+</span> <span class="n">license</span><span class="p">.</span>
+
+<span class="p">[</span><span class="n">FreeCAD</span> <span class="n">Console</span> <span class="n">mode</span> <span class="p">&lt;</span><span class="n">Use</span> <span class="n">Ctrl-Z</span> <span class="n">plus</span> <span class="k">Return</span> <span class="n">to</span> <span class="n">exit</span><span class="p">.&gt;]</span>
+<span class="p">&gt;&gt;&gt;</span> <span class="n">doc</span> <span class="p">=</span> <span class="n">App</span><span class="p">.</span><span class="n">newDocument</span><span class="p">(</span><span class="s2">&quot;Test&quot;</span><span class="p">)</span>
+<span class="p">&gt;&gt;&gt;</span> <span class="n">box</span> <span class="p">=</span> <span class="n">doc</span><span class="p">.</span><span class="n">addObject</span><span class="p">(</span><span class="s2">&quot;Part::Box&quot;</span><span class="p">,</span> <span class="s2">&quot;Box&quot;</span><span class="p">)</span>
+<span class="p">&gt;&gt;&gt;</span> <span class="n">box</span><span class="p">.</span><span class="n">Length</span> <span class="p">=</span> <span class="n">10</span>
+<span class="p">&gt;&gt;&gt;</span> <span class="n">box</span><span class="p">.</span><span class="n">Width</span> <span class="p">=</span> <span class="n">10</span>
+<span class="p">&gt;&gt;&gt;</span> <span class="n">box</span><span class="p">.</span><span class="n">Height</span> <span class="p">=</span> <span class="n">10</span>
+<span class="p">&gt;&gt;&gt;</span> <span class="n">doc</span><span class="p">.</span><span class="n">saveAs</span><span class="p">(</span><span class="s2">&quot;test.FCStd&quot;</span><span class="p">)</span>
+<span class="p">&gt;&gt;&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>还可以先写一个python脚本 <code>mytest.py</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">doc</span> <span class="o">=</span> <span class="n">App</span><span class="o">.</span><span class="n">newDocument</span><span class="p">(</span><span class="s2">&quot;TestDoc&quot;</span><span class="p">)</span>
+
+<span class="n">box</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">addObject</span><span class="p">(</span><span class="s2">&quot;Part::Box&quot;</span><span class="p">,</span> <span class="s2">&quot;Box&quot;</span><span class="p">)</span>
+<span class="n">box</span><span class="o">.</span><span class="n">Length</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">box</span><span class="o">.</span><span class="n">Width</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">box</span><span class="o">.</span><span class="n">Height</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="n">doc</span><span class="o">.</span><span class="n">saveAs</span><span class="p">(</span><span class="s2">&quot;test.FCStd&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>而后直接执行它：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>freecadcmd mytest.py
+</code></pre></div></td></tr></table></div>
+
+<h2 id="api">API文档</h2>
+<p>似乎很不完整</p>
+<ul>
+<li>https://freecad.github.io/SourceDoc/modules.html</li>
+</ul>
+<h3 id="app">APP 模块</h3>
+<h4 id="document">Document 类</h4>
+<p>Document 是 FreeCAD 数据结构的顶层容器，代表一个 FreeCAD 项目或文件（通常以 .FCStd 格式保存）。它是一个逻辑上的工作空间，包含了所有的建模对象、参数、视图信息等。</p>
+<p>每个 FreeCAD 文档都可以包含多个对象（DocumentObject），这些对象构成了文档的内容，例如几何体、草图、装配体等。</p>
+<ul>
+<li>管理和组织 DocumentObject。</li>
+<li>提供文件的保存、加载和重新计算功能。</li>
+<li>允许通过脚本访问和操作项目中的所有对象。</li>
+</ul>
+<ul>
+<li>doc.addObject(type, name) - 向文档添加一个新对象。</li>
+<li>doc.getObject(name) - 根据名称获取对象。</li>
+<li>doc.removeObject(name) - 删除指定名称的对象。</li>
+<li>doc.recompute() - 重新计算文档中的所有对象。</li>
+<li>doc.saveAs(filename) - 保存文档到指定路径。</li>
+<li>doc.save() - 保存文档（覆盖当前路径）。</li>
+<li>doc.Label - 获取或设置文档的标签。</li>
+<li>doc.Objects - 返回文档中所有对象的列表。</li>
+<li>doc.getObjectsByLabel(label) - 根据标签获取对象。</li>
+<li>doc.getDependentDocuments(objName) - 获取指定对象的依赖关系。</li>
+<li>doc.undo() - 撤销上一步操作。</li>
+<li>doc.redo() - 重做上一步操作。</li>
+<li>doc.clear() - 清空文档中的所有内容。</li>
+<li>doc.isModified() - 检查文档是否已被修改。</li>
+<li>doc.FileName - 返回文档的文件路径。</li>
+<li>doc.ActiveObject - 当前活动的对象。</li>
+</ul>
+<h4 id="documentobject">DocumentObject 类</h4>
+<p>DocumentObject 是 Document 中包含的实际对象，每个对象代表具体的建模元素或功能，例如一个立方体、草图、约束、几何体等。</p>
+<p>DocumentObject 是 FreeCAD 的核心建模单位，所有的几何体、关系和属性都存储在这些对象中。</p>
+<ul>
+<li>定义具体的建模元素（如立方体、球体、草图等）。</li>
+<li>提供对象的属性（如形状、尺寸、位置等）。</li>
+<li>支持对象之间的关联和依赖关系。</li>
+</ul>
+<p>一些接口：</p>
+<ul>
+<li>obj.Name - 对象的唯一标识名称。</li>
+<li>obj.Label - 对象的标签（可用于显示）。</li>
+<li>obj.TypeId - 对象的类型（如 Part::Box）。</li>
+<li>obj.Shape - 获取对象的几何形状（如立方体的形状）。</li>
+<li>obj.Placement - 获取或设置对象的位置和方向。</li>
+<li>obj.ViewObject - 控制对象的显示属性（颜色、透明度等）。</li>
+<li>obj.Visibility - 设置对象是否可见。</li>
+<li>obj.touch() - 标记对象为已修改（需要重新计算）。</li>
+<li>obj.recompute() - 重新计算对象。</li>
+<li>obj.getLinkedObject() - 获取与对象链接在一起的对象。</li>
+<li>obj.Document - 获取对象所属的文档。</li>
+<li>obj.getParentGeoFeatureGroup() - 获取对象所在的父组。</li>
+<li>obj.isDerivedFrom(type) - 检查对象是否派生自某类型。</li>
+<li>obj.PropertiesList - 返回对象的所有属性。</li>
+<li>obj.getPropertyByName(name) - 根据属性名称获取值。</li>
+<li>obj.addObject(type, name) - 添加子对象。</li>
+<li>obj.removeObject(name) - 删除子对象。</li>
+</ul>
+<h4 id="expressions-framework">Expressions Framework</h4>
+<p>FreeCAD 自己实现了一个功能模块。尽管它使用 Python 的语法和表达式风格，但它是专门为 FreeCAD 的参数化建模功能设计的，并深度集成到了 FreeCAD 的属性管理和文档系统中。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">doc</span> <span class="o">=</span> <span class="n">App</span><span class="o">.</span><span class="n">newDocument</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">)</span>
+<span class="c1"># App.setActiveDocument(&quot;Hello&quot;)</span>
+<span class="c1"># App.ActiveDocument=App.getDocument(&quot;Hello&quot;)</span>
+<span class="c1"># Gui.ActiveDocument=Gui.getDocument(&quot;Hello&quot;)</span>
+<span class="n">box</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">addObject</span><span class="p">(</span><span class="s2">&quot;Part::Box&quot;</span><span class="p">,</span> <span class="s2">&quot;MyCube&quot;</span><span class="p">)</span>
+<span class="n">box</span><span class="o">.</span><span class="n">Length</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># set to 100 mm</span>
+<span class="n">box</span><span class="o">.</span><span class="n">setExpression</span><span class="p">(</span><span class="s2">&quot;Width&quot;</span><span class="p">,</span> <span class="s2">&quot;Length *2&quot;</span><span class="p">)</span>
+<span class="n">box</span><span class="o">.</span><span class="n">setExpression</span><span class="p">(</span><span class="s2">&quot;Height&quot;</span><span class="p">,</span> <span class="s2">&quot;Width / 2&quot;</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">recompute</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<p>支持单位，所以可以：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">box</span><span class="o">.</span><span class="n">Length</span> <span class="o">=</span> <span class="s2">&quot;2 in&quot;</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">recompute</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<p>核心依赖于：</p>
+<ul>
+<li>Property 系统：管理对象的属性，支持绑定表达式并动态计算值。</li>
+<li>Expression Evaluator：解析表达式，计算属性值。建立属性之间的依赖关系，确保重计算时值的正确性。</li>
+<li>Unit Framework：处理单位并确保单位一致性。支持物理单位（如 mm, in, deg）的自动转换。</li>
+</ul>
+<h3 id="gui">Gui 模块</h3>
+<p>FreeCADGui（即Gui）是 FreeCAD 中的图形用户界面模块，用于管理和操作 FreeCAD 的 GUI（图形用户界面）部分。</p>
+<p>它与 FreeCAD 核心模块（即App模块）不同，</p>
+<ul>
+<li>FreeCAD 主要用于后台建模和管理文档数据，而 </li>
+<li>FreeCADGui 则负责与用户交互的可视化相关内容，例如 3D 视图、工具栏、任务面板、属性编辑等。</li>
+</ul>
+<h4 id="gui-document">GUI Document</h4>
+<p>GUI Document 是一个与普通文档（Document）相对应的图形用户界面表示。它由 FreeCAD 的 FreeCADGui.ActiveDocument 管理，负责处理文档中的对象如何在 FreeCAD 的图形界面（如 3D 视图、任务面板、属性面板等）中显示和交互。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">d</span> <span class="o">=</span> <span class="n">Gui</span><span class="o">.</span><span class="n">ActiveDocument</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">Gui</span><span class="o">.</span><span class="n">activeDocument</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="objects">Objects</h4>
+<p>和App中的DocumentObject对应，GUI中提供显示支持。</p>
+<p>获取当前对象：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">o</span> <span class="o">=</span> <span class="n">Gui</span><span class="o">.</span><span class="n">ActiveDocument</span><span class="o">.</span><span class="n">activeObject</span><span class="p">()</span>
+<span class="n">o</span><span class="o">.</span><span class="n">ShapeColor</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>获取指定名称对象</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">o</span> <span class="o">=</span> <span class="n">Gui</span><span class="o">.</span><span class="n">ActiveDocument</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="s2">&quot;MyCube&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>获取顶层对象列表</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">root_objects</span> <span class="o">=</span> <span class="n">Gui</span><span class="o">.</span><span class="n">ActiveDocument</span><span class="o">.</span><span class="n">TreeRootObjects</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="view">View 视图</h4>
+<p>获取视图</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Gui.ActiveDocument.ActiveView
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>设置视角（如顶部视图、正视图、轴测视图等）。</li>
+<li>调整视图（如缩放、平移、适应所有对象）。</li>
+<li>获取鼠标及屏幕坐标信息。</li>
+<li>捕获当前视图为图像。</li>
+<li>获取用户交互信息（如鼠标点击位置）。</li>
+<li>实时控制相机和视图参数。</li>
+</ul>
+<p>比如：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">view</span> <span class="o">=</span> <span class="n">Gui</span><span class="o">.</span><span class="n">ActiveDocument</span><span class="o">.</span><span class="n">ActiveView</span>
+
+<span class="n">view</span><span class="o">.</span><span class="n">viewTop</span><span class="p">()</span>
+<span class="n">view</span><span class="o">.</span><span class="n">viewBottom</span><span class="p">()</span>
+<span class="n">view</span><span class="o">.</span><span class="n">viewFront</span><span class="p">()</span>
+<span class="n">view</span><span class="o">.</span><span class="n">viewAxometric</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="command-framework">Command Framework?</h4>
+<blockquote>
+<p>Qt Creator 内部似乎也实现了类似的 Command 框架。</p>
+</blockquote>
+<p>Qt中菜单项和工具按钮，都是QAction，在FreeCAD中，为了让QAction和workbench等模组解耦，它定义了一套所谓的命令框架（Command Framework）。</p>
+<p>在C++下，Open命令定义如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OpenCommand</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Command</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="n">OpenCommand</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Command</span><span class="p">(</span><span class="s">&quot;Std_Open&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// set up menu text, status tip, ...</span>
+<span class="w">    </span><span class="n">sMenuText</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&amp;Open&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">sToolTipText</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Open a file&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">sWhatsThis</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Open a file&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">sStatusTip</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Open a file&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">sPixmap</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Open&quot;</span><span class="p">;</span><span class="w"> </span><span class="c1">// name of a registered pixmap</span>
+<span class="w">    </span><span class="n">sAccel</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Shift+P&quot;</span><span class="p">;</span><span class="w"> </span><span class="c1">// or &quot;P&quot; or &quot;P, L&quot; or &quot;Ctrl+X, Ctrl+C&quot; for a sequence</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">activated</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">QString</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="c1">// make a filter of all supported file formats</span>
+<span class="w">    </span><span class="n">QStringList</span><span class="w"> </span><span class="n">FileList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QFileDialog</span><span class="o">::</span><span class="n">getOpenFileNames</span><span class="p">(</span><span class="w"> </span><span class="n">filter</span><span class="p">,</span><span class="n">QString</span><span class="p">(),</span><span class="w"> </span><span class="n">getMainWindow</span><span class="p">()</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">QStringList</span><span class="o">::</span><span class="n">Iterator</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FileList</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">FileList</span><span class="p">.</span><span class="n">end</span><span class="p">();</span><span class="w"> </span><span class="o">++</span><span class="n">it</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">getGuiApplication</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">open</span><span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">).</span><span class="n">latin1</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="workbench_1">workbench</h4>
+<p>Workbench 主要配置菜单栏、工具栏、命令、停靠窗口</p>
+<ul>
+<li>setupMenuBar()</li>
+<li>setupToolBars()</li>
+<li>setupCommandBars()</li>
+<li>setupDockWindows()</li>
+</ul>
+<h2 id="_2">参考</h2>
+<ul>
+<li>https://wiki.freecad.org/PySide</li>
+<li>https://freecad.github.io/SourceDoc/modules.html</li>
+<li>https://github.com/FreeCAD/FreeCAD</li>
+</ul>
+<ul>
+<li>https://github.com/FreeCAD/FreeCAD-library</li>
+<li>https://github.com/shaise/FreeCAD_FastenersWB</li>
+<li>https://github.com/boltsparts/boltsparts</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2025-01-12T20:36:00+08:00" pubdate>Sun 12 January 2025</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/cax.html'>CAx</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/python.html">Python</a>,    <a class="category" href="https://blog.debao.me/tags/pyside.html">pyside</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

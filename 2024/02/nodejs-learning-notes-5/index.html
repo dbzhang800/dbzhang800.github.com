@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Node.js 学习笔记（五） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/javascript.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Node.js 学习笔记（五）</h1>
+    <p class="meta">
+<time datetime="2024-02-03T00:16:00+08:00" pubdate>Sat 03 February 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>接前面</p>
+<ul>
+<li><a href="https://blog.debao.me/2024/01/javascript-learning-notes-4/">JavaScript基础学习</a>：ECMAScript 基础知识</li>
+<li><a href="https://blog.debao.me/2024/01/nodejs-learning-notes-1/">Node.js学习笔记（一）</a>：Node.js是什么，如何安装，如何简单使用，工作目录与脚本所在目录获取</li>
+<li><a href="https://blog.debao.me/2024/01/nodejs-learning-notes-2/">Node.js学习笔记（二）</a>：命令行参数、环境变量、标准输入、标准输出、标准出错、信号处理、程序返回值，打包</li>
+<li><a href="https://blog.debao.me/2024/01/nodejs-learning-notes-3/">Node.js学习笔记（三）</a>：fs模块API，三种风格——同步、异步回调、异步promise，三种层级——底层、高层、流 </li>
+<li><a href="https://blog.debao.me/2024/01/nodejs-learning-notes-3/">Node.js学习笔记（四）</a>：网络功能：tcp、udp、tls、http、...</li>
+<li>Node.js学习笔记（五）：事件模块：EventEmitter、Event、EventTarget、NodeEventTarget</li>
+</ul>
+<p>继续了解Node.js。看看events模块</p>
+<h2 id="_1">引言</h2>
+<p>Nodejs手册中介绍说：</p>
+<blockquote>
+<p>Node.js核心API的很大一部分是基于一种惯用的异步事件驱动架构构建的，其中某些类型的对象（称为“emitters”）会发出命名事件，从而调用函数对象（“listeners”）。</p>
+</blockquote>
+<p>功能类似的三个类：</p>
+<ul>
+<li>EventEmitter，Nodejs中事件发射类</li>
+<li>EventTarget，Nodejs中仿WebAPI接口类</li>
+<li>NodeEventTarget，Nodejs将EventTarget封装成类似EventEmitter的接口</li>
+</ul>
+<h2 id="eventemitter">EventEmitter</h2>
+<p>事件模块的核心类是 EventEmitter，我觉得可以先和Qt信号槽对比一下：</p>
+<table>
+<thead>
+<tr>
+<th>特性/概念</th>
+<th><code>EventEmitter</code> (Node.js)</th>
+<th><code>QObject</code> (Qt)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>模块</strong></td>
+<td>内置模块 (<code>events</code>)</td>
+<td>核心库（ <code>QtCore</code> )</td>
+</tr>
+<tr>
+<td><strong>实例化</strong></td>
+<td><code>const emitter = new EventEmitter();</code></td>
+<td><code>QObject</code> 的派生类的实例化</td>
+</tr>
+<tr>
+<td><strong>添加监听器</strong></td>
+<td><code>on()</code> 或 <code>addListener()</code></td>
+<td><code>connect()</code></td>
+</tr>
+<tr>
+<td><strong>发射</strong></td>
+<td><code>emit()</code></td>
+<td>调用信号函数，<code>一个空的 emit宏</code></td>
+</tr>
+<tr>
+<td><strong>一次性监听</strong></td>
+<td><code>once()</code></td>
+<td>connect() 使用<code>Qt::UniqueConnection</code></td>
+</tr>
+<tr>
+<td><strong>移除监听器</strong></td>
+<td><code>off()</code>、<code>removeListener()</code> 或 <code>removeAllListeners()</code></td>
+<td><code>disconnect（）</code></td>
+</tr>
+<tr>
+<td><strong>传递参数</strong></td>
+<td>通过 <code>emit</code> 方法传递参数给监听器</td>
+<td>通过信号的参数列表传递数据给槽函数</td>
+</tr>
+<tr>
+<td><strong>自定义事件</strong></td>
+<td>灵活</td>
+<td>派生QObject 增加信号</td>
+</tr>
+</tbody>
+</table>
+<p>通过<code>on()</code>来添加事件监听器，我们在标准输入处理，文件系统模块fs，各种网络模块中的例子中都已经反复在用了。但是只是照猫画虎,需要稍微多了解一点点。</p>
+<p>不妨，通过若干简短的例子来学习一下</p>
+<h3 id="eventemitter_1">初识 EventEmitter</h3>
+<p>建立自定义事件(mySignal)和监听器的连接，而后 emit自定义事件： </p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">EventEmitter</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;node:events&#39;</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">myEmitter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">EventEmitter</span><span class="p">();</span>
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Hi 1+1=10, your event mySignal received!&#39;</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">);</span>
+
+<span class="c1">// output:</span>
+<span class="c1">// Hi 1+1=10, your event mySignal received!</span>
+</code></pre></div></td></tr></table></div>
+
+<p>可以多次emit，以多次触发监听器：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">EventEmitter</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;node:events&#39;</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">myEmitter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">EventEmitter</span><span class="p">();</span>
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Hi 1+1=10, your event mySignal received!&#39;</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">);</span>
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">);</span>
+
+<span class="c1">// output:</span>
+<span class="c1">// Hi 1+1=10, your event mySignal received!</span>
+<span class="c1">// Hi 1+1=10, your event mySignal received!</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果多次emit，只想响应一次，只需要使用<code>once()</code>而不是<code>on()</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">EventEmitter</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;node:events&#39;</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">myEmitter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">EventEmitter</span><span class="p">();</span>
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">once</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Hi 1+1=10, your event mySignal received!&#39;</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">);</span>
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">);</span>
+
+<span class="c1">// output:</span>
+<span class="c1">// Hi 1+1=10, your event mySignal received!</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果多次建立连接，回调会被调用同样次数：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">EventEmitter</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;node:events&#39;</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">myEmitter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">EventEmitter</span><span class="p">();</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">myCallback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Hi 1+1=10, your event mySignal received!&#39;</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">myCallback</span><span class="p">);</span>
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">myCallback</span><span class="p">);</span>
+
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">);</span>
+
+<span class="c1">// output:</span>
+<span class="c1">// Hi 1+1=10, your event mySignal received!</span>
+<span class="c1">// Hi 1+1=10, your event mySignal received!</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_2">传递参数</h3>
+<p>传递参数简单，直接就是函数参数：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">EventEmitter</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;node:events&#39;</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">myEmitter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">EventEmitter</span><span class="p">();</span>
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Hi 1+1=10, your event mySignal with </span><span class="si">${</span><span class="nx">a</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">b</span><span class="si">}</span><span class="sb"> received!`</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">);</span>
+
+<span class="c1">// output:</span>
+<span class="c1">// Hi 1+1=10, your event mySignal with 1 2 received!</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果要使用 this的话，注意不要用箭头函数：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">EventEmitter</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;node:events&#39;</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">myEmitter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">EventEmitter</span><span class="p">();</span>
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">,</span><span class="w"> </span><span class="nx">myEmitter</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">this</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">,</span><span class="w"> </span><span class="nx">myEmitter</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">this</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">);</span>
+
+<span class="c1">// output:</span>
+<span class="c1">// 1 2 true</span>
+<span class="c1">// 1 2 false</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="eventtarget-event">EventTarget 与 Event</h2>
+<p>Nodejs提供了仿WebAPI中的EventTarget，Event、CustomEvent。EventTarget不是EventEmitter派生类，接口简单：</p>
+<ul>
+<li>eventTarget.addEventListener()</li>
+<li>eventTarget.dispatchEvent()</li>
+<li>eventTarget.removeEventListener()</li>
+</ul>
+<p>Node.js 的 EventTarget与Web API的EventTarget 有所不同：</p>
+<ul>
+<li>在 Node.js 中，没有层次结构或事件传播的概念。分发到 <code>EventTarget</code> 的事件不会自动在嵌套的目标对象层次结构中传播。每个 <code>EventTarget</code> 独立处理其自己的处理程序集。</li>
+<li>在 Node.js 中，如果事件监听器是异步函数或返回 <code>Promise</code>，并且该 <code>Promise</code> 被拒绝，拒绝将自动捕获并与同步抛出的监听器一样处理。</li>
+</ul>
+<h3 id="_3">例子</h3>
+<p>简单例子：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">myTarget</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">EventTarget</span><span class="p">();</span>
+<span class="nx">myTarget</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;mySignal received&quot;</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">myTarget</span><span class="p">.</span><span class="nx">dispatchEvent</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">Event</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{}));</span>
+</code></pre></div></td></tr></table></div>
+
+<p>输出结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">Event</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">mySignal</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">defaultPrevented</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">cancelable</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">timeStamp</span><span class="p">:</span><span class="w"> </span><span class="m m-Double">25.34469997882843</span>
+<span class="p">}</span>
+<span class="nx">mySignal</span><span class="w"> </span><span class="nx">received</span>
+</code></pre></div></td></tr></table></div>
+
+<p>要传递参数的话，用CustomEvent而不是Event</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">myTarget</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">EventTarget</span><span class="p">();</span>
+<span class="nx">myTarget</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">detail</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;mySignal received&quot;</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">myTarget</span><span class="p">.</span><span class="nx">dispatchEvent</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">CustomEvent</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nx">detail</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;1+1=10&#39;</span><span class="p">}));</span>
+
+<span class="c1">//output:</span>
+<span class="c1">// 1+1=10</span>
+<span class="c1">// mySignal received</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>所谓CustomEvent，也是标准定义好的。提供了detail成员。</p>
+</blockquote>
+<h3 id="nodeeventtarget">NodeEventTarget</h3>
+<p>nodejs从EventTarget派生出 NodeEventTarget，以模仿EventEmitter的接口。</p>
+<p>但是奇怪，文档少的可怜，我连一个小的demo都凑不齐（跑不通）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// import NodeEventTarget from &#39;node-event-target&#39;;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">myEmitter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">NodeEventTarget</span><span class="p">();</span>
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Hi 1+1=10, your event mySignal with </span><span class="si">${</span><span class="nx">a</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">b</span><span class="si">}</span><span class="sb"> received!`</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">myEmitter</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;mySignal&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">);</span>
+
+<span class="c1">// expected output:</span>
+<span class="c1">// Hi 1+1=10, your event mySignal with 1 2 received!</span>
+</code></pre></div></td></tr></table></div>
+
+<p>查看源码，发现其在文件 <a href="https://github.com/nodejs/node/blob/8a41d9b636be86350cd32847c3f89d327c4f6ff7/lib/internal/event_target.js#L875">lib/internal/event_target.js</a>内：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nx">NodeEventTarget</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">EventTarget</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="p">[</span><span class="nx">kIsNodeEventTarget</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="nx">defaultMaxListeners</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">10</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kr">constructor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">super</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">initNodeEventTarget</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">// ...</span>
+</code></pre></div></td></tr></table></div>
+
+<p>还是不知道怎么用，以后慢慢看...</p>
+<h2 id="_4">参考</h2>
+<ul>
+<li>https://nodejs.org/api/events.html</li>
+<li>https://dom.spec.whatwg.org/#event</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-02-03T00:16:00+08:00" pubdate>Sat 03 February 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/javascript.html'>JavaScript</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/nodejs.html">nodejs</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

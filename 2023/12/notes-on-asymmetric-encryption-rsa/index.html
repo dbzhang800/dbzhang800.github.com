@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>非对称加密RSA小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">非对称加密RSA小记</h1>
+    <p class="meta">
+<time datetime="2023-12-13T22:04:00+08:00" pubdate>Wed 13 December 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><p><strong>RSA加密算法</strong>是一种非对称加密算法（public-key cryptosystem）。它是由 罗纳德·李维斯特（Ron Rivest）、阿迪·萨莫尔（Adi Shamir）和 伦纳德·阿德曼（Leonard Adleman）在1977年一起提出的。当时他们三人都在MIT工作。RSA 是他们三人姓氏开头字母拼成的。RSA算法包括四个步骤：密钥生成、密钥分发、加密和解密。</p>
+<blockquote>
+<p>非对称公钥-私钥密码系统的想法由 Whitfield Diffie 和 Martin Hellman 提出，他们于 1976 年发表了这个概念。在这之前，所有的加密方法都是同一种模式——对称加密算法（Symmetric-key algorithm）。</p>
+</blockquote>
+<h2 id="rsa">RSA 原理</h2>
+<p>RSA 背后的基本原理是观察到找到三个非常大的正整数 e、d 和 n 是可行的，这样对所有整数 m（0 ≤ m &lt; n）进行模幂运算：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>(m**e)**d ≡ m (mod n)
+</code></pre></div></td></tr></table></div>
+
+<p>其中，≡ 表示模同余（modular congruence)。同除以<code>n</code>时，<code>(m**e)**d</code>与<code>m</code>有相同的余数。</p>
+<ul>
+<li>公钥由整数 n 和 e 表示</li>
+<li>私钥由整数 d 表示（解密过程中也会使用 n，也可视为私钥的一部分）</li>
+<li>m 代表消息</li>
+</ul>
+<p>RSA的安全性在于：已知公钥n和e，难以推导出私钥d。</p>
+<p>注意：尽管通常将公钥e用于加密，私钥d用于解密。数学上，d和e的顺序完全是可以交换的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>(m**d)**e ≡ m (mod n)
+</code></pre></div></td></tr></table></div>
+
+<h2 id="key">Key生成</h2>
+<h3 id="nd-e">生成n、d、和 e</h3>
+<h4 id="1-p-q">1. 选择两个大质数 p 和 q</h4>
+<ul>
+<li>为了使分解更加困难，p和q应该随机选择，都很大并且有很大的差异。选择它们的标准方法是：<strong>选择随机整数并使用质性测试</strong>，直到找到两个质数。</li>
+<li>p 和 q 应该保密。 </li>
+</ul>
+<h4 id="2-n-pq">2. 计算 n = pq</h4>
+<ul>
+<li>n 用作公钥和私钥的模数。 它的长度通常以位表示，即<strong>密钥长度</strong>。常说的RSA 1024、2048、4096就是这个值的二进制位数。</li>
+</ul>
+<ul>
+<li>n 作为公钥的一部分发布。</li>
+</ul>
+<h4 id="3-n">3. 计算 λ(n)</h4>
+<blockquote>
+<p>早期的RSA的文章中，用的φ(p)，而不是 λ(n)。</p>
+</blockquote>
+<p>λ 是Carmichael's totient function 函数。它和 Euler totient function 有如下关系：</p>
+<p><img alt="carmichael-function" src="https://blog.debao.me/images/carmichael-function.svg"></p>
+<blockquote>
+<p>如果两个正整数，除了1之外，没有其他公因子，这两个数就是互质关系（coprime)。不是质数的两个数可以是互质关系，比如21和8。欧拉函数φ(n)用于表示，对于正整数n，在小于等于n的正整数中，有多少个与n构成互质关系。</p>
+</blockquote>
+<p>因为 n = pq，所以 <code>λ(n) = lcm(λ(p), λ(q))</code></p>
+<p>因为 p 和 q 是质数，所以<code>λ(p) = φ(p) = p − 1</code>，<code>λ(q ) = q − 1</code></p>
+<ul>
+<li>λ(n) = lcm(p − 1, q − 1)。lcm可以通过欧几里德算法计算，因为lcm(a,b)=|ab|/gcd(a,b)</li>
+</ul>
+<ul>
+<li>λ(n) 是保密的。</li>
+</ul>
+<blockquote>
+<p>lcm：Least common multiple（最小公倍数）</p>
+<p>gcd：Greatest common divisor（最大公约数）</p>
+</blockquote>
+<h4 id="4-e">4. 选择一个整数 e</h4>
+<blockquote>
+<p>早期的RSA文章，都是选择d，而后计算e。但现在主流的实现，都是选择e，而后计算d。</p>
+</blockquote>
+<p>e的选择需要满足： 2 &lt; e &lt; λ(n) 且 gcd(e, λ(n)) = 1； 也就是说，e 和 λ(n) 互质。</p>
+<ul>
+<li>e 具有较短的位长度和较小的汉明权重，可以实现更高效的加密 – 最常用的 e 值为 216 + 1 = 65537。e 的最小（也是最快）可能值为 3，但如此小的值 e 已被证明在某些设置中不太安全。</li>
+<li>e 作为公钥的一部分发布。</li>
+</ul>
+<h4 id="5-d">5. 确定 d</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code> d ≡  e^(-1) (mod λ(n))
+</code></pre></div></td></tr></table></div>
+
+<p>d 是 e 模 λ(n) 的模乘逆。求解 d 方程 <code>de ≡ 1 (mod λ(n))</code>。</p>
+<ul>
+<li>d 作为私钥指数保密。</li>
+</ul>
+<blockquote>
+<p>公钥由模数 n 和公共（或加密）指数 e 组成。 私钥由私有（或解密）指数 d 组成，必须保密。 p、q 和 λ(n) 也必须保密，因为它们可用于计算 d。 事实上，在计算 d 后它们都可以被丢弃。</p>
+</blockquote>
+<p>n已知，如果能够分解n，那么p和q就能被计算出来，进而找到d。破解RSA的难点在于n的因数分解，对于大整数的因数分解，目前没有高效的算法。</p>
+<h3 id="_1">例子</h3>
+<p>生成Key，全程涉及6个数字：p、q、n、lam(n)、e、d。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="c1"># 1 选择两个素数p,q</span>
+<span class="n">p</span> <span class="o">=</span> <span class="mi">61</span>
+<span class="n">q</span> <span class="o">=</span> <span class="mi">53</span>
+
+<span class="c1"># 2 计算n=p*q, 结果 3233</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">p</span> <span class="o">*</span> <span class="n">q</span>
+
+<span class="c1"># 3 计算lam(n)=lcm((p-1), (q-1)), 结果 780</span>
+<span class="n">lam_n</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">lcm</span><span class="p">((</span><span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c1"># 4 选择一个整数e, 1&lt;e&lt;lam(n), 且e与lam(n)互质</span>
+<span class="n">e</span> <span class="o">=</span> <span class="mi">17</span>
+
+<span class="c1"># 5 计算d, 使得e*d=1(mod lam(n)), 结果 413</span>
+<span class="c1">#   考虑 e*d = 1+k*lam(n), k 为任意正整数</span>
+
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">lam_n</span><span class="p">)</span> <span class="o">%</span> <span class="n">e</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">lam_n</span><span class="p">)</span> <span class="o">//</span> <span class="n">e</span>
+        <span class="k">break</span>
+
+<span class="c1"># 6 公钥为(n,e), 私钥为(n,d)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;公钥为(n,e): (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;私钥为(n,d): (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>公钥为(n,e): (3233,17)
+私钥为(n,d): (3233,413)
+</code></pre></div></td></tr></table></div>
+
+<p>使用上面的公钥和私钥，加密解密</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">m</span> <span class="o">=</span> <span class="mi">65</span>
+<span class="c1"># 加密，结果 2790</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">m</span> <span class="o">**</span> <span class="mi">17</span> <span class="o">%</span> <span class="mi">3233</span>
+<span class="c1"># 解密</span>
+<span class="n">m2</span> <span class="o">=</span> <span class="n">c</span> <span class="o">**</span> <span class="mi">413</span> <span class="o">%</span> <span class="mi">3233</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="openssl-key">OpenSSL 查看key内容</h3>
+<p>可以使用openssl命令查看一个<strong>rsa公钥文件</strong>的内容</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl<span class="w"> </span>rsa<span class="w"> </span>-pubin<span class="w"> </span>-in<span class="w"> </span>rsa_2048.pub<span class="w"> </span>-text
+</code></pre></div></td></tr></table></div>
+
+<p>输出如下（包含Modulus：n 和 Exponent：e）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Public</span><span class="o">-</span><span class="n">Key</span><span class="p">:</span> <span class="p">(</span><span class="mi">2048</span> <span class="n">bit</span><span class="p">)</span>
+<span class="n">Modulus</span><span class="p">:</span>
+    <span class="mi">00</span><span class="p">:</span><span class="n">d9</span><span class="p">:</span><span class="mi">69</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="n">fd</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mi">95</span><span class="p">:</span><span class="mi">5</span><span class="n">d</span><span class="p">:</span><span class="mi">96</span><span class="p">:</span><span class="n">a7</span><span class="p">:</span><span class="mi">6</span><span class="n">f</span><span class="p">:</span><span class="mi">26</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">5</span><span class="n">c</span><span class="p">:</span>
+    <span class="p">......</span>
+    <span class="mi">05</span><span class="p">:</span><span class="mi">24</span><span class="p">:</span><span class="n">e5</span><span class="p">:</span><span class="mi">68</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mi">3</span><span class="n">b</span><span class="p">:</span><span class="mi">14</span><span class="p">:</span><span class="n">c9</span><span class="p">:</span><span class="mi">95</span><span class="p">:</span><span class="mi">3</span><span class="n">f</span><span class="p">:</span><span class="mi">72</span><span class="p">:</span><span class="n">dd</span><span class="p">:</span><span class="mi">5</span><span class="n">f</span><span class="p">:</span><span class="mi">35</span><span class="p">:</span><span class="mi">4</span><span class="n">f</span><span class="p">:</span>
+    <span class="mi">29</span><span class="p">:</span><span class="mi">6</span><span class="n">f</span>
+<span class="n">Exponent</span><span class="p">:</span> <span class="mi">65537</span> <span class="p">(</span><span class="mi">0</span><span class="n">x10001</span><span class="p">)</span>
+<span class="n">writing</span> <span class="n">RSA</span> <span class="n">key</span>
+<span class="o">-----</span><span class="kr">BEGIN</span> <span class="n">PUBLIC</span> <span class="n">KEY</span><span class="o">-----</span>
+<span class="n">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2Wk4</span><span class="o">/</span><span class="n">RZTlV2Wp28mMlzG</span>
+<span class="p">......</span>
+<span class="n">bwIDAQAB</span>
+<span class="o">-----</span><span class="kr">END</span> <span class="n">PUBLIC</span> <span class="n">KEY</span><span class="o">-----</span>
+</code></pre></div></td></tr></table></div>
+
+<p>也可以使用openssl命令查看一个<strong>rsa私钥文件</strong>的内容</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl<span class="w"> </span>rsa<span class="w"> </span>-in<span class="w"> </span>rsa_2048.key<span class="w"> </span>-text
+</code></pre></div></td></tr></table></div>
+
+<p>私钥中，除了前面提到的：</p>
+<ul>
+<li>prime1：p</li>
+<li>prime2：q</li>
+<li>modulus：N = p * q</li>
+<li>publicExponent：e</li>
+<li>privateExponent：d</li>
+</ul>
+<p>还有另外三个值（这三个值有助于更高效地执行解密操作）：</p>
+<ul>
+<li>exponent1：<code>d (mod p-1)</code></li>
+<li>exponent2：<code>d (mod q-1)</code></li>
+<li>coefficient：<code>q^(-1) (mod p)</code></li>
+</ul>
+<p>具体输出如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Private</span><span class="o">-</span><span class="n">Key</span><span class="p">:</span> <span class="p">(</span><span class="mi">2048</span> <span class="n">bit</span><span class="p">,</span> <span class="mi">2</span> <span class="n">primes</span><span class="p">)</span>
+<span class="n">modulus</span><span class="p">:</span>
+    <span class="mi">00</span><span class="p">:</span><span class="n">d9</span><span class="p">:</span><span class="mi">69</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="n">fd</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mi">95</span><span class="p">:</span><span class="mi">5</span><span class="n">d</span><span class="p">:</span><span class="mi">96</span><span class="p">:</span><span class="n">a7</span><span class="p">:</span><span class="mi">6</span><span class="n">f</span><span class="p">:</span><span class="mi">26</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">5</span><span class="n">c</span><span class="p">:</span>
+    <span class="p">......</span>
+    <span class="mi">05</span><span class="p">:</span><span class="mi">24</span><span class="p">:</span><span class="n">e5</span><span class="p">:</span><span class="mi">68</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mi">3</span><span class="n">b</span><span class="p">:</span><span class="mi">14</span><span class="p">:</span><span class="n">c9</span><span class="p">:</span><span class="mi">95</span><span class="p">:</span><span class="mi">3</span><span class="n">f</span><span class="p">:</span><span class="mi">72</span><span class="p">:</span><span class="n">dd</span><span class="p">:</span><span class="mi">5</span><span class="n">f</span><span class="p">:</span><span class="mi">35</span><span class="p">:</span><span class="mi">4</span><span class="n">f</span><span class="p">:</span>
+    <span class="mi">29</span><span class="p">:</span><span class="mi">6</span><span class="n">f</span>
+<span class="n">publicExponent</span><span class="p">:</span> <span class="mi">65537</span> <span class="p">(</span><span class="mi">0</span><span class="n">x10001</span><span class="p">)</span>
+<span class="n">privateExponent</span><span class="p">:</span>
+    <span class="mi">47</span><span class="p">:</span><span class="mi">09</span><span class="p">:</span><span class="mi">63</span><span class="p">:</span><span class="n">f7</span><span class="p">:</span><span class="mi">01</span><span class="p">:</span><span class="n">e4</span><span class="p">:</span><span class="mi">06</span><span class="p">:</span><span class="mi">92</span><span class="p">:</span><span class="mi">61</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="n">cd</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="n">f0</span><span class="p">:</span><span class="mi">84</span><span class="p">:</span><span class="n">b2</span><span class="p">:</span>
+    <span class="p">......</span>
+    <span class="n">f8</span><span class="p">:</span><span class="n">a9</span><span class="p">:</span><span class="mi">9</span><span class="n">a</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mi">34</span><span class="p">:</span><span class="n">a5</span><span class="p">:</span><span class="mi">1</span><span class="n">a</span><span class="p">:</span><span class="n">ec</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">1</span><span class="n">e</span><span class="p">:</span><span class="n">a4</span><span class="p">:</span><span class="mi">47</span><span class="p">:</span><span class="n">d9</span><span class="p">:</span><span class="mi">3</span><span class="n">a</span><span class="p">:</span><span class="n">da</span><span class="p">:</span>
+    <span class="n">bd</span>
+<span class="n">prime1</span><span class="p">:</span>
+    <span class="mi">00</span><span class="p">:</span><span class="n">f0</span><span class="p">:</span><span class="mi">71</span><span class="p">:</span><span class="n">f0</span><span class="p">:</span><span class="n">d6</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span><span class="n">d6</span><span class="p">:</span><span class="mi">1</span><span class="n">b</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">81</span><span class="p">:</span><span class="mi">9</span><span class="n">a</span><span class="p">:</span><span class="mi">30</span><span class="p">:</span><span class="n">c7</span><span class="p">:</span><span class="n">ee</span><span class="p">:</span><span class="mi">95</span><span class="p">:</span>
+    <span class="p">.......</span>
+    <span class="mi">49</span><span class="p">:</span><span class="n">c8</span><span class="p">:</span><span class="mi">43</span><span class="p">:</span><span class="mi">94</span><span class="p">:</span><span class="n">b9</span><span class="p">:</span><span class="n">b9</span><span class="p">:</span><span class="n">dc</span><span class="p">:</span><span class="mi">74</span><span class="p">:</span><span class="n">d5</span>
+<span class="n">prime2</span><span class="p">:</span>
+    <span class="mi">00</span><span class="p">:</span><span class="n">e7</span><span class="p">:</span><span class="mi">79</span><span class="p">:</span><span class="n">cf</span><span class="p">:</span><span class="mi">6</span><span class="n">b</span><span class="p">:</span><span class="mi">1</span><span class="n">d</span><span class="p">:</span><span class="mi">08</span><span class="p">:</span><span class="mi">35</span><span class="p">:</span><span class="mi">15</span><span class="p">:</span><span class="n">ca</span><span class="p">:</span><span class="n">f3</span><span class="p">:</span><span class="n">d8</span><span class="p">:</span><span class="mi">1</span><span class="n">b</span><span class="p">:</span><span class="n">f0</span><span class="p">:</span><span class="mi">02</span><span class="p">:</span>
+    <span class="p">......</span>
+    <span class="mi">56</span><span class="p">:</span><span class="n">fd</span><span class="p">:</span><span class="mi">60</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="n">b5</span><span class="p">:</span><span class="n">bd</span><span class="p">:</span><span class="n">b1</span><span class="p">:</span><span class="n">d7</span><span class="p">:</span><span class="mi">33</span>
+<span class="n">exponent1</span><span class="p">:</span>
+    <span class="mi">00</span><span class="p">:</span><span class="mi">8</span><span class="n">c</span><span class="p">:</span><span class="mi">47</span><span class="p">:</span><span class="mi">3</span><span class="n">d</span><span class="p">:</span><span class="mi">66</span><span class="p">:</span><span class="mi">31</span><span class="p">:</span><span class="mi">6</span><span class="n">b</span><span class="p">:</span><span class="mi">4</span><span class="n">f</span><span class="p">:</span><span class="mi">85</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="mi">79</span><span class="p">:</span><span class="n">fb</span><span class="p">:</span><span class="mi">3</span><span class="n">a</span><span class="p">:</span><span class="n">f3</span><span class="p">:</span>
+    <span class="p">......</span>
+    <span class="mi">66</span><span class="p">:</span><span class="mi">04</span><span class="p">:</span><span class="mi">63</span><span class="p">:</span><span class="mi">81</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span><span class="n">ff</span><span class="p">:</span><span class="n">eb</span><span class="p">:</span><span class="mi">5</span><span class="n">d</span>
+<span class="n">exponent2</span><span class="p">:</span>
+    <span class="mi">00</span><span class="p">:</span><span class="n">c9</span><span class="p">:</span><span class="mi">6</span><span class="n">b</span><span class="p">:</span><span class="mi">2</span><span class="n">a</span><span class="p">:</span><span class="mi">3</span><span class="n">c</span><span class="p">:</span><span class="n">b7</span><span class="p">:</span><span class="mi">87</span><span class="p">:</span><span class="mi">83</span><span class="p">:</span><span class="n">c1</span><span class="p">:</span><span class="n">d1</span><span class="p">:</span><span class="n">d7</span><span class="p">:</span><span class="mi">3</span><span class="n">b</span><span class="p">:</span><span class="mi">4</span><span class="n">e</span><span class="p">:</span><span class="mi">9</span><span class="n">c</span><span class="p">:</span><span class="mi">1</span><span class="n">b</span><span class="p">:</span>
+    <span class="p">......</span>
+    <span class="mi">7</span><span class="n">c</span><span class="p">:</span><span class="mi">92</span><span class="p">:</span><span class="mi">7</span><span class="n">f</span><span class="p">:</span><span class="n">f9</span><span class="p">:</span><span class="n">f2</span><span class="p">:</span><span class="mi">6</span><span class="n">f</span><span class="p">:</span><span class="n">fd</span><span class="p">:</span><span class="mi">47</span><span class="p">:</span><span class="mi">17</span>
+<span class="n">coefficient</span><span class="p">:</span>
+    <span class="mi">00</span><span class="p">:</span><span class="mi">86</span><span class="p">:</span><span class="mi">81</span><span class="p">:</span><span class="mi">97</span><span class="p">:</span><span class="mi">52</span><span class="p">:</span><span class="n">aa</span><span class="p">:</span><span class="mi">2</span><span class="n">e</span><span class="p">:</span><span class="n">ac</span><span class="p">:</span><span class="mi">68</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="mi">6</span><span class="n">f</span><span class="p">:</span><span class="n">d7</span><span class="p">:</span><span class="n">e1</span><span class="p">:</span><span class="mi">2</span><span class="n">c</span><span class="p">:</span><span class="mi">04</span><span class="p">:</span>
+    <span class="p">......</span>
+    <span class="mi">51</span><span class="p">:</span><span class="n">de</span><span class="p">:</span><span class="mi">13</span><span class="p">:</span><span class="n">be</span><span class="p">:</span><span class="mi">70</span><span class="p">:</span><span class="n">dd</span><span class="p">:</span><span class="mi">4</span><span class="n">c</span><span class="p">:</span><span class="mi">40</span><span class="p">:</span><span class="mi">29</span>
+<span class="n">writing</span> <span class="n">RSA</span> <span class="n">key</span>
+<span class="o">-----</span><span class="kr">BEGIN</span> <span class="n">PRIVATE</span> <span class="n">KEY</span><span class="o">-----</span>
+<span class="n">MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDZaTj9FlOVXZan</span>
+<span class="p">......</span>
+<span class="n">pX6lk6dw5kSVHFHeE75w3UxAKQ</span><span class="o">==</span>
+<span class="o">-----</span><span class="kr">END</span> <span class="n">PRIVATE</span> <span class="n">KEY</span><span class="o">-----</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="rfc3447">RFC3447</h3>
+<p>公钥：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">A</span><span class="m m-Double">.1.1</span><span class="w"> </span><span class="nx">RSA</span><span class="w"> </span><span class="nx">public</span><span class="w"> </span><span class="nx">key</span><span class="w"> </span><span class="nx">syntax</span>
+
+<span class="w">   </span><span class="nx">An</span><span class="w"> </span><span class="nx">RSA</span><span class="w"> </span><span class="nx">public</span><span class="w"> </span><span class="nx">key</span><span class="w"> </span><span class="nx">should</span><span class="w"> </span><span class="nx">be</span><span class="w"> </span><span class="nx">represented</span><span class="w"> </span><span class="nx">with</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">ASN</span><span class="m m-Double">.1</span><span class="w"> </span><span class="k">type</span>
+<span class="w">   </span><span class="nx">RSAPublicKey</span><span class="p">:</span>
+
+<span class="w">      </span><span class="nx">RSAPublicKey</span><span class="w"> </span><span class="o">::</span><span class="p">=</span><span class="w"> </span><span class="nx">SEQUENCE</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nx">modulus</span><span class="w">           </span><span class="nx">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nx">n</span>
+<span class="w">          </span><span class="nx">publicExponent</span><span class="w">    </span><span class="nx">INTEGER</span><span class="w">   </span><span class="o">--</span><span class="w"> </span><span class="nx">e</span>
+<span class="w">      </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>私钥：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">A</span><span class="m m-Double">.1.2</span><span class="w"> </span><span class="nx">RSA</span><span class="w"> </span><span class="k">private</span><span class="w"> </span><span class="nx">key</span><span class="w"> </span><span class="nx">syntax</span>
+
+<span class="w">   </span><span class="nx">An</span><span class="w"> </span><span class="nx">RSA</span><span class="w"> </span><span class="k">private</span><span class="w"> </span><span class="nx">key</span><span class="w"> </span><span class="nx">should</span><span class="w"> </span><span class="nx">be</span><span class="w"> </span><span class="nx">represented</span><span class="w"> </span><span class="nx">with</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">ASN</span><span class="m m-Double">.1</span><span class="w"> </span><span class="k">type</span>
+<span class="w">   </span><span class="nx">RSAPrivateKey</span><span class="p">:</span>
+
+<span class="w">      </span><span class="nx">RSAPrivateKey</span><span class="w"> </span><span class="o">::</span><span class="p">=</span><span class="w"> </span><span class="nx">SEQUENCE</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nx">version</span><span class="w">           </span><span class="nx">Version</span><span class="p">,</span>
+<span class="w">          </span><span class="nx">modulus</span><span class="w">           </span><span class="nx">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nx">n</span>
+<span class="w">          </span><span class="nx">publicExponent</span><span class="w">    </span><span class="nx">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nx">e</span>
+<span class="w">          </span><span class="nx">privateExponent</span><span class="w">   </span><span class="nx">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nx">d</span>
+<span class="w">          </span><span class="nx">prime1</span><span class="w">            </span><span class="nx">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nx">p</span>
+<span class="w">          </span><span class="nx">prime2</span><span class="w">            </span><span class="nx">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nx">q</span>
+<span class="w">          </span><span class="nx">exponent1</span><span class="w">         </span><span class="nx">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nx">d</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="p">(</span><span class="nx">p</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">          </span><span class="nx">exponent2</span><span class="w">         </span><span class="nx">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="nx">d</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="p">(</span><span class="nx">q</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">          </span><span class="nx">coefficient</span><span class="w">       </span><span class="nx">INTEGER</span><span class="p">,</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="p">(</span><span class="nx">inverse</span><span class="w"> </span><span class="nx">of</span><span class="w"> </span><span class="nx">q</span><span class="p">)</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="nx">p</span>
+<span class="w">          </span><span class="nx">otherPrimeInfos</span><span class="w">   </span><span class="nx">OtherPrimeInfos</span><span class="w"> </span><span class="nx">OPTIONAL</span>
+<span class="w">      </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_2">填充</h2>
+<blockquote>
+<p>RSA的短明文可导致密文容易被攻击。给明文填充伪数据可以给攻击制造困难。</p>
+</blockquote>
+<p>OpenSSL给出如下选项。</p>
+<ul>
+<li><code>RSA_PKCS1_PADDING</code>，填充至少11字节</li>
+<li><code>RSA_NO_PADDING</code> ，明文前面填充0，如果明文开头有0，解密后会被当做填充去掉</li>
+<li><code>RSA_PKCS1_OAEP_PADDING</code> ，填充至少41字节，(只用于加密和解密)。</li>
+<li><code>RSA_X931_PADDING</code>（只用于 签名）</li>
+<li><code>RSA_PKCS1_PSS_PADDING</code>（只用于 签名和验签）</li>
+<li><code>RSA_PKCS1_WITH_TLS_PADDING</code>（只用于解密，TLS RSA的ClientKeyExchange消息）</li>
+</ul>
+<p>微软.Net中给出：</p>
+<ul>
+<li>RSAEncryptionPaddingMode<ul>
+<li>Oaep：推荐用于新程序</li>
+<li>Pkcs1：PKCS#1 v1.5. 兼容现有程序</li>
+</ul>
+</li>
+<li>RSASignaturePaddingMode <ul>
+<li>Pkcs1：PKCS#1 v1.5 兼容现有程序</li>
+<li>Pss： 推荐用于新程序</li>
+</ul>
+</li>
+</ul>
+<h3 id="pkcs1pkcs1-v15">PKCS1（PKCS#1 v1.5)</h3>
+<p>PKCS#1 标准的早期版本（最高版本 1.5）， 主要用于跟老应用的兼容。</p>
+<p>消息M的长度(mLen)至少比RSA模数n的长度(k)要短11。因为要保证随机非零填充内容PS的长度至少为8。</p>
+<p>对于加密操作，填充格式如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>EM = 0x00 || 0x02 || PS || 0x00 || M
+</code></pre></div></td></tr></table></div>
+
+<p>对于签名操作，填充如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>EM = 0x00 || 0x01 || PS || 0x00 || T
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>在 Crypto 1998 上，Bleichenbacher 表明该版本容易受到实际的自适应选择密文攻击。</p>
+<p>任何新应用程序都应使用 OAEP，并且应尽可能替换 PKCS#1 v1.5 填充。对签名处理要考虑概率签名方案 (RSA-PSS)。</p>
+</blockquote>
+<h3 id="oaep">OAEP</h3>
+<p>OAEP：<strong>Optimal Asymmetric Encryption Padding</strong></p>
+<p>OAEP填充模式对于原文长度要求：<code>原文长度 &lt;= 密钥模长 - (2 * 原文的摘要值长度) - 2</code></p>
+<p>常见摘要值的长度（当用SHA-1时，原文比模长要短至少41字节）：</p>
+<ul>
+<li>SHA-1:      20字节</li>
+<li>SHA-256:  32字节</li>
+<li>SHA-384:  48字节</li>
+<li>SHA-512:  64字节</li>
+</ul>
+<p><img alt="rsa-oaep-padding" src="https://blog.debao.me/images/rsa-oaep-padding.png"></p>
+<h4 id="mgf">MGF</h4>
+<p>MGF：Mask Generation function</p>
+<ul>
+<li>类似于哈希函数，但不同于哈希函数的输出大小固定，MGF的输出长度是可变的。</li>
+<li>接受任意长度的输入，可给出任意长度的输出</li>
+<li>同样的输入，输出结果是确定的</li>
+</ul>
+<h3 id="pss">PSS</h3>
+<p>PSS：<strong>Probabilistic Signature Scheme</strong></p>
+<p>与传统PKCS#1 v1.5方式相比，PSS签名算法引入了随机性。</p>
+<p><img alt="rsa-pss-padding" src="https://blog.debao.me/images/rsa-pss-padding.png"></p>
+<p>图片来源：https://slidetodoc.com/lect-15-digital-signatures-rsa-el-gamal-dsa/</p>
+<p>这个东西太复杂了，简单看看它的反操作——签名验证流程：</p>
+<ul>
+<li>解密：拿到签名S后，使用公钥进行RSA解密操作，得到解密后的EM。最后一个字节如不是0xbc，签名无效。</li>
+<li>分隔 EM：分隔出哈希值H和MaskedDB。（哈希值H长度 由哈希算法确定）</li>
+<li>计算 Salt：计算出DB值，分隔出PS和salt值，如果PS不是全0，签名无效。（salt长度一般与哈希值H长度一致）</li>
+<li>构建M’：计算哈希值mHash，添加salt，建构出M‘</li>
+<li>校验：计算M‘的哈希值，与H进行比较。如不相等，签名无效。</li>
+</ul>
+<h2 id="_3">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/RSA_(cryptosystem)</li>
+<li>https://en.wikipedia.org/wiki/Optimal_asymmetric_encryption_padding</li>
+<li>https://www.di-mgt.com.au/crt_rsa.html</li>
+<li>https://www.rfc-editor.org/rfc/rfc3447</li>
+<li>https://www.51cto.com/article/663141.html</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-12-13T22:04:00+08:00" pubdate>Wed 13 December 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a class="category" href="https://blog.debao.me/tags/rsa.html">rsa</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Git 杂记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Git 杂记</h1>
+    <p class="meta">
+<time datetime="2024-05-31T22:00:00+08:00" pubdate>Fri 31 May 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><div class="toc">
+<ul>
+<li><a href="#_1">工作与个人配置 如何分开？</a><ul>
+<li><a href="#ssh-key">创建新的ssh key</a></li>
+<li><a href="#gitconfig-work">创建 ~/.gitconfig-work</a></li>
+<li><a href="#gitconfig">修改 ~/.gitconfig</a></li>
+<li><a href="#_2">其他</a></li>
+</ul>
+</li>
+<li><a href="#master-vs-main">默认分支: master vs main ?</a></li>
+<li><a href="#windowsgit-openssh">Windows版Git的 openssh</a></li>
+<li><a href="#windowsgitssl">Windows版Git的ssl</a></li>
+<li><a href="#_3">参考</a></li>
+</ul>
+</div>
+<h2 id="_1">工作与个人配置 如何分开？</h2>
+<blockquote>
+<p>考虑一个场景：同一台电脑，既用于工作，又要用于个人事务，如何为其配置不同的email。如果这两个都同时位于github或gitlab上。又如何为其指定ssh的key？？</p>
+</blockquote>
+<p>假定 <code>E:/work</code> 是为工作服务的，其他都是个人事务，那么只需要为work文件夹指定不同的配置即可：</p>
+<h3 id="ssh-key">创建新的ssh key</h3>
+<p>执行命令：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>ssh-keygen<span class="w"> </span>-t<span class="w"> </span>rsa<span class="w"> </span>-C<span class="w"> </span><span class="s2">&quot;work@example.com&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>提示输入文件名时，输入 <code>~/.ssh/id_work_rsa</code>，以便于和默认key进行区分。</p>
+<h3 id="gitconfig-work">创建 ~/.gitconfig-work</h3>
+<p>配置用户名，email，以及key，
+内容如下</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[user]</span>
+<span class="w">    </span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Work&quot;</span>
+<span class="w">    </span><span class="na">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;work@example.com&quot;</span>
+<span class="k">[core]</span>
+<span class="w">   </span><span class="na">sshCommand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ssh -i ~/.ssh/id_work_rsa&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="gitconfig">修改 ~/.gitconfig</h3>
+<p>当仓库位于work文件夹时，使用工作配置</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[includeIf &quot;gitdir:E:/Work/&quot;]</span>
+<span class="w">    </span><span class="na">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">.gitconfig-work</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意：gitdir指定的路径区分大小写（即使在Windows下）。忽略大小写用<code>gitdir/i</code>。</p>
+</blockquote>
+<h3 id="_2">其他</h3>
+<p>完成类似任务，除了这种做法，gitlab文档中还给出了其他做法：</p>
+<ul>
+<li><a href="https://docs.gitlab.com/ee/user/ssh.html#use-different-accounts-on-a-single-gitlab-instance">https://docs.gitlab.com/ee/user/ssh.html#use-different-accounts-on-a-single-gitlab-instance</a></li>
+</ul>
+<h2 id="master-vs-main">默认分支: master vs main ?</h2>
+<blockquote>
+<p>好多年没在Github上创建新代码仓库，也没有更新公司内的gerrit2和gitlab。2年前就突然注意到，天天看到的master分支，竟已经被main取代...</p>
+</blockquote>
+<p>再仔细看看，变更竟发生在4年前：</p>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>事件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>2020年6月</strong></td>
+<td>GitHub 宣布将把默认分支名改为 <code>main</code></td>
+</tr>
+<tr>
+<td><strong>2020年7月</strong></td>
+<td>Git 2.28.0 版本发布，允许用户通过配置选项自定义默认分支</td>
+</tr>
+<tr>
+<td><strong>2020年10月</strong></td>
+<td>GitHub 新建的仓库默认分支改为 <code>main</code></td>
+</tr>
+<tr>
+<td><strong>2020年10月</strong></td>
+<td>GitLab 宣布从 2021 年起新建仓库使用 <code>main</code> 作为默认分支</td>
+</tr>
+<tr>
+<td><strong>2021年</strong></td>
+<td>其他git平台和工具（如 Bitbucket、Azure DevOps）开始支持 <code>main</code> 作为默认分支。</td>
+</tr>
+</tbody>
+</table>
+<p>在此之前：</p>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>事件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>2014年</strong></td>
+<td>Django 宣布将 <code>master-slave</code> 替换为 <code>leader-follower</code> 或 <code>primary-replica</code>。</td>
+</tr>
+<tr>
+<td><strong>2017年</strong></td>
+<td>Redis 将 <code>master-slave</code> 替换为 <code>primary-replica</code>。</td>
+</tr>
+<tr>
+<td><strong>2020年</strong></td>
+<td>Black Lives Matter 运动引发对种族不公正和系统性种族主义的广泛讨论，推动科技行业重新审视用词。</td>
+</tr>
+</tbody>
+</table>
+<p>好吧，更名原因竟然和<strong>主人</strong>与 <strong>奴隶</strong>有关。尽管main与master短也是一个可以说的优势。</p>
+<h2 id="windowsgit-openssh">Windows版Git的 openssh</h2>
+<p>在 Git for Windows 2.33.1 版本中，捆绑的 OpenSSH 升级到了 8.8p1 版本。OpenSSH 8.8 默认禁用了使用 SHA-1 算法的 ssh-rsa 密钥。</p>
+<p>如果不幸，某些老的网站还在用的旧版的 RSA 密钥，并且默认使用 ssh-rsa 签名算法，<strong> 这会造成连接失败</strong>。</p>
+<p>如果不能使用新算法生成密钥对，需要修改ssh配置文件<code>~/.ssh/config</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>Host *
+    PubkeyAcceptedAlgorithms +ssh-rsa
+    HostkeyAlgorithms +ssh-rsa
+</code></pre></div></td></tr></table></div>
+
+<p>或者只针对特定网站</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>Host codereview.debao.me
+   Port 29418
+   HostkeyAlgorithms +ssh-rsa
+   PubkeyAcceptedAlgorithms +ssh-rsa
+</code></pre></div></td></tr></table></div>
+
+<table>
+<thead>
+<tr>
+<th>Git for Windows 版本</th>
+<th>OpenSSH 版本</th>
+<th>关键变化</th>
+<th>发布时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.20.1</td>
+<td>OpenSSH 7.9p1</td>
+<td>初始版本</td>
+<td>2018年12月</td>
+</tr>
+<tr>
+<td>2.23.0</td>
+<td>OpenSSH 8.0p1</td>
+<td>更新到 8.0 版本</td>
+<td>2019年8月</td>
+</tr>
+<tr>
+<td>2.30.0</td>
+<td>OpenSSH 8.4p1</td>
+<td>更新到 8.4 版本</td>
+<td>2021年1月</td>
+</tr>
+<tr>
+<td>2.33.1</td>
+<td>OpenSSH 8.8p1</td>
+<td>禁用了使用 <code>ssh-rsa</code> 的 RSA 签名</td>
+<td>2021年9月</td>
+</tr>
+</tbody>
+</table>
+<h2 id="windowsgitssl">Windows版Git的ssl</h2>
+<p>简单记录一下</p>
+<table>
+<thead>
+<tr>
+<th>Git for Windows 版本</th>
+<th>OpenSSL 版本</th>
+<th>关键变化</th>
+<th>发布时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.20.1</td>
+<td>OpenSSL 1.0.2p</td>
+<td>使用 OpenSSL 1.0.2 系列</td>
+<td>2018年12月</td>
+</tr>
+<tr>
+<td>2.23.0</td>
+<td>OpenSSL 1.1.1c</td>
+<td>升级到 OpenSSL 1.1.1 系列</td>
+<td>2019年8月</td>
+</tr>
+<tr>
+<td>2.30.0</td>
+<td>OpenSSL 1.1.1i</td>
+<td>持续更新 1.1.1 系列</td>
+<td>2021年1月</td>
+</tr>
+<tr>
+<td>2.42.0</td>
+<td>OpenSSL 3.0.11</td>
+<td>升级到 OpenSSL 3.0 系列</td>
+<td>2023年9月</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">参考</h2>
+<ul>
+<li><a href="https://github.com/github/renaming">github/renaming: Guidance for changing the default branch name for GitHub repositories</a></li>
+<li><a href="https://www.openssh.com/txt/release-8.8">https://www.openssh.com/txt/release-8.8</a></li>
+<li><a href="https://git-scm.com/docs/git-config#_conditional_includes">https://git-scm.com/docs/git-config#_conditional_includes</a></li>
+<li><a href="https://itnext.io/how-to-handle-multiple-ssh-keys-with-gitlab-27f7cf2e77ed">https://itnext.io/how-to-handle-multiple-ssh-keys-with-gitlab-27f7cf2e77ed</a></li>
+<li><a href="https://docs.gitlab.com/ee/user/ssh.html#use-different-accounts-on-a-single-gitlab-instance">https://docs.gitlab.com/ee/user/ssh.html#use-different-accounts-on-a-single-gitlab-instance</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-05-31T22:00:00+08:00" pubdate>Fri 31 May 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/git.html">Git</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

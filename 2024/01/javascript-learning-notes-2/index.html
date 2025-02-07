@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>JavaScript学习笔记（二） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/javascript.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">JavaScript学习笔记（二）</h1>
+    <p class="meta">
+<time datetime="2024-01-20T10:24:00+08:00" pubdate>Sat 20 January 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><ul>
+<li><a href="https://blog.debao.me/2024/01/notes-on-javascript-engines-and-runtimes/">JavaScript引擎与运行时入门小记</a>：在哪些环境下可以运行JavaScript</li>
+<li><a href="https://blog.debao.me/2024/01/javascript-learning-notes-1/">JavaScript学习笔记（一）</a>：理解概念，一等函数、编程范式、原型、单线程</li>
+</ul>
+<blockquote>
+<p>继续梳理JavaScript基本概念。</p>
+</blockquote>
+<p>有两个东西，表述起来像绕口令：</p>
+<ul>
+<li>global object：全局对象。全局环境的顶层对象。JavaScript中，始终会定义一个全局对象。（globalThis）</li>
+<li>global objects：全局对象们。涵盖了所有在全局环境中可用的内置对象。（standard built-in objects)。</li>
+</ul>
+<h2 id="_1">全局对象</h2>
+<p>在 JavaScript 中，总是会存在一个全局对象。 在 Web 浏览器中，当使用使用 var 关键字定义全局变量时，它们将被创建为该全局对象的成员（在 Node.js 中，情况有所不同）。 例如：</p>
+<ul>
+<li>在 Web 浏览器中，绝大多数 JavaScript 代码不作为后台任务使用。它们将 Window 作为其全局对象。</li>
+<li>后台 Worker 中运行的代码有一个 WorkerGlobalScope 对象作为其全局对象。</li>
+<li>在 Node.js 下运行的脚本有一个名为 global 的对象作为其全局对象。</li>
+</ul>
+<p>先看个例子（在firefox、chrome、edge下可以运行，在node.js下不适用）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">myAdd</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">b</span>
+<span class="p">}</span>
+
+<span class="kd">var</span><span class="w"> </span><span class="nx">myAdd2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">b</span>
+<span class="p">}</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="nx">myAdd3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">b</span>
+
+<span class="nb">globalThis</span><span class="p">.</span><span class="nx">myAdd4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">b</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myAdd</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">),</span><span class="w"> </span><span class="nx">myAdd2</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">),</span><span class="w"> </span><span class="nx">myAdd3</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">),</span><span class="w"> </span><span class="nx">myAdd4</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">))</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">globalThis</span><span class="p">.</span><span class="nx">myAdd</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">),</span><span class="w"> </span><span class="nb">globalThis</span><span class="p">.</span><span class="nx">myAdd2</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">),</span><span class="w"> </span><span class="nb">globalThis</span><span class="p">.</span><span class="nx">myAdd4</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意：</p>
+<ul>
+<li>globalThis 的属性自动是 全局变量（例子中myAdd4)。</li>
+<li>通过var定义的变量，都会作为 globalThis 的属性存在（注意myAdd和myAdd2）。</li>
+<li>这个也仅适用于浏览器，nodejs行为不一样，见后面var部分。</li>
+</ul>
+<h3 id="globalthis">globalThis</h3>
+<blockquote>
+<p>globalThis 是在ES11（ES2020）中引入的，用于访问 全局对象。在Qt中，截至6.5，QJSEngine尚不支持这个东西。</p>
+</blockquote>
+<p>在globalThis引入之前，</p>
+<ul>
+<li>浏览器中 使用 window、self、frames 指代全局对象。Web workers中使用 self 指代全局对象</li>
+<li>Node.js中使用 global 指代全局对象</li>
+</ul>
+<p>全局对象，有属性指向它自己，比如</p>
+<h4 id="_2">在浏览器下：</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">globalThis</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nb">globalThis</span><span class="p">.</span><span class="nb">globalThis</span><span class="p">);</span><span class="w"> </span><span class="c1">// true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">window</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nb">window</span><span class="p">);</span><span class="w"> </span><span class="c1">// true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">self</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">self</span><span class="p">.</span><span class="nx">self</span><span class="p">);</span><span class="w"> </span><span class="c1">// true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">frames</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">frames</span><span class="p">.</span><span class="nx">frames</span><span class="p">);</span><span class="w"> </span><span class="c1">// true</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="nodejs">在Nodejs下：</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">globalThis</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nb">globalThis</span><span class="p">.</span><span class="nb">globalThis</span><span class="p">);</span><span class="w"> </span><span class="c1">// true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">global</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nb">globalThis</span><span class="p">.</span><span class="nb">global</span><span class="p">);</span><span class="w"> </span><span class="c1">// true</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="qjsengine">在QJSEngine下：</h4>
+<blockquote>
+<p>在QJSEngine（Qt6.6）下，不支持globalThis，也没有其他self、window、global等变通方式。</p>
+</blockquote>
+<p>但是我可以通过让函数返回this来间接获取它：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QCoreApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">var a = &quot;1+1=10&quot;;</span>
+
+<span class="s">let myGlobal = (function(){return this})();</span>
+<span class="s">console.log(myGlobal.Math === Math);</span>
+<span class="s">console.log(myGlobal.app === app);</span>
+<span class="s">console.log(myGlobal.a === a);</span>
+
+<span class="s">console.log(this.Math === Math);</span>
+<span class="s">console.log(this.a === a);</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">app</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">installExtensions</span><span class="p">(</span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">ConsoleExtension</span><span class="p">);</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">setObjectOwnership</span><span class="p">(</span><span class="o">&amp;</span><span class="n">app</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">CppOwnership</span><span class="p">);</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;app&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">app</span><span class="p">));</span>
+
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>输出结果</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="var">var 与全局对象</h3>
+<p><a href="https://nodejs.org/api/globals.html#globals_global">Nodejs手册</a>提到：</p>
+<blockquote>
+<p>In browsers, the top-level scope has traditionally been the global scope. This means that <code>var something</code> will define a new global variable, except within ECMAScript modules. In Node.js, this is different. The top-level scope is not the global scope; <code>var something</code> inside a Node.js module will be local to that module, regardless of whether it is a <a href="https://nodejs.org/api/modules.html">CommonJS module</a> or an <a href="https://nodejs.org/api/esm.html">ECMAScript module</a>.</p>
+</blockquote>
+<p>在浏览器中，顶级作用域传统上就是全局作用域，这意味着var会定义全局变量。而在Node.js中，顶级作用域不是全局作用域，var定义的变量属于当前模块。</p>
+<h4 id="nodejs_1">node.js</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nb">globalThis</span><span class="p">)</span><span class="w"> </span><span class="c1">// false</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="qjsengine_1">QJSEngine</h4>
+<p>在Qt下，即使没有globalThis，但是我们也可以在C++端轻松验证——var定义的变量是globalObject的属性：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">(</span><span class="s">var a = &quot;1+1=10&quot;</span><span class="dl">)</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">).</span><span class="n">toString</span><span class="p">();</span><span class="w"> </span><span class="c1">// 1+1=10</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="this">this 用法</h2>
+<p>不同于C++中的this和python中的self，javascript中这个东西似乎很乱。MDN中说：在非严格模式下，<code>this</code> 总是指向一个对象，在严格模式下可以是任意值。</p>
+<ul>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/this">this - JavaScript | MDN (mozilla.org)</a></li>
+</ul>
+<p>this的值取决于函数的调用方式和上下文环境，状况很复杂。简单几个情况如下：</p>
+<ul>
+<li>在对象的方法中，this指向调用该方法的对象</li>
+<li>在构造函数中，this指向正在构造的对象</li>
+<li>类静态方法中，this指向类</li>
+<li>在箭头函数中，this指向定义箭头函数时的外层对象，不会随着调用方式改变</li>
+<li>在事件处理函数中，this指向触发事件的元素??</li>
+<li>在call，apply或bind方法中，this可以被显式地绑定到任意对象</li>
+<li>在全局作用域或普通函数中，this不一定指向全局对象</li>
+</ul>
+<h3 id="_3">对象方法</h3>
+<p>和C++、Python有点类似。这个比较直观，this指向调用该方法的对象：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;1+1=10&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">func</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">};</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">test</span><span class="p">.</span><span class="nx">func</span><span class="p">());</span><span class="w"> </span><span class="c1">// 1+1=10</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">test2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;1+1=2&#39;</span><span class="p">,</span>
+<span class="p">};</span>
+<span class="nx">test2</span><span class="p">.</span><span class="nx">func</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">test</span><span class="p">.</span><span class="nx">func</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">test2</span><span class="p">.</span><span class="nx">func</span><span class="p">());</span><span class="w"> </span><span class="c1">// 1+1=2</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在函数内部，<code>this</code> 的值取决于函数如何被调用。同一个函数，根据其调用的方式，<code>this</code> 的值是不同的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">func</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">name</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">obj1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;obj1&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">func</span><span class="o">:</span><span class="w"> </span><span class="nx">func</span><span class="p">}</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">obj2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;obj2&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">func</span><span class="o">:</span><span class="w"> </span><span class="nx">func</span><span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj1</span><span class="p">.</span><span class="nx">func</span><span class="p">())</span><span class="w"> </span><span class="c1">// obj1</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj2</span><span class="p">.</span><span class="nx">func</span><span class="p">())</span><span class="w"> </span><span class="c1">// obj2</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这这个基础上，对原型使用，也是符合预期：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">obj3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;obj3&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">__proto__</span><span class="o">:</span><span class="w"> </span><span class="nx">obj1</span><span class="p">}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj3</span><span class="p">.</span><span class="nx">func</span><span class="p">())</span><span class="w"> </span><span class="c1">// obj3</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_4">构造函数</h3>
+<p>这个也容易理解。当一个函数被用作构造函数（使用 <code>new</code>关键字）时，无论构造函数是在哪个对象上被访问的，其 <code>this</code> 都会被绑定到正在构造的新对象上。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">Person</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span><span class="w"> </span><span class="nx">age</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">name</span><span class="p">;</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">age</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">person1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Person</span><span class="p">(</span><span class="s1">&#39;1+1=10&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">41</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">person1</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span><span class="w"> </span><span class="c1">// 1+1=10</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">person1</span><span class="p">.</span><span class="nx">age</span><span class="p">);</span><span class="w"> </span><span class="c1">// 41</span>
+</code></pre></div></td></tr></table></div>
+
+<p>类构造函数与此一样，this指向类实例：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nx">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span><span class="w"> </span><span class="nx">age</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">name</span><span class="p">;</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="nx">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">age</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">person1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Person</span><span class="p">(</span><span class="s1">&#39;1+1=10&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">41</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">person1</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span><span class="w"> </span><span class="c1">// 1+1=10</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">person1</span><span class="p">.</span><span class="nx">age</span><span class="p">);</span><span class="w"> </span><span class="c1">// 41</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_5">类静态方法</h3>
+<p>这个和python也有些类似</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nx">MyClass</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="nx">staticMethod</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">MyClass</span><span class="p">.</span><span class="nx">staticMethod</span><span class="p">());</span><span class="w"> </span><span class="c1">// class MyClass</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_6">箭头函数</h3>
+<p>在箭头函数中，<code>this</code> 保留了上下文的 <code>this</code> 值。</p>
+<p>这个东西，挺反知觉的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;1+1=10&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">sayHello</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Hello, </span><span class="si">${</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span><span class="sb">!`</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">sayHello</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+
+<p>输出是</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Hello, undefined!
+</code></pre></div></td></tr></table></div>
+
+<p>而不是</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Hello, 1+1=10!
+</code></pre></div></td></tr></table></div>
+
+<p>需要这样才行（注意：它指向全局的this，同时注意，在nodejs下this不等同于globalThis）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;1+1=10&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">sayHello</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Hello, </span><span class="si">${</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span><span class="sb">!`</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;1+1=2&#39;</span><span class="p">;</span>
+
+<span class="nx">obj</span><span class="p">.</span><span class="nx">sayHello</span><span class="p">();</span><span class="w"> </span><span class="c1">// 1+1=2</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在下面情况中，箭头函数中的this指向obj：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">var</span><span class="w"> </span><span class="nx">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;obj&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">say</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+<span class="w">      </span><span class="kd">let</span><span class="w"> </span><span class="nx">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span><span class="w"> </span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">f</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="nx">obj</span><span class="p">.</span><span class="nx">say</span><span class="p">()();</span><span class="w"> </span><span class="c1">// obj obj</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_7">事件处理函数</h3>
+<p>如下程序，在浏览器下显示”true“，即this指向globalThis：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>DOM Event Handler<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">onclick</span><span class="o">=</span><span class="s">&quot;handleClick()&quot;</span><span class="p">&gt;</span>Click me<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="kd">function</span><span class="w"> </span><span class="nx">handleClick</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">alert</span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nb">globalThis</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>而下面addEventListenser用法，结果显示"Button id is myButton"，即this指向button：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Button Event Listener Demo<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;myButton&quot;</span><span class="p">&gt;</span>Click Me<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;myButton&quot;</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">alert</span><span class="p">(</span><span class="s2">&quot;Button id is: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+<span class="w">        </span><span class="p">});</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="callapplybind">call、apply、bind</h3>
+<p>JavaScript中的call()和apply()方法都是用来改变函数的this指向的，它们可以让一个函数以指定的对象作为执行上下文，从而访问该对象的属性和方法。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;1+1=10&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">age</span><span class="o">:</span><span class="w"> </span><span class="mf">100</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="c1">// Function to display person&#39;s details</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">displayDetails</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Name: </span><span class="si">${</span><span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span><span class="sb">, Age: </span><span class="si">${</span><span class="k">this</span><span class="p">.</span><span class="nx">age</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Using call</span>
+<span class="nx">displayDetails</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+
+<span class="c1">// Using apply</span>
+<span class="nx">displayDetails</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+
+<span class="c1">// Using bind</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">boundFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">displayDetails</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span>
+<span class="nx">boundFunction</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_8">全局作用域或普通函数</h3>
+<p>在全局作用域或普通函数中：非严格模式下，this指向全局对象（globalThis）；严格模式下，this是undefined？？</p>
+<h4 id="this_1">全局作用域中 this</h4>
+<p>全局作用域下，this并不一定是全局对象：</p>
+<p>先看一段代码：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// &#39;use strict&#39;;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nb">Math</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nb">Math</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在Firefox浏览器与QJSEngine下，结果都是true，在Node.js中，结果为false。是否是strict没有影响。</p>
+<p>更直接一点：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nb">globalThis</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在Firefox下true，在node.js下为false，在QJSEngine下报错（不支持globalThis)。</p>
+<h4 id="this_2">普通函数中的this</h4>
+<p>搞不懂，普通函数中为什么要设计this。</p>
+<p>在Firefox、Node.js、QJSEngine下测试以下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">returnThis</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">returnThis</span><span class="p">());</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">returnThis</span><span class="p">().</span><span class="nb">Math</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nb">Math</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>object
+true
+</code></pre></div></td></tr></table></div>
+
+<p>在严格模式下测试：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">returnThis</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">returnThis</span><span class="p">());</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>undefined
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_9">全局对象们（内置标准对象）</h2>
+<blockquote>
+<p>JavaScript内置标准对象是指JavaScript语言自带的一些对象，它们可以直接在代码中使用，而不需要引入其他文件或库。</p>
+</blockquote>
+<p>这东西挺多，暂时先摘抄一点。</p>
+<p>JavaScript内置标准对象可以分为以下几类：</p>
+<h4 id="_10">值属性</h4>
+<blockquote>
+<p>这些全局属性返回一个简单值，这些值没有自己的属性和方法。</p>
+</blockquote>
+<ul>
+<li>globalThis</li>
+<li>Infinity</li>
+<li>NaN</li>
+<li>undefined</li>
+</ul>
+<p>关于NaN一个梗，香蕉是怎么练成的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">((</span><span class="s1">&#39;b&#39;</span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;a&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;b&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;a&#39;</span><span class="p">).</span><span class="nx">toLowerCase</span><span class="p">())</span><span class="w"> </span><span class="c1">// banana</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注，NaN的特点：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="kc">NaN</span><span class="p">)</span><span class="w"> </span><span class="c1">// number</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="kc">NaN</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="kc">NaN</span><span class="p">)</span><span class="w"> </span><span class="c1">// false</span>
+</code></pre></div></td></tr></table></div>
+
+<p>对于C++看看：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// c++</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nan</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">boolalpha</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"> </span><span class="c1">// false</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_11">函数属性</h4>
+<blockquote>
+<p>这些全局函数可以直接调用，不需要在调用时指定所属对象，执行结束后会将结果直接返回给调用者。</p>
+</blockquote>
+<p>例如：</p>
+<ul>
+<li>eval()，</li>
+<li>isFinite()，</li>
+<li>isNaN()，</li>
+<li>parseFloat()，</li>
+<li>parseInt()</li>
+</ul>
+<h4 id="_12">基本对象</h4>
+<blockquote>
+<p>这些对象是定义或使用其他对象的基础。</p>
+</blockquote>
+<p>例如：</p>
+<ul>
+<li>Object，</li>
+<li>Function，</li>
+<li>Boolean，</li>
+<li>Symbol</li>
+</ul>
+<p>注意：<strong>symbol</strong> 是一种基本数据类型，每个从 <code>Symbol()</code> 返回的 symbol 值都是唯一的。一个 symbol 值能作为对象属性的标识符；这是该数据类型仅有的目的。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">mySymbol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Symbol</span><span class="p">(</span><span class="s1">&#39;mySymbol&#39;</span><span class="p">);</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">normal</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;Hello, normal&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">[</span><span class="nx">mySymbol</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;Hello, symbol!&#39;</span>
+<span class="p">};</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj</span><span class="p">[</span><span class="nx">mySymbol</span><span class="p">]);</span><span class="w"> </span><span class="c1">// Hello, symbol!</span>
+</code></pre></div></td></tr></table></div>
+
+<p>symbol 在 for in中不可见，在JSON.stringify()也不可见：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">mySymbol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Symbol</span><span class="p">(</span><span class="s1">&#39;mySymbol&#39;</span><span class="p">);</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">normal</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;Hello, normal&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">[</span><span class="nx">mySymbol</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;Hello, symbol!&#39;</span>
+<span class="p">};</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">key</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">obj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span><span class="w"> </span><span class="c1">// Hello, normal</span>
+<span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">obj</span><span class="p">));</span><span class="w"> </span><span class="c1">// {&quot;normal&quot;:&quot;Hello, normal&quot;}</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_13">错误对象</h4>
+<blockquote>
+<p>这些对象是一种特殊的基本对象，它们用来表示和处理错误。</p>
+</blockquote>
+<p>例如</p>
+<ul>
+<li>Error</li>
+<li>EvalError</li>
+<li>RangeError</li>
+<li>ReferenceError</li>
+</ul>
+<h4 id="_14">数字和日期对象</h4>
+<blockquote>
+<p>这些对象用来表示和操作数字、日期和执行数学计算的对象。</p>
+</blockquote>
+<p>例如</p>
+<ul>
+<li>Number</li>
+<li>BigInt</li>
+<li>Math</li>
+<li>Date</li>
+</ul>
+<h4 id="_15">字符串对象</h4>
+<blockquote>
+<p>这些对象用来表示和操作字符串的对象。例如，String，RegExp等。</p>
+</blockquote>
+<h4 id="_16">可索引的集合对象</h4>
+<blockquote>
+<p>这些对象用来表示和操作按照索引值来排序的数据集合，包括数组和类型数组，以及类数组结构的对象。</p>
+</blockquote>
+<p>例如</p>
+<ul>
+<li>Array，</li>
+<li>Int8Array，</li>
+<li>Uint8Array，</li>
+<li>Uint8ClampedArray</li>
+</ul>
+<h4 id="_17">使用键的集合对象</h4>
+<blockquote>
+<p>这些对象用来表示和操作使用键来存储数据的集合，包括可迭代的Map和Set，以及支持按照插入顺序来迭代元素的对象。</p>
+</blockquote>
+<p>例如，</p>
+<ul>
+<li>Map，</li>
+<li>Set，</li>
+<li>WeakMap，</li>
+<li>WeakSet</li>
+</ul>
+<h4 id="_18">结构化数据对象</h4>
+<blockquote>
+<p>这些对象用来表示和操作结构化的缓冲区数据，或使用JSON（JavaScript Object Notation）编码的数据。例如，ArrayBuffer，SharedArrayBuffer，Atomics，DataView，JSON等。</p>
+</blockquote>
+<h4 id="_19">控制抽象对象</h4>
+<blockquote>
+<p>这些对象用来帮助构造代码，尤其是异步代码（例如不使用深度嵌套的回调）。</p>
+</blockquote>
+<p>例如</p>
+<ul>
+<li>Iterator</li>
+<li>AsyncIterator</li>
+<li>Promise</li>
+<li>GeneratorFunction</li>
+<li>AsyncGeneratorFunction</li>
+<li>Generator</li>
+<li>AsyncGenerator</li>
+<li>AsyncFunction</li>
+</ul>
+<h4 id="_20">反射对象</h4>
+<blockquote>
+<p>这些对象用来实现对对象的底层操作，或创建和操作代理对象。例如，Reflect，Proxy等。
+Reflect是ES6引入的，Reflect对象提供了一系列的静态方法，它们与对象的基本操作一一对应，例如Reflect.get()，Reflect.set()，Reflect.has()等。这些方法的作用是将对象的操作转为函数调用，从而可以在函数中实现更灵活的逻辑：</p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;1+1=10&#39;</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">person</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span><span class="w"> </span><span class="c1">// 1+1=10</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">person</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]);</span><span class="w"> </span><span class="c1">// 1+1=10</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Reflect</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="p">));</span><span class="w"> </span><span class="c1">// 1+1=10</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Reflect</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="p">));</span><span class="w"> </span><span class="c1">// true</span>
+
+<span class="nb">Reflect</span><span class="p">.</span><span class="nx">deleteProperty</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Reflect</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="p">));</span><span class="w"> </span><span class="c1">// false</span>
+</code></pre></div></td></tr></table></div>
+
+<p>Proxy对象用于创建一个对象的代理，它接受两个参数，第一个是目标对象，第二个是一个处理器对象，它包含了一些陷阱(trap)函数，用于拦截目标对象的基本操作。这些陷阱函数的名称和Reflect对象的方法一一对应，例如get，set，has等。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;1+1=10&#39;</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="c1">// Create a proxy object</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">personProxy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Proxy</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">get</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span><span class="w"> </span><span class="nx">property</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Getting property: </span><span class="si">${</span><span class="nx">property</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">Reflect</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span><span class="w"> </span><span class="nx">property</span><span class="p">);</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">set</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span><span class="w"> </span><span class="nx">property</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Setting property: </span><span class="si">${</span><span class="nx">property</span><span class="si">}</span><span class="sb"> to </span><span class="si">${</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">Reflect</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span><span class="w"> </span><span class="nx">property</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="p">);</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">has</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span><span class="w"> </span><span class="nx">property</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Checking if property exists: </span><span class="si">${</span><span class="nx">property</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">Reflect</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span><span class="w"> </span><span class="nx">property</span><span class="p">);</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">deleteProperty</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span><span class="w"> </span><span class="nx">property</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Deleting property: </span><span class="si">${</span><span class="nx">property</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">Reflect</span><span class="p">.</span><span class="nx">deleteProperty</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span><span class="w"> </span><span class="nx">property</span><span class="p">);</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">});</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">personProxy</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span><span class="w"> </span><span class="c1">// Getting property: name, 1+1=10</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">personProxy</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]);</span><span class="w"> </span><span class="c1">// Getting property: name, 1+1=10</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Reflect</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">personProxy</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="p">));</span><span class="w"> </span><span class="c1">// Getting property: name, 1+1=10</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Reflect</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">personProxy</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="p">));</span><span class="w"> </span><span class="c1">// Checking if property exists: name, true</span>
+
+<span class="nb">Reflect</span><span class="p">.</span><span class="nx">deleteProperty</span><span class="p">(</span><span class="nx">personProxy</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// Deleting property: name</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Reflect</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">personProxy</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="p">));</span><span class="w"> </span><span class="c1">// Checking if property exists: name, false</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_21">国际化对象</h4>
+<blockquote>
+<p>这些对象用来支持多语言处理。例如，Intl，Intl.Collator，Intl.DateTimeFormat，Intl.NumberFormat等。</p>
+</blockquote>
+<p>例子：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// Create a new date object</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">();</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">formattedDate_en_US</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Intl</span><span class="p">.</span><span class="nx">DateTimeFormat</span><span class="p">(</span><span class="s1">&#39;en-US&#39;</span><span class="p">).</span><span class="nx">format</span><span class="p">(</span><span class="nx">date</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">formattedDate_en_US</span><span class="p">);</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">formattedDate_zh_CN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Intl</span><span class="p">.</span><span class="nx">DateTimeFormat</span><span class="p">(</span><span class="s1">&#39;zh-CN&#39;</span><span class="p">).</span><span class="nx">format</span><span class="p">(</span><span class="nx">date</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">formattedDate_zh_CN</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="mf">1</span><span class="o">/</span><span class="mf">20</span><span class="o">/</span><span class="mf">2024</span>
+<span class="mf">2024</span><span class="o">/</span><span class="mf">1</span><span class="o">/</span><span class="mf">20</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注，截至目前，QJSEngine不支持Intl。</p>
+<h2 id="_22">参考</h2>
+<ul>
+<li>https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis</li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Symbol">Symbol - JavaScript | MDN (mozilla.org)</a></li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects">JavaScript 标准内置对象 - JavaScript | MDN (mozilla.org)</a></li>
+<li>https://doc.qt.io/qt-6/qtqml-javascript-functionlist.html</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-01-20T10:24:00+08:00" pubdate>Sat 20 January 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/javascript.html'>JavaScript</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/javascript.html">javascript</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

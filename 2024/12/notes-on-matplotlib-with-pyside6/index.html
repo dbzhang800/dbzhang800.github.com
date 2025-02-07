@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>PySide6下Matplotlib小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">PySide6下Matplotlib小记</h1>
+    <p class="meta">
+<time datetime="2024-12-14T12:24:00+08:00" pubdate>Sat 14 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><div class="toc">
+<ul>
+<li><a href="#8qt">8种Qt后端</a><ul>
+<li><a href="#qt">选择Qt绑定的规则</a></li>
+<li><a href="#qtagg-qtcairo">QtAgg 与 QtCairo</a></li>
+</ul>
+</li>
+<li><a href="#qt_1">Qt 控件对接</a></li>
+<li><a href="#matplotlib">Matplotlib 基本概念</a></li>
+<li><a href="#matplotlibapi">Matplotlib三种API接口（使用层次）</a><ul>
+<li><a href="#scriptingpyplot">Scripting层/隐式pyplot接口</a></li>
+<li><a href="#artistaxes">Artist层/显式Axes接口</a></li>
+<li><a href="#backend">Backend层</a></li>
+</ul>
+</li>
+<li><a href="#matplotlib_1">Matplotlib 做什么？</a><ul>
+<li><a href="#_1">数据可视化</a></li>
+<li><a href="#_2">键鼠事件</a></li>
+<li><a href="#_3">动画支持</a></li>
+</ul>
+</li>
+<li><a href="#_4">参考</a></li>
+</ul>
+</div>
+<blockquote>
+<p>突然发现，上次正儿八经使用Matplotlib还是17年在前，除代码还可查外，当时的笔记已不复存在。重新了解一下...</p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="ch">#!/usr/bin/python</span>
+<span class="c1"># -*- coding: UTF-8 -*-</span>
+
+<span class="c1">#2007.10.1</span>
+<span class="c1">#--------------------------------------------------------------------------</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">ConfigParser</span> <span class="kn">import</span> <span class="n">SafeConfigParser</span>
+<span class="c1">#import subprocess</span>
+<span class="kn">import</span> <span class="nn">threading</span><span class="o">,</span> <span class="nn">urllib</span><span class="o">,</span> <span class="nn">webbrowser</span>
+
+<span class="kn">import</span> <span class="nn">wx</span>
+<span class="kn">import</span> <span class="nn">wx.stc</span><span class="o">,</span> <span class="nn">wx.combo</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;wxAgg&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">matplotlib.backends.backend_wxagg</span> <span class="c1"># for py2exe</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="8qt">8种Qt后端</h2>
+<p>在Python下，编写Qt程序，目前有4个绑定选项存在：</p>
+<ul>
+<li>PyQt6</li>
+<li>PySide6</li>
+<li>PyQt5</li>
+<li>PySide2</li>
+</ul>
+<blockquote>
+<p>老版本的matplotlib还支持 PyQt和PySide，由于其对应的Qt4在2015年就停止支持，应该无需考虑。</p>
+</blockquote>
+<p>而每个绑定，又有2个渲染后端可选择：</p>
+<ul>
+<li>Agg</li>
+<li>Cairo</li>
+</ul>
+<h3 id="qt">选择Qt绑定的规则</h3>
+<p>Matplotlib是如何同时支持这四个的？？官方手册是这么说的：</p>
+<ul>
+<li>If a binding's QtCore subpackage is already imported, that binding is selected (the order for the check is PyQt6, PySide6, PyQt5, PySide2).</li>
+<li>If the QT_API environment variable is set to one of "PyQt6", "PySide6", "PyQt5", "PySide2" (case-insensitive), that binding is selected. (See also the documentation on Environment variables.)</li>
+<li>Otherwise, the first available backend in the order PyQt6, PySide6, PyQt5, PySide2 is selected.</li>
+</ul>
+<p>挺啰嗦，不如看代码直观：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">QT_API_ENV</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;QT_API&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">QT_API_ENV</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">QT_API_ENV</span> <span class="o">=</span> <span class="n">QT_API_ENV</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+<span class="n">_ETS</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># Mapping of QT_API_ENV to requested binding.</span>
+    <span class="s2">&quot;pyqt6&quot;</span><span class="p">:</span> <span class="n">QT_API_PYQT6</span><span class="p">,</span> <span class="s2">&quot;pyside6&quot;</span><span class="p">:</span> <span class="n">QT_API_PYSIDE6</span><span class="p">,</span>
+    <span class="s2">&quot;pyqt5&quot;</span><span class="p">:</span> <span class="n">QT_API_PYQT5</span><span class="p">,</span> <span class="s2">&quot;pyside2&quot;</span><span class="p">:</span> <span class="n">QT_API_PYSIDE2</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="c1"># First, check if anything is already imported.</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PyQt6.QtCore&quot;</span><span class="p">):</span>
+    <span class="n">QT_API</span> <span class="o">=</span> <span class="n">QT_API_PYQT6</span>
+<span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PySide6.QtCore&quot;</span><span class="p">):</span>
+    <span class="n">QT_API</span> <span class="o">=</span> <span class="n">QT_API_PYSIDE6</span>
+<span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PyQt5.QtCore&quot;</span><span class="p">):</span>
+    <span class="n">QT_API</span> <span class="o">=</span> <span class="n">QT_API_PYQT5</span>
+<span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PySide2.QtCore&quot;</span><span class="p">):</span>
+    <span class="n">QT_API</span> <span class="o">=</span> <span class="n">QT_API_PYSIDE2</span>
+</code></pre></div></td></tr></table></div>
+
+<p>考虑到Qt5生命周期明年就结束了，我们可以只考虑PyQt6和 PySide6两兄弟，同时我也不喜欢设置环境变量<code>QT_API</code>，那么可以这么简单理解：</p>
+<ul>
+<li>如果Python中只安装PyQt6或PySide6中一个，装哪个用哪个</li>
+<li>如果同时装了2个，默认使用PyQt6，除非使用matplotlib前<code>import PySide6.QtCore</code></li>
+</ul>
+<blockquote>
+<p>由于PyQt不支持LGPL协议，原则上，不管是否商用，只考虑PySide6就够了。如果要支持Windows7，可以考虑PySide2。</p>
+</blockquote>
+<h3 id="qtagg-qtcairo">QtAgg 与 QtCairo</h3>
+<p>除了不同的Qt绑定外，它还有不同的渲染后端支持</p>
+<ul>
+<li>QtAgg：使用 Anti-Grain Geometry 这一个 C++ 库来渲染，适合需要快速渲染和交互的应用。</li>
+<li>QtCairo：使用  Cairo 库来渲染，提供更高质量的图形渲染，尤其在文本和矢量图形方面。速度慢。</li>
+</ul>
+<p>默认使用的QtAgg后端，同样它有多种方式可以用来指定：</p>
+<ul>
+<li>使用 <code>rcParams["backend"]</code> 参数，通过代码，或者matplotlibrc文件</li>
+<li>使用环境变量 <code>MPLBACKEND</code></li>
+<li>使用函数 <code>matplotlib.use()</code></li>
+</ul>
+<h2 id="qt_1">Qt 控件对接</h2>
+<p>要在PySide6中使用 matplotlib，首要就是找到matplotlib提供的QWidget在哪里：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">matplotlib.backends.backend_qtagg</span> <span class="kn">import</span> <span class="n">FigureCanvas</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_qtagg</span> <span class="kn">import</span> <span class="n">NavigationToolbar2QT</span> <span class="k">as</span> <span class="n">NavigationToolbar</span>
+</code></pre></div></td></tr></table></div>
+
+<p>上面两个都是QWidget的派生类：</p>
+<ul>
+<li>FigureCanvas 派生自 QWidget：源码 <code>class FigureCanvasQT(FigureCanvasBase, QtWidgets.QWidget):</code></li>
+<li>NavigationToolbar2QT 派生自 QToolBar：源码 <code>class NavigationToolbar2QT(NavigationToolbar2, QtWidgets.QToolBar):</code></li>
+</ul>
+<p>另外，不少matplotlib为主的例子中，会这么写：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">matplotlib.backends.qt_compat</span> <span class="kn">import</span> <span class="n">QtWidgets</span>
+</code></pre></div></td></tr></table></div>
+
+<p>只是为了隐藏不同的Qt绑定的细节，对于库通用性有意义，应用程序中使用它意义不大。</p>
+<h2 id="matplotlib">Matplotlib 基本概念</h2>
+<p>先看一张图：</p>
+<p><img alt="matplotlib with pyside6" src="https://blog.debao.me/images/qt/matplotlib_pyside6.png"></p>
+<ul>
+<li>图中有四个图表，每个叫做一个 Axes</li>
+<li>四个 Axes 都位于同一个 Figure 中（Figure 是顶层容器）</li>
+<li>Figure 渲染到一个 QWidget 中（这个QWidget就是 FigureCanvas）</li>
+<li>PySide6 将这个 QWidget作为窗口显示出来</li>
+</ul>
+<p>抛开FigureCanvas这种底层细节不说，Matplotlib中东西也挺多，一些主要的概念如下：</p>
+<table>
+<thead>
+<tr>
+<th><strong>概念</strong></th>
+<th><strong>作用</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Figure</strong></td>
+<td><code>Figure</code> 是顶级容器，承载整个图形的所有元素，类似于空白画布，用来绘制可视化内容。</td>
+</tr>
+<tr>
+<td><strong>Axes</strong></td>
+<td><code>Axes</code> 是 <code>Figure</code> 中的矩形区域，提供坐标系，是绘制数据的地方，一个 <code>Figure</code> 可以包含多个 <code>Axes</code>。</td>
+</tr>
+<tr>
+<td><strong>Axis</strong></td>
+<td><code>Axis</code> 代表 x 轴和 y 轴，定义数据范围、刻度位置、刻度标签和坐标轴标签，控制刻度间距和定位。</td>
+</tr>
+<tr>
+<td><strong>Marker</strong></td>
+<td><code>Marker</code> 是表示单个数据点的符号，常用于散点图中区分不同的数据点，形状如圆形、方形、三角形等。</td>
+</tr>
+<tr>
+<td><strong>Lines</strong></td>
+<td><code>Lines</code> 连接数据点，通常用于折线图、带连接点的散点图等，表示数据点之间的关系或趋势。可自定义样式。</td>
+</tr>
+<tr>
+<td><strong>Title</strong></td>
+<td><code>Title</code> 是图形的描述性文本，通常显示在顶部，为可视化提供背景信息或数据描述。</td>
+</tr>
+<tr>
+<td><strong>Axis Labels</strong></td>
+<td><code>Axis Labels</code> 是描述 x 轴和 y 轴的文本，帮助理解数据及其单位或其他相关信息。</td>
+</tr>
+<tr>
+<td><strong>Ticks</strong></td>
+<td><code>Ticks</code> 是沿坐标轴的刻度标记，帮助用户理解图形的比例和数据位置。</td>
+</tr>
+<tr>
+<td><strong>Tick Labels</strong></td>
+<td><code>Tick Labels</code> 是刻度上的文本，显示与刻度对应的数据值，可以进行格式化或单位显示。</td>
+</tr>
+<tr>
+<td><strong>Legend</strong></td>
+<td><code>Legend</code> 是图例，解释图形中的符号或颜色，帮助用户理解不同数据系列或类别的含义。</td>
+</tr>
+<tr>
+<td><strong>Grid Lines</strong></td>
+<td><code>Grid Lines</code> 是辅助的横纵线，帮助用户更容易识别数据的模式或趋势。</td>
+</tr>
+<tr>
+<td><strong>Spines</strong></td>
+<td><code>Spines</code> 是围绕绘图区域的边框线，分隔图形区域与外部空间，可以进行自定义以改变边框的外观。</td>
+</tr>
+</tbody>
+</table>
+<p>另外，关注 Artist 和 Patch，手册中有个<a href="https://matplotlib.org/stable/api/artist_api.html#matplotlib.artist.Artist">类图</a></p>
+<h2 id="matplotlibapi">Matplotlib三种API接口（使用层次）</h2>
+<p>从易到难，Matplotlib 有三个使用层次：</p>
+<table>
+<thead>
+<tr>
+<th><strong>接口层次</strong></th>
+<th><strong>作用</strong></th>
+<th><strong>特点</strong></th>
+<th><strong>适用场景</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Scripting Layer</strong></td>
+<td>提供简单的绘图接口，适合快速绘制常见图形，类似 MATLAB 风格。</td>
+<td>简单、自动管理，快速绘图。</td>
+<td>快速原型、常见绘图任务、日常数据可视化。</td>
+</tr>
+<tr>
+<td><strong>Artist Layer</strong></td>
+<td>提供对图形元素的精细控制，可以自定义图形的所有细节。</td>
+<td>高度定制、灵活，直接控制图形对象的外观和行为。</td>
+<td>复杂可视化任务、高度定制的绘图。</td>
+</tr>
+<tr>
+<td><strong>Backend Layer</strong></td>
+<td>控制图形的渲染和输出，决定如何显示或保存图形。</td>
+<td>渲染图形到屏幕或文件，支持不同的图形工具包和设备。</td>
+<td>图形文件输出、非交互式渲染、与图形工具包交互。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="scriptingpyplot">Scripting层/隐式pyplot接口</h3>
+<p>类似Matlab风格（好吧，因为太贵，我从没用过matlab），叫做octave风格？</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;X Axis&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Y Axis&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Debao&#39;s Simple Plot&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="artistaxes">Artist层/显式Axes接口</h3>
+<p>按部就班，一层层构建</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># 创建Figure和Axes对象</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+<span class="c1"># 使用Axes对象绘制数据</span>
+<span class="n">line</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
+
+<span class="c1"># 修改线条属性</span>
+<span class="n">line</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+
+<span class="c1"># 设置坐标轴标签和标题</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;X Axis&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Y Axis&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Debao&#39;s Artist Layer Example&quot;</span><span class="p">)</span>
+
+<span class="c1"># 显示图形</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="backend">Backend层</h3>
+<p>这个是我们最关注的，使用PySide6时，将Figure装进 FigureCanvas（一个QWidget）中，而后和Qt程序对接上了。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QMainWindow</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QWidget</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_qtagg</span> <span class="kn">import</span> <span class="n">FigureCanvasQTAgg</span> <span class="k">as</span> <span class="n">FigureCanvas</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="k">class</span> <span class="nc">PlotWindow</span><span class="p">(</span><span class="n">QMainWindow</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Debao&#39;s Matplotlib with PySide6&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 创建Matplotlib图形</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;X Axis&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Y Axis&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Simple Plot&#39;</span><span class="p">)</span>
+
+        <span class="c1"># 创建画布，并将其添加到窗口</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span> <span class="o">=</span> <span class="n">FigureCanvas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="p">)</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="p">)</span>
+
+        <span class="n">container</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">container</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="n">container</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">PlotWindow</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">())</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="matplotlib_1">Matplotlib 做什么？</h2>
+<h3 id="_1">数据可视化</h3>
+<p>Matplotlib 支持多种数据类型的可视化，包括但不限于：</p>
+<ol>
+<li><strong>配对数据 (Pairwise Data)</strong>：使用散点图、成对关系图等展示数据点间的关系。</li>
+<li><strong>统计分布 (Statistical Distributions)</strong>：通过直方图、密度图等展示数据的分布特性。</li>
+<li><strong>网格数据 (Gridded Data)</strong>：使用热图、等高线图等展示规则网格上的数据。</li>
+<li><strong>非规则网格数据 (Irregularly Gridded Data)</strong>：通过散点图、三角网格图等展示不规则网格数据。</li>
+<li><strong>三维和体积数据 (3D and Volumetric Data)</strong>：通过 3D 图、体积图等展示空间数据。</li>
+</ol>
+<p>手册中有很直观的 <a href="https://matplotlib.org/stable/gallery/index.html">Gallery</a> 可以参考。</p>
+<p>试着放个简单的例子，一组数据，应该是姿势不对，两种方式结果不同（似乎各有各的不准）：</p>
+<p><img alt="contour" src="https://blog.debao.me/images/qt/matplotlib_grid_contour.png"></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.8</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+
+<span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> 
+<span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Data Points&#39;</span><span class="p">)</span> 
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Contour Plot&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tricontour</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Z</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Data Points&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Tricontour Plot&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span> 
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_2">键鼠事件</h3>
+<p>对于Qt后端，可以处理一些鼠标事件（尽管不强）</p>
+<ul>
+<li>https://matplotlib.org/stable/users/explain/figure/event_handling.html</li>
+</ul>
+<h3 id="_3">动画支持</h3>
+<p>还有简单的动画支持</p>
+<ul>
+<li>https://matplotlib.org/stable/users/explain/animations/animations.html</li>
+</ul>
+<h2 id="_4">参考</h2>
+<ul>
+<li>https://matplotlib.org/stable/api/backend_qt_api.html</li>
+<li>https://matplotlib.org/stable/users/explain/figure/api_interfaces.html</li>
+<li>https://doc.qt.io/qtforpython-6/examples/example_external_matplotlib_widget_gaussian.html</li>
+<li>https://ajaytech.co/matplotlib/</li>
+<li>https://www.geeksforgeeks.org/python-introduction-matplotlib/</li>
+<li>https://matplotlib.org/stable/gallery/images_contours_and_fields/irregulardatagrid.html</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-12-14T12:24:00+08:00" pubdate>Sat 14 December 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/python.html">python</a>,    <a class="category" href="https://blog.debao.me/tags/pyside.html">pyside</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

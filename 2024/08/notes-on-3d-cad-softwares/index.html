@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>3D机械设计CAD软件小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/cax.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">3D机械设计CAD软件小记</h1>
+    <p class="meta">
+<time datetime="2024-08-09T00:44:00+08:00" pubdate>Fri 09 August 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>稍微整理一下</p>
+<div class="toc">
+<ul>
+<li><a href="#_1">列个表</a><ul>
+<li><a href="#_2">国外商业</a></li>
+<li><a href="#_3">开源</a><ul>
+<li><a href="#freecad">FreeCAD</a></li>
+<li><a href="#openscad">OpenSCAD</a></li>
+</ul>
+</li>
+<li><a href="#_4">国产</a></li>
+<li><a href="#viewer">Viewer？</a></li>
+</ul>
+</li>
+<li><a href="#_5">三维几何内核？</a></li>
+<li><a href="#plm-vs-pdm">PLM vs PDM</a><ul>
+<li><a href="#plm">PLM</a></li>
+<li><a href="#pdm">PDM</a></li>
+</ul>
+</li>
+<li><a href="#_6">链接</a></li>
+</ul>
+</div>
+<table>
+<thead>
+<tr>
+<th>缩写</th>
+<th>全称</th>
+<th>功能</th>
+<th>代表软件？</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CAD</td>
+<td>Computer-Aided Design</td>
+<td>创建精确的2D和3D设计模型</td>
+<td>SolidWorks, AutoCAD</td>
+</tr>
+<tr>
+<td>CAE</td>
+<td>Computer-Aided Engineering</td>
+<td>模拟和分析产品性能</td>
+<td>ANSYS, Abaqus</td>
+</tr>
+<tr>
+<td>CAM</td>
+<td>Computer-Aided Manufacturing</td>
+<td>规划和控制制造过程</td>
+<td>Mastercam, Fusion 360</td>
+</tr>
+<tr>
+<td>CAQ</td>
+<td>Computer-Aided Quality</td>
+<td>质量管理和检测</td>
+<td>Q-DAS, Minitab</td>
+</tr>
+<tr>
+<td>CAPP</td>
+<td>Computer-Aided Process Planning</td>
+<td>制定制造工艺流程</td>
+<td>Siemens Tecnomatix, CAPPS</td>
+</tr>
+</tbody>
+</table>
+<p>主要关注CAD</p>
+<h2 id="_1">列个表</h2>
+<h3 id="_2">国外商业</h3>
+<table>
+<thead>
+<tr>
+<th>软件名称</th>
+<th>厂商</th>
+<th>别名或缩写</th>
+<th>特点</th>
+<th>适用领域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SolidWorks</strong></td>
+<td>Dassault Systèmes</td>
+<td>SW</td>
+<td>参数化建模，模拟功能强大</td>
+<td>机械设计、产品开发</td>
+</tr>
+<tr>
+<td>AutoCAD</td>
+<td>Autodesk</td>
+<td>-</td>
+<td>经典CAD软件，支持2D和3D设计</td>
+<td>建筑、工程、制图</td>
+</tr>
+<tr>
+<td><strong>Fusion</strong> 360</td>
+<td>Autodesk</td>
+<td>F360</td>
+<td>云端平台，集成CAD、CAM、CAE</td>
+<td>合作设计、快速迭代</td>
+</tr>
+<tr>
+<td><strong>Creo</strong></td>
+<td>PTC</td>
+<td>Pro/E（Pro/ENGINEER）</td>
+<td>参数化和直接建模功能</td>
+<td>产品设计和开发</td>
+</tr>
+<tr>
+<td><strong>CATIA</strong></td>
+<td>Dassault Systèmes</td>
+<td>-</td>
+<td>适用于复杂和高精度设计</td>
+<td>航空航天、汽车行业</td>
+</tr>
+<tr>
+<td>Inventor</td>
+<td>Autodesk</td>
+<td>-</td>
+<td>强大的仿真和可视化工具</td>
+<td>机械设计、3D建模</td>
+</tr>
+<tr>
+<td><strong>NX</strong></td>
+<td>Siemens</td>
+<td><strong>UG</strong></td>
+<td>集成CAD、CAM、CAE，适合复杂设计</td>
+<td>复杂产品设计和工程</td>
+</tr>
+<tr>
+<td><strong>Solid Edge</strong></td>
+<td>Siemens</td>
+<td>-</td>
+<td>参数化和同步建模功能</td>
+<td>中小型企业设计</td>
+</tr>
+<tr>
+<td>Tinkercad</td>
+<td>Autodesk</td>
+<td>-</td>
+<td>3D 打印建模、简单电子设计 和 编程教学</td>
+<td>学生和教育工作者</td>
+</tr>
+<tr>
+<td>Onshape</td>
+<td>PTC</td>
+<td>-</td>
+<td>参数化建模 和 协作设计</td>
+<td>实时协作，云存储</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Siemens NX 的前身是 Unigraphics。Unigraphics 是一款强大的 CAD/CAM/CAE 软件，由 Unigraphics Solutions 开发。Siemens 在 2007 年收购了 Unigraphics 的母公司 UGS，从而将 Unigraphics 整合为 Siemens NX。</li>
+</ul>
+<ul>
+<li>SolidWorks 的前身是由 Jon Hirschtick 于 1993 年创立的公司，目标是开发一款在 Windows 上运行的易用 3D CAD 软件。1995 年，推出了 SolidWorks 1.0，迅速受到欢迎。1997 年，Dassault Systèmes 收购了 SolidWorks。SolidWorks 使用 Parasolid 作为其几何建模内核。Parasolid 由 Siemens 开发，提供了稳定和精确的 3D 建模功能。</li>
+</ul>
+<h3 id="_3">开源</h3>
+<h4 id="freecad">FreeCAD</h4>
+<ul>
+<li>https://www.freecad.org/</li>
+<li>支持参数化建模</li>
+<li>可扩展插件系统</li>
+</ul>
+<h4 id="openscad">OpenSCAD</h4>
+<ul>
+<li>https://openscad.org/</li>
+<li>侧重于编程生成的设计</li>
+<li>适合需要精确参数化的模型</li>
+<li>通过脚本语言进行建模</li>
+</ul>
+<h3 id="_4">国产</h3>
+<ul>
+<li><a href="https://www.zwsoft.cn/product/zw3d">中望3D</a></li>
+<li><a href="https://www.gstarcad.com/3d/">浩辰3D软件</a></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>软件名称</th>
+<th>功能</th>
+<th>特点</th>
+<th>应用领域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>中望 3D</td>
+<td>参数化建模、曲面设计</td>
+<td>兼容性强，支持多种格式</td>
+<td>机械设计、模具设计</td>
+</tr>
+<tr>
+<td>浩辰 3D</td>
+<td>3D建模、装配、工程图</td>
+<td>界面友好，易于上手</td>
+<td>建筑设计、工程应用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="viewer">Viewer？</h3>
+<table>
+<thead>
+<tr>
+<th>软件名称</th>
+<th>厂家</th>
+<th>支持格式</th>
+<th>主要特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JT2Go</td>
+<td>Siemens</td>
+<td>JT, 其他常见格式</td>
+<td>免费查看、标注、测量</td>
+</tr>
+<tr>
+<td>eDrawings</td>
+<td>Dassault Systèmes</td>
+<td>SolidWorks, eDrawing</td>
+<td>查看和标注，支持多种文件格式</td>
+</tr>
+<tr>
+<td>Autodesk Viewer</td>
+<td>Autodesk</td>
+<td>DWG, DXF, 其他格式</td>
+<td>在线查看，多格式支持</td>
+</tr>
+<tr>
+<td>FreeCAD</td>
+<td>开源社区</td>
+<td>多种CAD格式</td>
+<td>开源，支持查看和简单编辑</td>
+</tr>
+<tr>
+<td>Blender</td>
+<td>开源社区</td>
+<td>OBJ, FBX, 3DS 等</td>
+<td>开源，3D查看和编辑功能</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">三维几何内核？</h2>
+<table>
+<thead>
+<tr>
+<th><strong>三维几何内核</strong></th>
+<th><strong>所有者</strong></th>
+<th><strong>CAD 产品</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CGM</strong></td>
+<td>法国 - 达索集团</td>
+<td>CATIA</td>
+</tr>
+<tr>
+<td><strong>ACIS</strong></td>
+<td>美国 - Spatial 公司 (达索)</td>
+<td>Inventor（后使用 ShapeManager？）, Abaqus</td>
+</tr>
+<tr>
+<td><strong>Parasolid</strong></td>
+<td>德国 - 西门子</td>
+<td>NX, SolidWorks, SolidEdge, ANSYS</td>
+</tr>
+<tr>
+<td><strong>Granite</strong></td>
+<td>美国 - PTC</td>
+<td>Creo（PRO/E）, Gibbs, Altair</td>
+</tr>
+<tr>
+<td><strong>C3D Molder</strong></td>
+<td>俄罗斯 - ASCON</td>
+<td>KOMPAS-3D, nanoCAD</td>
+</tr>
+<tr>
+<td><strong>Overdrive</strong></td>
+<td>中国 - 中望软件</td>
+<td>中望3D, ZWMeshWorks</td>
+</tr>
+<tr>
+<td><strong>CRUX IV</strong></td>
+<td>中国 - 华天软件</td>
+<td>SINOVATION</td>
+</tr>
+<tr>
+<td><strong>DGM</strong></td>
+<td>中国 - 华云三维</td>
+<td>CrownCAD</td>
+</tr>
+<tr>
+<td><strong>Open Cascade</strong></td>
+<td>法国 - CapGemini</td>
+<td>FreeCAD, AnyCAD</td>
+</tr>
+</tbody>
+</table>
+<h2 id="plm-vs-pdm">PLM vs PDM</h2>
+<blockquote>
+<p>如何对CAD设计的文件进行 版本管控和追踪，如何进行协作和共享...</p>
+</blockquote>
+<p>产品生命周期管理（PLM）和产品数据管理（PDM）是两个相关但不同的概念：</p>
+<ul>
+<li>PDM：管理和组织产品数据，包括设计文档、版本控制、权限管理等。确保团队成员使用正确的版本，提高协作效率。</li>
+<li>PLM：涵盖产品从概念到退役的整个生命周期，包括设计、制造、服务等环节。PLM 包含 PDM 功能，但更关注整体流程和战略管理。</li>
+</ul>
+<h3 id="plm">PLM</h3>
+<ul>
+<li>Teamcenter：与 Siemens CAD 软件（如 NX、Solid Edge）集成良好。</li>
+<li>Windchill：与 PTC Creo 配合使用。</li>
+<li>Enovia：与 Dassault Systèmes 产品（如 CATIA、SolidWorks）集成。</li>
+<li>Autodesk Vault：适用于 Autodesk 产品（如 AutoCAD、Inventor）。</li>
+</ul>
+<h3 id="pdm">PDM</h3>
+<ul>
+<li>SolidWorks PDM：与 SolidWorks 紧密集成。</li>
+<li>Autodesk Vault：适用于 Autodesk 产品，如 AutoCAD 和 Inventor。</li>
+<li>Teamcenter Rapid Start：适用于 Siemens 的 CAD 软件。</li>
+<li>PTC Windchill PDM Essentials：与 Creo 集成。</li>
+</ul>
+<h2 id="_6">链接</h2>
+<ul>
+<li><a href="https://www.edrawingsviewer.com/download-edrawings">Download eDrawings | eDrawings Viewer</a></li>
+<li><a href="https://viewer.autodesk.com/">Autodesk Viewer | Free Online File Viewer</a></li>
+<li><a href="https://plm.sw.siemens.com/en-US/plm-components/jt/jt2go/">JT2Go JT File Viewer | Siemens Software</a></li>
+<li></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-08-09T00:44:00+08:00" pubdate>Fri 09 August 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/cax.html'>CAx</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/cad.html">cad</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Pelican继续了解 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Pelican继续了解</h1>
+    <p class="meta">
+<time datetime="2024-10-21T13:16:00+08:00" pubdate>Mon 21 October 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>重新捡起来 Pelican 写博客已经将近一年，见 <a href="https://blog.debao.me/2023/11/hello-pelican-again/">Hello Pelican Again</a>。由于开始用到大量公式，重新梳理一下Markdown的一些概念，并使用了katex和mermaid扩展，但是体验并不好，见<a href="https://blog.debao.me/2024/05/notes-on-markdown/">Markdown小记</a>与<a href="https://blog.debao.me/2024/09/notes-on-python-markdown-usage/">Python Markdown使用小记</a>。另外，想看看<a href="https://blog.debao.me/2023/11/notes-for-sass/">Sass相关</a>以及<a href="https://blog.debao.me/2023/12/python-flask-beginner-notes-2/">Jinja2相关内容</a>以便于调整一下模板，也没看懂。</p>
+</blockquote>
+<p>Pelican 是一个基于 Python 的静态网站生成器，广泛用于创建博客、个人网站、文档网站和项目展示页面。它支持 Markdown 和 reStructuredText 格式，允许用户通过模板引擎（如 Jinja2）定制页面布局</p>
+<h2 id="pelican">Pelican源码结构</h2>
+<p>既然不准备换掉它，那就走马观花看看，顺便温习python知识点</p>
+<h3 id="pyprojecttoml">pyproject.toml</h3>
+<blockquote>
+<p>pelican 从多年以前就开始使用 pyproject.toml 文件。</p>
+</blockquote>
+<p>pyproject.toml 是PEP 518 提出的标准配置文件，用于定义 Python 项目的构建工具和元数据。旨在为 Python 项目提供一种统一的、简洁的方式来配置构建工具链。</p>
+<p>在它之前，经常可见的文件</p>
+<ul>
+<li>setup.py</li>
+<li>setup.cfg</li>
+<li>requirements.txt (不是完全取代)</li>
+</ul>
+<p>文件由各个部分，主要的：</p>
+<table>
+<thead>
+<tr>
+<th><strong>部分</strong></th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[project]</code></td>
+<td>定义项目的元数据，如名称、版本、描述、作者等。</td>
+</tr>
+<tr>
+<td><code>[project.dependencies]</code></td>
+<td>声明项目的运行时依赖项，类似于 <code>requirements.txt</code>。</td>
+</tr>
+<tr>
+<td><code>[project.scripts]</code></td>
+<td>定义可以暴露为命令行的脚本，类似于 <code>entry_points</code> 中的 <code>console_scripts</code>。</td>
+</tr>
+<tr>
+<td><code>[build-system]</code></td>
+<td>定义项目的构建工具和构建依赖（如 <code>setuptools</code> 或 <code>poetry</code>）。</td>
+</tr>
+<tr>
+<td><code>[tool]</code></td>
+<td>各种工具（如 <code>black</code>, <code>pytest</code> 等）的配置区域。</td>
+</tr>
+</tbody>
+</table>
+<p>pyproject.toml 参考链接：</p>
+<ul>
+<li>https://packaging.python.org/en/latest/specifications/pyproject-toml/#pyproject-toml-spec</li>
+<li>https://peps.python.org/pep-0518/</li>
+</ul>
+<p>对于当前penlican项目，它的scripts部分如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[project.scripts]</span>
+<span class="n">pelican</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;pelican.__main__:main&quot;</span>
+<span class="n">pelican-import</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;pelican.tools.pelican_import:main&quot;</span>
+<span class="n">pelican-plugins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;pelican.plugins._utils:list_plugins&quot;</span>
+<span class="n">pelican-quickstart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;pelican.tools.pelican_quickstart:main&quot;</span>
+<span class="n">pelican-themes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;pelican.tools.pelican_themes:main&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>对应我们在命令行下可用的命令，特别是第一个。对应主命令 pelican。</p>
+<p>另外，我们执行如下命令时，调用的也是它：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pelican</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p><code>python -m</code> 的模块搜索路径遵循 sys.path，顺序为当前工作目录、PYTHONPATH 环境变量、标准库路径和第三方库路径。它运行模块和包中的代码，包的入口文件为 <code>__main__.py</code>。</p>
+</blockquote>
+<h3 id="mainpy"><strong>main</strong>.py 文件</h3>
+<p>脚本入口文件，真正代码位于别处：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">main</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="__init__py">__init__py 文件</h3>
+<p>真正的入口文件</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Pelican</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">init_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="o">...</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>main() 是命令行入口，解析命令行并决定执行转换操作还是listen操作。</li>
+<li>Pelican.run() 函数，函数内生成各个Generator，并按特定顺序执行。</li>
+</ul>
+<h3 id="generatorspy">generators.py文件</h3>
+<p>生成Generator后，创建一个上下文（context）。该上下文包含来自命令行的设置，以及如果提供了设置文件，则也包含其内容。</p>
+<ul>
+<li>调用每个生成器的 <code>generate_context()</code> 方法，更新上下文。</li>
+<li>创建一个写入器（writer）对象，并将其传递给每个生成器的<code>generate_output()</code> 方法。</li>
+<li>注意：Generator的<code>get_template()</code>方法</li>
+</ul>
+<div class="mermaid">
+classDiagram
+    class Generator {
+        +get_template(self, name)
+    }
+
+    class CachingGenerator {
+    }
+
+    class TemplatePagesGenerator {
+        +generate_output(writer)
+    }
+
+    class StaticGenerator {
+        +generate_context()
+        +generate_output(writer)
+    }
+
+    class SourceFileGenerator {
+        +generate_context()
+        +generate_output(writer)
+    }
+
+    class ArticleGenerator {
+        +generate_context()
+        +generate_output(writer)
+        +generate_feeds(writer)
+        +generate_pages(writer)
+    }
+
+    class PagesGenerator {
+        +generate_context()
+        +generate_output(writer)
+    }
+
+    Generator <|-- CachingGenerator
+    Generator <|-- TemplatePagesGenerator
+    Generator <|-- StaticGenerator
+    Generator <|-- SourceFileGenerator
+
+    CachingGenerator <|-- ArticleGenerator
+    CachingGenerator <|-- PagesGenerator
+</div>
+
+<p>以简单的PagesGenerator为例：</p>
+<p>在 <code>generate_context</code>阶段：</p>
+<ul>
+<li>读取指定路径，搜索其中特定的文件（比如 .markdown文件等）</li>
+<li>使用Reader，将文件加载到特定对象中</li>
+</ul>
+<p>在 <code>generate_output</code>阶段：</p>
+<ul>
+<li>使用上面的context 和 Writer，写入生成的内容。</li>
+<li>对于ArticleGenerator、PagesGenerator以及TemplatePageGenerator，都会调用Writer的<code>write_file()</code>函数。</li>
+</ul>
+<h4 id="jinja2">jinja2模板加载</h4>
+<p>模板加载也在这个文件内，通过这个文件，对接jinja2知识</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseLoader</span><span class="p">,</span>
+    <span class="n">ChoiceLoader</span><span class="p">,</span>
+    <span class="n">Environment</span><span class="p">,</span>
+    <span class="n">FileSystemLoader</span><span class="p">,</span>
+    <span class="n">PrefixLoader</span><span class="p">,</span>
+    <span class="n">TemplateNotFound</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Generator</span><span class="p">:</span>
+     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">settigns</span><span class="p">,</span><span class="o">...</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span>
+            <span class="n">loader</span><span class="o">=</span><span class="n">ChoiceLoader</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">FileSystemLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_templates_path</span><span class="p">),</span>
+                    <span class="n">simple_loader</span><span class="p">,</span>  <span class="c1"># implicit inheritance</span>
+                    <span class="n">PrefixLoader</span><span class="p">(</span>
+                        <span class="p">{</span><span class="s2">&quot;!simple&quot;</span><span class="p">:</span> <span class="n">simple_loader</span><span class="p">,</span> <span class="s2">&quot;!theme&quot;</span><span class="p">:</span> <span class="n">theme_loader</span><span class="p">}</span>
+                    <span class="p">),</span>  <span class="c1"># explicit ones</span>
+                <span class="p">]</span>
+            <span class="p">),</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;JINJA_ENVIRONMENT&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Template list: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">list_templates</span><span class="p">())</span>
+
+        <span class="c1"># provide utils.strftime as a jinja filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;strftime&quot;</span><span class="p">:</span> <span class="n">DateFormatter</span><span class="p">()})</span>
+
+        <span class="c1"># get custom Jinja filters from user settings</span>
+        <span class="n">custom_filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;JINJA_FILTERS&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">custom_filters</span><span class="p">)</span>
+
+        <span class="c1"># get custom Jinja globals from user settings</span>
+        <span class="n">custom_globals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;JINJA_GLOBALS&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">globals</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">custom_globals</span><span class="p">)</span>
+
+        <span class="c1"># get custom Jinja tests from user settings</span>
+        <span class="n">custom_tests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;JINJA_TESTS&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">tests</span><span class="p">[</span><span class="s2">&quot;plugin_enabled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+            <span class="n">plugin_enabled</span><span class="p">,</span> <span class="n">plugin_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;PLUGINS&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">tests</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">custom_tests</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the template by name.</span>
+<span class="sd">        Use self.theme to get the templates to use, and return a list of</span>
+<span class="sd">        templates ready to use with Jinja2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_templates</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;TEMPLATE_EXTENSIONS&quot;</span><span class="p">]:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_templates</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="n">ext</span><span class="p">)</span>
+                    <span class="k">break</span>
+                <span class="k">except</span> <span class="n">TemplateNotFound</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_templates</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PelicanTemplateNotFound</span><span class="p">(</span>
+                    <span class="s2">&quot;[templates] unable to load </span><span class="si">{}</span><span class="s2">[</span><span class="si">{}</span><span class="s2">] from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">name</span><span class="p">,</span>
+                        <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;TEMPLATE_EXTENSIONS&quot;</span><span class="p">]),</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_templates_path</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_templates</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="readerspy">readers.py文件</h3>
+<p>这是用于解析各种源文件的地方。主要关注MarkdownReader。</p>
+<div class="mermaid">
+classDiagram
+    class BaseReader {
+        +process_metadata(name, value)
+        +read(source_path)
+    }
+
+    class RstReader {
+        +_parse_metadata(document, source_path) dict
+        +read(source_path) :(content, metadata)
+    }
+
+    class MarkdownReader {
+        -_parse_metadata(meta) dict
+        +read(source_path) :(content, metadata)
+    }
+
+    class HTMLReader {
+        +read(filename) :(content, metadata)
+    }
+
+    BaseReader <|-- RstReader
+    BaseReader <|-- MarkdownReader
+    BaseReader <|-- HTMLReader
+</div>
+
+<p>对MarkdownReader，可以看到基本上没有特殊处理：</p>
+<ul>
+<li>处理配置文件中的参数，使用参数直接创建python的Markdown对象</li>
+<li>使用Makrdown对象的<code>convert()</code>方法执行转换操作</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MarkdownReader</span><span class="p">(</span><span class="n">BaseReader</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reader for Markdown files&quot;&quot;&quot;</span>
+
+    <span class="n">enabled</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">Markdown</span><span class="p">)</span>
+    <span class="n">file_extensions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">,</span> <span class="s2">&quot;markdown&quot;</span><span class="p">,</span> <span class="s2">&quot;mkd&quot;</span><span class="p">,</span> <span class="s2">&quot;mdown&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;MARKDOWN&quot;</span><span class="p">]</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;extension_configs&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;extensions&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">for</span> <span class="n">extension</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;extension_configs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">extension</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;extensions&quot;</span><span class="p">]:</span>
+                <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;extensions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extension</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;markdown.extensions.meta&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;extensions&quot;</span><span class="p">]:</span>
+            <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;extensions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;markdown.extensions.meta&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_source_path</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse content and metadata of markdown files&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_source_path</span> <span class="o">=</span> <span class="n">source_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_md</span> <span class="o">=</span> <span class="n">Markdown</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;MARKDOWN&quot;</span><span class="p">])</span>
+        <span class="k">with</span> <span class="n">pelican_open</span><span class="p">(</span><span class="n">source_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">text</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_md</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_md</span><span class="p">,</span> <span class="s2">&quot;Meta&quot;</span><span class="p">):</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_md</span><span class="o">.</span><span class="n">Meta</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="n">content</span><span class="p">,</span> <span class="n">metadata</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="writerspy">writers.py文件</h3>
+<p>Wrriter类主要两个函数：</p>
+<div class="mermaid">
+classDiagram
+    class Writer {
+        +write_feed(elements, context, path=None, url=None, feed_type="atom", ...)
+        +write_file(name, template, context, relative_urls=False, paginated=None, template_name=None, ...)
+    }
+
+    Writer --> Paginator
+</div>
+
+<p>主要的函数 <code>write_file()</code>中有一个辅助函数<code>_write_file()</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code>        <span class="k">def</span> <span class="nf">_write_file</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">localcontext</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">override</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Render the template write the file.&quot;&quot;&quot;</span>
+            <span class="c1"># set localsiteurl for context so that Contents can adjust links</span>
+            <span class="k">if</span> <span class="n">localcontext</span><span class="p">[</span><span class="s2">&quot;localsiteurl&quot;</span><span class="p">]:</span>
+                <span class="n">context</span><span class="p">[</span><span class="s2">&quot;localsiteurl&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">localcontext</span><span class="p">[</span><span class="s2">&quot;localsiteurl&quot;</span><span class="p">]</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">localcontext</span><span class="p">)</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">sanitised_join</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_w</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="n">override</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>从这儿可以看到，模板的 render() 方法被调用。</p>
+<h2 id="plugins">插件（plugins）</h2>
+<ul>
+<li>插件接口？</li>
+<li>插件的组织结构怎么样？</li>
+<li>Pelican如何搜索插件？</li>
+</ul>
+<h3 id="_1">插件接口</h3>
+<p>Pelican的插件文件的定义很简单，只需要提供 <code>register()</code>文件作为插件入口！</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">pelican</span> <span class="kn">import</span> <span class="n">signals</span>
+
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">sender</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">register</span><span class="p">():</span>
+    <span class="n">signals</span><span class="o">.</span><span class="n">initialized</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>所有的插件是通过订阅-监听机制来工作的，Pelican中称之为signals。所以register()中主要为需要监听的信号注册响应函数。</p>
+<h3 id="_2">插件结构</h3>
+<p>对于一个名为myplugin插件，其文件组织结构大致如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>├── pelican
+│   └── plugins
+│       └── myplugin
+│           ├── __init__.py
+│           └── ...
+├── ...
+└── pyproject.toml
+</code></pre></div></td></tr></table></div>
+
+<p>注意：pelican，pelican/plugins 文件夹下不包含其他文件。</p>
+<p>核心文件就一个 <code>__init__.py</code></p>
+<h3 id="_3">用途？</h3>
+<p>Python写的这东西，尽管简陋，确实灵活</p>
+<ul>
+<li>https://docs.getpelican.com/en/latest/plugins.html</li>
+</ul>
+<p>比如：添加一个新的Reader，以支持新的格式</p>
+<ul>
+<li>从 BaseReader 派生，声明支持的文件后缀并实现特定的read()函数</li>
+<li>对<code>readers_init</code>信号进行注册相应，以便于添加新的reader</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">pelican</span> <span class="kn">import</span> <span class="n">signals</span>
+<span class="kn">from</span> <span class="nn">pelican.readers</span> <span class="kn">import</span> <span class="n">BaseReader</span>
+
+<span class="c1"># Create a new reader class, inheriting from the pelican.reader.BaseReader</span>
+<span class="k">class</span> <span class="nc">NewReader</span><span class="p">(</span><span class="n">BaseReader</span><span class="p">):</span>
+    <span class="n">enabled</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Yeah, you probably want that :-)</span>
+
+    <span class="c1"># The list of file extensions you want this reader to match with.</span>
+    <span class="c1"># If multiple readers were to use the same extension, the latest will</span>
+    <span class="c1"># win (so the one you&#39;re defining here, most probably).</span>
+    <span class="n">file_extensions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;yeah&#39;</span><span class="p">]</span>
+
+    <span class="c1"># You need to have a read method, which takes a filename and returns</span>
+    <span class="c1"># some content and the associated metadata.</span>
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Oh yeah&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;Foo&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-01&#39;</span><span class="p">}</span>
+
+        <span class="n">parsed</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">parsed</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_metadata</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;Some content&quot;</span><span class="p">,</span> <span class="n">parsed</span>
+
+<span class="k">def</span> <span class="nf">add_reader</span><span class="p">(</span><span class="n">readers</span><span class="p">):</span>
+    <span class="n">readers</span><span class="o">.</span><span class="n">reader_classes</span><span class="p">[</span><span class="s1">&#39;yeah&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">NewReader</span>
+
+<span class="c1"># This is how pelican works.</span>
+<span class="k">def</span> <span class="nf">register</span><span class="p">():</span>
+    <span class="n">signals</span><span class="o">.</span><span class="n">readers_init</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">add_reader</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="theme">主题（theme）</h2>
+<blockquote>
+<p>这玩意主要是前端的工作了，Jinja2模板，样式表，sass 等</p>
+</blockquote>
+<p>penlican提供一些第三方的主题可用，但一般用户都定制一下。</p>
+<ul>
+<li>https://docs.getpelican.com/en/latest/themes.html</li>
+<li>https://github.com/getpelican/pelican-themes</li>
+</ul>
+<h3 id="_4">模板结构</h3>
+<ul>
+<li>static部分用于存放主题的静态资源文件，包括 CSS、图片、JavaScript 等。Pelican 会将此目录中的文件复制到输出目录中，与生成的 HTML 文件一起发布。</li>
+<li>templates目录下的Jinja2模板文件用于定义每个页面的布局和内容显示方式。Pelican 会根据内容类型（文章、标签、分类等）选择相应的模板文件来生成 HTML 页面。下面列出的这些模板必须都存在。</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code>mytheme/
+├── static
+│   ├── css
+│   ├── js
+│   └── images
+└── templates
+    ├── archives.html         // 显示归档页面
+    ├── article.html          // 为每篇文章生成页面
+    ├── author.html           // 为每个作者生成页面
+    ├── authors.html          // 列出所有作者
+    ├── categories.html       // 列出所有分类
+    ├── category.html         // 为每个分类生成页面
+    ├── index.html            // 网站首页，列出所有文章
+    ├── page.html             // 为每个页面生成内容（例如“关于我们”页面）
+    ├── period_archives.html  // 按时间段显示归档
+    ├── tag.html              // 为每个标签生成页面
+    └── tags.html             // 列出所有标签（可以是标签云）
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_5">变量</h3>
+<p>Pelican为模板提供的一些常规变量</p>
+<table>
+<thead>
+<tr>
+<th><strong>变量</strong></th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>output_file</code></td>
+<td>当前正在生成的文件名。例如，当 Pelican 正在渲染首页时，<code>output_file</code> 的值为 <code>"index.html"</code>。</td>
+</tr>
+<tr>
+<td><code>articles</code></td>
+<td>文章列表，按日期降序排列。所有元素都是 <code>Article</code> 对象，可访问其属性（如标题、摘要、作者等）。有时会被覆盖（例如在标签页面中）。在这种情况下，可以在 <code>all_articles</code> 变量中找到信息。</td>
+</tr>
+<tr>
+<td><code>dates</code></td>
+<td>相同的文章列表，但按日期升序排列。</td>
+</tr>
+<tr>
+<td><code>hidden_articles</code></td>
+<td>隐藏的文章列表。</td>
+</tr>
+<tr>
+<td><code>drafts</code></td>
+<td>草稿文章列表。</td>
+</tr>
+<tr>
+<td><code>period_archives</code></td>
+<td>一个字典，包含与时间段归档相关的元素（如果启用）。详见“Listing and Linking to Period Archives”部分的细节。</td>
+</tr>
+<tr>
+<td><code>authors</code></td>
+<td>(作者, 文章) 元组的列表，包含所有作者及其对应的文章。</td>
+</tr>
+<tr>
+<td><code>categories</code></td>
+<td>(分类, 文章) 元组的列表，包含所有分类及其对应的文章。</td>
+</tr>
+<tr>
+<td><code>tags</code></td>
+<td>(标签, 文章) 元组的列表，包含所有标签及其对应的文章。</td>
+</tr>
+<tr>
+<td><code>pages</code></td>
+<td>页面列表。</td>
+</tr>
+<tr>
+<td><code>hidden_pages</code></td>
+<td>隐藏的页面列表。</td>
+</tr>
+<tr>
+<td><code>draft_pages</code></td>
+<td>草稿页面列表。</td>
+</tr>
+</tbody>
+</table>
+<p>另外，在配置文件 pelicanconf.py 中，可以自由定义变量（注意不要和pelian内置变量冲突），这些自定义变量，在jinja2模板中也可以直接用。</p>
+<h3 id="sass">sass</h3>
+<p>兜兜转转，还是回来折腾折腾这个 octopress 这个久久没人维护的主题。克隆一下进行折腾<a href="https://github.com/dbzhang800/pelican-octopress-theme">pelican-octopress-theme</a>：</p>
+<p>它的样式表是通过sass来生成的，更改样式表要手动修改这些scss文件，而后使用sass工具来生成目标.css。</p>
+<blockquote>
+<p>这个东西变化太多，先勉强从老的ruby版本一直到dart版本。还有一堆警告存在。</p>
+</blockquote>
+<p>首先，安装nodejs及其下的sass包</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>npm install -g sass
+</code></pre></div></td></tr></table></div>
+
+<p>而后</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>sass<span class="w"> </span>main.scss<span class="w"> </span>../static/css/main.css<span class="w"> </span>--style<span class="w"> </span>compressed
+</code></pre></div></td></tr></table></div>
+
+<h3 id="katex">katex</h3>
+<p>Pelican的katex支持有两个方案。但都是离线转换方案，在Windows下奇慢无比（数十分钟），即使在github的actions，也是分钟级别的。</p>
+<p>实在无法接受，故而当前blog 自己编写Markdown插件，不进行离线转换。速度只需数秒。</p>
+<h4 id="markdown-katex">markdown-katex</h4>
+<p>网站：https://github.com/mbarkhau/markdown-katex</p>
+<p><code>markdown-katex</code> 插件通过调用 KaTeX 进行 <strong>离线转换</strong>，从而生成不需要浏览器加载 JavaScript 的公式。然而：</p>
+<ul>
+<li>在我的个人电脑（Windows 10）上，性能表现非常差，尽管在 GitHub Actions 环境中速度尚可。</li>
+<li>该插件只支持 <strong>GitLab</strong> 风格的公式分割符。</li>
+</ul>
+<h4 id="pelican-katex">pelican-katex</h4>
+<p>网站：https://github.com/martenlienen/pelican-katex</p>
+<p><code>pelican-katex</code> 也是一个基于 KaTeX 的 <strong>离线转换</strong> 插件，且封装为 Pelican 插件，适合使用 Pelican 的用户。在实现上，它是一个 Markdown 插件，被 Pelican 通过传递对象的方式调用。</p>
+<h2 id="getpelican">getpelican使用问题</h2>
+<ul>
+<li>它使用 python-markdown 不支持 commmark，与主流的Markdown编辑器由一定的兼容性问题。</li>
+<li>内部链接使用自定义变量<code>{filenme}</code>、<code>{static}</code>等，主流的Markdown编辑器不支持。</li>
+<li>...</li>
+</ul>
+<h3 id="front-matter">front matter</h3>
+<p>现在其他软件YAML Front Matter用的比较多，可以使用扩展</p>
+<ul>
+<li>https://pypi.org/project/pelican-yaml-metadata/</li>
+</ul>
+<p>或者</p>
+<ul>
+<li>https://pypi.org/project/markdown-full-yaml-metadata/</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nn">---</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">I am the title of the article</span>
+<span class="nn">---</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意，pelican源码中默认会启动python-markdown的自己的Mate扩展。</p>
+</blockquote>
+<p>其他编辑器比如vscode等可以识别并隐藏这部分。</p>
+<h3 id="nest-list">nest list</h3>
+<blockquote>
+<p>嵌套用4个空格，这是Python Markdown非常坚持的一点。见Issue：https://github.com/Python-Markdown/markdown/issues/3</p>
+</blockquote>
+<p>针对python markdown和其他软件缩进空格不一致问题，可以</p>
+<ul>
+<li>https://pypi.org/project/mdx-truly-sane-lists/</li>
+</ul>
+<h3 id="_6">其他扩展</h3>
+<blockquote>
+<p>方案！ 手动写Python Markdown扩展，书写makrdown时使用编辑器常规使用的格式，送入pelican时在内存中自动转换一下。这个终极灵活</p>
+</blockquote>
+<p>比如如果没有可心的katex扩展，那就直接写一下：</p>
+<ul>
+<li>https://pypi.org/project/md-katex/</li>
+</ul>
+<h3 id="commonmark">commonmark兼容？</h3>
+<p>另外，pelican也有三方的pelican-markdown-it-reader插件，它使用更符合markdown-it 生态的 markdown-it-py。先观望，后面考虑是否切换。</p>
+<h2 id="_7">参考</h2>
+<ul>
+<li>https://docs.getpelican.com/en/latest/internals.html</li>
+<li>https://github.com/getpelican/pelican</li>
+<li>https://peps.python.org/pep-0518/</li>
+<li>https://pypi.org/project/pelican-markdown-it-reader/</li>
+</ul>
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+</script></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-10-21T13:16:00+08:00" pubdate>Mon 21 October 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a class="category" href="https://blog.debao.me/tags/katex.html">katex</a>,    <a class="category" href="https://blog.debao.me/tags/markdown.html">markdown</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

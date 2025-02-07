@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>浅谈Qt Designer中使用自定义控件的提升法 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">浅谈Qt Designer中使用自定义控件的提升法</h1>
+    <p class="meta">
+<time datetime="2025-01-05T22:24:00+08:00" pubdate>Sun 05 January 2025</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>属于很老旧的内容了，简单写写，主要覆盖C++ Qt，PySide6，PyQt6。</p>
+<p>尽管PyQt6没有PySide6的LGPL协议友好，但是.ui动态加载这一块，确实比Pyside6要强不少。</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#c">C++ 自定义控件</a><ul>
+<li><a href="#_1">提升法</a></li>
+<li><a href="#cqtui">C++Qt下.ui 如何用？（一）</a></li>
+<li><a href="#cqtui_1">C++Qt下.ui 如何用？（二）</a></li>
+</ul>
+</li>
+<li><a href="#pyside6">PySide6</a><ul>
+<li><a href="#pysideui">PySide下.ui用法（一）</a></li>
+<li><a href="#pysideui_1">PySide下.ui用法（二）</a></li>
+<li><a href="#pysideui_2">PySide下.ui用法（三）</a></li>
+</ul>
+</li>
+<li><a href="#pyqt6">PyQt6</a><ul>
+<li><a href="#pyqtui">PyQt下.ui用法（一）</a></li>
+<li><a href="#pyqtui_1">PyQt下.ui用法（二）！！</a></li>
+<li><a href="#pyqtui_2">PyQt下.ui用法（三）！！</a></li>
+</ul>
+</li>
+<li><a href="#pythonui">python下对.ui自定义控件路径处理</a><ul>
+<li><a href="#pyside6-uic">pyside6-uic</a></li>
+<li><a href="#pyuic6">pyuic6</a></li>
+</ul>
+</li>
+<li><a href="#_2">参考</a></li>
+</ul>
+</div>
+<p>很多人抱怨Qt Designer（或Qt Creator中的Designer）不好用，其中有一个很大原因是，不太了解如何在Designer中使用自定义控件：</p>
+<ul>
+<li>如果我用C++写一个自定义按钮，比如QPushButton的派生类，如何在Designer中放置它？</li>
+<li>如果我用Python写一个自定义的Led控件，从QWidget派生的，如何在Designer中放置它？</li>
+<li>...</li>
+</ul>
+<p><strong>正统的做法</strong>有两种：</p>
+<ul>
+<li>插件法（Plugins）：实现 Qt Designer 的插件，使得自定义插件可以和内置的QPushButton等一样拖拽放置。【这个东西比较复杂，写库（供别人用）时会比较有用，单独自已用意义不大】</li>
+<li>提升法（Promotion）：<strong>简单直接</strong>。只需要知道自定义控件所在文件名，比如xxxx.h 或 xxxx.py 等即可，即使设计ui时，这些文件不存在都没问题。</li>
+</ul>
+<blockquote>
+<p>本文通篇不考虑插件法。</p>
+</blockquote>
+<h2 id="c">C++ 自定义控件</h2>
+<p>考虑简单场景，我写好了一个支持行号、语法高亮以及自动补全的文本编辑器，比如，像下面这样：</p>
+<p><img alt="code edit" src="https://blog.debao.me/images/qt/my_codeedit.png"></p>
+<p>对应代码大概这样：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DEBAO_WIDGETS_EXPORT</span><span class="w"> </span><span class="n">CodeEdit</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QPlainTextEdit</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Q_OBJECT</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">CodeEdit</span><span class="p">(</span><span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="n">parent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="w">    </span><span class="o">~</span><span class="n">CodeEdit</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="nf">isLineNumberVisible</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">    </span><span class="n">QCompleter</span><span class="w"> </span><span class="o">*</span><span class="nf">completer</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="k">public</span><span class="w"> </span><span class="n">slots</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">setLineNumberVisible</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">visible</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">setCompleter</span><span class="p">(</span><span class="n">QCompleter</span><span class="w"> </span><span class="o">*</span><span class="n">c</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p><strong>如何将其加入到designer的.ui文件中??</strong></p>
+<h3 id="_1">提升法</h3>
+<p>我们这个edit是从QPlainTextEdit派生的，所以只需要在designer拖拽一个 QPlainTextEdit 上去就行了：</p>
+<p><img alt="promotion" src="https://blog.debao.me/images/qt/designer_promotion.png"></p>
+<p>然后提升它，注意输入：</p>
+<ul>
+<li>类的名字（在C++下，可包含namespace信息，比如 <code>Xxxx::Yyy::CodeEdit</code>）</li>
+<li>头文件的名字（可包含路径信息，比如 <code>xxx/bbb.h</code>，Python会自动处理这种情况）</li>
+</ul>
+<p><strong>这样就可以了。注意本文8个例子，使用的均是这一个.ui文件。</strong></p>
+<blockquote>
+<p>其实，我们直接拖拽一个QWidget上去，然后提升到CodeEdit也是完全可以的。只是右侧属性栏内容不太一样，designer阶段显示不够友好。但完全不影响后期运行效果。</p>
+</blockquote>
+<h3 id="cqtui">C++Qt下.ui 如何用？（一）</h3>
+<p>常规用法，将其转换成 .cpp 文件（cmake或qmake可以自动进行这个操作），执行如下命令：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>uic<span class="w"> </span>dialog.ui<span class="w"> </span>-o<span class="w"> </span>ui_dialog.cpp
+</code></pre></div></td></tr></table></div>
+
+<p>生成文件<code>ui_dialog.cpp</code>如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QtCore/QVariant&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QtWidgets/QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QtWidgets/QDialog&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QtWidgets/QVBoxLayout&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;codeedit.h&quot;</span>
+
+<span class="n">QT_BEGIN_NAMESPACE</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Ui_Dialog</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">QVBoxLayout</span><span class="w"> </span><span class="o">*</span><span class="n">verticalLayout</span><span class="p">;</span>
+<span class="w">    </span><span class="n">CodeEdit</span><span class="w"> </span><span class="o">*</span><span class="n">plainTextEdit</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">setupUi</span><span class="p">(</span><span class="n">QDialog</span><span class="w"> </span><span class="o">*</span><span class="n">Dialog</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>里面用到了，我们设定的头文件 和 类名。仅此而已！</p>
+</blockquote>
+<p>c++文件生成后，在代码中怎么用它就灵活了：</p>
+<ul>
+<li>单继承方式</li>
+<li>多重继承方式</li>
+<li>...</li>
+</ul>
+<h3 id="cqtui_1">C++Qt下.ui 如何用？（二）</h3>
+<p>除了上面的常规用法，.ui 文件更灵活的用法是通过 QUiLoader 动态加载。</p>
+<p>同样，由于要通过.ui文件动态加载自定义控件，这儿有两个路线可以选：</p>
+<ul>
+<li>把自定义控件做成插件，供QUiLoader 使用。【自从有了Qt Creator，我个人就不再喜欢插件法。因为Qt Creator的版本和我们所用Qt的版本通常不一样，插件需要做两份】</li>
+<li>派生QUiLoader，实现其<code>createWidget()</code>以便于其运行时完成自定义控件的创建。【写起来还好，至少也很直观！！简单】</li>
+</ul>
+<p>派生QUiLoader，示例代码如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;uiloader.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;codeedit.h&quot;</span>
+
+<span class="n">UiLoader</span><span class="o">::</span><span class="n">UiLoader</span><span class="p">(</span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">parent</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="n">QUiLoader</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+<span class="p">{}</span>
+
+<span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="n">UiLoader</span><span class="o">::</span><span class="n">createWidget</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">className</span><span class="p">,</span><span class="w"> </span><span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">name</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">className</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;CodeEdit&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">CodeEdit</span><span class="p">(</span><span class="n">parent</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">QUiLoader</span><span class="o">::</span><span class="n">createWidget</span><span class="p">(</span><span class="n">className</span><span class="p">,</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>然后就可以用它来加载我们的包含自定义控件的 .ui 文件了：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">UiLoader</span><span class="w"> </span><span class="n">loader</span><span class="p">;</span>
+<span class="w">    </span><span class="n">QFile</span><span class="w"> </span><span class="n">file</span><span class="p">(</span><span class="n">qApp</span><span class="o">-&gt;</span><span class="n">applicationDirPath</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;/../../dialog.ui&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">file</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">QFile</span><span class="o">::</span><span class="n">ReadOnly</span><span class="p">);</span>
+<span class="w">    </span><span class="n">QWidget</span><span class="w"> </span><span class="o">*</span><span class="n">myWidget</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loader</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="o">&amp;</span><span class="n">file</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">);</span>
+<span class="w">    </span><span class="n">file</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">myWidget</span><span class="o">-&gt;</span><span class="n">show</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="pyside6">PySide6</h2>
+<p>和 C++ 相对应，ui在PySide下主要也有两类用法。但是由于Python更灵活，所以还是有所不同...</p>
+<h3 id="pysideui">PySide下.ui用法（一）</h3>
+<blockquote>
+<p>不知道你有没有疑惑？ 在前面的ui文件中，我们指定的是 C++ 自定义控件的类名和头文件，那么这个文件怎么可以用于python呢？？</p>
+</blockquote>
+<p>常规用法，将前面的列出的.ui文件直接转换成 .py 文件，执行如下命令：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pyside6-uic<span class="w"> </span>dialog.ui<span class="w"> </span>-o<span class="w"> </span>ui_dialog.py
+</code></pre></div></td></tr></table></div>
+
+<p>内容大致如下（注意看，codeedit.h 没有对python造成困扰，它直接认为是模块 codeedit）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">PySide6.QtCore</span> <span class="kn">import</span> <span class="p">(</span><span class="n">QCoreApplication</span><span class="p">,</span> <span class="n">QMetaObject</span><span class="p">,</span> <span class="n">QObject</span><span class="p">,</span> <span class="n">Qt</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtWidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">QDialog</span><span class="p">,</span> <span class="n">QSizePolicy</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">codeedit</span> <span class="kn">import</span> <span class="n">CodeEdit</span>
+
+<span class="k">class</span> <span class="nc">Ui_Dialog</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Dialog</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">Dialog</span><span class="o">.</span><span class="n">objectName</span><span class="p">():</span>
+            <span class="n">Dialog</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;Dialog&quot;</span><span class="p">)</span>
+        <span class="n">Dialog</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">Dialog</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;verticalLayout&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plainTextEdit</span> <span class="o">=</span> <span class="n">CodeEdit</span><span class="p">(</span><span class="n">Dialog</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plainTextEdit</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;plainTextEdit&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plainTextEdit</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">retranslateUi</span><span class="p">(</span><span class="n">Dialog</span><span class="p">)</span>
+
+        <span class="n">QMetaObject</span><span class="o">.</span><span class="n">connectSlotsByName</span><span class="p">(</span><span class="n">Dialog</span><span class="p">)</span>
+    <span class="c1"># setupUi</span>
+
+    <span class="k">def</span> <span class="nf">retranslateUi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Dialog</span><span class="p">):</span>
+        <span class="n">Dialog</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">QCoreApplication</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Dialog&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;1+1=10&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="c1"># retranslateUi</span>
+</code></pre></div></td></tr></table></div>
+
+<p>python文件生成了，在代码中怎么用就灵活了：</p>
+<ul>
+<li>单继承方式</li>
+<li>多重继承方式</li>
+<li>...</li>
+</ul>
+<h3 id="pysideui_1">PySide下.ui用法（二）</h3>
+<p>依然和C++下的用法二一样，不过Python下写代码比C++简单，下面是完整的可运行的伪代码：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># codeedit.py</span>
+
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QPlainTextEdit</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtUiTools</span> <span class="kn">import</span> <span class="n">QUiLoader</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtCore</span> <span class="kn">import</span> <span class="n">QFile</span>
+
+<span class="k">class</span> <span class="nc">CodeEdit</span><span class="p">(</span><span class="n">QPlainTextEdit</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appendPlainText</span><span class="p">(</span><span class="s2">&quot;Hello 1+1=10&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">UiLoader</span><span class="p">(</span><span class="n">QUiLoader</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">createWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">className</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">className</span> <span class="o">==</span> <span class="s2">&quot;CodeEdit&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CodeEdit</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">createWidget</span><span class="p">(</span><span class="n">className</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
+
+    <span class="n">loader</span> <span class="o">=</span> <span class="n">UiLoader</span><span class="p">()</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="n">QFile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;dialog.ui&quot;</span><span class="p">))</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">QFile</span><span class="o">.</span><span class="n">ReadOnly</span><span class="p">)</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<p>逻辑和C++的完全一样，派生QUiLoader并实现的其createWidget()成员。</p>
+<h3 id="pysideui_2">PySide下.ui用法（三）</h3>
+<p>不同于C++，在PySide下，还有一种用法。使用 <code>loadUiType</code>（这个应该是抄袭的PyQt的<strong>接口</strong>，内部实现方法差异很大）</p>
+<p>注意：</p>
+<ul>
+<li>这个函数在运行时加载.ui并生成相应的 Python 类和基类</li>
+<li>Qt官方建议使用本文提到的方法一（手动调用 <code>pyside6-uic</code> 的方法）</li>
+</ul>
+<p>尤其要注意，官方说：</p>
+<blockquote>
+<p>The internal process relies on uic being in the PATH. The pyside6-uic wrapper uses a shipped uic that is located in the site-packages/PySide6/uic, so PATH needs to be updated to use that if there is no uic in the system.</p>
+</blockquote>
+<p>不管怎样，为了完整期间，一个可运行的例子如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtUiTools</span> <span class="kn">import</span> <span class="n">loadUiType</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QDialog</span>
+
+
+<span class="n">Ui_Dialog</span><span class="p">,</span> <span class="n">base_class</span> <span class="o">=</span> <span class="n">loadUiType</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;dialog.ui&quot;</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">Dialog</span><span class="p">(</span><span class="n">QDialog</span><span class="p">,</span> <span class="n">Ui_Dialog</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">Dialog</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<p>该例子运行时会使用我们一开始的.ui文件，以及用法二中给出的 codeedit.py 文件。</p>
+<h2 id="pyqt6">PyQt6</h2>
+<blockquote>
+<p>PyQt历史比较久，资料更多，对ui文件的支持，也更强大，但由于GPL授权问题，我个人用它机会比较少。为了和PySide对比，还是简单写写</p>
+</blockquote>
+<h3 id="pyqtui">PyQt下.ui用法（一）</h3>
+<p>常规用法，将前面的列出的.ui文件直接转换成 .py 文件，执行如下命令：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pyuic6<span class="w"> </span>dialog.ui<span class="w"> </span>-o<span class="w"> </span>ui_dialog.py
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意和pyside6的命令区分。</p>
+</blockquote>
+<p>生成结果如下（处理方式一样, codeedit.h 被它作为python模块 codedit）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">PyQt6</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
+
+
+<span class="k">class</span> <span class="nc">Ui_Dialog</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Dialog</span><span class="p">):</span>
+        <span class="n">Dialog</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;Dialog&quot;</span><span class="p">)</span>
+        <span class="n">Dialog</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">Dialog</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;verticalLayout&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plainTextEdit</span> <span class="o">=</span> <span class="n">CodeEdit</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">Dialog</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plainTextEdit</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;plainTextEdit&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plainTextEdit</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">retranslateUi</span><span class="p">(</span><span class="n">Dialog</span><span class="p">)</span>
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QMetaObject</span><span class="o">.</span><span class="n">connectSlotsByName</span><span class="p">(</span><span class="n">Dialog</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">retranslateUi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Dialog</span><span class="p">):</span>
+        <span class="n">_translate</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QCoreApplication</span><span class="o">.</span><span class="n">translate</span>
+        <span class="n">Dialog</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">_translate</span><span class="p">(</span><span class="s2">&quot;Dialog&quot;</span><span class="p">,</span> <span class="s2">&quot;1+1=10&quot;</span><span class="p">))</span>
+<span class="kn">from</span> <span class="nn">codeedit</span> <span class="kn">import</span> <span class="n">CodeEdit</span>
+</code></pre></div></td></tr></table></div>
+
+<p>有了这个py文件，使用时可以直接用，或者单继承或多重继承</p>
+<p>另外，不同于 PySide下的uic，PyQt下的uic还支持其他的命令行参数，比如<code>-x</code></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pyuic6 dialog.ui -o ui_dialog.py
+</code></pre></div></td></tr></table></div>
+
+<p>这样一来，生成的代码中会包含如下片段（编写小的demo时可能有用，或者作为使用参照）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">Dialog</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QDialog</span><span class="p">()</span>
+    <span class="n">ui</span> <span class="o">=</span> <span class="n">Ui_Dialog</span><span class="p">()</span>
+    <span class="n">ui</span><span class="o">.</span><span class="n">setupUi</span><span class="p">(</span><span class="n">Dialog</span><span class="p">)</span>
+    <span class="n">Dialog</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">())</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="pyqtui_1">PyQt下.ui用法（二）！！</h3>
+<blockquote>
+<p>注意，PyQt 没有提供 QtUiTools模块的封装，所以不能像C++ Qt和 PySide下那么用 QtUiTools。但是</p>
+</blockquote>
+<p>PyQt 自己用 python 实现了一个 uic 模块！！该模块有如下接口：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">PyQt6</span><span class="o">.</span><span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="n">uifile</span><span class="p">,</span><span class="w"> </span><span class="n">baseinstance</span><span class="o">=</span><span class="n">None</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>可运行的示例代码如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">PyQt6.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QPlainTextEdit</span><span class="p">,</span> <span class="n">QDialog</span>
+<span class="kn">from</span> <span class="nn">PyQt6</span> <span class="kn">import</span> <span class="n">uic</span>
+
+<span class="k">class</span> <span class="nc">CodeEdit</span><span class="p">(</span><span class="n">QPlainTextEdit</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appendPlainText</span><span class="p">(</span><span class="s2">&quot;Hello 1+1=10&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Dialog</span><span class="p">(</span><span class="n">QDialog</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;dialog.ui&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">Dialog</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">())</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>和PySide的用法二比较一下，可知 PyQt6的更简洁。毕竟它是 PyQt重写的，而不是对C++的 QtUiTools的简单封装。</p>
+</blockquote>
+<h3 id="pyqtui_2">PyQt下.ui用法（三）！！</h3>
+<p>PyQt 的uic模块也提供 loadUiType 函数：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">PyQt6</span><span class="o">.</span><span class="n">uic</span><span class="o">.</span><span class="n">loadUiType</span><span class="p">(</span><span class="n">uifile</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>用起来和PySide下面几乎一样（毕竟PySide 仿制的对象就是PyQt），但是没有PySide的毛病，所以可以放心用：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">from</span> <span class="nn">PyQt6.uic</span> <span class="kn">import</span> <span class="n">loadUiType</span>
+<span class="kn">from</span> <span class="nn">PyQt6.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QDialog</span>
+
+
+<span class="n">Ui_Dialog</span><span class="p">,</span> <span class="n">base_class</span> <span class="o">=</span> <span class="n">loadUiType</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;dialog.ui&quot;</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">Dialog</span><span class="p">(</span><span class="n">QDialog</span><span class="p">,</span> <span class="n">Ui_Dialog</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">Dialog</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="pythonui">python下对.ui自定义控件路径处理</h2>
+<p>回到我们开头提到的自定义控件，需要指定头文件。但头文件时 c/c++ 下的概念，我们看看 python 下如何处理的：</p>
+<h3 id="pyside6-uic">pyside6-uic</h3>
+<ul>
+<li>如果头文件有<code>.h</code>、<code>.hpp</code>、<code>.hh</code> 后缀，则去掉后缀</li>
+<li>如果文件中有路径分隔符<code>/</code>，则替换成 <code>.</code></li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">WriteImports::addPythonCustomWidget</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">className</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">DomCustomWidget</span><span class="w"> </span><span class="o">*</span><span class="n">node</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">className</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="s">&quot;::&quot;</span><span class="n">_L1</span><span class="p">))</span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span><span class="w"> </span><span class="c1">// Exclude namespaced names (just to make tests pass).</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">addQtClass</span><span class="p">(</span><span class="n">className</span><span class="p">))</span><span class="w">  </span><span class="c1">// Qt custom widgets like QQuickWidget, QAxWidget, etc</span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// When the elementHeader is not set, we know it&#39;s the continuation</span>
+<span class="w">    </span><span class="c1">// of a Qt for Python import or a normal import of another module.</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">elementHeader</span><span class="p">()</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">node</span><span class="o">-&gt;</span><span class="n">elementHeader</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">text</span><span class="p">().</span><span class="n">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">m_plainCustomWidgets</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">className</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// When we do have elementHeader, we know it&#39;s a relative import.</span>
+<span class="w">        </span><span class="n">QString</span><span class="w"> </span><span class="n">modulePath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="o">-&gt;</span><span class="n">elementHeader</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">text</span><span class="p">();</span>
+<span class="w">        </span><span class="c1">// Replace the &#39;/&#39; by &#39;.&#39;</span>
+<span class="w">        </span><span class="n">modulePath</span><span class="p">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">u</span><span class="sc">&#39;/&#39;</span><span class="p">,</span><span class="w"> </span><span class="sa">u</span><span class="sc">&#39;.&#39;</span><span class="p">);</span>
+<span class="w">        </span><span class="c1">// &#39;.h&#39; is added by default on headers for &lt;customwidget&gt;.</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">modulePath</span><span class="p">.</span><span class="n">endsWith</span><span class="p">(</span><span class="s">&quot;.h&quot;</span><span class="n">_L1</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">CaseInsensitive</span><span class="p">))</span>
+<span class="w">            </span><span class="n">modulePath</span><span class="p">.</span><span class="n">chop</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">modulePath</span><span class="p">.</span><span class="n">endsWith</span><span class="p">(</span><span class="s">&quot;.hh&quot;</span><span class="n">_L1</span><span class="p">))</span>
+<span class="w">            </span><span class="n">modulePath</span><span class="p">.</span><span class="n">chop</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+<span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">modulePath</span><span class="p">.</span><span class="n">endsWith</span><span class="p">(</span><span class="s">&quot;.hpp&quot;</span><span class="n">_L1</span><span class="p">))</span>
+<span class="w">            </span><span class="n">modulePath</span><span class="p">.</span><span class="n">chop</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="w">        </span><span class="n">insertClass</span><span class="p">(</span><span class="n">modulePath</span><span class="p">,</span><span class="w"> </span><span class="n">className</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">m_customWidgets</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="pyuic6">pyuic6</h3>
+<ul>
+<li>如果头文件以 <code>.h</code> 结尾，直接去掉后缀</li>
+<li>如果有路径分割符 <code>/</code> ,则替换成 <code>.</code> </li>
+</ul>
+<p>源码逻辑：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">header2module</span><span class="p">(</span><span class="n">header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;header2module(header) -&gt; strin</span>
+<span class="sd">    Convert paths to C++ header files to according Python modules</span>
+<span class="sd">    &gt;&gt;&gt; header2module(&quot;foo/bar/baz.h&quot;)</span>
+<span class="sd">    &#39;foo.bar.baz&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">header</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.h&quot;</span><span class="p">):</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">header</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span>
+    <span class="n">mpath</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">header</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">):</span>
+        <span class="c1"># Ignore any empty parts or those that refer to thcurrent</span>
+        <span class="c1"># directory.</span>
+        <span class="k">if</span> <span class="n">part</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">part</span> <span class="o">==</span> <span class="s1">&#39;..&#39;</span><span class="p">:</span>
+                <span class="c1"># We should allow this for Python3.</span>
+                <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="s2">&quot;custom widget header filname may not contain &#39;..&#39;.&quot;</span>
+            <span class="n">mpath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_2">参考</h2>
+<ul>
+<li>https://doc.qt.io/qt-6/designer-using-custom-widgets.html</li>
+<li>https://doc.qt.io/qtforpython-6/PySide6/QtUiTools/index.html</li>
+<li>https://www.riverbankcomputing.com/static/Docs/PyQt6/designer.html#pyuic6</li>
+<li>https://www.riverbankcomputing.com/static/Docs/PyQt6/api/uic/uic-module.html#PyQt6.uic.loadUi</li>
+<li>https://github.com/qt/qtbase/blob/dev/src/tools/uic</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2025-01-05T22:24:00+08:00" pubdate>Sun 05 January 2025</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a class="category" href="https://blog.debao.me/tags/python.html">Python</a>,    <a class="category" href="https://blog.debao.me/tags/pyside.html">pyside</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

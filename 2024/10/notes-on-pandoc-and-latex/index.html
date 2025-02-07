@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Pandoc与LaTeX小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Pandoc与LaTeX小记</h1>
+    <p class="meta">
+<time datetime="2024-10-29T22:25:00+08:00" pubdate>Tue 29 October 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>Markdown和LaTeX都是老朋友了。本文试图通过简单例子，将markdown文件通过latex输出一本书，以此来熟悉一下pandoc</p>
+<p><img alt="pandoc book" src="https://blog.debao.me/images/pandoc-examples-book.png"></p>
+<h2 id="pandoc">关于Pandoc</h2>
+<blockquote>
+<p>功能太多，本文只关心其从 Markdown 到 LaTeX 的转换功能。</p>
+</blockquote>
+<ul>
+<li>Pandoc 是一个广泛使用的<strong>文档转换工具</strong>，它可以在不同的标记语言和文档格式之间进行转换。Pandoc 由加州大学伯克利分校的哲学教授 John MacFarlane 开发。</li>
+<li>Pandoc 的第一个版本发布于 2006 年，最初的重点是从 Markdown 转换为 LaTeX、HTML 和 DocBook。</li>
+<li>Pandoc 的设计理念是为每种输入格式解析器构建一个抽象语法树（AST），然后通过这个 AST 生成目标格式。通过这种方式，Pandoc 可以支持任意多的输入和输出格式。</li>
+</ul>
+<h2 id="_1">命令行</h2>
+<p>通过例子来走马观花看一看，如何从一个包含中文的markdown文件，转换成latex，进而到pdf。</p>
+<h3 id="1">例子1</h3>
+<p>将 hello.md 转换成 hello.tex，可执行如下命令：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>-f<span class="w"> </span>markdown<span class="w"> </span>-t<span class="w"> </span>latex<span class="w"> </span>hello.md<span class="w"> </span>-o<span class="w"> </span>hello.tex
+</code></pre></div></td></tr></table></div>
+
+<p>其中：</p>
+<ul>
+<li><code>-f</code>，<code>--from</code>：输入文件格式</li>
+<li><code>-t</code>，<code>--to</code>：输出文件格式</li>
+<li><code>-o</code>，<code>--output</code>：输出文件名</li>
+</ul>
+<p>其实pandoc可以根据后缀直接猜测格式，所以，上面命令可以写作：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>hello.md<span class="w"> </span>-o<span class="w"> </span>hello.tex
+</code></pre></div></td></tr></table></div>
+
+<p>注意：pandoc支持令人头大的 <strong>各种风格</strong> 的 markdown 格式！！！</p>
+<ul>
+<li><strong>markdown</strong>：Pandoc风格的Markdown</li>
+<li><strong>markdown_mmd</strong>：MultiMarkdown</li>
+<li><strong>markdown_phpextra</strong>：PHP Markdown Extra</li>
+<li><strong>markdown_strict</strong>：原始的Markdown</li>
+<li><strong>gfm</strong>：Github风格的Markdown</li>
+<li>...</li>
+</ul>
+<p>输入文件hello.md内容：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="gh"># Hello 1+1=2</span>
+
+我是测试文本。
+
+我是公式：
+
+$$
+E=mc^2
+$$
+</code></pre></div></td></tr></table></div>
+
+<p>输出文件hello.tex内容如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code>\section{Hello 1+1=2}\label{hello-112}
+
+我是测试文本。
+
+我是公式：
+
+\[
+E=mc^2
+\]
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>操作成功了，尽管输出只是tex片段。</p>
+</blockquote>
+<h3 id="2">例子2</h3>
+<p>如果要生成完整的tex文件，我们需要命令行参数：</p>
+<ul>
+<li><code>-s</code>，<code>--standalone</code>：生成文件头和尾（完整的tex或html等文件）</li>
+</ul>
+<p>这样一来，</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>hello.md<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>hello.tex
+</code></pre></div></td></tr></table></div>
+
+<p>此时 tex文件就完整了。可以调用latex来生成pdf文件了：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>xelatex<span class="w"> </span>hello.tex
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>尽管可以生成pdf，但是因为中文的问题，如上命令生成的pdf和我们期望的并不一样，丢失了中文字体。</p>
+</blockquote>
+<p>编译之前，我们需要手动将.tex的文档类从<code>article</code>改为<code>ctexart</code>才行。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c">%\documentclass[]{article}</span>
+<span class="k">\documentclass</span><span class="na">[]</span><span class="nb">{</span>ctexart<span class="nb">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="3">例子3</h3>
+<p>前面我们启用<code>-s</code>选项，它就添加了tex文件的头和尾。很神奇，它怎么做的？？</p>
+<p>实际上，它有一个模板，对于latex，它的默认模板长下面这样：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="s">$</span><span class="nb">passoptions.latex</span><span class="o">()</span><span class="s">$</span>
+<span class="k">\documentclass</span>[
+<span class="s">$</span><span class="nb">if</span><span class="o">(</span><span class="nb">fontsize</span><span class="o">)</span><span class="s">$</span>
+  <span class="s">$</span><span class="nb">fontsize</span><span class="s">$</span>,
+<span class="s">$</span><span class="nb">endif</span><span class="s">$</span>
+<span class="s">$</span><span class="nb">if</span><span class="o">(</span><span class="nb">papersize</span><span class="o">)</span><span class="s">$</span>
+  <span class="s">$</span><span class="nb">papersize</span><span class="s">$</span>paper,
+<span class="s">$</span><span class="nb">endif</span><span class="s">$</span>
+<span class="s">$</span><span class="nb">for</span><span class="o">(</span><span class="nb">classoption</span><span class="o">)</span><span class="s">$</span>
+  <span class="s">$</span><span class="nb">classoption</span><span class="s">$$</span><span class="nb">sep</span><span class="s">$</span>,
+<span class="s">$</span><span class="nb">endfor</span><span class="s">$</span>
+]<span class="nb">{</span><span class="s">$</span><span class="nb">documentclass</span><span class="s">$</span><span class="nb">}</span>
+<span class="s">$</span><span class="nb">if</span><span class="o">(</span><span class="nb">beamerarticle</span><span class="o">)</span><span class="s">$</span>
+<span class="k">\usepackage</span><span class="nb">{</span>beamerarticle<span class="nb">}</span> <span class="c">% needs to be loaded first</span>
+<span class="s">$</span><span class="nb">endif</span><span class="s">$</span>
+<span class="k">\usepackage</span><span class="nb">{</span>xcolor<span class="nb">}</span>
+<span class="s">$</span><span class="nb">.......</span>
+</code></pre></div></td></tr></table></div>
+
+<p>通过如下命令，我们可以输出这个模板：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>-D<span class="w"> </span>latex
+</code></pre></div></td></tr></table></div>
+
+<p>其中命令行参数</p>
+<ul>
+<li><code>-D</code>，<code>----print-default-template</code> 用于输出指定格式的 默认模板。</li>
+</ul>
+<p>注意看上面的模板，明显有一个我们感兴趣的变量<code>$documentclass$</code>。上面例子中，我们已经发现它不符合我们胃口。但，如何修改它？！！</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>hello.md<span class="w"> </span>-s<span class="w"> </span>-V<span class="w"> </span><span class="nv">documentclass</span><span class="o">=</span>ctexart<span class="w"> </span>-o<span class="w"> </span>hello.tex
+xelatex<span class="w"> </span>hello.tex
+</code></pre></div></td></tr></table></div>
+
+<p>这样就可以，直接生成我们可用的latex文件。</p>
+<p>通过命令行选项（大写）<code>V</code>可以定义模板变量：</p>
+<ul>
+<li><code>-V</code>，<code>--variable</code>：用于定义模板变量</li>
+</ul>
+<h3 id="4">例子4</h3>
+<p>文档类是文档的一部分啊，除了命令行之外，有没有其他写法？？</p>
+<p>好在
+Pandoc的Markdown支持yaml格式的front matter（一种元数据）。
+通过它，我们可以将前面的markdown文件，写为</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code>---
+<span class="gu">documentclass: ctexart</span>
+<span class="gu">---</span>
+
+<span class="gh"># Hello 1+1=2</span>
+
+我是测试文本。
+
+我是公式：
+
+$$
+E=mc^2
+$$
+</code></pre></div></td></tr></table></div>
+
+<p>这样一来，通过front matter我们定义了模板变量，下面命令也就没问题了</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>hello.md<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>hello.tex
+xelatex<span class="w"> </span>hello.tex
+</code></pre></div></td></tr></table></div>
+
+<h3 id="5">例子5</h3>
+<p>例子跑通了，不过这么牛的pandoc，既然能各种格式直接转。是不是可以直接生成pdf呢？</p>
+<p>试一下</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>hello.md<span class="w"> </span>-o<span class="w"> </span>hello.pdf
+</code></pre></div></td></tr></table></div>
+
+<p>对我们这个例子没问题。不过因为markdown中我们有中文。pandoc默认使用pdflatex引擎对中文支持不好，万一不能正常工作。怎么办，如何切换成我们前面用的xelatex。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>hello.md<span class="w"> </span>--pdf-engine<span class="w"> </span>xelatex<span class="w"> </span>-o<span class="w"> </span>hello.pdf
+</code></pre></div></td></tr></table></div>
+
+<p>通过命令行 <code>--pdf-engine</code> 我们可以指定一个特定的latex编译器。问题解决！</p>
+<h3 id="6">例子6</h3>
+<p>如果我们不想再头部添加yaml，可以独立成一个单独文件，比如hello.yaml:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nn">---</span>
+<span class="nt">documentclass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ctexart</span>
+<span class="nn">---</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这样，只需要</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>hello.md<span class="w"> </span>--metadata-file<span class="o">=</span>hello.yaml<span class="w"> </span>--pdf-engine<span class="w"> </span>xelatex<span class="w"> </span>-o<span class="w"> </span>hello.pdf
+</code></pre></div></td></tr></table></div>
+
+<p>或者</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>hello.md<span class="w"> </span>hello.yaml<span class="w"> </span>--pdf-engine<span class="w"> </span>xelatex<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>hello.pdf
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>这个文件应该挺有用。</p>
+</blockquote>
+<h2 id="_2">模板</h2>
+<p>要取代默认模板很简单，只需要我们定义一个</p>
+<h3 id="8">例子8</h3>
+<p>一个简单的模板，不需要多高大上：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">\documentclass</span><span class="nb">{</span>ctexart<span class="nb">}</span>
+<span class="k">\begin</span><span class="nb">{</span>document<span class="nb">}</span>
+<span class="s">$</span><span class="nb">body</span><span class="s">$</span>
+<span class="k">\end</span><span class="nb">{</span>document<span class="nb">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>通过命令行指定模板</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>hello.md<span class="w"> </span>-s<span class="w"> </span>--template<span class="o">=</span>debao_template.tex<span class="w"> </span>-o<span class="w"> </span>hello.tex
+xelatex<span class="w"> </span>hello.tex
+</code></pre></div></td></tr></table></div>
+
+<p>或者一步到位，生成pdf</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>hello.md<span class="w"> </span>-s<span class="w"> </span>--template<span class="o">=</span>debao_template.tex<span class="w"> </span>--pdf-engine<span class="w"> </span>xelatex<span class="w"> </span>-o<span class="w"> </span>hello.pdf
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_3">变量</h2>
+<p>模板变量，直接和模板相关，比如yaml中定义如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nn">---</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The document title</span>
+<span class="nt">author</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Author One</span>
+<span class="w">  </span><span class="nt">affiliation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">University of Somewhere</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Author Two</span>
+<span class="w">  </span><span class="nt">affiliation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">University of Nowhere</span>
+<span class="nn">...</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在模板文件中，可以</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="s">$</span><span class="nb">for</span><span class="o">(</span><span class="nb">author</span><span class="o">)</span><span class="s">$</span>
+<span class="s">$</span><span class="nb">if</span><span class="o">(</span><span class="nb">author.name</span><span class="o">)</span><span class="s">$</span>
+<span class="s">$</span><span class="nb">author.name</span><span class="s">$$</span><span class="nb">if</span><span class="o">(</span><span class="nb">author.affiliation</span><span class="o">)</span><span class="s">$</span> (<span class="s">$</span><span class="nb">author.affiliation</span><span class="s">$</span>)<span class="s">$</span><span class="nb">endif</span><span class="s">$</span>
+<span class="s">$</span><span class="nb">else</span><span class="s">$</span>
+<span class="s">$</span><span class="nb">author</span><span class="s">$</span>
+<span class="s">$</span><span class="nb">endif</span><span class="s">$</span>
+<span class="s">$</span><span class="nb">endfor</span><span class="s">$</span>
+</code></pre></div></td></tr></table></div>
+
+<p>模板中，条件语句、循环语句，以及默认哪些变量，需要查<a href="https://pandoc.org/MANUAL.html#templates">手册</a></p>
+<h2 id="_4">开始写本书</h2>
+<p>假定一本书有10章，每章对应一个markdown文件。</p>
+<h3 id="1_1">例子1</h3>
+<p>作为模拟，可以写个python脚本，生成这10个markdown文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># 定义章节的数量</span>
+<span class="n">num_chapters</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="n">output_dir</span> <span class="o">=</span> <span class="s2">&quot;chapters&quot;</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+
+<span class="c1"># 循环生成每个章节文件</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_chapters</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">/chapter</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">.md&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# 第</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">章: 章节标题</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;这是第 </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> 章的内容。</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">## 小节 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;这是第 </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> 章的小节 1 的内容。</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">## 小节 2</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;这是第 </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> 章的小节 2 的内容。</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;生成 </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">成功生成 </span><span class="si">{</span><span class="n">num_chapters</span><span class="si">}</span><span class="s2"> 个章节的 Markdown 文件！&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>而后，直接使用pandoc命令，来生成pdf文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>chapters/chapter01.md<span class="w"> </span>chapters/chapter02.md<span class="w"> </span>chapters/chapter03.md<span class="w"> </span>chapters/chapter04.md<span class="w"> </span>chapters/chapter05.md<span class="w"> </span>chapters/chapter06.md<span class="w"> </span>chapters/chapter07.md<span class="w"> </span>chapters/chapter08.md<span class="w"> </span>chapters/chapter09.md<span class="w"> </span>chapters/chapter10.md<span class="w"> </span>-V<span class="w"> </span><span class="nv">documentclass</span><span class="o">=</span>ctexbook<span class="w"> </span>--pdf-engine<span class="w"> </span>xelatex<span class="w"> </span>-o<span class="w"> </span>book.pdf
+</code></pre></div></td></tr></table></div>
+
+<p>这样就可以。就是一堆文件名太闹心</p>
+<h3 id="2_1">例子2</h3>
+<p>写个文本文件，比如 booklist.txt</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code>chapters/chapter01.md
+chapters/chapter02.md
+chapters/chapter03.md
+chapters/chapter04.md
+chapters/chapter05.md
+chapters/chapter06.md
+chapters/chapter07.md
+chapters/chapter08.md
+chapters/chapter09.md
+chapters/chapter10.md
+</code></pre></div></td></tr></table></div>
+
+<p>而后，就清爽多了</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>booklist.txt<span class="k">)</span><span class="w"> </span>-o<span class="w"> </span>book.pdf<span class="w"> </span>--pdf-engine<span class="o">=</span>xelatex<span class="w"> </span>-V<span class="w"> </span><span class="nv">documentclass</span><span class="o">=</span>ctexbook
+</code></pre></div></td></tr></table></div>
+
+<h3 id="3_1">例子3</h3>
+<p>还可以编写一个yaml文件，来存在模板变量信息：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nn">---</span>
+<span class="nt">documentclass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ctexbook</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;我的书籍&quot;</span>
+<span class="nt">author</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1+1=10&quot;</span>
+<span class="nt">date</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2024-10-29&quot;</span>
+<span class="nt">fontsize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12pt</span>
+<span class="nt">geometry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">margin=1in</span>
+<span class="nt">toc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">numbersections</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nn">---</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这样一来</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>--metadata-file<span class="o">=</span>metadata.yaml<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>booklist.txt<span class="k">)</span><span class="w"> </span>-o<span class="w"> </span>book.pdf<span class="w"> </span>--pdf-engine<span class="o">=</span>xelatex<span class="w"> </span>-V<span class="w"> </span><span class="nv">documentclass</span><span class="o">=</span>ctexbook
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_5">扩展</h2>
+<h3 id="extension">Extension</h3>
+<ul>
+<li>https://pandoc.org/chunkedhtml-demo/8.21-non-default-extensions.html</li>
+<li>https://pandoc.org/chunkedhtml-demo/7.3-math-input.html</li>
+</ul>
+<p>扩展可以通过在格式名称后添加 <code>+EXTENSION</code> 来启用，通过添加 <code>-EXTENSION</code> 来禁用。例如：</p>
+<ul>
+<li><code>--from markdown_strict+footnotes</code> 是启用脚注的严格 Markdown，而</li>
+<li><code>--from markdown-footnotes-pipe_tables</code> 是不包含脚注或管道表的 Pandoc Markdown。</li>
+</ul>
+<p>可用扩展列表，可通过如下命令</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>--list-extensions<span class="o">=</span>markdown
+</code></pre></div></td></tr></table></div>
+
+<p>或</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pandoc<span class="w"> </span>--list-extensions<span class="o">=</span>gfm
+</code></pre></div></td></tr></table></div>
+
+<p>来获取</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code>-abbreviations
++all_symbols_escapable
+-angle_brackets_escapable
+-ascii_identifiers
++auto_identifiers
+-autolink_bare_uris
++backtick_code_blocks
++blank_before_blockquote
++blank_before_header
++bracketed_spans
++citations
+-compact_definition_lists
++definition_lists
+-east_asian_line_breaks
+-emoji
++escaped_line_breaks
++example_lists
++fancy_lists
++fenced_code_attributes
++fenced_code_blocks
++fenced_divs
++footnotes
+-four_space_rule
+...
+</code></pre></div></td></tr></table></div>
+
+<h3 id="filter">Filter</h3>
+<p>Pandoc 过滤器在文档转换过程中对 Pandoc 的抽象语法树（AST）进行操作。这意味着我们可以对文档的结构、内容和格式进行修改，添加、删除或重排元素。</p>
+<p>可以使用各种脚本语言（默认对应解释器）：</p>
+<table>
+<thead>
+<tr>
+<th>文件后缀</th>
+<th>解释器</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.py</td>
+<td>python</td>
+</tr>
+<tr>
+<td>.hs</td>
+<td>runhaskell</td>
+</tr>
+<tr>
+<td>.pl</td>
+<td>perl</td>
+</tr>
+<tr>
+<td>.rb</td>
+<td>ruby</td>
+</tr>
+<tr>
+<td>.php</td>
+<td>php</td>
+</tr>
+<tr>
+<td>.js</td>
+<td>node</td>
+</tr>
+<tr>
+<td>.r</td>
+<td>Rscript</td>
+</tr>
+</tbody>
+</table>
+<p>使用python编写时，使用 pandocfilters，见：</p>
+<p>https://pypi.org/project/pandocfilters/</p>
+<h2 id="_6">继续</h2>
+<p>如果写点像书的正经东西，还要多学习一些。</p>
+<h3 id="_7">文件、代码结构</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code>my-book/                  # 项目根目录
+├── chapters/             # 存放各个章节的 Markdown 文件
+│   ├── 01-introduction.md
+│   ├── 02-chapter1.md
+│   ├── 03-chapter2.md
+│   └── ...               # 其他章节
+├── images/               # 存放图片资源
+│   └── cover.png         # 书籍封面图片
+├── templates/            # 存放自定义的模板和样式文件
+│   ├── custom-template.tex   # 自定义的 LaTeX 模板
+│   └── custom-style.css      # 自定义的 CSS 样式表
+├── metadata.yaml         # 元数据文件，存放书籍的全局信息，如标题、作者等
+├── booklist.txt          # 列出所有章节的文件列表
+├── Makefile              # Makefile 文件，用于生成书籍（可选）
+└── README.md             # 项目说明文件
+</code></pre></div></td></tr></table></div>
+
+<p>这些文件前面基本都见到了，Makefile文件用于简化pandoc的调用</p>
+<h3 id="makefile">Makefile</h3>
+<p>Makefile真要好好写，挺不容易。</p>
+<p>不过我们可以只用最简单和傻瓜的规则（不考虑构建依赖以及清理等操作）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c"># 生成多个格式</span>
+<span class="nf">all</span><span class="o">:</span><span class="w"> </span><span class="n">pdf</span> <span class="n">epub</span> <span class="n">html</span>
+
+<span class="c"># 生成 PDF 文件</span>
+<span class="nf">pdf</span><span class="o">:</span>
+<span class="w">    </span>pandoc<span class="w"> </span>--metadata-file<span class="o">=</span>metadata.yaml<span class="w"> </span>--toc<span class="w"> </span>--number-sections<span class="w"> </span>--template<span class="o">=</span>templates/custom-template.tex<span class="w"> </span>--pdf-engine<span class="o">=</span>xelatex<span class="w"> </span>-o<span class="w"> </span>mybook.pdf<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>booklist.txt<span class="k">)</span>
+
+<span class="c"># 生成 EPUB 文件</span>
+<span class="nf">epub</span><span class="o">:</span>
+<span class="w">    </span>pandoc<span class="w"> </span>--metadata-file<span class="o">=</span>metadata.yaml<span class="w"> </span>--toc<span class="w"> </span>--number-sections<span class="w"> </span>--css<span class="o">=</span>templates/custom-style.css<span class="w"> </span>--epub-cover-image<span class="o">=</span>images/cover.png<span class="w"> </span>-o<span class="w"> </span>mybook.epub<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>booklist.txt<span class="k">)</span>
+
+<span class="c"># 生成 HTML 文件</span>
+<span class="nf">html</span><span class="o">:</span>
+<span class="w">    </span>pandoc<span class="w"> </span>--metadata-file<span class="o">=</span>metadata.yaml<span class="w"> </span>--toc<span class="w"> </span>--number-sections<span class="w"> </span>--css<span class="o">=</span>templates/custom-style.css<span class="w"> </span>-o<span class="w"> </span>mybook.html<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>booklist.txt<span class="k">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>或者直接用python吧</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="n">metadata_file</span> <span class="o">=</span> <span class="s2">&quot;metadata.yaml&quot;</span>
+<span class="n">booklist_file</span> <span class="o">=</span> <span class="s2">&quot;booklist.txt&quot;</span>
+<span class="n">output_dir</span> <span class="o">=</span> <span class="s2">&quot;build&quot;</span>
+<span class="n">output_pdf</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;mybook.pdf&quot;</span><span class="p">)</span>
+<span class="n">output_epub</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;mybook.epub&quot;</span><span class="p">)</span>
+<span class="n">output_html</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;mybook.html&quot;</span><span class="p">)</span>
+<span class="n">cover_image</span> <span class="o">=</span> <span class="s2">&quot;images/cover.png&quot;</span>
+<span class="n">latex_template</span> <span class="o">=</span> <span class="s2">&quot;templates/pdf.latex&quot;</span>
+<span class="n">css_file</span> <span class="o">=</span> <span class="s2">&quot;templates/style.css&quot;</span>
+<span class="n">pdf_engine</span> <span class="o">=</span> <span class="s2">&quot;xelatex&quot;</span>
+<span class="n">md_format</span> <span class="o">=</span> <span class="s2">&quot;markdown+tex_math_single_backslash&quot;</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">booklist_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">booklist</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+
+<span class="n">command_comm</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;pandoc&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--metadata-file&quot;</span><span class="p">,</span> <span class="n">metadata_file</span><span class="p">,</span>
+        <span class="s2">&quot;--from&quot;</span><span class="p">,</span> <span class="n">md_format</span><span class="p">,</span>
+        <span class="s2">&quot;--toc&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--number-sections&quot;</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">+</span> <span class="n">booklist</span>
+
+<span class="k">def</span> <span class="nf">check_file_exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Cannot found </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+<span class="k">def</span> <span class="nf">create_output_directory</span><span class="p">():</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Build directory: </span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">generate_pdf</span><span class="p">():</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_file_exists</span><span class="p">(</span><span class="n">latex_template</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">pdf_command</span> <span class="o">=</span> <span class="n">command_comm</span> <span class="o">+</span> <span class="p">[</span>
+        <span class="s2">&quot;--template&quot;</span><span class="p">,</span> <span class="n">latex_template</span><span class="p">,</span>
+        <span class="s2">&quot;--pdf-engine&quot;</span><span class="p">,</span> <span class="n">pdf_engine</span><span class="p">,</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">output_pdf</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generate PDF: </span><span class="si">{</span><span class="n">output_pdf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">pdf_command</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error generate PDF: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">generate_epub</span><span class="p">():</span>
+    <span class="n">epub_command</span> <span class="o">=</span> <span class="n">command_comm</span> <span class="o">+</span> <span class="p">[</span>
+        <span class="s2">&quot;--css&quot;</span><span class="p">,</span> <span class="n">css_file</span><span class="p">,</span>
+        <span class="s2">&quot;--epub-cover-image&quot;</span><span class="p">,</span> <span class="n">cover_image</span><span class="p">,</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">output_epub</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generate EPUB: </span><span class="si">{</span><span class="n">output_epub</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">epub_command</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error generating EPUB: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">generate_html</span><span class="p">():</span>
+    <span class="n">html_command</span> <span class="o">=</span> <span class="n">command_comm</span> <span class="o">+</span> <span class="p">[</span>
+        <span class="s2">&quot;--css&quot;</span><span class="p">,</span> <span class="n">css_file</span><span class="p">,</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">output_html</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generate HTML: </span><span class="si">{</span><span class="n">output_html</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">html_command</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error generating HTML: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;..start...&quot;</span><span class="p">)</span>
+    <span class="n">create_output_directory</span><span class="p">()</span>
+    <span class="n">generate_pdf</span><span class="p">()</span>
+    <span class="n">generate_epub</span><span class="p">()</span>
+    <span class="n">generate_html</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;..finished...&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<p>或许找个现成模板，起步会更好...</p>
+<h2 id="_8">参考</h2>
+<ul>
+<li><a href="https://pandoc.org/MANUAL.html">https://pandoc.org/MANUAL.html</a></li>
+<li><a href="https://learnbyexample.github.io/customizing-pandoc/">https://learnbyexample.github.io/customizing-pandoc/</a></li>
+<li><a href="https://keleshev.com/my-book-writing-setup/">https://keleshev.com/my-book-writing-setup/</a></li>
+<li><a href="https://github.com/Wandmalfarbe/pandoc-latex-template">https://github.com/Wandmalfarbe/pandoc-latex-template</a></li>
+<li><a href="https://ge-chunyu.github.io/posts/2019-11-pandoc-large-document/">https://ge-chunyu.github.io/posts/2019-11-pandoc-large-document/</a></li>
+<li><a href="https://sspai.com/post/77206">Pandoc 从入门到精通，你也可以学会这一个文本转换利器</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/564587260">利用pandoc模板eisvogel实现Markdown转pdf（latex）中文排版</a></li>
+<li><a href="https://github.com/wikiti/pandoc-book-template">https://github.com/wikiti/pandoc-book-template</a></li>
+<li><a href="https://medium.com/@sydasif78/book-creation-with-pandoc-and-markdown-893c7d72cb35">https://medium.com/@sydasif78/book-creation-with-pandoc-and-markdown-893c7d72cb35</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-10-29T22:25:00+08:00" pubdate>Tue 29 October 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/latex.html">latex</a>,    <a class="category" href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a class="category" href="https://blog.debao.me/tags/pandoc.html">pandoc</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>电子光学基础：电子的速度与波长 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/sem.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">电子光学基础：电子的速度与波长</h1>
+    <p class="meta">
+<time datetime="2024-11-28T18:41:00+08:00" pubdate>Thu 28 November 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><div class="toc">
+<ul>
+<li><a href="#_1">先列个表</a></li>
+<li><a href="#_2">电子的质量与电荷量</a></li>
+<li><a href="#_3">电子速度与加速电压</a></li>
+<li><a href="#_4">电子波长与加速电压</a></li>
+<li><a href="#_5">参考</a></li>
+</ul>
+</div>
+<h2 id="_1">先列个表</h2>
+<p>不同加速电压下电子速度、质量比与波长</p>
+<table>
+<thead>
+<tr>
+<th>加速电压 (kV)</th>
+<th>速度 (<span class="math inline">\times10^8</span> m/s)</th>
+<th>质量/静止质量</th>
+<th>波长 (nm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.10</td>
+<td>0.059301</td>
+<td>1.000196</td>
+<td>0.122637</td>
+</tr>
+<tr>
+<td>1.00</td>
+<td>0.187279</td>
+<td>1.001957</td>
+<td>0.038764</td>
+</tr>
+<tr>
+<td>5.00</td>
+<td>0.416334</td>
+<td>1.009785</td>
+<td>0.017302</td>
+</tr>
+<tr>
+<td>10.00</td>
+<td>0.584552</td>
+<td>1.019570</td>
+<td>0.012205</td>
+</tr>
+<tr>
+<td>15.00</td>
+<td>0.710838</td>
+<td>1.029354</td>
+<td>0.009941</td>
+</tr>
+<tr>
+<td>20.00</td>
+<td>0.815034</td>
+<td>1.039139</td>
+<td>0.008589</td>
+</tr>
+<tr>
+<td>30.00</td>
+<td>0.984447</td>
+<td>1.058709</td>
+<td>0.006979</td>
+</tr>
+<tr>
+<td>40.00</td>
+<td>1.121403</td>
+<td>1.078278</td>
+<td>0.006016</td>
+</tr>
+<tr>
+<td>50.00</td>
+<td>1.237202</td>
+<td>1.097848</td>
+<td>0.005355</td>
+</tr>
+<tr>
+<td>60.00</td>
+<td>1.337748</td>
+<td>1.117417</td>
+<td>0.004866</td>
+</tr>
+<tr>
+<td>80.00</td>
+<td>1.506154</td>
+<td>1.156556</td>
+<td>0.004176</td>
+</tr>
+<tr>
+<td>100.00</td>
+<td>1.643525</td>
+<td>1.195695</td>
+<td>0.003701</td>
+</tr>
+<tr>
+<td>120.00</td>
+<td>1.758795</td>
+<td>1.234834</td>
+<td>0.003349</td>
+</tr>
+<tr>
+<td>160.00</td>
+<td>1.942975</td>
+<td>1.313112</td>
+<td>0.002851</td>
+</tr>
+<tr>
+<td>2000.00</td>
+<td>2.935190</td>
+<td>4.913902</td>
+<td>0.000504</td>
+</tr>
+<tr>
+<td>5000.00</td>
+<td>2.985009</td>
+<td>10.784756</td>
+<td>0.000226</td>
+</tr>
+<tr>
+<td>10000.00</td>
+<td>2.994380</td>
+<td>20.569512</td>
+<td>0.000118</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>可以看出，电子质量相对其静止质量的比值，在 <span class="math inline">U=10^4</span> V 时，增大不到2%。所以在真空器件中，当 <span class="math inline">U&lt;10^4</span> V 时，一般可不考虑相对论效应。在同样的加速电压下，对于离子来说，速度比电子慢很多，相对论修正会更小，需要在更高电压下才考虑相对论效应。</p>
+</blockquote>
+<p>如上表格容易通过一段简单的python脚本生成</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="n">e</span> <span class="o">=</span> <span class="mf">1.602176634e-19</span>
+<span class="n">m0</span> <span class="o">=</span> <span class="mf">9.10938356e-31</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mf">2.99792458e8</span>
+<span class="n">h</span> <span class="o">=</span> <span class="mf">6.62607015e-34</span>
+
+<span class="n">voltages</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">,</span> <span class="mf">5e3</span><span class="p">,</span> <span class="mf">1e4</span><span class="p">,</span> <span class="mf">1.5e4</span><span class="p">,</span> <span class="mf">2e4</span><span class="p">,</span> <span class="mf">3e4</span><span class="p">,</span> <span class="mf">4e4</span><span class="p">,</span> <span class="mf">5e4</span><span class="p">,</span> <span class="mf">6e4</span><span class="p">,</span>
+            <span class="mf">8e4</span><span class="p">,</span> <span class="mf">1e5</span><span class="p">,</span> <span class="mf">1.2e5</span><span class="p">,</span> <span class="mf">1.6e5</span><span class="p">,</span> <span class="mf">2e6</span><span class="p">,</span> <span class="mf">5e6</span><span class="p">,</span> <span class="mf">1e7</span><span class="p">]</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">V</span> <span class="ow">in</span> <span class="n">voltages</span><span class="p">:</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">e</span> <span class="o">*</span> <span class="n">V</span> <span class="o">/</span> <span class="p">(</span><span class="n">m0</span> <span class="o">*</span> <span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">me_m0_ratio</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">v</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">me</span> <span class="o">=</span> <span class="n">me_m0_ratio</span> <span class="o">*</span> <span class="n">m0</span>
+    <span class="n">wavelength</span> <span class="o">=</span> <span class="n">h</span> <span class="o">/</span> <span class="p">(</span><span class="n">me</span> <span class="o">*</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">V</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="n">v</span> <span class="o">*</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">me_m0_ratio</span><span class="p">,</span> <span class="n">wavelength</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;加速电压（kV）</span><span class="se">\t</span><span class="s2"> 速度（×10^8 m/s）</span><span class="se">\t</span><span class="s2"> 质量比, 波长（nm）&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> </span><span class="se">\t</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> </span><span class="se">\t</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> </span><span class="se">\t</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>简单看看公式是怎么来的...</p>
+<h2 id="_2">电子的质量与电荷量</h2>
+<p>1897年，汤姆孙（J. J. Thomson）通过带电粒子在电磁场中的偏转，设计实验测得了阴极射线的荷质比为 <span class="math inline">e/m = 7.6 \times 10^{10}\, \text{C/kg}</span>。稍后，密立根（R. A. Millikan）通过油滴实验测定了这种粒子的电荷量 <span class="math inline">e \approx 1.602 \times 10^{-19}\, \text{C}</span>，从而也就确定这种粒子的质量。阴极射线中这种带电量与氢离子相同但符号相反、质量大约为氢离子千分之一的粒子，被称为电子（Electron）。</p>
+<p>电子的电荷量是自然界中电荷的最小单位，通常被称为“基本电荷”。根据国际单位制（SI）2019年的修订，基本电荷的数值固定为：<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<div class="math display">
+e = 1.602176634 \times 10^{-19} \, \text{C}
+</div>
+<p>电子的质量（静止质量）约为：<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
+<div class="math display">
+m_0 \approx 9.1093837139 \times 10^{-31} \, \text{kg}
+</div>
+<p>根据狭义相对论，电子与其他物质粒子一样，其质量随运动速度的变化而变量。运动中的电子质量 <span class="math inline">m_v</span> 与其静止质量 <span class="math inline">m_0</span> 的关系如下：</p>
+<div class="math display">
+m_v = \frac{m_0}{\sqrt{1-\big(\frac{v}{c}\big)^2}}
+</div>
+<blockquote>
+<p>注：由上式可见，当 <span class="math inline">v\ll c</span> 时，<span class="math inline">v/c \ll 1</span>，<span class="math inline">m_v \approx m_0</span>。即慢速运动的电子质量可视为等同于它的静止质量。</p>
+</blockquote>
+<p>在自由空间中，用加速电位<span class="math inline">U</span>，取代式子中的速度<span class="math inline">v</span>（见下一节），可得：</p>
+<div class="math display">
+m_v = m_0 (1 + 1,957 \times 10^{-6} U) \, \text{kg}
+</div>
+<h2 id="_3">电子速度与加速电压</h2>
+<p>假定电子初速度为<span class="math inline">0</span>，在加速电压 <span class="math inline">U</span>下获得速度<span class="math inline">v_0</span>，在低速时，认为其质量与速度无关，依据能量守恒定理，可得：</p>
+<div class="math display">
+v_0 = \sqrt{\frac{2 \lvert e \rvert U}{m_0}} \approx 5.932 \times 10^5 \sqrt U\, \text{m/s}
+</div>
+<p>另一方面，依据质能关系式，有下列关系成立：</p>
+<div class="math display">
+m_v c^2 = m_0 c^2 + \lvert e \rvert U
+</div>
+<p>其中，电压 <span class="math inline">U</span> 单位为伏特。</p>
+<p>将上一节 <span class="math inline">m_v</span> 带入上式，可得到考虑相对论修正后的电子速度：</p>
+<div class="math display">
+v = c \sqrt{1-\frac{1}{\big(1+\frac{ \lvert e \rvert U}{m_0c^2}\big)^2}}
+</div>
+<p>如将 <span class="math inline">v_0</span> 代入，便有：</p>
+<div class="math display">
+v = c \sqrt{1-\frac{1}{\big(1+\frac{v_0^2}{2c^2}\big)^2}}
+</div>
+<p>若将电子的荷质比 <span class="math inline">e/m_0</span> 与光速 <span class="math inline">c</span> 的数值带入，并考虑 <span class="math inline">U</span> 单位为伏特，可得到电子速度与质量的相对论修正公式：</p>
+<div class="math display">
+v = 3 \times 10^8 \sqrt{1-\frac{1}{(1+1.957 \times 10^{-6} U)^2}} \, \text{m/s}
+</div>
+<h2 id="_4">电子波长与加速电压</h2>
+<blockquote>
+<p>1923年，法国科学家德布罗意（Louis de Broglie）在光的波粒二象性启示下，提出了实物粒子，如电子、质子、中子等也都具有波粒二象性。但是德布罗意的假说发表后，并没有立即得到科学界重视。直到1927年戴维森 (Clinton Davisson) 和革末 (Lester Germer)用电子衍射试验验证了电子的波动性。</p>
+</blockquote>
+<p>按德布罗意的假设，质量为 <span class="math inline">m</span> 的粒子，以速度 <span class="math inline">v</span> 运动时，其具有：</p>
+<ul>
+<li>粒子特征：能量 <span class="math inline">E</span> 和动量 <span class="math inline">p</span></li>
+<li>波动特征：波长 <span class="math inline">\lambda</span> 和频率 <span class="math inline">\gamma</span></li>
+</ul>
+<p>像光子一样，粒子特征与波动特征通过普朗克常数<span class="math inline">h</span>定量地联系起来：</p>
+<div class="math display">
+E = mc^2 = h\gamma
+    \\
+    p = mv = \frac{h}{\lambda}
+</div>
+<p>上述公式称为德布罗意公式。</p>
+<p>对于任何具有静止质量 <span class="math inline">m_0</span> 以速度 <span class="math inline">v</span> 运动的粒子，所具有的波，通常称为德布罗意波或物质波。当 <span class="math inline">v\ll c</span> 时，其波长为：</p>
+<div class="math display">
+\lambda = \frac{h}{p} = \frac{h}{m_0 v}
+</div>
+<p>考虑只受电场（加速电压为 <span class="math inline">U</span>)加速的电子，将非相对论下的速度关系式带入，可得：</p>
+<div class="math display">
+\lambda = \frac{h}{\sqrt{2\lvert e \rvert m_0}} \frac{1}{\sqrt{U}}
+</div>
+<p>将具体数值带入：</p>
+<div class="math display">
+\lambda = 1.226 \frac{1}{\sqrt{U}} \, \text{nm}
+</div>
+<p>当电子运动速度较高时，需要考虑相对论修正，可用如下公式进行计算：</p>
+<div class="math display">
+\lambda = \frac{h}{mv} = \frac{h}{m_0 v} \sqrt{1-\frac{v^2}{c^2}} = \frac{h}{\sqrt{2\lvert e \rvert m_0 U}} \frac{1}{\sqrt{1 + \frac{\lvert e \rvert U}{2 m_0 c^2}}}
+</div>
+<p>带入具体数值，可得：</p>
+<div class="math display">
+\lambda = \frac{1.226}{\sqrt{U}} \frac{1}{\sqrt{1+0.978 \times 10^{-6} U}} \, \text{nm}
+</div>
+<p>当 <span class="math inline">U=1000</span> V 时，计算 <span class="math inline">\lambda \approx 0.0388</span> nm，而当 <span class="math inline">U=10</span> kV 时，计算 <span class="math inline">\lambda \approx 0.01226</span> nm。可见电子的德布罗意波长时很短的，其数量级相当于或略小于晶体中的原子间距，远小于可见光的波长400nm~700nm。</p>
+<h2 id="_5">参考</h2>
+<ul>
+<li>姚宗熙等《物理电子学》，西安交通大学</li>
+</ul>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>https://physics.nist.gov/cgi-bin/cuu/Value?e|search_for=e&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>https://physics.nist.gov/cgi-bin/cuu/Value?me|search_for=mass&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-11-28T18:41:00+08:00" pubdate>Thu 28 November 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/sem.html'>SEM</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

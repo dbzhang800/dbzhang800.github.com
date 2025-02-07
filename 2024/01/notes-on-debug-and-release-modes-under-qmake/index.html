@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>qmake下的debug与release模式 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">qmake下的debug与release模式</h1>
+    <p class="meta">
+<time datetime="2024-01-25T20:22:00+08:00" pubdate>Thu 25 January 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>捋完了<a href="https://blog.debao.me/2023/12/modern-cmake-study-notes-part2/">CMake下的Debug与Release</a>，同事突然问我一句，qmake下面的Debug与Release是怎么配置的，发现第一时间竟然想不起来了...</p>
+<blockquote>
+<p>注：从cmake3.0开始，qmake已经没有多少优势了，Qt6自身也已经使用cmake构建，新的项目没必要再使用qmake。</p>
+</blockquote>
+<p>本文内容：</p>
+<ul>
+<li><code>qmake &amp;&amp; make</code> ：默认是release。但如果.pro内添加了<code>CONFIG+=debug</code>，那么结果是debug。</li>
+<li><code>qmake CONFIG+=debug &amp;&amp; make</code>：构建结果一定是 debug</li>
+<li><code>qmake CONFIG+=release &amp;&amp; make</code>：构建结果一定是 release</li>
+<li>如果.pro内添加了<code>CONFIG+=debug_and_release</code>（不管是Windows下自动添加，还是Linux下你手动添加）<ul>
+<li><code>qmake &amp;&amp; make debug</code>：构建结果是 debug</li>
+<li><code>qmake &amp;&amp; make release</code>：构建结果是 release</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><code>CONFIG += debug release debug release debug</code>：要好好理解</li>
+<li><code>CONFIG(debug, debug|release)</code>：很有用/很常用/也很晦涩难懂</li>
+<li><code>build_pass</code>：是否有用看是否关注了</li>
+</ul>
+<h2 id="qmake">qmake使用</h2>
+<p>qmake的使用很简单，创建工程文件 xxxx.pro后，直接</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>qmake
+make
+</code></pre></div></td></tr></table></div>
+
+<p>就行了。</p>
+<p>但是<strong>这编译出的程序是 debug  版本 还是 release ？？</strong></p>
+<ul>
+<li>不严谨答案：release</li>
+</ul>
+<ul>
+<li>严谨答案：不一定。</li>
+</ul>
+<h3 id="pro">取决于在.pro内配置</h3>
+<ul>
+<li>在 xxxx.pro文件内添加 <code>CONFIG += release</code> 上面编译出来的就是 release</li>
+</ul>
+<ul>
+<li>在 xxxx.pro文件内添加 <code>CONFIG += debug</code> 上面编译出来的就是 debug</li>
+</ul>
+<p>注意：<strong>这个是很反直觉的</strong>。如果类似语句<strong>可以多次添加</strong>（即使你没加，其他pri/prf/prl中也可能会加)，此时，需要看谁在最后（如下，编译出来会是 release）:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>CONFIG += release
+CONFIG += debug
+CONFIG += debug release debug
+CONFIG += release
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>所有的难以理解，都是从这个多次添加的用法开始的。命令行参数中的 <code>CONFIG+=</code> 也在干这个事情。</p>
+</blockquote>
+<h3 id="_1">也可以命令行参数指定</h3>
+<blockquote>
+<p>除了可以在.pro内指定外，还可以使用qmake的命令行参数</p>
+</blockquote>
+<p>如下命令，编译出来是debug：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>qmake<span class="w"> </span><span class="nv">CONFIG</span><span class="o">+=</span>debug
+make
+</code></pre></div></td></tr></table></div>
+
+<p>如下命令，编译出来是release：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>qmake<span class="w"> </span><span class="nv">CONFIG</span><span class="o">+=</span>release
+make
+</code></pre></div></td></tr></table></div>
+
+<h3 id="maketarget">还可以指定make的target</h3>
+<p>当在工程文件.pro内使用 <code>debug_and_release</code>选项（这是 Windows 下的默认选项）。那么Makefile会支持两个target，这样，就不用在乎qmake指定什么了...</p>
+<p>构建debug版本：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>qmake
+make debug
+</code></pre></div></td></tr></table></div>
+
+<p>构建release版本：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>qmake
+make release
+</code></pre></div></td></tr></table></div>
+
+<p>当然，你也可以这么写（反正make后面的 target 说了算）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>qmake CONFIG+=debug
+make release
+</code></pre></div></td></tr></table></div>
+
+<p>去掉make后面的target，才轮到<code>CONFIG+=debug</code>说了算</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>qmake CONFIG+=debug
+make
+</code></pre></div></td></tr></table></div>
+
+<h2 id="qmake-configdebug-debugrelease">qmake 之 CONFIG(debug, debug|release)</h2>
+<p>这个怪异的写法，是在解决一个很很常规的问题。</p>
+<h3 id="_2">问题起源</h3>
+<p>在 Qt 编程中，10多年前，多数人用的都是 qmake，并编写相应pro文件。</p>
+<p>实际中经常需要对 debug 与 release 两种编译模式 设置不同的选项，比方说链接不同库</p>
+<p>遇到该问题，简单看看qmake的manual，不少人都会写出类似下面的内容：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>debug {
+    LIBS += -L../lib1 -lhellod
+}
+release {
+    LIBS += -L../lib2 -lhello
+}
+</code></pre></div></td></tr></table></div>
+
+<p>很不幸，这么做通常不能正常工作。</p>
+<p>如果打开看生成的makefile文件，会发现 无论是debug还是release，上面的两个语句都会同时起作用。也就是说，上面相当于</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>LIBS += -L../lib1 -lhellod -L../lib2 -lhello
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_3">原因</h3>
+<p>这是很违反直觉的，因为CONFIG可以同时定义 debug 和 release，但只有一个处于active（当两个互斥的值出现时，最后设置的处于active状态）</p>
+<p>比如：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>CONFIG = debug
+CONFIG += release
+</code></pre></div></td></tr></table></div>
+
+<p>这种情况下，release处于active状态，但，debug 和 release 都能通过上面的测试。</p>
+<h3 id="_4">如何解决?</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">CONFIG</span><span class="ss">(</span><span class="nv">debug</span>,<span class="w"> </span><span class="nv">debug</span><span class="o">|</span><span class="nv">release</span><span class="ss">)</span><span class="w"> </span>{
+<span class="w">    </span><span class="nv">LIBS</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="o">-</span><span class="nv">L</span>..<span class="o">/</span><span class="nv">lib1</span><span class="w"> </span><span class="o">-</span><span class="nv">lhellod</span>
+}<span class="w"> </span><span class="k">else</span><span class="w"> </span>{
+<span class="w">    </span><span class="nv">LIBS</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="o">-</span><span class="nv">L</span>..<span class="o">/</span><span class="nv">lib2</span><span class="w"> </span><span class="o">-</span><span class="nv">lhello</span>
+}
+</code></pre></div></td></tr></table></div>
+
+<p>或</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>CONFIG(debug, debug|release)：LIBS += -L../lib1 -lhellod
+CONFIG(release, debug|release)：LIBS += -L../lib2 -lhello
+</code></pre></div></td></tr></table></div>
+
+<p>那么，<code>CONFIG(debug, debug|release)</code> 这种语法是什么含义呢？</p>
+<p>两个参数，前者是要判断的active的选项，后者是互斥的选项的一个集合。</p>
+<p>什么叫active，也就是，最后一个给CONFIG添加的时debug还是release，下面例子：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>CONFIG = debug release debug debug
+CONFIG += debug
+CONFIG += release
+</code></pre></div></td></tr></table></div>
+
+<p>激活的是release</p>
+<h2 id="build_pass">build_pass</h2>
+<p>qmake中反直觉的事情很多，<code>build_pass</code>算一个。</p>
+<p>当在工程文件.pro内使用 <code>debug_and_release</code>选项（这是 Windows 下的默认选项）时，工程的.pro文件实际上会被处理三次：</p>
+<ul>
+<li>一次生成：Makefile</li>
+<li>一次生成： Makefile.Debug</li>
+<li>还一次： Makefile.Release</li>
+</ul>
+<p>例如：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">build_pass</span><span class="o">:</span><span class="w"> </span><span class="n">message</span><span class="o">(</span><span class="s2">&quot;build pass&quot;</span><span class="o">)</span>
+<span class="k">else</span><span class="o">:</span><span class="w"> </span><span class="n">message</span><span class="o">(</span><span class="s2">&quot;non build pass&quot;</span><span class="o">)</span>
+
+<span class="n">message</span><span class="o">(</span><span class="s2">&quot;Hello dbzhang800!&quot;</span><span class="o">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行<code>qmake x.pro</code>，结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>Project MESSAGE: non build pass
+Project MESSAGE: Hello dbzhang800!
+Project MESSAGE: build pass
+Project MESSAGE: Hello dbzhang800!
+Project MESSAGE: build pass
+Project MESSAGE: Hello dbzhang800!
+</code></pre></div></td></tr></table></div>
+
+<h3 id="debugrelease">配合debug和release</h3>
+<p>pro文件内容：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">build_pass</span><span class="o">:</span><span class="w"> </span><span class="n">message</span><span class="o">(</span><span class="s2">&quot;build pass&quot;</span><span class="o">)</span>
+<span class="k">else</span><span class="o">:</span><span class="w"> </span><span class="n">message</span><span class="o">(</span><span class="s2">&quot;non build pass&quot;</span><span class="o">)</span>
+
+<span class="n">CONFIG</span><span class="o">(</span><span class="n">debug</span><span class="o">,</span><span class="w"> </span><span class="n">debug</span><span class="o">|</span><span class="n">release</span><span class="o">)</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">message</span><span class="o">(</span><span class="s2">&quot;debug&quot;</span><span class="o">)</span>
+<span class="o">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">message</span><span class="o">(</span><span class="s2">&quot;release&quot;</span><span class="o">)</span>
+<span class="o">}</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>直接运行<code>qmake</code>，结果:</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>Project MESSAGE: non build pass
+Project MESSAGE: release
+Project MESSAGE: build pass
+Project MESSAGE: release
+Project MESSAGE: build pass
+Project MESSAGE: debug
+</code></pre></div></td></tr></table></div>
+
+<p>此时打开Makefile文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>MAKEFILE      = Makefile
+first: release
+...
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>直接运行<code>qmake CONFIG+=debug</code>，结果：</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>Project MESSAGE: non build pass
+Project MESSAGE: debug
+Project MESSAGE: build pass
+Project MESSAGE: debug
+Project MESSAGE: build pass
+Project MESSAGE: release
+</code></pre></div></td></tr></table></div>
+
+<p>此时打开Makefile文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>MAKEFILE      = Makefile
+first: debug
+...
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_5">参考</h2>
+<p>个人2010年前后在百度空间和CSDN中写过多篇qmake相关的blog，但是百度空间关闭后，很多记录找不回来了。本文是基于早期留存的记录片段进行整理而成。</p>
+<p>由于不想重新查找资料并去一一核实，所以不贴参考链接了。</p></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-01-25T20:22:00+08:00" pubdate>Thu 25 January 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/qmake.html">qmake</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Python Markdown使用小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/python.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Python Markdown使用小记</h1>
+    <p class="meta">
+<time datetime="2024-09-03T21:14:00+08:00" pubdate>Tue 03 September 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>在getpeclican下启用了 python-markdown 的 markdown-katex后，markdown到html转换速度奇慢无比（在Windows下，从10秒变成了30分钟，Github Action的Ubuntu下，尽管没Windows下夸张，其workflow也从1分钟以内变成了4分钟出头。问题出在哪里？？不妨，从 python-markdown 基本用法开始...</p>
+</blockquote>
+<p>python-markdown 是一个用于将 Markdown 文本转换为 HTML 的 Python 库。它提供了一个简单而灵活的方式来处理 Markdown 格式的文本，并将其转换为可以在网页上显示的 HTML 代码。</p>
+<p>注意：python-markdown 是一个较早的 Markdown 解析器，它遵循的是原始 Markdown 语法，所以不完全符合 CommonMark 标准。在python下，符合CommonMark的解析器有 markdown-it-py 和 mistune。</p>
+<div class="toc">
+<ul>
+<li><a href="#python-markdown">python-markdown 使用</a><ul>
+<li><a href="#_1">基本用法</a></li>
+<li><a href="#_2">使用扩展（一）：单一内置扩展</a></li>
+<li><a href="#_3">使用扩展（二）：内置扩展介绍</a></li>
+<li><a href="#_4">使用扩展（三）：配置扩展</a></li>
+<li><a href="#katex">使用扩展（四）：第三方扩展katex</a></li>
+</ul>
+</li>
+<li><a href="#markdown-katex">markdown-katex 源码？</a><ul>
+<li><a href="#setuppy">setup.py 文件</a></li>
+<li><a href="#initpy">init.py 文件</a></li>
+<li><a href="#extensionpy">extension.py 文件</a></li>
+<li><a href="#wrapperpy">wrapper.py 文件</a><ul>
+<li><a href="#_5">单独‌拎出来看看</a></li>
+<li><a href="#github-action">Github Action</a></li>
+<li><a href="#_6">最终方案</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#vscode">其他：vscode使用</a><ul>
+<li><a href="#_7">公式分隔符</a></li>
+</ul>
+</li>
+<li><a href="#_8">参考</a></li>
+</ul>
+</div>
+<h2 id="python-markdown">python-markdown 使用</h2>
+<p>安装</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>markdown
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_1">基本用法</h3>
+<p>将markdown文本作为输入，调用 markdown.markdown() 函数将其转换为HTML。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">markdown</span>
+
+<span class="n">md_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2"># 这是一个标题</span>
+
+<span class="s2">这是一个段落，其中包括 **加粗** 和 *斜体* 文本。</span>
+
+<span class="s2">- 列表项 1</span>
+<span class="s2">- 列表项 2</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># 转换为 HTML</span>
+<span class="n">html</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">md_text</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>输出内容：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>这是一个标题<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>这是一个段落，其中包括 <span class="p">&lt;</span><span class="nt">strong</span><span class="p">&gt;</span>加粗<span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span> 和 <span class="p">&lt;</span><span class="nt">em</span><span class="p">&gt;</span>斜体<span class="p">&lt;/</span><span class="nt">em</span><span class="p">&gt;</span> 文本。<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>列表项 1<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>列表项 2<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果markdown内容在文件中，比如a.md，可以直接写简单的脚本（比较灵活）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">markdown</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+
+<span class="c1"># Parse command line</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Convert a Markdown file to HTML.&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+    <span class="s2">&quot;md_file&quot;</span><span class="p">,</span>
+    <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;a.md&quot;</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The Markdown file to convert. Defaults to &#39;a.md&#39;.&quot;</span>
+<span class="p">)</span>
+<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+<span class="n">md_name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">md_file</span>
+
+<span class="c1"># Read the md file</span>
+<span class="n">md_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">md_name</span><span class="p">)</span>
+<span class="n">md_text</span> <span class="o">=</span> <span class="n">md_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
+<span class="c1"># Convert .md to .html</span>
+<span class="n">html_text</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">md_text</span><span class="p">)</span>
+
+<span class="c1"># Write to html file</span>
+<span class="n">html_path</span> <span class="o">=</span> <span class="n">md_path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.html&#39;</span><span class="p">)</span>
+<span class="n">html_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>另外，python-markdown也有自己的命令模式可用</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>markdown<span class="w"> </span>a.md<span class="w"> </span>-f<span class="w"> </span>b.html<span class="w"> </span>-e<span class="w"> </span>utf-8
+</code></pre></div></td></tr></table></div>
+
+<p>或</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>markdown_py<span class="w"> </span>a.md<span class="w"> </span>-f<span class="w"> </span>b.html<span class="w"> </span>-e<span class="w"> </span>utf-8
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>如果.md文件内有非ASCII字符的话，指定输出文件名和编码是很重要的。这也是此处不用输出重定向的原因（不能指定编码）。</p>
+</blockquote>
+<h3 id="_2">使用扩展（一）：单一内置扩展</h3>
+<p>Python markdown使用了扩展式设计，使用起来很灵活。</p>
+<p>比如，前面的例子中，一旦我们的markdown中使用了表格，类似下面这样：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>First Header  | Second Header
+------------- | -------------
+Content Cell  | Content Cell
+Content Cell  | Content Cell
+</code></pre></div></td></tr></table></div>
+
+<p>可以发现，输出的html中，它是作为纯文本处理的，并没有转换成html表格。要转成表格，需要写成下面这样（'tables'是注册的入口点，通常在setup.py中）。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">html</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;tables&#39;</span><span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+
+<p>或者（对第三方插件来说，这种写法不需要注册）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">markdown.extensions.tables</span> <span class="kn">import</span> <span class="n">TableExtension</span>
+<span class="n">html</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="n">TableExtension</span><span class="p">()])</span>
+</code></pre></div></td></tr></table></div>
+
+<p>还可以写成下面这样（不需要注册）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">html</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;markdown.extensions.tables:TableExtension&quot;</span><span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果省略 ':' 后面的内容，可以这样...</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">html</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;markdown.extensions.tables&#39;</span><span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>这样能工作的前提的，扩展模块在模块级别实现了 <code>makeExtension(**kwargs)</code> 函数。</p>
+</blockquote>
+<p>由于，python-markdown将一些常用的扩展放置到了一个extra扩展中，所以，还可以</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">html</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;extra&#39;</span><span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果使用命令行的话，需要使用 <code>-x</code> 来指定启动的扩展</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>markdown_py<span class="w"> </span>.<span class="se">\d</span>ebaodemo.md<span class="w"> </span>-f<span class="w"> </span>a.html<span class="w"> </span>-e<span class="w"> </span>utf-8<span class="w"> </span>-x<span class="w"> </span>fenced_code
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_3">使用扩展（二）：内置扩展介绍</h3>
+<p>Python-markdown支持扩展如下：</p>
+<table>
+<thead>
+<tr>
+<th>扩展</th>
+<th>入口点</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Extra</strong></td>
+<td><code>extra</code></td>
+<td>包含一组常用扩展的集合。</td>
+</tr>
+<tr>
+<td>├── Abbreviations</td>
+<td><code>abbr</code></td>
+<td>支持缩写语法。</td>
+</tr>
+<tr>
+<td>├── Attribute Lists</td>
+<td><code>attr_list</code></td>
+<td>允许为 Markdown 元素添加 HTML 属性。</td>
+</tr>
+<tr>
+<td>├── Definition Lists</td>
+<td><code>def_list</code></td>
+<td>支持定义列表语法。</td>
+</tr>
+<tr>
+<td>├──<strong>Fenced Code Blocks</strong></td>
+<td><code>fenced_code</code></td>
+<td><strong>支持围栏代码块语法。</strong></td>
+</tr>
+<tr>
+<td>├── Footnotes</td>
+<td><code>footnotes</code></td>
+<td>支持脚注语法。</td>
+</tr>
+<tr>
+<td>├── Markdown in HTML</td>
+<td><code>md_in_html</code></td>
+<td>允许在 HTML 标签中嵌入 Markdown 内容。</td>
+</tr>
+<tr>
+<td>└──<strong>Tables</strong></td>
+<td><code>tables</code></td>
+<td><strong>支持表格语法。</strong></td>
+</tr>
+<tr>
+<td>Admonition</td>
+<td><code>admonition</code></td>
+<td>支持提示框语法。</td>
+</tr>
+<tr>
+<td><strong>CodeHilite</strong></td>
+<td><code>codehilite</code></td>
+<td><strong>为代码块添加语法高亮功能。</strong></td>
+</tr>
+<tr>
+<td>Legacy Attributes</td>
+<td><code>legacy_attrs</code></td>
+<td>支持旧版的属性语法。</td>
+</tr>
+<tr>
+<td>Legacy Emphasis</td>
+<td><code>legacy_em</code></td>
+<td>支持旧版的强调语法。</td>
+</tr>
+<tr>
+<td><strong>Meta-Data</strong></td>
+<td><code>meta</code></td>
+<td><strong>允许在 Markdown 文档的开头添加元数据。</strong></td>
+</tr>
+<tr>
+<td>New Line to Break</td>
+<td><code>nl2br</code></td>
+<td>将换行符 <code>\n</code> 转换为 <code>&lt;br /&gt;</code> 标签。</td>
+</tr>
+<tr>
+<td>Sane Lists</td>
+<td><code>sane_lists</code></td>
+<td>修复列表解析的不合理行为。</td>
+</tr>
+<tr>
+<td>SmartyPants</td>
+<td><code>smarty</code></td>
+<td>自动转换直角引号、连字符等为更符合排版规则的符号。</td>
+</tr>
+<tr>
+<td>Table of Contents</td>
+<td><code>toc</code></td>
+<td>自动生成内容目录（Table of Contents）。</td>
+</tr>
+<tr>
+<td>WikiLinks</td>
+<td><code>wikilinks</code></td>
+<td>支持类似 Wiki 的链接语法。</td>
+</tr>
+</tbody>
+</table>
+<p>注意表格中的入口点（entry point)，通常扩展会在自己的的 setup.py 文件内注册。通常放置在在markdown.extensions组中，如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">setuptools</span> <span class="kn">import</span> <span class="n">setup</span>
+
+<span class="n">setup</span><span class="p">(</span>
+    <span class="c1"># ...</span>
+    <span class="n">entry_points</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;markdown.extensions&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">&#39;markdown_katex = markdown_katex.extension:KatexExtension&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>后面dot方式可以工作的前提是：扩展模块在模块级别实现了 <code>makeExtension(**kwargs)</code> 函数。像下面这样</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MyExtension</span><span class="p">(</span><span class="n">markdown</span><span class="o">.</span><span class="n">extensions</span><span class="o">.</span><span class="n">Extension</span><span class="p">)</span>
+    <span class="c1"># Define extension here...</span>
+
+<span class="k">def</span> <span class="nf">makeExtension</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">MyExtension</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意：Extra中的tables和Fenced Code，以及CodeHilite都是很常用的扩展。Meta-Data对于 getpeclian是必须的。TOC、Footnotes也有一定意义。</p>
+<p>要在代码中启用常用的扩展，只需要</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">html_text</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;extra&#39;</span><span class="p">,</span> <span class="s1">&#39;meta&#39;</span><span class="p">,</span> <span class="s1">&#39;codehilite&#39;</span><span class="p">,</span> <span class="s1">&#39;toc&#39;</span><span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果用命令行的话，</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>markdown_py<span class="w"> </span>.<span class="se">\d</span>ebaodemo.md<span class="w"> </span>-f<span class="w"> </span>a.html<span class="w"> </span>-e<span class="w"> </span>utf-8<span class="w"> </span>-x<span class="w"> </span>extra<span class="w"> </span>-x<span class="w"> </span>codehilite<span class="w"> </span>-x<span class="w"> </span>toc<span class="w"> </span>-x<span class="w"> </span>meta
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_4">使用扩展（三）：配置扩展</h3>
+<p>前两个例子，启用了扩展，但是如何对其配置？</p>
+<p>比如要配置toc的层级？构造扩展时直接指定：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">markdown.extensions.toc</span> <span class="kn">import</span> <span class="n">TocExtension</span>
+<span class="n">html</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="n">TocExtension</span><span class="p">(</span><span class="n">baselevel</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">toc_depth</span><span class="o">=</span><span class="s1">&#39;2-3&#39;</span><span class="p">)])</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果不直接构建，需要借助于 <code>extension_configs</code>进行（每个扩展的配置对应一个dict，所有扩展的配置又放置在一个大的dict内）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">html</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;toc&#39;</span><span class="p">],</span> <span class="n">extension_configs</span><span class="o">=</span><span class="p">{</span>
+    <span class="s1">&#39;toc&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;baselevel&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;toc_depth&#39;</span><span class="p">:</span> <span class="s1">&#39;2-3&#39;</span><span class="p">},</span>
+    <span class="p">})</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果使用命令行，那就需要写一个配置文件，使用yml或json格式，而后通过 <code>-c</code>来指定：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">markdown_py</span> <span class="o">.</span>\<span class="n">debaodemo</span><span class="o">.</span><span class="n">md</span> <span class="o">-</span><span class="n">f</span> <span class="n">a</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">e</span> <span class="n">utf</span><span class="o">-</span><span class="mi">8</span> <span class="o">-</span><span class="n">x</span> <span class="n">extra</span> <span class="o">-</span><span class="n">x</span> <span class="n">codehilite</span> <span class="o">-</span><span class="n">x</span> <span class="n">toc</span> <span class="o">-</span><span class="n">x</span> <span class="n">meta</span> <span class="o">-</span><span class="n">c</span> <span class="n">config</span><span class="o">.</span><span class="n">yml</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意，启用配置的 <code>-x</code> 是不可少的。</p>
+</blockquote>
+<h3 id="katex">使用扩展（四）：第三方扩展katex</h3>
+<blockquote>
+<p>最终到了关注的问题的点，看看katex如何用。</p>
+</blockquote>
+<p>首先，安装很简单：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>markdown-katex
+</code></pre></div></td></tr></table></div>
+
+<p>然后，编写带公式的markdown文本：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="sb">` `</span> `math
+\int_{a}^{b} x^2 \,dx
+<span class="sb">` `</span> `
+</code></pre></div></td></tr></table></div>
+
+<p>最后，启用katex进行转换：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">html_text</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;extra&#39;</span><span class="p">,</span> <span class="s1">&#39;markdown_katex&#39;</span><span class="p">],</span> <span class="n">extension_configs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;markdown_katex&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;no_inline_svg&#39;</span> <span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;insert_fonts_css&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span> <span class="p">})</span>
+</code></pre></div></td></tr></table></div>
+
+<p>或者考虑其他扩展</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">html_text</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">md_text</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;extra&#39;</span><span class="p">,</span> <span class="s1">&#39;meta&#39;</span><span class="p">,</span> <span class="s1">&#39;codehilite&#39;</span><span class="p">,</span> <span class="s1">&#39;toc&#39;</span><span class="p">,</span> <span class="s1">&#39;markdown_katex&#39;</span><span class="p">],</span> <span class="n">extension_configs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;toc&#39;</span><span class="p">:{},</span> <span class="s1">&#39;markdown_katex&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;no_inline_svg&#39;</span> <span class="p">:</span> <span class="kc">False</span><span class="err">，</span><span class="s1">&#39;insert_fonts_css&#39;</span> <span class="err">：</span> <span class="kc">False</span><span class="p">},</span> <span class="p">})</span>
+</code></pre></div></td></tr></table></div>
+
+<p>工作都正常，但是</p>
+<blockquote>
+<p>可以复现：就是很慢！！转换速度从秒级变成分钟级。原因？？</p>
+<p>在其老的gitlab的网站上，可以看到有人提过类似的性能问题。但是看起来其他人没遇到过？https://gitlab.com/mbarkhau/markdown-katex/-/issues/17</p>
+</blockquote>
+<h2 id="markdown-katex">markdown-katex 源码？</h2>
+<p>要排查问题，只能看看源码。简单记录一下，源码查看过程...</p>
+<h3 id="setuppy">setup.py 文件</h3>
+<p>精简一下，内容大概如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">setuptools</span>
+
+<span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+<span class="n">setuptools</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;markdown-katex&quot;</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;202406.1035&quot;</span><span class="p">,</span>
+    <span class="n">author</span><span class="o">=</span><span class="s2">&quot;Manuel Barkhau&quot;</span><span class="p">,</span>
+    <span class="n">author_email</span><span class="o">=</span><span class="s2">&quot;mbarkhau@gmail.com&quot;</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://github.com/mbarkhau/markdown-katex&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;KaTeX extension for Python Markdown&quot;</span><span class="p">,</span>
+    <span class="n">long_description</span><span class="o">=</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;README.md&quot;</span><span class="p">),</span>
+    <span class="n">long_description_content_type</span><span class="o">=</span><span class="s2">&quot;text/markdown&quot;</span><span class="p">,</span>
+    <span class="n">license</span><span class="o">=</span><span class="s2">&quot;MIT&quot;</span><span class="p">,</span>
+    <span class="n">packages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;markdown_katex&quot;</span><span class="p">],</span>
+    <span class="n">package_data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;markdown_katex&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;katex*&quot;</span><span class="p">)]},</span>
+    <span class="n">install_requires</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;requirements/pypi.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">python_requires</span><span class="o">=</span><span class="s2">&quot;&gt;=2.7&quot;</span><span class="p">,</span>
+    <span class="n">entry_points</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;markdown.extensions&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">&#39;markdown_katex = markdown_katex.extension:KatexExtension&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="n">classifiers</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;License :: OSI Approved :: MIT License&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Programming Language :: Python :: 2.7&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Programming Language :: Python :: 3&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>核心关注：</p>
+<ul>
+<li><code>package_data</code>：需要打包二进制可执行文件 katex</li>
+<li><code>entry_points</code>：注册入口点 <code>makedown_katex</code></li>
+</ul>
+<h3 id="initpy"><strong>init</strong>.py 文件</h3>
+<p>精简一下，大致这样</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;v202406.1035&quot;</span>
+
+<span class="kn">from</span> <span class="nn">markdown_katex.wrapper</span> <span class="kn">import</span> <span class="n">tex2html</span><span class="p">,</span> <span class="n">get_bin_cmd</span>
+<span class="kn">from</span> <span class="nn">markdown_katex.extension</span> <span class="kn">import</span> <span class="n">KatexExtension</span>
+
+<span class="n">makeExtension</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">KatexExtension</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;makeExtension&#39;</span><span class="p">,</span> <span class="s1">&#39;__version__&#39;</span><span class="p">,</span> <span class="s1">&#39;get_bin_cmd&#39;</span><span class="p">,</span> <span class="s1">&#39;tex2html&#39;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>主要关注 <code>makeExtension</code>。它的存在使得第二个写法可用</p>
+<ul>
+<li><code>markdown_katex.extension:KatexExtension</code></li>
+<li><code>markdown_katex.extension</code></li>
+</ul>
+<h3 id="extensionpy">extension.py 文件</h3>
+<p>这是个katex扩展的主文件，主要的类是 KatexExtension，大致如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">markdown.extensions</span> <span class="kn">import</span> <span class="n">Extension</span>
+<span class="kn">from</span> <span class="nn">markdown.preprocessors</span> <span class="kn">import</span> <span class="n">Preprocessor</span>
+<span class="kn">from</span> <span class="nn">markdown.postprocessors</span> <span class="kn">import</span> <span class="n">Postprocessor</span>
+
+<span class="k">class</span> <span class="nc">KatexExtension</span><span class="p">(</span><span class="n">Extension</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;no_inline_svg&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Replace inline &lt;svg&gt; with &lt;img&gt; tags.&quot;</span><span class="p">],</span>
+            <span class="s1">&#39;insert_fonts_css&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Insert font loading stylesheet.&quot;</span><span class="p">],</span>
+            <span class="o">**</span><span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">options_text</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">options_text</span> <span class="ow">in</span> <span class="n">wrapper</span><span class="o">.</span><span class="n">parse_options</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getConfig</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">math_html</span><span class="p">:</span> <span class="n">typ</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">math_html</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">extendMarkdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">md</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">md</span><span class="o">.</span><span class="n">preprocessors</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">KatexPreprocessor</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="bp">self</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;katex_fenced_code_block&#39;</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="n">md</span><span class="o">.</span><span class="n">postprocessors</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">KatexPostprocessor</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="bp">self</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;katex_fenced_code_block&#39;</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">md</span><span class="o">.</span><span class="n">registerExtension</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>可以看到它注册了两个处理器类：</p>
+<ul>
+<li>KatexPreprocessor：预处理器类，负责在 Markdown 文档解析前处理 LaTeX 数学公式。它会将公式替换为占位符标记，并在 KatexExtension 中缓存 HTML 代码。</li>
+<li>KatexPostprocessor：后处理器类，负责在 Markdown 文档解析后将占位符标记替换为实际的 HTML 代码。</li>
+</ul>
+<p>主要工作在预处理器类中</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">KatexPreprocessor</span><span class="p">(</span><span class="n">Preprocessor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">md</span><span class="p">,</span> <span class="n">ext</span><span class="p">:</span> <span class="n">KatexExtension</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span>
+
+    <span class="k">def</span> <span class="nf">_make_tag_for_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_lines</span><span class="p">:</span> <span class="n">typ</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">block_text</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">block_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">block_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()):]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block_lines</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+        <span class="n">marker_tag</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;tmp_block_md_katex_</span><span class="si">{</span><span class="n">make_marker_id</span><span class="p">(</span><span class="s1">&#39;block&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">block_text</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span><span class="n">math_html</span><span class="p">[</span><span class="n">marker_tag</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;p&gt;</span><span class="si">{</span><span class="n">md_block2html</span><span class="p">(</span><span class="n">block_text</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span><span class="n">options</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/p&gt;&quot;</span>
+        <span class="k">return</span> <span class="n">block_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="nb">len</span><span class="p">(</span><span class="n">block_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">block_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">())]</span> <span class="o">+</span> <span class="n">marker_tag</span>
+
+    <span class="k">def</span> <span class="nf">_make_tag_for_inline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inline_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">marker_tag</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;tmp_inline_md_katex_</span><span class="si">{</span><span class="n">make_marker_id</span><span class="p">(</span><span class="s1">&#39;inline&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">inline_text</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span><span class="n">math_html</span><span class="p">[</span><span class="n">marker_tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">md_inline2html</span><span class="p">(</span><span class="n">inline_text</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">marker_tag</span>
+
+    <span class="k">def</span> <span class="nf">_iter_out_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">typ</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typ</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">is_in_math_fence</span><span class="p">,</span> <span class="n">is_in_fence</span><span class="p">,</span> <span class="n">block_lines</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[]</span>
+        <span class="n">expected_close_fence</span> <span class="o">=</span> <span class="s2">&quot;```&quot;</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_in_fence</span> <span class="ow">or</span> <span class="n">is_in_math_fence</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">line</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="o">==</span> <span class="n">expected_close_fence</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">is_in_math_fence</span><span class="p">:</span>
+                        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_tag_for_block</span><span class="p">(</span><span class="n">block_lines</span><span class="p">)</span>
+                        <span class="n">block_lines</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="n">is_in_fence</span> <span class="o">=</span> <span class="n">is_in_math_fence</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">BLOCK_START_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                    <span class="n">is_in_math_fence</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">expected_close_fence</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="n">BLOCK_START_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span> <span class="o">+</span> <span class="n">BLOCK_START_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                    <span class="n">block_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">FENCE_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                    <span class="n">is_in_fence</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">expected_close_fence</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="n">FENCE_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span> <span class="o">+</span> <span class="n">FENCE_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                    <span class="k">yield</span> <span class="n">line</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">iter_inline_katex</span><span class="p">(</span><span class="n">line</span><span class="p">))):</span>
+                        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="n">code</span><span class="o">.</span><span class="n">start</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_tag_for_inline</span><span class="p">(</span><span class="n">code</span><span class="o">.</span><span class="n">inline_text</span><span class="p">)</span> <span class="o">+</span> <span class="n">line</span><span class="p">[</span><span class="n">code</span><span class="o">.</span><span class="n">end</span> <span class="p">:]</span>
+                    <span class="k">yield</span> <span class="n">line</span>
+
+        <span class="k">if</span> <span class="n">block_lines</span><span class="p">:</span>
+            <span class="k">yield from</span> <span class="n">block_lines</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">typ</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typ</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iter_out_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+
+<p>其入口是 <code>run</code>函数，逐行遍历，识别公式块和行内公式，而后调用</p>
+<ul>
+<li><code>md_block2html()</code>：处理块级数学公式，将其转换为 HTML。</li>
+<li><code>md_inline2html()</code>：处理行内数学公式，将其转换为 HTML。</li>
+</ul>
+<h3 id="wrapperpy">wrapper.py 文件</h3>
+<p>真正的tex到html的转换操作发生在这个文件内。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">tex2html</span><span class="p">(</span><span class="n">tex</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">MaybeOptions</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">cmd_parts</span>         <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_iter_cmd_parts</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+    <span class="n">digest</span>            <span class="o">=</span> <span class="n">_cmd_digest</span><span class="p">(</span><span class="n">tex</span><span class="p">,</span> <span class="n">cmd_parts</span><span class="p">)</span>
+    <span class="n">cache_filename</span>    <span class="o">=</span> <span class="n">digest</span> <span class="o">+</span> <span class="s2">&quot;.html&quot;</span>
+    <span class="n">cache_output_file</span> <span class="o">=</span> <span class="n">CACHE_DIR</span> <span class="o">/</span> <span class="n">cache_filename</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cache_output_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="c1"># give cached file a life extension (update mtime)</span>
+            <span class="n">cache_output_file</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">_atomic_writable_path</span><span class="p">(</span><span class="n">cache_output_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_output_file</span><span class="p">:</span>
+                <span class="n">_write_tex2html</span><span class="p">(</span><span class="n">cmd_parts</span><span class="p">,</span> <span class="n">tex</span><span class="p">,</span> <span class="n">tmp_output_file</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">cache_output_file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">KATEX_OUTPUT_ENCODING</span><span class="p">)</span> <span class="k">as</span> <span class="n">fobj</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">fobj</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">_cleanup_cache_dir</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<p>它竟然使用大量缓存文件，为什么？？缓存不能命中的再调用katex转换</p>
+<p>具体转换操作在 <code>_write_tex2html()</code>函数中</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">_write_tex2html</span><span class="p">(</span><span class="n">cmd_parts</span><span class="p">:</span> <span class="n">typ</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">tex</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tmp_output_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># pylint: disable=consider-using-with ; not supported on py27</span>
+    <span class="n">tmp_input_file</span> <span class="o">=</span> <span class="n">CACHE_DIR</span> <span class="o">/</span> <span class="n">tmp_output_file</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.html&quot;</span><span class="p">,</span> <span class="s2">&quot;.tex&quot;</span><span class="p">)</span>
+    <span class="n">input_data</span>     <span class="o">=</span> <span class="n">tex</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">KATEX_INPUT_ENCODING</span><span class="p">)</span>
+
+    <span class="n">CACHE_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">_atomic_writable_path</span><span class="p">(</span><span class="n">tmp_input_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_path</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">tmp_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fobj</span><span class="p">:</span>
+            <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+
+    <span class="n">cmd_parts</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;--input&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">tmp_input_file</span><span class="p">),</span> <span class="s2">&quot;--output&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">tmp_output_file</span><span class="p">)])</span>
+    <span class="n">proc</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">proc</span>     <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd_parts</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+        <span class="n">ret_code</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<p>每一个公式都通过子进程方式调用一次 katex 进行转换！！</p>
+<h4 id="_5">单独‌拎出来看看</h4>
+<blockquote>
+<p>根源：markdown-katex始终优先用户安装的katex或者nodejs的katex的包，它遍历系统PATH，搜索katex或npx是否存在。但一旦npx存在，但是npx中的katex没有安装，就会阻塞很长时间。而且每个公式会阻塞一次。</p>
+</blockquote>
+<p>单独用这个tex2html试试：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">markdown_katex</span> <span class="kn">import</span> <span class="n">tex2html</span>
+
+<span class="n">latex_string</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;c = \pm\sqrt{a^2 + b^2}&quot;</span>
+
+<span class="n">html_output</span> <span class="o">=</span> <span class="n">tex2html</span><span class="p">(</span><span class="n">latex_string</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">html_output</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在个人PC上，确实非常慢！</p>
+<p>再进一步，试一下，发现还是很慢。看来慢的原因不在转换上，在于搜索katex程序</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">markdown_katex</span> <span class="kn">import</span> <span class="n">tex2html</span><span class="p">,</span> <span class="n">get_bin_cmd</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">get_bin_cmd</span><span class="p">())</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在Windows下，它遍历系统环境变量PATH中的所有路径，逐一去搜索 katex.cmd、katex.exe、katex.ps1、npx.cmd、npx.exe、npx.ps1</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CMD_NAME</span> <span class="o">=</span> <span class="s2">&quot;katex&quot;</span>
+
+<span class="k">def</span> <span class="nf">_get_local_bin_candidates</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">typ</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">OSNAME</span> <span class="o">==</span> <span class="s1">&#39;Windows&#39;</span><span class="p">:</span>
+        <span class="c1"># whackamole</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CMD_NAME</span><span class="si">}</span><span class="s2">.cmd&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CMD_NAME</span><span class="si">}</span><span class="s2">.exe&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;npx.cmd --no-install </span><span class="si">{</span><span class="n">CMD_NAME</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;npx.exe --no-install </span><span class="si">{</span><span class="n">CMD_NAME</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CMD_NAME</span><span class="si">}</span><span class="s2">.ps1&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;npx.ps1 --no-install </span><span class="si">{</span><span class="n">CMD_NAME</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">CMD_NAME</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;npx --no-install </span><span class="si">{</span><span class="n">CMD_NAME</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>而后添加参数 <code>--version</code> 进行执行和确认</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code>            <span class="k">try</span><span class="p">:</span>
+                <span class="n">output_data</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span><span class="n">local_cmd_parts</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;--version&#39;</span><span class="p">],</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">)</span>
+                <span class="n">output_text</span> <span class="o">=</span> <span class="n">output_data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+\.\d+\.\d+&quot;</span><span class="p">,</span> <span class="n">output_text</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+            <span class="k">except</span> <span class="n">sp</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="k">continue</span>
+</code></pre></div></td></tr></table></div>
+
+<p><strong>直接原因</strong>：我的系统PATH路径中有 nodejs，但是没有通过npm装katex模块，造成在执行如下命令时，会阻塞很长时间，而后抛出 CalledProcessError 异常。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">subprocess</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="n">local_cmd_parts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;D:</span><span class="se">\\</span><span class="s1">Program Files</span><span class="se">\\</span><span class="s1">nodejs</span><span class="se">\\</span><span class="s1">npx.cmd&#39;</span><span class="p">,</span> <span class="s1">&#39;--no-install&#39;</span><span class="p">,</span> <span class="s1">&#39;katex&#39;</span><span class="p">]</span>
+
+<span class="n">output_data</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span><span class="n">local_cmd_parts</span> <span class="o">+</span> <span class="p">[</span>
+                    <span class="s1">&#39;--version&#39;</span><span class="p">],</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p><strong>解决方案，安装katex</strong>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>katex
+</code></pre></div></td></tr></table></div>
+
+<p>使用国内源的话：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>npm<span class="w"> </span>--registry<span class="w"> </span>https://registry.npm.taobao.org<span class="w"> </span>--strict-ssl<span class="o">=</span><span class="nb">false</span><span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>katex
+</code></pre></div></td></tr></table></div>
+
+<h4 id="github-action">Github Action</h4>
+<blockquote>
+<p>测试表明，再Github Action中，配置好 nodejs 的 katex 包，也能显著提升转换速度。（从4分钟恢复到1分钟以内，也就是没用启用markdown-katex时的水平）。</p>
+</blockquote>
+<p>附 github action的workflow文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">pelican</span><span class="w"> </span><span class="n">CI</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">debao</span><span class="w"> </span><span class="n">blog</span>
+
+<span class="n">on</span><span class="o">:</span>
+<span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">Trigger</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">workflow</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">push</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="n">branch</span><span class="o">,</span>
+<span class="w">  </span><span class="n">push</span><span class="o">:</span>
+<span class="w">    </span><span class="n">branches</span><span class="o">:</span>
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">main</span>
+
+<span class="n">jobs</span><span class="o">:</span>
+<span class="w">  </span><span class="n">build</span><span class="o">:</span>
+<span class="w">    </span><span class="n">runs</span><span class="o">-</span><span class="n">on</span><span class="o">:</span><span class="w"> </span><span class="n">ubuntu</span><span class="o">-</span><span class="n">latest</span>
+<span class="w">    </span><span class="n">steps</span><span class="o">:</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">uses</span><span class="o">:</span><span class="w"> </span><span class="n">actions</span><span class="o">/</span><span class="n">checkout</span><span class="err">@</span><span class="n">v4</span>
+<span class="w">      </span><span class="k">with</span><span class="o">:</span><span class="w"> </span>
+<span class="w">        </span><span class="n">submodules</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;true&#39;</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">up</span><span class="w"> </span><span class="n">Python</span>
+<span class="w">      </span><span class="n">uses</span><span class="o">:</span><span class="w"> </span><span class="n">actions</span><span class="o">/</span><span class="n">setup</span><span class="o">-</span><span class="n">python</span><span class="err">@</span><span class="n">v5</span>
+<span class="w">      </span><span class="k">with</span><span class="o">:</span>
+<span class="w">        </span><span class="n">python</span><span class="o">-</span><span class="n">version</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;3.12&#39;</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">up</span><span class="w"> </span><span class="n">Nodejs</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">katex</span>
+<span class="w">      </span><span class="n">uses</span><span class="o">:</span><span class="w"> </span><span class="n">actions</span><span class="o">/</span><span class="n">setup</span><span class="o">-</span><span class="n">node</span><span class="err">@</span><span class="n">v4</span>
+<span class="w">      </span><span class="k">with</span><span class="o">:</span>
+<span class="w">        </span><span class="n">node</span><span class="o">-</span><span class="n">version</span><span class="o">:</span><span class="w"> </span><span class="mi">20</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">Install</span><span class="w"> </span><span class="n">packages</span><span class="w"> </span><span class="n">needed</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">pelican</span>
+<span class="w">      </span><span class="n">run</span><span class="o">:</span><span class="w"> </span><span class="o">|</span>
+<span class="w">        </span><span class="n">python</span><span class="w"> </span><span class="o">-</span><span class="n">m</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="o">--</span><span class="n">upgrade</span><span class="w"> </span><span class="n">pip</span>
+<span class="w">        </span><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="o">-</span><span class="n">r</span><span class="w"> </span><span class="n">requirements</span><span class="o">.</span><span class="na">txt</span>
+<span class="w">        </span><span class="n">npm</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="o">-</span><span class="n">g</span><span class="w"> </span><span class="n">katex</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">Run</span><span class="w"> </span><span class="n">pelican</span>
+<span class="w">      </span><span class="n">run</span><span class="o">:</span><span class="w"> </span><span class="o">|</span>
+<span class="w">        </span><span class="n">pelican</span><span class="w"> </span><span class="o">-</span><span class="n">s</span><span class="w"> </span><span class="n">publishconf</span><span class="o">.</span><span class="na">py</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">depoly</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">gh</span><span class="w"> </span><span class="n">pages</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_6">最终方案</h4>
+<p>20241024更新：</p>
+<p>当前blog 使用自己编写Markdown的katex插件，不进行离线转换。速度只需数秒。</p>
+<h2 id="vscode">其他：vscode使用</h2>
+<blockquote>
+<p>随手记录一下</p>
+</blockquote>
+<h3 id="_7">公式分隔符</h3>
+<p>vscode下有多种扩展支持 markdown + katex 组合。而且支持的katex的公式分隔符各式各样，详见：https://github.com/goessner/markdown-it-texmath 。</p>
+<p>而本文中提及的python下的这个包只支持 gitlab风格的公式分割。</p>
+<p>一些正则表达式：</p>
+<ul>
+<li>将 dollar 风格的行内单个dollar替换为 gitlab风格</li>
+</ul>
+<p>查找表达式：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>(?&lt;!`)\$(?!`)([^$`]+)(?&lt;!`)\$(?!`)
+</code></pre></div></td></tr></table></div>
+
+<p>替换表达式</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">$</span><span class="nv">`$1`</span><span class="p">$</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>将括号风格的行内公式替换为 gitlab风格</li>
+</ul>
+<p>查找表达式</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>\\\((.+?)\\\)
+</code></pre></div></td></tr></table></div>
+
+<p>替换表达式</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">$</span>\<span class="nv">`$1\`</span><span class="p">$</span>
+</code></pre></div></td></tr></table></div>
+
+<p>另外，vscode似乎不支持跨行的正则表达式，这使得替换显示公式的分隔符，不太容易，只能开头和结尾逐个替换（而且还处理不了前后分隔符一样的情况）。对于括号分割符：</p>
+<p>查找表达式</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>\\\[
+</code></pre></div></td></tr></table></div>
+
+<p>替换表达式（注意，确保合法！！)</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>```math
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_8">参考</h2>
+<ul>
+<li>https://github.com/mbarkhau/markdown-katex</li>
+<li>https://python-markdown.github.io/</li>
+<li>https://markdown-it-py.readthedocs.io</li>
+<li>https://mistune.lepture.com/</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-09-03T21:14:00+08:00" pubdate>Tue 03 September 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/python.html'>Python</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/katex.html">katex</a>,    <a class="category" href="https://blog.debao.me/tags/markdown.html">markdown</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

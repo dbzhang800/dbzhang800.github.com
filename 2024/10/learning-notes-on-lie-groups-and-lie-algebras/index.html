@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>李群和李代数学习小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/science.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">李群和李代数学习小记</h1>
+    <p class="meta">
+<time datetime="2024-10-13T00:49:00+08:00" pubdate>Sun 13 October 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>老是感觉啥啥都不懂，杂七杂八边学边记吧</p>
+</blockquote>
+<ul>
+<li>李群（Lie group）是一类<strong>既是</strong>群（Group），<strong>又是</strong>光滑流形（Smooth Manifold）的对象。这意味着李群<strong>既具有</strong>代数结构（群的运算：乘法和逆元），<strong>又具</strong>有几何结构（可以微分的光滑结构）</li>
+<li>李群的另一个重要伴随结构是李代数（Lie algebra）。李代数<strong>可看作</strong>是李群的“局部化线性化”版本（"localized linearized" version），描述的是李群在单位元（identity element）附近的性质。李代数与李群之间的<strong>关系类似于</strong>切空间（tangent space）与流形（manifold）之间的关系。</li>
+</ul>
+<h2 id="_1">走马观花</h2>
+<p>不同类型的李群和李代数可以在不同的数域上定义，如实数ℝ、复数ℂ、四元数ℍ以及更高维的八元数𝕆。</p>
+<table>
+<thead>
+<tr>
+<th><strong>李群</strong></th>
+<th><strong>李代数</strong></th>
+<th><strong>数系的可用性</strong></th>
+<th><strong>群的定义</strong></th>
+<th><strong>代数的定义</strong></th>
+<th><strong>维数</strong></th>
+<th><strong>名称缩写的来源</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GL(n)</td>
+<td>𝔤𝔩(n)</td>
+<td>ℝ, ℂ</td>
+<td>n × n 的可逆矩阵。</td>
+<td>n × n 矩阵的全体，李括号为 [A, B] = AB - BA。</td>
+<td>n²</td>
+<td>一般线性群（General Linear Group）</td>
+</tr>
+<tr>
+<td>SL(n)</td>
+<td>𝔰𝔩(n)</td>
+<td>ℝ, ℂ</td>
+<td>行列式为 1 的 n × n 矩阵。</td>
+<td>迹为 0 的 n × n 矩阵。</td>
+<td>n² - 1</td>
+<td>特殊线性群（Special Linear Group）</td>
+</tr>
+<tr>
+<td>O(n)</td>
+<td>𝔬(n)</td>
+<td>ℝ</td>
+<td>保持 n 维欧几里得空间内积不变的正交矩阵。</td>
+<td>反对称的 n × n 矩阵。</td>
+<td>n(n - 1) / 2</td>
+<td>正交群（Orthogonal Group）</td>
+</tr>
+<tr>
+<td>SO(n)</td>
+<td>𝔰𝔬(n)</td>
+<td>ℝ</td>
+<td>保持 n 维欧几里得空间内积不变的正交矩阵，且行列式为 1。</td>
+<td>反对称的 n × n 矩阵。</td>
+<td>n(n - 1) / 2</td>
+<td>特殊正交群（Special Orthogonal Group）</td>
+</tr>
+<tr>
+<td>U(n)</td>
+<td>𝔲(n)</td>
+<td>ℂ</td>
+<td>n × n 酉矩阵。</td>
+<td>n × n 反厄米矩阵。</td>
+<td>n²</td>
+<td>酉群（Unitary Group）</td>
+</tr>
+<tr>
+<td>SU(n)</td>
+<td>𝔰𝔲(n)</td>
+<td>ℂ</td>
+<td>行列式为 1 的 n × n 酉矩阵。</td>
+<td>迹为 0 的 n × n 反厄米矩阵。</td>
+<td>n² - 1</td>
+<td>特殊酉群（Special Unitary Group）</td>
+</tr>
+<tr>
+<td>Sp(2n)</td>
+<td>𝔰𝔭(2n)</td>
+<td>ℝ, ℍ</td>
+<td>保持辛形式不变的 2n × 2n 矩阵。</td>
+<td>满足 AᵀJ + JA = 0 的矩阵，其中 J 是辛矩阵。</td>
+<td>n(2n + 1)</td>
+<td>辛群（Symplectic Group）</td>
+</tr>
+<tr>
+<td>SE(n)</td>
+<td>𝔰𝔢(n)</td>
+<td>ℝ</td>
+<td>n 维欧氏空间中的刚体运动，包括旋转和平移。</td>
+<td>旋转和平移的无穷小生成元，包含 𝔰𝔬(n) 和 ℝⁿ。</td>
+<td>n(n - 1) / 2 + n</td>
+<td>特殊欧氏群（Special Euclidean Group in n dimensions）</td>
+</tr>
+<tr>
+<td>Spin(n)</td>
+<td>𝔰𝔭𝔦𝔫(n)</td>
+<td>ℝ, ℍ</td>
+<td>SO(n) 的二重覆盖群，描述旋转群的自旋表示。</td>
+<td>与 𝔰𝔬(n) 相同，但涉及旋量表示。</td>
+<td>n(n - 1) / 2</td>
+<td>自旋群（Spin Group）</td>
+</tr>
+<tr>
+<td>ℝⁿ (加法群)</td>
+<td>ℝⁿ</td>
+<td>ℝ</td>
+<td>实数向量的加法群。</td>
+<td>实数向量空间，李括号恒为 0。</td>
+<td>n</td>
+<td>实数向量加法群（Additive Group of Real Numbers）</td>
+</tr>
+<tr>
+<td>𝒫 或 ISO(1, 3)</td>
+<td>𝔭𝔬𝔦𝔫</td>
+<td>ℝ</td>
+<td>描述洛伦兹变换与平移的时空对称性群。</td>
+<td>洛伦兹代数与平移代数的结合。</td>
+<td>10</td>
+<td>庞加莱群（Poincaré Group）</td>
+</tr>
+<tr>
+<td>𝒢ₙ 或 Hₙ</td>
+<td>𝔥ₙ</td>
+<td>ℝ, ℂ</td>
+<td>描述量子力学中位置和动量对易关系的群。</td>
+<td>具有 [X, P] = iℏ 的代数结构。</td>
+<td>2n + 1</td>
+<td>海森堡群（Heisenberg Group）</td>
+</tr>
+<tr>
+<td>Diff(M)</td>
+<td>—</td>
+<td>无明确数系</td>
+<td>光滑流形 M 上的微分同胚群。</td>
+<td>无李代数，非局部群。</td>
+<td>无限维</td>
+<td>微分同胚群（Diffeomorphism Group）</td>
+</tr>
+<tr>
+<td>G₂</td>
+<td>𝔤₂</td>
+<td>ℝ, 𝕆</td>
+<td>14 维例外李群，与八元数自同构群相关。</td>
+<td>复杂结构，与八元数相关。</td>
+<td>14</td>
+<td>例外李群 G₂（Exceptional Lie Group G₂）</td>
+</tr>
+</tbody>
+</table>
+<p>大部分都是和n阶矩阵相关的，ℝⁿ 向量也可以看作行或列为1的矩阵。这些通过矩阵构造的李群，属于经典李群（Classical Lie groups），它们在几何学和物理学中有广泛应用。</p>
+<p>经典李群包括以下几类：</p>
+<ul>
+<li>一般线性群 GL(n, ℝ)、GL(n, ℂ)：全体 n×n 可逆矩阵构成的群。</li>
+<li>特殊线性群 SL(n, ℝ)、SL(n, ℂ)：行列式为 1 的 n×n 矩阵构成的群。</li>
+<li>正交群 O(n)、特殊正交群 SO(n)：保持实数域上欧几里得内积不变的矩阵群。</li>
+<li>酉群 U(n)、特殊酉群 SU(n)：保持复数域上欧几里得内积不变的矩阵群。</li>
+<li>辛群 Sp(n)：保持辛结构不变的矩阵群。</li>
+</ul>
+<h2 id="_2">历史</h2>
+<ul>
+<li>1869-1873 - <strong>索菲斯·李（Sophus Lie）</strong>与费利克斯·克莱因（Felix Klein）密切合作，形成李群（Lie Group）和李代数（Lie Algebra）的<strong>早期思想</strong>。</li>
+<li>1873-1874 - 李群理论（Lie Group Theory）和李代数<strong>理论诞生</strong>，索菲斯·李开始系统研究连续群（continuous group）及其局部对称性。</li>
+<li>1884 - 李宣称已完成主要成果，包括李代数的部分理论，弗里德里希·恩格尔（Friedrich Engel）开始与李合作。</li>
+<li>1888 - 威廉·基林（Wilhelm Killing）提出半单李代数（semisimple Lie algebra）的分类，推动李代数结构理论的重大进展。</li>
+<li>1893 - "李群"（groupes de Lie）和李代数一词<strong>首次出现</strong>在阿图尔·特雷斯（Arthur Tresse）的论文中。</li>
+<li>20世纪初 - 赫尔曼·外尔（Hermann Weyl）系统研究李群与李代数（Lie Algebra）的关系，发展了李代数表示理论（representation theory of Lie algebras）。</li>
+<li>20世纪中期 - 埃利·嘉当（Élie Cartan）进一步完善了李代数的分类，特别是对半单李代数和对称空间（symmetric spaces）的研究。</li>
+<li>20世纪中期 - 克劳德·谢瓦莱（Claude Chevalley）用现代数学语言系统化了李群和李代数的理论。</li>
+</ul>
+<h2 id="_3">概念</h2>
+<h3 id="algebra">代数（algebra）是什么东西？？</h3>
+<blockquote>
+<p>中学有《代数》课程，大学有《线性代数》《高等代数》等课程，代数是个什么东西？</p>
+</blockquote>
+<p>在<strong>广义</strong>上，它可以指代包括<strong>初等代数</strong>（<em>elementary algebra</em>，中学接触的代数，处理变量、方程和简单运算）、<strong>抽象代数</strong>（<em>abstract algebra</em>，研究一般的代数结构如<strong>群</strong>（<em>group</em>）、<strong>环</strong>（<em>ring</em>）、<strong>域</strong>（<em>field</em>）、<strong>模</strong>（<em>module</em>）、和<strong>代数</strong>（<em>algebra</em>）等）在内的多个领域，涉及数和运算的性质。</p>
+<p>在<strong>狭义</strong>上，<strong>代数</strong>（<em>algebra</em>）通常指一个<strong>向量空间</strong>（<em>vector space</em>），并且配备了一个<strong>双线性运算</strong>（<em>bilinear operation</em>）。这个运算可以是<strong>结合的</strong>（<em>associative</em>）、<strong>非结合的</strong>（<em>non-associative</em>）、<strong>交换的</strong>（<em>commutative</em>）或<strong>非交换的</strong>（<em>non-commutative</em>），具体取决于代数的类型。</p>
+<h4 id="_4">代数(狭义)</h4>
+<p>代数指的是一个向量空间（通常定义在某个域上，如<span class="math inline">\mathbb{R}</span> 或 <span class="math inline">\mathbb{C}</span> 上），并且向量空间上定义了一个乘法运算<span class="math inline">\cdot</span>，这个乘法运算需要满足以下条件：</p>
+<p><strong>双线性性</strong>（<em>Bilinearity</em>）：</p>
+<p>对于任何 <span class="math inline"> a, b, c \in A </span> 和标量 <span class="math inline"> \lambda, \mu \in K </span>，有：</p>
+<div class="math display">
+(\lambda a + \mu b) \cdot c = \lambda (a \cdot c) + \mu (b \cdot c)
+\\
+c \cdot (\lambda a + \mu b) = \lambda (c \cdot a) + \mu (c \cdot b)
+</div>
+
+<h4 id="_5">线性代数？</h4>
+<p>《线性代数》<strong>本身并不是通常所说的“代数”结构</strong>，而是一门数学分支，主要研究向量空间及其上的线性变换。</p>
+<p>但《线性代数》研究的对象中有很多确实属于代数结构，一般的线代教材中都会有：</p>
+<table>
+<thead>
+<tr>
+<th><strong>研究对象</strong></th>
+<th><strong>代数结构类型</strong></th>
+<th><strong>简要介绍</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>向量空间</strong>（<em>Vector Space</em>）</td>
+<td>空间</td>
+<td>由向量组成的集合，具有向量加法和标量乘法运算，满足线性性和分配律等公理。</td>
+</tr>
+<tr>
+<td><strong>线性变换</strong>（<em>Linear Transformation</em>）</td>
+<td>环</td>
+<td>两个向量空间之间保持加法和标量乘法的映射，所有线性变换在复合运算下形成一个环。</td>
+</tr>
+<tr>
+<td><strong>矩阵代数</strong>（<em>Matrix Algebra</em>）</td>
+<td>代数</td>
+<td>由矩阵加法和矩阵乘法构成的结合代数，特别是 n × n 矩阵在这些运算下是一个结合代数。</td>
+</tr>
+<tr>
+<td><strong>内积空间</strong>（<em>Inner Product Space</em>）</td>
+<td>空间</td>
+<td>向量空间的一种特殊形式，定义了内积运算，用于度量向量之间的角度和长度。</td>
+</tr>
+</tbody>
+</table>
+<p>如下研究对象尽管和线性代数相关，但一般出现在各个高级课程中：</p>
+<table>
+<thead>
+<tr>
+<th><strong>研究对象</strong></th>
+<th><strong>代数结构类型</strong></th>
+<th><strong>简要介绍</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>外代数</strong>（<em>Exterior Algebra</em>）</td>
+<td>代数</td>
+<td>从向量空间构造出的代数，定义了外积（wedge product），用于研究向量空间的多重线性性质。</td>
+</tr>
+<tr>
+<td><strong>张量代数</strong>（<em>Tensor Algebra</em>）</td>
+<td>代数</td>
+<td>通过在向量空间上构造张量来形成的代数，广泛用于物理和几何中处理高阶结构。</td>
+</tr>
+<tr>
+<td><strong>对称代数</strong>（<em>Symmetric Algebra</em>）</td>
+<td>代数</td>
+<td>由向量空间生成的代数结构，使用对称积（symmetric product）定义运算，通常用于多项式函数的研究。</td>
+</tr>
+<tr>
+<td><strong>李代数</strong>（<em>Lie Algebra</em>）</td>
+<td>代数</td>
+<td>带有李括号的代数结构，李括号是一个双线性、反对称的运算，常用于研究连续对称性。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="manifold">流形（manifold）是什么东西？</h3>
+<p>Manifold 一词在英文中的原意源自于“many”和“fold”，直译过来可以理解为“多折的”或“多面的”。在数学中，尤其是拓扑学和微分几何中，流形（Manifold）是一个抽象的几何对象。</p>
+<p>"Manifold" 在日语中通常被翻译为 "多様体"（たようたい，tayoutai）。</p>
+<blockquote>
+<p>流形是一种拓扑空间。拓扑空间 作为最基础的结构，定义了点与点之间的邻域和连续性的概念。</p>
+</blockquote>
+<h4 id="_6">流形 光滑流形</h4>
+<p>流形有不同的可微分等级：</p>
+<table>
+<thead>
+<tr>
+<th><strong>可微分等级</strong></th>
+<th><strong>符号</strong></th>
+<th><strong>要求</strong></th>
+<th><strong>性质</strong></th>
+<th><strong>应用领域</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>拓扑流形</strong></td>
+<td><span class="math inline">C^0</span></td>
+<td>过渡映射是<strong>连续的</strong></td>
+<td>仅定义了连续性，不能讨论导数和微分结构</td>
+<td>拓扑学、连通性、紧致性等</td>
+</tr>
+<tr>
+<td><strong><span class="math inline">C^k</span> 流形</strong></td>
+<td><span class="math inline">C^k</span></td>
+<td>过渡映射是<strong><span class="math inline">k</span> 次连续可微的</strong></td>
+<td>允许讨论前<span class="math inline">k</span> 阶导数，<span class="math inline">k = 1</span> 时可以定义切空间</td>
+<td>可微分几何、切空间、有限阶导数应用</td>
+</tr>
+<tr>
+<td><strong>光滑流形</strong></td>
+<td><span class="math inline">C^\infty</span></td>
+<td>过渡映射是<strong>无限次可微的</strong></td>
+<td>允许进行无穷次微分运算，定义向量场、微分形式、黎曼几何等</td>
+<td>微分几何、广义相对论、连续对称性、物理场</td>
+</tr>
+<tr>
+<td><strong>解析流形</strong></td>
+<td><span class="math inline">C^\omega</span></td>
+<td>过渡映射是<strong>解析的</strong>（可用幂级数展开）</td>
+<td>过渡映射不仅无穷次可微，且具有更强的全局性</td>
+<td>代数几何、解析几何、数学物理</td>
+</tr>
+</tbody>
+</table>
+<h3 id="lie-group">李群（Lie Group）</h3>
+<blockquote>
+<p>李群结合了<strong>代数结构</strong>（群）和<strong>几何结构</strong>（光滑流形），在几何结构上定义了定了了代数群运算，适用于描述连续对称性和无穷小变换。这个定义...头大</p>
+</blockquote>
+<p>一个 <strong>李群</strong> <span class="math inline">G</span> 是一个<strong>光滑流形</strong>（smooth manifold），并且在这个流形上定义了一个使得以下两个条件成立的<strong>群运算</strong>：</p>
+<ol>
+<li><strong>群结构</strong>：<span class="math inline">G</span> 是一个群，即集合 <span class="math inline">G</span> 上的运算满足封闭性、结合性、单位元存在性和逆元存在性。</li>
+<li><strong>光滑性</strong>：群运算 <span class="math inline">\cdot: G \times G \to G</span> 和取逆运算 <span class="math inline">\text{inv}: G \to G</span> 是<strong>光滑映射</strong>（smooth maps），也就是说它们在流形的坐标系下是可微的。</li>
+</ol>
+<h4 id="group">什么是群 (Group)</h4>
+<p>一个 <strong>群</strong> <span class="math inline">(G, \cdot)</span> 是一个集合 <span class="math inline">G</span> 和一个二元运算 <span class="math inline">\cdot</span>（通常称为<strong>乘法</strong>或<strong>群运算</strong>），满足以下四个条件：</p>
+<ol>
+<li><strong>封闭性</strong>（Closure）：对于所有 <span class="math inline">a, b \in G</span>，有 <span class="math inline">a \cdot b \in G</span>。</li>
+<li><strong>结合性</strong>（Associativity）：对于所有 <span class="math inline">a, b, c \in G</span>，有 <span class="math inline">(a \cdot b) \cdot c = a \cdot (b \cdot c)</span>。</li>
+<li><strong>单位元</strong>（Identity Element）：存在一个元素 <span class="math inline">e \in G</span> （称为单位元），使得对于所有 <span class="math inline">a \in G</span>，有 <span class="math inline">e \cdot a = a \cdot e = a</span>。</li>
+<li><strong>逆元</strong>（Inverse Element）：对于每一个 <span class="math inline">a \in G</span>，存在一个元素 <span class="math inline">b \in G</span> 使得 <span class="math inline">a \cdot b = b \cdot a = e</span>，其中 <span class="math inline">e</span> 是单位元。</li>
+</ol>
+<p>简而言之，<strong>群</strong>是一个有封闭二元运算的集合，且该运算具有结合性，并且存在单位元和每个元素的逆元。</p>
+<h3 id="lie-algebra">李代数（Lie Algebra）</h3>
+<p>李代数是一个更抽象的代数结构，主要用于描述连续对称性和无穷小变换。它最常与李群相关联。一个李代数是一个向量空间，但它配备了一种特殊的二元运算，称为李括号（Lie bracket）。</p>
+<p>对李代数中的两个元素 <span class="math inline">X</span> 和 <span class="math inline">Y</span>，它们可以是矩阵、向量场或者其他满足李代数结构的对象。那么它们的李括号 <span class="math inline">[X, Y]</span> 定义为：</p>
+<div class="math display">
+[X, Y] = XY - YX
+</div>
+
+<blockquote>
+<p>也就是说，李括号是两个矩阵的<strong>交换子</strong>（commutator），它表示 <span class="math inline">X</span> 和 <span class="math inline">Y</span> 以不同顺序相乘时的差异。与普通乘法不同，李括号是<strong>非交换的</strong>，即 <span class="math inline">[X, Y] \neq 0</span> 通常成立。注意在，<span class="math inline">so(n)</span>中，它等同于向量叉乘。</p>
+</blockquote>
+<p>该运算满足以下性质：</p>
+<p><strong>双线性（bilinearity）【代数（狭义）的内在要求】</strong></p>
+<p>对于任意 <span class="math inline">X,Y,Z \in \mathfrak{g}</span> 和标量 <span class="math inline">a,b \in \mathbb{R}</span> 或 <span class="math inline">\mathbb{C}</span>，有</p>
+<ul>
+<li><span class="math inline">[aX + bY, Z] = a [X, Z] + b [Y, Z]</span></li>
+<li><span class="math inline">[Z, aX + bY] = a [Z, X] + b [Z, Y]</span></li>
+</ul>
+<p><strong>反对称性（antisymmetry）</strong></p>
+<p>对于所有 <span class="math inline">X, Y \in \mathfrak{g}</span>，有</p>
+<ul>
+<li><span class="math inline">[X, Y] = -[Y, X]</span></li>
+</ul>
+<p><strong>雅可比恒等式（Jacobi identity）</strong></p>
+<p>对于所有 <span class="math inline">X, Y, Z \in \mathfrak{g}</span>，有</p>
+<ul>
+<li><span class="math inline">[X, [Y, Z]] + [Y, [Z, X]] + [Z, [X, Y]] = 0</span></li>
+</ul>
+<h2 id="generator">生成元（generator）</h2>
+<blockquote>
+<p>在最基本的层面，生成元描述的是如何通过一组元素及其组合来构建出一个更大的结构。在线性代数中，任何一组基（basis）都可以视为生成元（generators）,因为基向量通过线性组合可以生成整个向量空间中的所有向量。</p>
+</blockquote>
+<h3 id="generators-in-group-theory">群论中的生成元（Generators in Group Theory）</h3>
+<p>在<strong>群论</strong>（<strong>group theory</strong>）中，生成元是一组元素，通过<strong>群运算</strong>（<strong>group operation</strong>，如乘法或加法）可以生成整个群的所有元素。一个群可以由一个或多个生成元生成。</p>
+<p>若 <span class="math inline">G</span> 是一个群，集合 <span class="math inline">S \subseteq G</span> 的元素通过有限次的群运算生成整个 <span class="math inline">G</span>，则称 <span class="math inline">S</span> 为 <span class="math inline">G</span> 的生成集合（generating set）。我们记作 <span class="math inline">G = \langle S \rangle</span>。</p>
+<p>例子：</p>
+<p><strong>循环群 <span class="math inline">\mathbb{Z}_4</span></strong>：</p>
+<p><span class="math inline">\mathbb{Z}_4</span> 是模 4 的加法群，元素为 <span class="math inline">\{0, 1, 2, 3\}</span>，群运算是加法模 4。生成元是 <span class="math inline">1</span>，因为通过反复加 <span class="math inline">1</span>，可以得到所有元素：</p>
+<div class="math display">
+  1 + 1 = 2, \quad 1 + 1 + 1 = 3, \quad 1 + 1 + 1 + 1 = 0
+</div>
+
+<p>因此，<span class="math inline">\mathbb{Z}_4 = \langle 1 \rangle</span>。</p>
+<p><strong>对称群 <span class="math inline">S_3</span></strong>：</p>
+<p><span class="math inline">S_3</span> 是对 3 个元素的排列群，它有 6 个元素，表示为 <span class="math inline">S_3 = \{(), (12), (13), (23), (123), (132)\}</span>。其中，<span class="math inline">(12)</span> 表示交换第 1 和第 2 个元素，而 <span class="math inline">(123)</span> 表示 1 → 2 → 3 的循环排列。</p>
+<p>通过<strong>交换</strong> <span class="math inline">(12)</span> 和<strong>循环</strong> <span class="math inline">(123)</span> 的组合，可以生成 <span class="math inline">S_3</span> 的所有元素：</p>
+<div class="math display">
+  S_3 = \langle (12), (123) \rangle
+</div>
+
+<h3 id="generators-in-lie-algebras">李代数中的生成元（Generators in Lie Algebras）</h3>
+<p>李代数中的生成元是一组基向量，通过某种运算（主要是李括号）可以生成整个李代数的所有元素。</p>
+<p>下面以特殊正交李代数<span class="math inline">\mathfrak{so}(3)</span>为例子看一看。</p>
+<h4 id="so3">特殊正交李代数 so(3)</h4>
+<blockquote>
+<p><span class="math inline">\mathfrak{so}(3)</span> 是三维旋转群 <span class="math inline">SO(3)</span> 的李代数，描述了三维空间中的无穷小旋转。该李代数的生成元对应绕 <span class="math inline">x</span>、<span class="math inline">y</span> 和 <span class="math inline">z</span> 轴的无穷小旋转。生成元是描述这些无穷小变换的反对称矩阵，它们通过李括号运算生成整个李代数的所有元素。</p>
+</blockquote>
+<p><span class="math inline">\mathfrak{so}(3)</span> 是由所有 <span class="math inline">3 \times 3</span> <strong>反对称矩阵</strong>组成的向量空间，满足条件：</p>
+<div class="math display">
+A^T = -A
+</div>
+
+<p>其中 <span class="math inline">A^T</span> 是矩阵 <span class="math inline">A</span> 的转置矩阵。</p>
+<p>反对称矩阵的形式为：</p>
+<div class="math display">
+  A = \begin{pmatrix}
+  0 & -a_3 & a_2 \\
+  a_3 & 0 & -a_1 \\
+  -a_2 & a_1 & 0
+  \end{pmatrix}
+</div>
+
+<p>其中 <span class="math inline">a_1, a_2, a_3</span> 是实数，表示无穷小旋转的参数。</p>
+<h4 id="so3_1">so(3) 的生成元</h4>
+<p>李代数 <span class="math inline">\mathfrak{so}(3)</span> 的生成元描述了三维空间中的无穷小旋转。<span class="math inline">L_x</span>、 <span class="math inline">L_y</span>  和 <span class="math inline">L_z</span> 分别描述了绕 <span class="math inline">x</span>轴、<span class="math inline">y</span> 轴和 <span class="math inline">z</span> 轴的无穷小旋转。它们都是反对称矩阵。</p>
+<p><strong>绕 <span class="math inline">x</span> 轴的生成元 <span class="math inline">L_x</span></strong>：</p>
+<div class="math display">
+L_x = \begin{pmatrix}
+0 & 0 & 0 \\
+0 & 0 & -1 \\
+0 & 1 & 0
+\end{pmatrix}
+</div>
+
+<p><span class="math inline">L_x</span> 描述的是绕 <span class="math inline">x</span> 轴的无穷小旋转。</p>
+<p><strong>绕 <span class="math inline">y</span> 轴的生成元 <span class="math inline">L_y</span></strong>：</p>
+<div class="math display">
+L_y = \begin{pmatrix}
+0 & 0 & 1 \\
+0 & 0 & 0 \\
+-1 & 0 & 0
+\end{pmatrix}
+</div>
+
+<p><span class="math inline">L_y</span> 描述的是绕 <span class="math inline">y</span> 轴的无穷小旋转。</p>
+<p><strong>绕 <span class="math inline">z</span> 轴的生成元 <span class="math inline">L_z</span></strong>：</p>
+<div class="math display">
+L_z = \begin{pmatrix}
+0 & -1 & 0 \\
+1 & 0 & 0 \\
+0 & 0 & 0
+\end{pmatrix}
+</div>
+
+<p>这三个生成元 <span class="math inline">L_x</span>、<span class="math inline">L_y</span>、<span class="math inline">L_z</span> 之间满足以下李括号（交换子）关系：</p>
+<div class="math display">
+[L_x, L_y] = L_z, \quad [L_y, L_z] = L_x, \quad [L_z, L_x] = L_y
+</div>
+
+<p>这些关系表明，不同轴的旋转生成元组合会产生另一个轴的旋转，这符合三维空间中旋转的组合规律。</p>
+<h4 id="z">推导：绕z轴的生成元</h4>
+<p>绕 <span class="math inline">z</span> 轴的旋转矩阵 <span class="math inline">R_z(\theta)</span> 描述的是点绕 <span class="math inline">z</span> 轴旋转 <span class="math inline">\theta</span> 角度后的坐标变化，形式为：</p>
+<div class="math display">
+R_z(\theta) = \begin{pmatrix}
+\cos \theta & -\sin \theta & 0 \\
+\sin \theta & \cos \theta & 0 \\
+0 & 0 & 1
+\end{pmatrix}
+</div>
+
+<p>当 <span class="math inline">\theta</span> 很小时，使用泰勒展开：</p>
+<ul>
+<li><span class="math inline">\cos \theta \approx 1</span></li>
+<li><span class="math inline">\sin \theta \approx \theta</span></li>
+</ul>
+<p>于是我们得到绕 <span class="math inline">z</span> 轴的<strong>无穷小旋转矩阵</strong>（即 <span class="math inline">\theta \to 0</span> 的极限情况）：</p>
+<div class="math display">
+R_z(\theta) \approx \begin{pmatrix}
+1 & -\theta & 0 \\
+\theta & 1 & 0 \\
+0 & 0 & 1
+\end{pmatrix}
+</div>
+
+<p>这个矩阵可以写成：</p>
+<div class="math display">
+R_z(\theta) \approx I + \theta L_z
+</div>
+
+<p>其中 <span class="math inline">I</span> 是单位矩阵，<span class="math inline">L_z</span> 是旋转的生成元。通过比较可以看出，绕 <span class="math inline">z</span> 轴的<strong>生成元</strong> <span class="math inline">L_z</span> 是：</p>
+<div class="math display">
+L_z = \begin{pmatrix}
+0 & -1 & 0 \\
+1 & 0 & 0 \\
+0 & 0 & 0
+\end{pmatrix}
+</div>
+
+<ul>
+<li><strong>物理意义</strong>：<span class="math inline">L_z</span> 表示绕 <span class="math inline">z</span> 轴的无穷小旋转。它作用于三维向量时，会改变 <span class="math inline">x</span> 和 <span class="math inline">y</span> 分量，而 <span class="math inline">z</span> 分量保持不变。</li>
+<li><strong>反对称性</strong>：矩阵 <span class="math inline">L_z</span> 是反对称的，即 <span class="math inline">L_z^T = -L_z</span>，这符合旋转矩阵的性质：无穷小旋转不改变向量的模长。</li>
+<li><strong>李括号关系</strong>：<span class="math inline">L_z</span> 与其他生成元 <span class="math inline">L_x</span> 和 <span class="math inline">L_y</span> 之间满足以下李括号关系：</li>
+</ul>
+<div class="math display">
+  [L_z, L_x] = L_y, \quad [L_z, L_y] = -L_x
+</div>
+
+<p>这些关系反映了三维空间中不同方向的旋转组合的规律。</p>
+<h2 id="_7">李群 与 李代数</h2>
+<ul>
+<li>李群表示的是系统的有限变换，例如物体的最终旋转状态。</li>
+<li>李代数表示的是系统的无穷小变化，例如物体旋转时的瞬时角速度。</li>
+</ul>
+<h3 id="_8">二者联系</h3>
+<p>虽然李群和李代数的生成元是不同的概念，它们之间的联系可以通过无穷小变换和指数映射来理解：</p>
+<p><strong>李群的无穷小变换</strong></p>
+<p>对于一个连续李群，可以通过考虑该群的无穷小变换来得到它的李代数。李代数的生成元可以看作是这些无穷小变换的表示。</p>
+<p>例如，在前面提到的特殊正交群（三维旋转群） <span class="math inline">SO(3)</span> 中，绕 <span class="math inline">x</span>、<span class="math inline">y</span>、<span class="math inline">z</span> 轴的无穷小旋转可以用李代数 <span class="math inline">\mathfrak{so}(3)</span> 的生成元 <span class="math inline">L_x</span>，<span class="math inline">L_y</span>，<span class="math inline">L_z</span> 来描述。这些生成元是 <span class="math inline">3 \times 3</span> 的反对称矩阵，代表无穷小旋转。</p>
+<p><strong>指数映射</strong></p>
+<p>李代数的元素通过指数映射生成李群中的元素。具体来说，对于李代数中的一个元素 <span class="math inline">X</span>，我们可以通过指数映射 <span class="math inline">e^X</span> 得到李群中的一个元素。通过这种方式，李代数的生成元与李群中的有限变换有了联系。</p>
+<p>例如，李群 <span class="math inline">SO(3)</span> 中的有限旋转可以通过李代数 <span class="math inline">\mathfrak{so}(3)</span> 中的生成元的指数映射来生成。</p>
+<h3 id="_9">指数映射例子</h3>
+<p><strong>李群 <span class="math inline">SO(3)</span></strong></p>
+<p><span class="math inline">SO(3)</span> 是描述三维空间中所有保持长度的旋转构成的群。它的元素是 <span class="math inline">3 \times 3</span> 的正交矩阵，满足 <span class="math inline">R^T R = I</span> 且 <span class="math inline">\det(R) = 1</span>。该群包含了所有可能的三维旋转。</p>
+<p><strong>李代数 <span class="math inline">\mathfrak{so}(3)</span></strong></p>
+<p><span class="math inline">\mathfrak{so}(3)</span> 是李群 <span class="math inline">SO(3)</span> 的李代数，它由所有 <span class="math inline">3 \times 3</span> 的反对称矩阵组成。李代数的元素描述了无穷小旋转。具体来说，<span class="math inline">\mathfrak{so}(3)</span> 的生成元 <span class="math inline">L_x</span>，<span class="math inline">L_y</span>，<span class="math inline">L_z</span> 对应绕 <span class="math inline">x</span>、<span class="math inline">y</span>、<span class="math inline">z</span> 轴的无穷小旋转。</p>
+<p><strong>从李代数到李群：指数映射</strong></p>
+<p>李代数 <span class="math inline">\mathfrak{so}(3)</span> 中的元素通过<strong>指数映射</strong>生成李群 <span class="math inline">SO(3)</span> 中的有限旋转。</p>
+<p>对于 <span class="math inline">\mathfrak{so}(3)</span> 中的任意元素 <span class="math inline">X</span>，我们可以通过指数映射 <span class="math inline">e^X</span> 得到李群 <span class="math inline">SO(3)</span> 中的一个元素。对于矩阵李群，这个指数映射可以通过矩阵指数定义：</p>
+<div class="math display">
+e^X = I + X + \frac{1}{2!}X^2 + \frac{1}{3!}X^3 + \cdots
+</div>
+
+<p>其中，<span class="math inline">X</span> 是李代数中的一个矩阵，<span class="math inline">e^X</span> 是李群中的一个旋转矩阵。</p>
+<p>例如，绕 <span class="math inline">z</span> 轴的有限旋转矩阵 <span class="math inline">R_z(\theta)</span> 可以通过李代数中的生成元 <span class="math inline">L_z</span> 的指数映射生成：</p>
+<div class="math display">
+R_z(\theta) = e^{\theta L_z} = I + \theta L_z + \frac{\theta^2}{2!} L_z^2 + \cdots
+</div>
+
+<p>通过计算 <span class="math inline">L_z^2</span>、<span class="math inline">L_z^3</span> 以及 <span class="math inline">L_z^4</span> 的结果，可以将这个展开式分解为两个部分：</p>
+<ul>
+<li>含偶数次幂的项（包括 <span class="math inline">L_z^2</span>、<span class="math inline">L_z^4</span> 等）：</li>
+</ul>
+<div class="math display">
+  I + \frac{\theta^2}{2!} L_z^2 + \frac{\theta^4}{4!} L_z^4 + \cdots
+  = \begin{pmatrix}
+  1 & 0 & 0 \\
+  0 & 1 & 0 \\
+  0 & 0 & 1
+  \end{pmatrix} + \frac{\theta^2}{2!} \begin{pmatrix} -1 & 0 & 0 \\ 0 & -1 & 0 \\ 0 & 0 & 0 \end{pmatrix} + \cdots
+  = \begin{pmatrix}
+  \cos \theta & 0 & 0 \\
+  0 & \cos \theta & 0 \\
+  0 & 0 & 1
+  \end{pmatrix}
+</div>
+
+<ul>
+<li>含奇数次幂的项（包括 <span class="math inline">L_z</span>、<span class="math inline">L_z^3</span> 等）：</li>
+</ul>
+<div class="math display">
+  \theta L_z + \frac{\theta^3}{3!} L_z^3 + \cdots
+  = \theta \begin{pmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix} + \frac{\theta^3}{3!} \begin{pmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix} + \cdots
+  = \begin{pmatrix}
+  0 & -\sin \theta & 0 \\
+  \sin \theta & 0 & 0 \\
+  0 & 0 & 0
+  \end{pmatrix}
+</div>
+
+<p>可以看到矩阵的各个项对应<span class="math inline">sin\theta</span>和<span class="math inline">cos\theta</span>泰勒展开式，进而得到：</p>
+<div class="math display">
+R_z(\theta) = \begin{pmatrix}
+\cos \theta & -\sin \theta & 0 \\
+\sin \theta & \cos \theta & 0 \\
+0 & 0 & 1
+\end{pmatrix}
+</div>
+
+<p>这就是绕 <span class="math inline">z</span> 轴旋转角度 <span class="math inline">\theta</span> 的旋转矩阵。</p>
+<p>类似地，绕 <span class="math inline">x</span> 轴和 <span class="math inline">y</span> 轴的有限旋转也可以通过 <span class="math inline">L_x</span> 和 <span class="math inline">L_y</span> 的指数映射生成。</p>
+<h3 id="so3_2">so(3)下李括号与向量叉乘</h3>
+<blockquote>
+<p>在三维旋转群 <span class="math inline">\text{SO}(3)</span> 的李代数 <span class="math inline">\mathfrak{so}(3)</span> 中，<strong>李括号（Lie bracket）</strong> 实际上与三维向量的 <strong>叉乘</strong>（Cross product）是等价的。这种对应关系反映了三维旋转的代数结构与三维向量之间的紧密联系。</p>
+</blockquote>
+<p>在 <span class="math inline">\mathfrak{so}(3)</span> 中，元素是 <strong>反对称矩阵</strong>，即满足 <span class="math inline">A^T = -A</span> 的 <span class="math inline">3 \times 3</span> 矩阵。任何 <span class="math inline">\mathfrak{so}(3)</span> 的元素 <span class="math inline">A</span> 都可以写成如下形式：</p>
+<div class="math display">
+A = \begin{pmatrix}
+0 & -a_3 & a_2 \\
+a_3 & 0 & -a_1 \\
+-a_2 & a_1 & 0
+\end{pmatrix}
+</div>
+
+<p>其中，<span class="math inline">\mathbf{a} = (a_1, a_2, a_3)</span> 是一个三维向量。我们可以将这个矩阵 <span class="math inline">A</span> 与向量 <span class="math inline">\mathbf{a}</span> 关联起来，称 <span class="math inline">A</span> 是向量 <span class="math inline">\mathbf{a}</span> 的“反对称矩阵表示”。</p>
+<p>在 <span class="math inline">\mathfrak{so}(3)</span> 中，两个反对称矩阵 <span class="math inline">A</span> 和 <span class="math inline">B</span> 的<strong>李括号</strong>定义为矩阵的交换子：</p>
+<div class="math display">
+[A, B] = AB - BA
+</div>
+<p>假设矩阵 <span class="math inline">A</span> 和 <span class="math inline">B</span> 分别对应于向量 <span class="math inline">\mathbf{a}</span> 和 <span class="math inline">\mathbf{b}</span> 的反对称矩阵表示：</p>
+<div class="math display">
+A = \begin{pmatrix}
+0 & -a_3 & a_2 \\
+a_3 & 0 & -a_1 \\
+-a_2 & a_1 & 0
+\end{pmatrix}, \quad
+B = \begin{pmatrix}
+0 & -b_3 & b_2 \\
+b_3 & 0 & -b_1 \\
+-b_2 & b_1 & 0
+\end{pmatrix}
+</div>
+
+<p>计算 <span class="math inline">[A, B]</span> 的结果仍然是一个反对称矩阵。事实上，得到的这个矩阵对应于向量 <span class="math inline">\mathbf{c} = \mathbf{a} \times \mathbf{b}</span> 的反对称矩阵表示。</p>
+<p>两个向量 <span class="math inline">\mathbf{a} = (a_1, a_2, a_3)</span> 和 <span class="math inline">\mathbf{b} = (b_1, b_2, b_3)</span>，它们的<strong>叉乘</strong>定义为：</p>
+<div class="math display">
+\mathbf{a} \times \mathbf{b} = \begin{pmatrix}
+a_2 b_3 - a_3 b_2 \\
+a_3 b_1 - a_1 b_3 \\
+a_1 b_2 - a_2 b_1
+\end{pmatrix}
+</div>
+
+<h2 id="_10">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/Lie_group</li>
+<li>https://en.wikipedia.org/wiki/Algebra</li>
+<li>https://en.wikipedia.org/wiki/Linear_algebra</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-10-13T00:49:00+08:00" pubdate>Sun 13 October 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/science.html'>Science</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

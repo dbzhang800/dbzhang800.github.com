@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>开源C++ 3D引擎小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/c.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">开源C++ 3D引擎小记</h1>
+    <p class="meta">
+<time datetime="2024-11-10T00:08:00+08:00" pubdate>Sun 10 November 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>简单罗列一下</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#_1">开源，免费</a><ul>
+<li><a href="#ogre">OGRE</a></li>
+<li><a href="#irrlicht-engine">Irrlicht Engine</a></li>
+<li><a href="#godot">Godot</a></li>
+<li><a href="#panda3d">Panda3D</a></li>
+<li><a href="#o3de">O3DE</a></li>
+<li><a href="#openscenegraph">OpenSceneGraph</a></li>
+<li><a href="#vulkanscenegraph">VulkanSceneGraph</a></li>
+<li><a href="#open3d">Open3D</a></li>
+<li><a href="#vtk">VTK</a></li>
+<li><a href="#coin3d">Coin3D</a></li>
+<li><a href="#open-inventor">Open Inventor</a></li>
+</ul>
+</li>
+<li><a href="#_2">商业</a><ul>
+<li><a href="#unigine">Unigine</a></li>
+<li><a href="#unreal-engine">Unreal Engine</a></li>
+</ul>
+</li>
+<li><a href="#_3">参考</a></li>
+</ul>
+</div>
+<h2 id="_1">开源，免费</h2>
+<blockquote>
+<p>本表格内容来自 chatgpt，可能不准确。先列上</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th><strong>工具/引擎</strong></th>
+<th><strong>游戏开发</strong></th>
+<th><strong>实时 3D 渲染</strong></th>
+<th><strong>科学数据可视化</strong></th>
+<th><strong>虚拟现实/仿真</strong></th>
+<th><strong>CAD/工业设计</strong></th>
+<th><strong>医学与工程</strong></th>
+<th><strong>大规模数据处理</strong></th>
+<th><strong>体渲染/点云处理</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OGRE</strong></td>
+<td>✅ 高质量渲染</td>
+<td>✅ 强大渲染能力</td>
+<td>❌ 不适用</td>
+<td>✅ 适合</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+</tr>
+<tr>
+<td><strong>Irrlicht Engine</strong></td>
+<td>✅ 简单游戏开发</td>
+<td>✅ 基本渲染能力</td>
+<td>❌ 不适用</td>
+<td>✅ 适合</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+</tr>
+<tr>
+<td><strong>Godot</strong></td>
+<td>✅ 全功能游戏引擎</td>
+<td>✅ 完整支持</td>
+<td>❌ 不适用</td>
+<td>✅ 支持</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+</tr>
+<tr>
+<td><strong>Panda3D</strong></td>
+<td>✅ 教育与轻量级游戏</td>
+<td>✅ 支持</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+</tr>
+<tr>
+<td><strong>O3DE</strong></td>
+<td>✅ 复杂 AAA 游戏开发</td>
+<td>✅ PBR 和现代图形特性</td>
+<td>❌ 不适用</td>
+<td>✅ 专业支持</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>✅ 支持数据驱动</td>
+<td>❌ 不适用</td>
+</tr>
+<tr>
+<td><strong>OpenSceneGraph</strong></td>
+<td>❌ 不适用</td>
+<td>✅ 适合</td>
+<td>✅ 部分适合</td>
+<td>✅ 支持</td>
+<td>✅ 适合</td>
+<td>✅ 适合</td>
+<td>✅ 支持</td>
+<td>❌ 不适用</td>
+</tr>
+<tr>
+<td><strong>VulkanSceneGraph</strong></td>
+<td>❌ 不适用</td>
+<td>✅ 非常适合</td>
+<td>✅ 高性能支持</td>
+<td>✅ 支持 VR/AR</td>
+<td>✅ 支持</td>
+<td>✅ 适合</td>
+<td>✅ 支持</td>
+<td>❌ 不适用</td>
+</tr>
+<tr>
+<td><strong>Open3D</strong></td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>✅ 强大数据可视化</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>✅ 最适合</td>
+<td>✅ 最适合</td>
+<td>✅ 最适合</td>
+</tr>
+<tr>
+<td><strong>VTK</strong></td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>✅ 最适合</td>
+<td>❌ 不适用</td>
+<td>✅ 部分适合</td>
+<td>✅ 最适合</td>
+<td>✅ 最适合</td>
+<td>✅ 最适合</td>
+</tr>
+<tr>
+<td><strong>Coin3D</strong></td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>✅ 支持简单可视化</td>
+<td>✅ 支持</td>
+<td>✅ 非常适合</td>
+<td>✅ 部分适合</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+</tr>
+<tr>
+<td><strong>Open Inventor</strong></td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+<td>✅ 支持简单可视化</td>
+<td>✅ 支持</td>
+<td>✅ 非常适合</td>
+<td>✅ 部分适合</td>
+<td>❌ 不适用</td>
+<td>❌ 不适用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ogre">OGRE</h3>
+<p>OGRE：面向对象的图形渲染引擎（Object-Oriented Graphics Rendering Engine）。最初由 Steve Streeting 创建，它是面向对象设计的，专注于图形渲染而非完整游戏引擎功能。采用MIT协议发布。</p>
+<ul>
+<li><a href="https://www.ogre3d.org">https://www.ogre3d.org</a></li>
+<li><a href="https://github.com/OGRECave">https://github.com/OGRECave</a></li>
+</ul>
+<p>首次发布于2005年，但是2019年fork出两个项目同时开发：</p>
+<ul>
+<li>Ogre：原来的1.x 版本。版本号从 1.11.x, 1.12.x 之后就变成了 13.x，14.x，...</li>
+<li>Ogre Next：原来的2.x开发版本。版本号从2.1开始，后续命名 3.0，4.0</li>
+</ul>
+<p>两个版本的比较见<a href="https://www.ogre3d.org/about/what-version-to-choose">官方</a>，OgreNext 是 Ogre 引擎的现代化版本，专注于物理渲染管线，适合高端硬件和现代图形 API 的需求。OGRE更成熟，支持的插件，绑定的语言更多。</p>
+<blockquote>
+<p>Ogre提供有<a href="https://www.ogre3d.org/2020/04/21/qt-ogre3d-integration-now-available-in-master">ApplicationContextQt </a>，而OgreNext没有直接提供。</p>
+</blockquote>
+<h3 id="irrlicht-engine">Irrlicht Engine</h3>
+<ul>
+<li><a href="https://irrlicht.sourceforge.io/">https://irrlicht.sourceforge.io/</a></li>
+</ul>
+<p>Irrlicht 于 2003 年由 Niko Schröder 开发，一个轻量级的 3D 引擎。采用zlib协议发布。</p>
+<p>简单的 API 和良好的文档。</p>
+<h3 id="godot">Godot</h3>
+<p>发音：/ˈɡɒdoʊ/ GOD-oh</p>
+<ul>
+<li><a href="https://godotengine.org/">https://godotengine.org/</a></li>
+<li><a href="https://github.com/godotengine/godot">https://github.com/godotengine/godot</a></li>
+</ul>
+<p>Godot 起初由 Juan Linietsky 和 Ariel Manzur 开发，正式开源于 2014 年。</p>
+<p>尽管可以使用C++，但知名的是它的 GDScript 和 C# 支持</p>
+<h3 id="panda3d">Panda3D</h3>
+<ul>
+<li><a href="https://www.panda3d.org/">https://www.panda3d.org/</a></li>
+</ul>
+<p>Panda3D 由迪士尼和卡内基梅隆大学合作开发，最初用于主题公园的互动体验。2008 年，迪士尼将其开源。</p>
+<p>简单的学习曲线和丰富的 Python 绑定，但其核心是用 C++ 编写的。内置的物理引擎和粒子系统，适合教育和快速原型开发</p>
+<h3 id="o3de">O3DE</h3>
+<p>O3DE：Open 3D Engine</p>
+<ul>
+<li><a href="https://o3de.org/">https://o3de.org/</a></li>
+<li><a href="https://github.com/o3de/o3de/">https://github.com/o3de/o3de/</a></li>
+</ul>
+<p>O3DE 的前身是 Amazon Lumberyard，这是 Amazon 在 2016 年基于 CryEngine 开发的引擎。</p>
+<p>2021 年，Amazon 将 Lumberyard 开源，并将其交由 Linux 基金会管理，形成了 Open 3D Engine 项目。</p>
+<p>采用 Apache License 2.0 与 MIT 协议。</p>
+<h3 id="openscenegraph">OpenSceneGraph</h3>
+<ul>
+<li><a href="https://github.com/openscenegraph/OpenSceneGraph">https://github.com/openscenegraph/OpenSceneGraph</a></li>
+</ul>
+<p>OpenSceneGraph (OSG) 1998年OSG 由 Don Burns 和 Robert Osfield 创建，最初用于军事仿真和科学可视化，采用 OpenGL 渲染和场景图架构。它是一个开源的 3D 图形应用程序开发框架，广泛用于可视化、仿真、游戏开发和虚拟现实等领域。它基于 C++ 开发，提供了一个高效的 3D 渲染引擎，适合用于构建高性能的图形应用程序。发布协议类似 LGPL。</p>
+<h3 id="vulkanscenegraph">VulkanSceneGraph</h3>
+<ul>
+<li>https://vsg-dev.github.io/vsg-dev.io/</li>
+<li>https://github.com/vsg-dev/VulkanSceneGraph</li>
+</ul>
+<p>2018年：VulkanSceneGraph 项目开始在 GitHub 上发布。是一个基于 Vulkan 图形 API 的开源 3D 场景图引擎，旨在提供比传统 OpenGL 更高效、更灵活的 3D 渲染解决方案。</p>
+<p>采用MIT协议。</p>
+<blockquote>
+<p>Qt支持：https://github.com/vsg-dev/vsgQt</p>
+</blockquote>
+<h3 id="open3d">Open3D</h3>
+<ul>
+<li><a href="https://www.open3d.org/">https://www.open3d.org/</a></li>
+<li><a href="https://github.com/isl-org/Open3D">https://github.com/isl-org/Open3D</a></li>
+</ul>
+<p>一个开源的库，不是游戏引擎。旨在为 3D 数据处理和可视化提供高效和易用的工具。它专注于处理点云、网格、体素和其他 3D 数据结构，广泛应用于计算机视觉、机器人、几何处理、3D 重建等领域。</p>
+<p>Open3D 提供了简洁且高效的 API，使开发者能够快速进行 3D 数据的处理、分析和可视化。</p>
+<h3 id="vtk">VTK</h3>
+<ul>
+<li><a href="https://vtk.org/">https://vtk.org/</a></li>
+<li><a href="https://github.com/Kitware/VTK">https://github.com/Kitware/VTK</a></li>
+</ul>
+<p>VTK (The Visualization Toolkit) 是一个开源的 3D 计算机图形学、图像处理、可视化和数据分析软件库。它用于处理、渲染和分析科学数据，广泛应用于工程、医学、地球科学、物理学等领域。VTK 支持丰富的 3D 图形可视化，提供了强大的功能，可以进行多种数据处理操作，包括几何处理、网格和体积数据的可视化、流体动力学分析、图像分析等。采用BSD协议发布</p>
+<ul>
+<li>1993年：VTK 由 Kitware 公司创建，最初用于科学计算和工程仿真领域的数据可视化。</li>
+<li>1996年：VTK 开源，允许更多的开发者和研究人员使用和改进。</li>
+<li>2005年：VTK 添加了对 Python 的支持，使得开发者能更方便地用 Python 进行可视化编程。</li>
+<li>2010年代：增加了对 GPU 加速的支持，并改善了渲染技术，能处理更复杂的数据和图形。</li>
+<li>2015年：支持现代的图形硬件，提升了性能和图形质量。</li>
+</ul>
+<h3 id="coin3d">Coin3D</h3>
+<blockquote>
+<p>它是 Open Inventor 的一个高兼容性实现。</p>
+</blockquote>
+<ul>
+<li><a href="https://www.coin3d.org/">https://www.coin3d.org/</a></li>
+<li><a href="https://github.com/coin3d">https://github.com/coin3d</a></li>
+</ul>
+<p>Coin3D 是一个开源的 3D 图形工具包，基于 Open Inventor 标准开发，主要用于交互式 3D 图形应用的开发。它提供了高层次的编程接口，让开发者能够方便地创建复杂的 3D 图形场景，而无需直接处理底层的 OpenGL 代码。</p>
+<p>1998-2011，Coin3D作为商业产品开发，采用商业和GPL双重授权。最初由一家名为 Systems in Motion (SIM) 的公司开发，后来由 Kongsberg Oil &amp; Gas Technologies 维护。</p>
+<p>2011年，停止商业开发，采用 BSD协议发布。</p>
+<ul>
+<li>Coin3D 使用 BSD 许可证</li>
+<li>它的Python绑定叫做 pivy</li>
+<li>它的Qt绑定叫做 quarter（老的绑定叫 soqt）</li>
+<li>它还有提供有 wxWidget，Xt/Motif、GTK 等绑定</li>
+</ul>
+<p>FreeCAD 使用 Coid3D</p>
+<h3 id="open-inventor">Open Inventor</h3>
+<ul>
+<li><a href="https://github.com/aumuell/open-inventor">https://github.com/aumuell/open-inventor</a></li>
+</ul>
+<p>Open Inventor 是由 Silicon Graphics, Inc. (SGI) 在 1990 年代开发的一种高级 3D 图形工具包，它为开发交互式三维应用程序提供了一个面向对象的框架。它的核心是一个基于场景图（Scene Graph）的架构，这种架构简化了 3D 图形开发，使开发者可以通过更高层次的接口来操作 3D 对象，而无需直接处理底层的 OpenGL 调用。</p>
+<p>采用 LGPL 授权（2000年开始，但是开源版本基本不再维护？？）</p>
+<p>相关项目：</p>
+<ul>
+<li><a href="https://www.openinventor.com/en">Open Inventor Toolkit</a> ：赛默飞的闭源产品。</li>
+<li>Coin3D：和 Open Inventor 接口兼容的开源产品</li>
+<li><a href="https://www.mevislab.de/mevislab/features/open-inventor">MeVisLab Open Inventor</a>：二次开发版本，包含Qt绑定</li>
+</ul>
+<h2 id="_2">商业</h2>
+<h3 id="unigine">Unigine</h3>
+<ul>
+<li><a href="https://unigine.com/">https://unigine.com/</a></li>
+</ul>
+<p>Unigine 开发始于 2005 年，主要由一家俄罗斯公司开发，一个高保真的 3D 渲染和物理模拟引擎。</p>
+<p>尽管 Unigine 的专业版是商业产品，但它提供了一个免费的社区版供开发者使用。</p>
+<h3 id="unreal-engine">Unreal Engine</h3>
+<ul>
+<li><a href="https://www.unrealengine.com">https://www.unrealengine.com</a></li>
+<li><a href="https://www.unrealengine.com/zh-CN/ue-on-github">https://www.unrealengine.com/zh-CN/ue-on-github</a></li>
+</ul>
+<p>Unreal Engine（简称 UE）是由 Epic Games 开发的一个高度功能强大的游戏引擎，广泛应用于游戏开发、虚拟现实（VR）、电影制作、建筑可视化等多个领域。自 1998 年首次发布以来，Unreal Engine 已成为业内最为知名和最具影响力的引擎之一。</p>
+<p>Unreal Engine 曾经是商业引擎，需要支付高额的许可费用，但从 2015 年起，Epic Games 推出了 UE4 的免费版本，允许开发者使用所有功能，唯一的费用是当游戏收入超过一定数额时支付分成。</p>
+<h2 id="_3">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/OGRE</li>
+<li>https://www.ogre3d.org/2020/04/21/qt-ogre3d-integration-now-available-in-master</li>
+<li>https://en.wikipedia.org/wiki/Irrlicht_Engine</li>
+<li>https://en.wikipedia.org/wiki/Panda3D</li>
+<li>https://en.wikipedia.org/wiki/Godot_(game_engine)</li>
+<li>https://wiki.qt.io/Using_3D_engines_with_Qt</li>
+<li>https://en.wikipedia.org/wiki/Unigine</li>
+<li>https://en.wikipedia.org/wiki/VTK</li>
+<li>https://en.wikipedia.org/wiki/Open_Inventor</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-11-10T00:08:00+08:00" pubdate>Sun 10 November 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/c.html'>C++</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a class="category" href="https://blog.debao.me/tags/qt.html">Qt</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

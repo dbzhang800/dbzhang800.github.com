@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>电子源小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/sem.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">电子源小记</h1>
+    <p class="meta">
+<time datetime="2024-12-07T23:13:00+08:00" pubdate>Sat 07 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>电子源，一般叫做电子枪（Electron Gun），是一个电子光学系统，用于产生一定形状，往一定方向投射的电子束。</p>
+<h2 id="_1">三种电子源</h2>
+<p>在SEM中，根据发射方式不同，常用的电子源有三种：</p>
+<ul>
+<li>热发射电子源 (Thermionic Emission, TE)：利用热能克服材料表面的逸出功（work function），使得电子从加热的金属材料中逸出。</li>
+<li>热场发射电子源（Thermally assisted Field Emission，TFE）：也称为肖特基发射电子源 (Schottky Emission, SE)，它结合了热发射和场发射的特性。电子源表面加热至较高温度，同时加上外部电场来增强电子的逸出能力。</li>
+<li>冷场发射电子源（Cold Field Emission，CFE）：通常简称场发射电子源(Field Emission, FE)，它基于场发射效应，通过施加非常强的电场（几千伏/厘米）来拉伸材料表面的电子，促使它们逸出。</li>
+</ul>
+<p><img alt="electron" src="https://blog.debao.me/images/sem/electron_gun.png"></p>
+<p>特性比较：</p>
+<table>
+<thead>
+<tr>
+<th>-</th>
+<th>热发射（钨）</th>
+<th>热发射（LaB6）</th>
+<th>肖特基（热场）发射</th>
+<th>冷场发射</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>发射面（<span class="math inline">um^2</span>）</td>
+<td>&gt;&gt;1</td>
+<td>&gt; 1</td>
+<td>0.2</td>
+<td>0.02</td>
+</tr>
+<tr>
+<td>(虚)源直径</td>
+<td>15~20um</td>
+<td>10um</td>
+<td>15~20nm</td>
+<td>5-10nm</td>
+</tr>
+<tr>
+<td>亮度（<span class="math inline">A cm^{-2}rad^{-2}</span>）</td>
+<td><span class="math inline">10^5</span></td>
+<td><span class="math inline">10^6</span></td>
+<td><span class="math inline">10^8</span></td>
+<td><span class="math inline">10^8</span></td>
+</tr>
+<tr>
+<td>能散（eV）</td>
+<td>3-4</td>
+<td>2-3</td>
+<td>0.7~1</td>
+<td>0.3</td>
+</tr>
+<tr>
+<td>逸出功（eV）</td>
+<td>4.5</td>
+<td>2.6</td>
+<td>2.8</td>
+<td>4.5</td>
+</tr>
+<tr>
+<td>阴极温度（K）</td>
+<td>2800</td>
+<td>1900</td>
+<td>1800</td>
+<td>300</td>
+</tr>
+<tr>
+<td>真空度（Pa）</td>
+<td><span class="math inline">10^{-4}</span></td>
+<td><span class="math inline">10^{-6}</span></td>
+<td><span class="math inline">10^{-8}- 10^{-9}</span></td>
+<td><span class="math inline">10^{-9} - 10^{-11}</span></td>
+</tr>
+<tr>
+<td>生命期</td>
+<td>50h</td>
+<td>500h</td>
+<td>y</td>
+<td>1-2y</td>
+</tr>
+<tr>
+<td>束流波动性（每小时）</td>
+<td>&lt;1%</td>
+<td>&lt;2%</td>
+<td>&lt;1%</td>
+<td>&gt;10%</td>
+</tr>
+</tbody>
+</table>
+<p>注：亮度值在20kV下获得。</p>
+<h2 id="_2">概念</h2>
+<h3 id="crossover-virtual-source">Crossover 与 Virtual source</h3>
+<p>对于场发射电子源，电子束的行为就像是从一个直径为5至10纳米的源点发出，这个点被称为虚拟源（Virtual source，或者 Virtual Crossover）。注意区分其不同于热发射时的Real Crossover，Corssover处会有比较强的空间电荷效应。</p>
+<p><img alt="Virtual Source" src="https://blog.debao.me/images/sem/electron_gun_virtual_source.png"></p>
+<p>基于这个，电子源可以分为：</p>
+<ul>
+<li>交叉枪</li>
+<li>层流枪</li>
+</ul>
+<h3 id="flashing">Flashing</h3>
+<p>对于冷场发射电子枪，其枪尖通常由钨单晶制成（尖端半径仅几个纳米），在使用过程中，尖端表面容易被残留气体分子或其他污染物覆盖，这会降低发射稳定性。</p>
+<p>通过Flashing（闪烁）过程，可将尖端瞬时加热到较高温度（通常为1800–2500 K），以烧掉或挥发掉附着在表面的污染物。清洁后的尖端能够恢复其高效的电子发射性能。</p>
+<p><img alt="Flashing" src="https://blog.debao.me/images/sem/electron_gun_flashing.png"></p>
+<blockquote>
+<p>根据设备使用频率和环境条件，Flashing 的频率可从几小时到几天不等。Flashing的温度和时间控制也比较关键：温度过高可能导致尖端形状改变或熔化，影响发射性能；温度过低或时间过短可能无法完全清除污染（冷场发射电镜提供专门的Flashing操作，需要关闭HV的情况下进行）。</p>
+</blockquote>
+<h3 id="ta">TA</h3>
+<p><strong>TA值（tip-anode）</strong> TA值指的是电子源尖端（如钨灯丝或肖特基源）与阳极之间的距离。 在场发射电子枪和肖特基电子枪中，非常关键，对电子束的形成、加速和最终的成像质量有显著影响。</p>
+<p><img alt="TA" src="https://blog.debao.me/images/sem/electron_gun_ta.png"></p>
+<h3 id="brightness">亮度（Brightness）</h3>
+<p>电子枪的亮度是指单位时间内，从电子枪发射的电子束通过单位面积并朝特定方向传播的电子数量。</p>
+<p>亮度的单位用“A/cm²·sr”表示，表示单位立体角下的电流密度。</p>
+<div class="math display">
+L = \frac{I}{A \cdot \Omega}
+</div>
+<p>其中：</p>
+<ul>
+<li><span class="math inline">I</span>：通过电子枪的电流（单位：安培），</li>
+<li><span class="math inline">A</span>：电子束通过的面积（单位：平方厘米），</li>
+<li><span class="math inline">\Omega</span>：电子束的固角（单位：球面度，sr），即电子束在空间中占据的角度范围。</li>
+</ul>
+<h2 id="_3">其他</h2>
+<p>从材料考虑，一个理想阴极（Cathode），追求：</p>
+<ul>
+<li>材料逸出功低</li>
+<li>发射电流密度大</li>
+<li>工作温度低</li>
+<li>在阴极工作温度下材料蒸发小</li>
+<li>抗离子轰击及抗中毒性好</li>
+<li>寿命长</li>
+</ul>
+<p>从电子光学系统：</p>
+<ul>
+<li>虚源尽可能小</li>
+<li>亮度高</li>
+</ul>
+<h2 id="_4">参考</h2>
+<ul>
+<li>Jon Orloff,《Handbook of Charged Particle Optics》</li>
+<li>JEOL,《Scanning Electron MicroScope A to Z, Basic Knowledge for Using The SEM》</li>
+<li>https://www.thermofisher.com/blog/materials/electron-source-fundamentals/</li>
+<li>https://iubemcenter.indiana.edu/doc/williams-and-carter/transmission-electron-microscopy-chapter-05.pdf</li>
+<li>https://www.jeol.com/words/semterms/20121024.021759.php</li>
+<li>https://ediss.uni-goettingen.de/bitstream/11858/00-1735-0000-0028-867D-4/1/release-version_20151216.pdf</li>
+<li>https://en.wikipedia.org/wiki/Field_electron_emission</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-12-07T23:13:00+08:00" pubdate>Sat 07 December 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/sem.html'>SEM</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/sem.html">SEM</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

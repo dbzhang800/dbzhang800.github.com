@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>电机小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">电机小记</h1>
+    <p class="meta">
+<time datetime="2024-08-14T23:10:00+08:00" pubdate>Wed 14 August 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>电机（Electric Motor）是一种将电能转换成机械能的设备，也被称为马达，是Motor的音译。</p>
+<h2 id="_1">一些术语？</h2>
+<ul>
+<li>定子（Stator）：固定部分，包含绕组。</li>
+<li>转子（Rotor）：旋转部分，连接负载。</li>
+<li>转矩（Torque）：旋转力。</li>
+<li>转速（Speed）：旋转速度，以RPM表示。</li>
+<li>反馈（Feedback）：监控电机状态的信号。</li>
+<li>编码器（Encoder）：提供位置或速度反馈的传感器。</li>
+<li>闭环控制（Closed-loop Control）：使用反馈调整输出。</li>
+<li>开环控制（Open-loop Control）：无反馈的控制方式。</li>
+<li>驱动器（Driver）：控制电机运行的设备。</li>
+<li>PWM（脉宽调制）：控制速度和转矩的技术。</li>
+<li>额定电压（Rated Voltage）：设计运行电压。</li>
+<li>额定电流（Rated Current）：额定负载下的电流。</li>
+<li>额定功率（Rated Power）：最大输出功率。</li>
+<li>启动转矩（Starting Torque）：启动时的转矩。</li>
+<li>转差（Slip）：转子转速与同步转速的差异。</li>
+<li>惯量（Inertia）：抵抗加速或减速的性质。</li>
+<li>电枢（Armature）：产生电磁力的部分。</li>
+<li>堵转电流（Stall Current）：转子阻止转动时的电流。</li>
+<li>换向器（Commutator）：反转电流方向的装置。</li>
+<li>...</li>
+</ul>
+<h3 id="_2">缩写</h3>
+<ul>
+<li>PMSM：permanent-magnet synchronous motor</li>
+<li>BLDC：brushless DC electric motor</li>
+</ul>
+<ul>
+<li>VFD：Variable-frequency drive</li>
+<li>FOC：Field-oriented control</li>
+<li>DTC：Direct torque control</li>
+<li>MPC：Model predictive control</li>
+<li>SVPWM：Space Vector Pulse Width Modulation</li>
+<li>PI：Proportional-integral</li>
+</ul>
+<h2 id="_3">分类？</h2>
+<p>电机在生活中无处不在，种类繁多... 查查资料，简单整理一下</p>
+<h3 id="_4">直流电机、交流电机</h3>
+<ul>
+<li>直流电机（DC motor）：直流电驱动的电机。常说的直流电机指代有刷电机（Brushed DC electric motor）。</li>
+<li>交流电机（AC motor）：交流电驱动的电机。交流电可以控制电流和磁场方向，可以不用电刷。</li>
+</ul>
+<p>广义的直流电机，可以包括：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>直流有刷电机</th>
+<th>直流无刷电机</th>
+<th>开关磁阻电机</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>结构</td>
+<td>有电刷和换向器</td>
+<td>无电刷，电子换向</td>
+<td>简单结构，无电刷</td>
+</tr>
+<tr>
+<td>控制</td>
+<td>简单</td>
+<td>复杂，需要控制器</td>
+<td>复杂，需要控制器</td>
+</tr>
+<tr>
+<td>维护</td>
+<td>需定期更换电刷</td>
+<td>低维护</td>
+<td>低维护</td>
+</tr>
+<tr>
+<td>效率</td>
+<td>较低</td>
+<td>高</td>
+<td>中等</td>
+</tr>
+<tr>
+<td>噪音</td>
+<td>中等</td>
+<td>低</td>
+<td>较大</td>
+</tr>
+<tr>
+<td>转子</td>
+<td>缠绕线圈</td>
+<td>永磁体</td>
+<td>无磁体（软磁材料）</td>
+</tr>
+<tr>
+<td>定子</td>
+<td>永磁体或线圈</td>
+<td>缠绕线圈</td>
+<td>缠绕线圈</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>步进电机（stepper motor、step motor）是直流无刷电机的一种。</p>
+</blockquote>
+<h4 id="_5">步进电机</h4>
+<p>步进电机采用开回路（open-loop)处理，不依赖出传感器或编码器，不需要位置检出和速度检出的回馈，可以脉冲信号进行运动。</p>
+<p>步进电机有三种，混合式比较常见。</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>永磁步进电机（PM）</th>
+<th>反应式步进电机（VR）</th>
+<th>混合式步进电机（HB）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>特点</td>
+<td>使用永磁体，步距角较大</td>
+<td>无永久磁场，依靠磁阻变化</td>
+<td>结合永磁和反应式优点，精度高</td>
+</tr>
+<tr>
+<td>转子</td>
+<td>永磁体</td>
+<td>软铁材料</td>
+<td>永磁体与软铁组合</td>
+</tr>
+<tr>
+<td>定子</td>
+<td>缠绕线圈</td>
+<td>缠绕线圈</td>
+<td>缠绕线圈</td>
+</tr>
+<tr>
+<td>精度</td>
+<td>中等</td>
+<td>较低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>扭矩</td>
+<td>较低</td>
+<td>较低</td>
+<td>较高</td>
+</tr>
+<tr>
+<td>复杂性</td>
+<td>简单</td>
+<td>简单</td>
+<td>复杂</td>
+</tr>
+<tr>
+<td>应用</td>
+<td>低成本、简单应用</td>
+<td>精度较低，适合基本定位</td>
+<td>高精度、高性能应用</td>
+</tr>
+</tbody>
+</table>
+<p>混合式步进电机有2相、3相、5相。其中2相电机步距角1.8°。</p>
+<p><img alt="step motor" src="https://blog.debao.me/images/motor/stepmotor.png"></p>
+<blockquote>
+<p>脉冲数决定了旋转角度，脉冲频率决定了旋转速度。</p>
+</blockquote>
+<h3 id="_6">同步电机、异步电机（感应电机）</h3>
+<p>同步电机（Synchronous Motor）和异步电机（Induction Motor）都是交流电机。它们都使用交流电源来运行，但在结构和工作原理上有所不同。</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>同步电机</th>
+<th>异步电机（感应电机）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>转速</td>
+<td>与电源频率同步</td>
+<td>低于电源频率</td>
+</tr>
+<tr>
+<td>效率</td>
+<td>高</td>
+<td>略低</td>
+</tr>
+<tr>
+<td>结构</td>
+<td>需要外部励磁（永磁或电枢）</td>
+<td>无需外部励磁</td>
+</tr>
+<tr>
+<td>启动</td>
+<td>较复杂</td>
+<td>简单</td>
+</tr>
+<tr>
+<td>转子</td>
+<td>永磁体或励磁绕组</td>
+<td>鼠笼式或绕线式</td>
+</tr>
+<tr>
+<td>定子</td>
+<td>缠绕线圈</td>
+<td>缠绕线圈</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_7">单相电机、三相电机</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>单相电机</th>
+<th>三相电机</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>电源类型</td>
+<td>单相交流</td>
+<td>三相交流</td>
+</tr>
+<tr>
+<td>结构</td>
+<td>简单</td>
+<td>复杂</td>
+</tr>
+<tr>
+<td>启动扭矩</td>
+<td>低，需要启动装置</td>
+<td>高，不需启动装置</td>
+</tr>
+<tr>
+<td>效率</td>
+<td>较低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>定子</td>
+<td>单相绕组</td>
+<td>三相绕组</td>
+</tr>
+<tr>
+<td>转子</td>
+<td>鼠笼式</td>
+<td>鼠笼式或绕线式</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="3phase motor" src="https://blog.debao.me/images/motor/motor-3phase.gif"></p>
+<p>根据转子结构不同，三相电机有：鼠笼式电机（Squirrel Cage Motor）和 绕线式（Wound Rotor Motor）</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>鼠笼式电机</th>
+<th>绕线式电机</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>结构</td>
+<td>转子由导条和短路环组成</td>
+<td>转子有绕组，连接滑环</td>
+</tr>
+<tr>
+<td>维护</td>
+<td>维护方便，无需电刷</td>
+<td>需要滑环和电刷维护</td>
+</tr>
+<tr>
+<td>启动特性</td>
+<td>启动电流大，转矩低</td>
+<td>启动转矩高，可调电阻</td>
+</tr>
+<tr>
+<td>复杂性</td>
+<td>结构简单</td>
+<td>结构较复杂</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="squirrel cage motor" src="https://blog.debao.me/images/motor/3motors_2.webp"></p>
+<h3 id="_8">伺服电机</h3>
+<blockquote>
+<p>伺服电机（Servomotor、Servo）不是特定类别的电机，尽管“伺服电机”这一术语通常用于指适用于闭环控制系统的电机。伺服电机是一个电机系统，它包含电机、传感器和控制器，使伺服电机能够实现精确的闭环控制。</p>
+</blockquote>
+<p>编码器的使用是伺服电机的关键特征之一，但并非所有伺服电机都一定内置编码器，某些系统可能采用外部传感器。</p>
+<p>提到伺服电机，经常遇到一个名词：舵机。</p>
+<h4 id="_9">舵机</h4>
+<p>“舵机” 其实是一个俗称，是玩航模、船模的人起的名字，因为这种电机常被用于舵面控制。舵机其实就是一个低端一点的伺服电机系统。舵机可以分为模拟舵机和数字舵机。</p>
+<p>舵机内部包含：一个小型直流电机，电位计，和一个控制电路。电机通过齿轮与控制轮相连，工作时，传入电信号，电机旋转时，电位计的电阻会发生变化，控制电路通过电阻变化来精确调节转动的角度，当输出轴角度位置恰好处于需要控制的位置时，电机停止转动。</p>
+<p><img alt="servo motor" src="https://blog.debao.me/images/motor/servomotor.png"></p>
+<p>舵机通常3根线：电源线，底线，控制信号线。如果控制信号线通过PWM进行控制，通过脉冲宽度（占空比）控制角度位置，脉冲宽度的变化变化控制运动速度。</p>
+<h3 id="_10">永磁电机、励磁电机、感应电机</h3>
+<p>根据转子磁场产生方式和结构不同？</p>
+<ul>
+<li>永磁电机（Permanent Magnet Motor）：使用永久磁体。</li>
+<li>励磁电机（Electrically Excited Motor）：通过电流在绕组中产生磁场。</li>
+<li>感应电机（Induction Motor）：通过电磁感应产生磁场。</li>
+</ul>
+<h3 id="_11">直线电机、旋转电机</h3>
+<p>直线电机，也叫做线性电机（linear motor）是一种将<strong>电能</strong>直接转换成<strong>直线运动机械能</strong>而不需要任何中间转换机构的传动装置。不同于旋转电机，它不是产生扭矩（旋转），而是沿其长度产生直线力。它可以看成是一台旋转电机按径向剖开，并展成平面而成。</p>
+<p><img alt="Linear motor" src="https://blog.debao.me/images/motor/linearmotorprinzip.png"></p>
+<p>直线电机种类基本与旋转电机对应</p>
+<table>
+<thead>
+<tr>
+<th>直线电机种类</th>
+<th>对应旋转电机种类</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>直线感应电机（LIM）</td>
+<td>感应电机（IM）</td>
+</tr>
+<tr>
+<td>直线同步电机（LSM）</td>
+<td>同步电机（SM）</td>
+</tr>
+<tr>
+<td>直线开关磁阻电机（LSRM）</td>
+<td>开关磁阻电机（SRM）</td>
+</tr>
+<tr>
+<td>直线步进电机（LSM）</td>
+<td>步进电机（SM）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_12">压电马达（压电陶瓷电机）</h2>
+<p>压电马达（piezoelectric motor、piezo motor）是一种利用压电效应驱动的电机，通过电压改变压电材料的形状来产生运动。</p>
+<p>压电马达大致可以分为三大类：</p>
+<ul>
+<li>共振马达（超声波驱动器），resonance-motors (ultrasonic drives)</li>
+<li>惯性马达（粘滑原理），inertia-motors (stick-slip principle)</li>
+<li>压电步行驱动器。piezo-walk drives</li>
+</ul>
+<h3 id="_13">共振马达</h3>
+<blockquote>
+<p>通过高频电压在压电材料中产生超声波振动，利用共振效应放大振动幅度，增加驱动力。</p>
+</blockquote>
+<p>共振马达分为：行波马达和驻波马达。</p>
+<h3 id="_14">惯性马达</h3>
+<blockquote>
+<p>惯性马达是一种利用压电效应和惯性原理进行运动的电机,通过快速的膨胀和收缩产生摩擦力，导致负载移动。</p>
+</blockquote>
+<h3 id="_15">压电步行马达</h3>
+<blockquote>
+<p>通过电压驱动压电材料，使其产生微小的机械运动。利用多个压电元件的协调动作，模拟步行方式推动负载。</p>
+</blockquote>
+<p><img alt="inchworm motor" src="https://blog.debao.me/images/motor/piezomotor_type_inchworm.gif"></p>
+<p><img alt="bimorph motor" src="https://blog.debao.me/images/motor/piezomotor_type_bimorph.gif"></p>
+<h2 id="_16">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/Electric_motor</li>
+<li>https://www.moonsindustries.com/article/basic-structure-and-operating-principle-of-stepper-motor</li>
+<li>https://en.wikipedia.org/wiki/Piezoelectric_motor</li>
+<li>https://www.pi-usa.us/en/tech-blog/overview-of-different-piezo-motor-design-principles</li>
+<li>https://www.163.com/dy/article/HEC3ISH505380ADU.html</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-08-14T23:10:00+08:00" pubdate>Wed 14 August 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

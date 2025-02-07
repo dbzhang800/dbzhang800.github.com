@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>聚焦离子束FIB小记（一） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/sem.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">聚焦离子束FIB小记（一）</h1>
+    <p class="meta">
+<time datetime="2024-11-22T20:23:00+08:00" pubdate>Fri 22 November 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>查查网上资料，稍作整理，简单记记流水账...</p>
+</blockquote>
+<h2 id="_1">一些术语</h2>
+<p>先抛开 FIB（Focused Ion Beam），熟悉一些离子束（包括宽束、非聚焦离子束）相关应用或设备术语</p>
+<ul>
+<li><strong>IBE (Ion Beam Etching)</strong>：离子束刻蚀，利用离子束轰击材料表面实现精细刻蚀或表面清洁。</li>
+<li><strong>IBD (Ion Beam Deposition)</strong>：离子束沉积，利用离子束将材料沉积到基底上，用于薄膜制备。</li>
+<li><strong>IBAD (Ion Beam Assisted Deposition)</strong>：离子束辅助沉积，结合离子束和物理气相沉积技术增强薄膜的附着力或调控薄膜性质。</li>
+<li><strong>Ion Implantation</strong>：离子注入，将高能离子束注入材料中，用于半导体掺杂或材料改性。</li>
+<li><strong>Ion Milling</strong>：离子束研磨（减薄），通过离子束轰击样品表面去除材料层，用于样品制备和平坦化。</li>
+<li><strong>Ion Beam Polishing</strong>：离子束抛光，通过离子束轰击去除样品表面粗糙层，获得高光滑度表面。</li>
+<li><strong>HIM (Helium Ion Microscopy)</strong>：氦离子显微镜，利用氦离子束进行超高分辨率成像，适合绝缘材料、生物样品及纳米级表面分析。</li>
+<li><strong>SIMS (Secondary Ion Mass Spectrometry)</strong>：二次离子质谱，利用离子束溅射样品表面产生的二次离子进行化学成分表征和深度分布分析。</li>
+<li><strong>IBIC (Ion Beam Induced Charge Imaging)</strong>：离子束诱导电荷成像，利用离子束激发样品中的电荷，用于半导体器件和材料的电性能分析。</li>
+<li><strong>PIXE (Particle-Induced X-ray Emission)</strong>：粒子诱导 X 射线发射，离子束轰击样品产生特征 X 射线，用于化学元素分析和成像。</li>
+<li><strong>STIM (Scanning Transmission Ion Microscopy)</strong>：扫描透射离子显微镜，利用聚焦离子束穿透样品，记录透射离子信号，用于样品厚度分析和成像。</li>
+<li><strong>Ion Beam Mixing</strong>：离子束混合，利用离子束轰击界面材料，实现界面扩散和结构调整。</li>
+<li><strong>IBL (Ion Beam Lithography)</strong>：离子束光刻，利用聚焦离子束在抗蚀剂上直接写图，用于纳米级图案化。</li>
+<li><strong>MeV Ion Beam Microprobe</strong>：兆电子伏（MeV）级离子束微探针，利用高能离子束分析样品微区的成分和结构，应用于 RBS、PIXE 和 NRA 的微区分析。</li>
+<li><strong>RBS (Rutherford Backscattering Spectrometry)</strong>：拉塞福背散射光谱，利用离子束与样品原子核的散射效应分析材料的层厚和元素分布。</li>
+<li><strong>ERD (Elastic Recoil Detection)</strong>：弹性后退探测分析，利用离子束轰击轻元素（如氢、氧）从样品中弹出，实现定量分析。</li>
+<li><strong>NRA (Nuclear Reaction Analysis)</strong>：核反应分析，利用离子束与特定元素发生核反应，测量其深度分布。</li>
+<li><strong>FIB-SEM Dual Beam Systems</strong>：聚焦离子束-扫描电子显微镜联合系统，结合 FIB 的精密加工和 SEM 的高分辨率成像，用于材料分析和样品制备。</li>
+</ul>
+<h2 id="fib">FIB供应商</h2>
+<p>Zeiss公司的John Notte在文章 <a href="https://www.researchgate.net/publication/319011951_Focused_Ion_Beams_for_Imaging_Analysis_and_Fabrication_-_Where_Did_They_Come_From_and_Where_are_They_Going">Focused Ion Beams for Imaging Analysis and Fabrication</a> 给出下面一个商业FIB供应商的时间线：</p>
+<p><img alt="timeline" src="https://blog.debao.me/images/sem/timeline_of_fib_providers.png"></p>
+<p>主要厂家：</p>
+<ul>
+<li>Thermo Fisher Scientific</li>
+<li>Hitachi</li>
+<li>Zeiss</li>
+<li>JEOL Ltd</li>
+<li>Tescan Group</li>
+<li>Raith</li>
+</ul>
+<blockquote>
+<p>注意：和半导体工艺中用到的离子注入机（Ion Implanter）厂家（AIBT、AMAT等）相区分。注入机一般都是高能、大面积、深层掺杂，不用FIB。</p>
+</blockquote>
+<p>文中还提到：与大多数 SEM 不同，衍射效应对 FIB 的聚焦探针尺寸几乎没有显著影响。FIB在给定的束流电流下探针的聚焦尺寸主要受离子源亮度的限制。FIB 能力的进步通常与离子源技术的发展密切相关。</p>
+<p>顺便看看历史</p>
+<h2 id="_2">历史</h2>
+<p>FIB用的离子源主要可分为：</p>
+<ul>
+<li>【<strong>LMIS</strong>】<strong>Ga⁺</strong> 液态金属离子源（Liquid Metal Ion Source）：最常见、成熟且广泛使用的离子源，适用于高精度应用。</li>
+<li>【<strong>GFIS</strong>】气体离子源（Gas Field-Ionization Source）：用于高分辨率应用，如氦离子显微镜（HIM）。</li>
+<li>【<strong>PFIB</strong>】等离子体离子源（Plasma Focus Ion Source）：适用于高束流电流（2uA）需求的应用，例如大规模材料去除。</li>
+</ul>
+<h3 id="2060">20世纪60年代：起源与早期探索</h3>
+<blockquote>
+<p>60年代离子束技术（<strong>Ion Beam Technology</strong>）的概念开始出现，科学家尝试利用离子束进行材料的加工与分析。  </p>
+</blockquote>
+<ul>
+<li><strong>1961年</strong>：Krohn 研究了带电液滴中离子的形成，并首次设计了基于液态金属的离子源（Liquid Metal Ion Source, <strong>LMIS</strong>），为现代 FIB 技术奠定了基础。</li>
+<li><strong>1964年</strong>：Taylor 提出了液体在电场中形成锥形（<strong>Taylor Cone</strong>）的模型，这是 LMIS 技术的核心原理。</li>
+</ul>
+<h3 id="1970">1970年代：气体离子源与液态金属离子源</h3>
+<h4 id="gas-field-ion-source-gfis">气体场离子源（Gas Field Ion Source, GFIS）</h4>
+<ul>
+<li><strong>1974年</strong>：Seliger 和 Fleming 在集成电路中首次使用气体离子源进行无掩模掺杂（<strong>Maskless Doping</strong>）和抗蚀剂曝光，但因电流密度较低和操作复杂，未得到广泛应用。</li>
+</ul>
+<ul>
+<li><strong>1975年</strong>：Orloff 和 Swanson 开发了高亮度的 GFIS，但其低温操作的限制阻碍了工业化推广。基于GFIS开发了首个FIB系统。</li>
+</ul>
+<h4 id="liquid-metal-ion-source-lmis">液态金属离子源（Liquid Metal Ion Source, LMIS）</h4>
+<ul>
+<li><strong>1974年</strong>：Krohn 演示了基于镓（Gallium, Ga）、锡（Tin, Sn）等液态金属的离子源，亮度高且易于操作，逐步成为 FIB 技术的主流方案。</li>
+<li><strong>1979年</strong>：Seliger 等人用 LMIS 成功实现了在硅基底上的纳米级图案化（如 0.1μm 宽的线条铣刻），标志着 <strong>FIB</strong> 技术在微纳加工（Nano-Fabrication）中的<strong>首次成功应用</strong>。</li>
+</ul>
+<h3 id="1980lmis">1980年代：LMIS优化</h3>
+<blockquote>
+<p>80年代 LMIS 技术逐渐成熟，被广泛应用于半导体制造（Semiconductor Manufacturing）和材料加工（Material Processing）。</p>
+</blockquote>
+<ul>
+<li><strong>1981年</strong>：Seliger 开发了基于 ExB 质量分离器（Mass Separator）的系统，用于掺杂不同的离子种类，这一技术被 JEOL 和 AT&amp;T 贝尔实验室进一步改进。</li>
+<li><strong>1985年</strong>：Orloff 和 Sudraud 设计了一种基于 LMIS 的离子束镜筒（Ion Optics Column），在光刻（Lithography）和注入应用中实现了 10nm 的分辨率。</li>
+</ul>
+<h3 id="1990fib">1990年代至今：FIB发展</h3>
+<h4 id="lmis">镓 LMIS 的主导地位</h4>
+<p>镓基 LMIS 成为 FIB 系统的核心技术，广泛应用于半导体失效分析（Failure Analysis）、样品制备（Sample Preparation）和微纳加工（Nano-Fabrication）。</p>
+<h4 id="_3">新型离子源的出现</h4>
+<ul>
+<li><strong>GFIS</strong> 气体场离子源（Gas Field Ion Source）复兴：氦离子显微镜（Helium Ion Microscope, HIM）基于 GFIS 技术，提供亚纳米级分辨率，适用于高分辨率成像（High-Resolution Imaging）。</li>
+<li><strong>PFIB</strong> 等离子离子源（Plasma Ion Source）：提供高束流电流（High Beam Current），适合大规模材料去除和粗加工。</li>
+<li><strong>激光离子源（Laser Ion Source）</strong>：提供低温单色离子束（Monochromatic Ion Beam），支持多种离子种类的新应用。</li>
+</ul>
+<h2 id="fib_1">FIB市场规模</h2>
+<blockquote>
+<p>网上搜到的各种市场分析报告，感觉很多都是在胡写，真假莫辨，不知道包含哪些种类设备。</p>
+</blockquote>
+<p>全球市场规模</p>
+<table>
+<thead>
+<tr>
+<th>报告日期</th>
+<th>出版商</th>
+<th>2023</th>
+<th>2024</th>
+<th>2028</th>
+<th>2029</th>
+<th>2030</th>
+<th>2031</th>
+<th>2032</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2022.12</td>
+<td>MarketsandMarkets</td>
+<td>13亿USD</td>
+<td>-</td>
+<td>18亿USD</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>2022.12</td>
+<td>KBV Research</td>
+<td>-</td>
+<td>-</td>
+<td>19亿USD</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>2023.2</td>
+<td>Polaris Market Research</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>15.56亿USD</td>
+</tr>
+<tr>
+<td>2024.1</td>
+<td>360iResearch</td>
+<td>14亿USD</td>
+<td>14.8亿USD</td>
+<td>-</td>
+<td>-</td>
+<td>23.4亿USD</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>2024.1</td>
+<td>Lucintel</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>16亿USD</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>2024.4</td>
+<td>IMARC</td>
+<td>10.44亿USD</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>17.15亿USD</td>
+</tr>
+<tr>
+<td>2024.2</td>
+<td>The Business Research Company</td>
+<td>12.6亿USD</td>
+<td>13.6亿USD</td>
+<td>18亿USD</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>2024.4</td>
+<td>贝哲斯咨询</td>
+<td>7.64亿USD</td>
+<td>-</td>
+<td>11.36亿USD</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>2024</td>
+<td>贝哲斯咨询</td>
+<td>71.43亿CNY</td>
+<td>-</td>
+<td>-</td>
+<td>88.11亿CNY</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>2024.11</td>
+<td>Business Research Inights</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>5.08亿USD</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>具体到FIB-SEM</p>
+<table>
+<thead>
+<tr>
+<th>报告日期</th>
+<th>出版商</th>
+<th>2023</th>
+<th>2024</th>
+<th>2028</th>
+<th>2029</th>
+<th>2030</th>
+<th>2031</th>
+<th>2032</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2023.8</td>
+<td>QYResearch</td>
+<td>5.96亿USD</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>7.49亿USD</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>2024.1</td>
+<td>Lucintel</td>
+<td>-</td>
+<td>7.39亿USD</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>2024</td>
+<td>辰宇信息</td>
+<td>38亿CNY</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>57亿CNY</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>按照 QYResearch，2023年数据：</p>
+<ul>
+<li>北美：   1.72亿USD</li>
+<li>亚太：   2.24亿USD</li>
+<li>欧洲：   1.72亿USD</li>
+</ul>
+<h2 id="fib_2">FIB分类？</h2>
+<h3 id="_4">按功能</h3>
+<ul>
+<li>蚀刻（Etching）：用于材料去除和微纳结构制造。</li>
+<li>沉积（Deposition）：用于局部材料添加和结构修复。</li>
+<li>注入（Implantation）：用于材料改性和半导体掺杂。</li>
+<li>成像（Imaging）：用于高分辨率表面成像和缺陷检测。</li>
+</ul>
+<p><img alt="fib" src="https://blog.debao.me/images/sem/basic_functions_of_fib_technology.png"></p>
+<p>图片来源：<a href="https://www.researchgate.net/publication/353893950_A_review_of_focused_ion_beam_applications_in_optical_fibers">A_review_of_focused_ion_beam_applications_in_optical_fibers</a></p>
+<h3 id="_5">按应用</h3>
+<ul>
+<li><strong>故障分析（Failure Analysis）</strong>：FIB 用于半导体和材料的失效分析（如电路开路、短路等），是当前最重要的应用之一。</li>
+<li>纳米制造（Nanofabrication）：FIB 可实现纳米级的精密加工，如纳米孔、纳米柱的制作。</li>
+<li>器件修改（Device Modification）：通过 FIB 修改现有器件的结构或性能，例如半导体器件的局部调整。</li>
+<li>电路编辑（Circuit Editing）：用于芯片设计中的电路功能修改或修复，尤其在芯片开发阶段。</li>
+<li>假冒检测（Counterfeit Detection）：用于验证电子元器件的真伪，通过对内部结构分析检测假冒产品。</li>
+</ul>
+<h3 id="_6">按行业</h3>
+<ul>
+<li><strong>电子与半导体</strong>：失效分析、晶圆修复、电路编辑是核心应用。</li>
+<li>工业科学：用于工业材料的表征和加工技术开发。</li>
+<li>生物科学：FIB 用于生物样品制备（如 TEM 生物薄片的制备）。</li>
+<li>材料科学：纳米制造、材料表征（如成分分析、结构分析）等。</li>
+</ul>
+<h2 id="_7">参考</h2>
+<ul>
+<li><a href="https://baijiahao.baidu.com/s?id=1812669612351403512">聚焦离子束（FIB）的技术史与商业演化</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/660311698">分析聚焦离子束fib系统的离子源技术的进步</a></li>
+<li><a href="https://fit4nano.eu/roadmap-for-focused-ion-beam-fib-technologies/">https://fit4nano.eu/roadmap-for-focused-ion-beam-fib-technologies/</a></li>
+<li><a href="https://www.researchgate.net/publication/319011951_Focused_Ion_Beams_for_Imaging_Analysis_and_Fabrication_-_Where_Did_They_Come_From_and_Where_are_They_Going">Focused Ion Beams for Imaging Analysis and Fabrication</a></li>
+<li>https://en.wikipedia.org/wiki/Focused_ion_beam</li>
+<li>https://www.globalmarketmonitor.com.cn/market_news/2914506.html</li>
+<li>https://en.wikipedia.org/wiki/Ion_implantation</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-11-22T20:23:00+08:00" pubdate>Fri 22 November 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/sem.html'>SEM</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/sem.html">SEM</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

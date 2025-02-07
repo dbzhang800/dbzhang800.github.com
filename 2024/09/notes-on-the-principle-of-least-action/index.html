@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>最小作用量原理小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/science.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">最小作用量原理小记</h1>
+    <p class="meta">
+<time datetime="2024-09-15T22:20:00+08:00" pubdate>Sun 15 September 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>胡乱整理一下，理理思绪。</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#_1">最小？作用量？原理？</a><ul>
+<li><a href="#_2">原理？</a></li>
+<li><a href="#_3">作用量？</a></li>
+<li><a href="#_4">最小？</a></li>
+</ul>
+</li>
+<li><a href="#_5">莫培督原理 与 哈密顿原理</a><ul>
+<li><a href="#_6">莫培督原理</a></li>
+<li><a href="#_7">哈密顿原理</a></li>
+</ul>
+</li>
+<li><a href="#_8">作用原理 与 牛顿定律</a><ul>
+<li><a href="#_9">拉格朗日力学</a></li>
+<li><a href="#_10">哈密顿力学</a></li>
+</ul>
+</li>
+<li><a href="#_11">路径积分 与 薛定谔方程</a><ul>
+<li><a href="#_12">薛定谔方程</a></li>
+<li><a href="#_13">积分路径</a></li>
+</ul>
+</li>
+<li><a href="#_14">泛函</a><ul>
+<li><a href="#function">函数（Function）</a><ul>
+<li><a href="#_15">区分函数与函数值</a></li>
+</ul>
+</li>
+<li><a href="#functional">泛函（Functional）</a><ul>
+<li><a href="#linear-functional">线性泛函（Linear Functional）</a></li>
+<li><a href="#calculus-of-variation">变分（Calculus of Variation）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_16">参考</a></li>
+</ul>
+</div>
+<h2 id="_1">最小？作用量？原理？</h2>
+<blockquote>
+<p>虽然这个原理历史上被称为“最小作用量原理（Principle of Least Action）”，或“最小作用原理”，但更准确的说法应该是“驻定作用量原理（Principle of Stationary Action）”，因为系统的路径不一定总是使作用量达到最小值，它可以是驻定值，可能是最小值、最大值或鞍点。为避免混淆，现在一般称呼“哈密顿原理”。</p>
+</blockquote>
+<ul>
+<li>最小（least）：<strong>不一定</strong>是最小值，还可能是最大值，或者鞍点值。</li>
+<li>作用量（action）：物理系统在某一段时间内的整体行为。为什么翻译成作用量，估计是借鉴的日语翻译？</li>
+<li>原理（principle）：经验总结出的广泛规则或假设，<strong>不需要严格证明</strong></li>
+</ul>
+<p>分别看看</p>
+<h3 id="_2">原理？</h3>
+<blockquote>
+<p>作为对自然现象的一种特别有效的描述方式，最小作用量原理在其发展史上曾被赋予各种神秘特性或目的论（Teleology /ˌtiːliˈɒlədʒi/）色彩。目的论是一种哲学思想，认为自然界中的事物或过程是朝着某种“目的”进行的。在最小作用量原理的语境中，目的论的含义可以理解为：自然界中的物理系统会选择一种特定的路径或演化方式（上帝创造自然界时的设计），以实现某种“最优”或“最小”的状态。</p>
+</blockquote>
+<p>有好多词，经常出现，似乎挺容易混的。不过本来也没有严格定义，很多时候界限也不明确</p>
+<table>
+<thead>
+<tr>
+<th>中文概念</th>
+<th>英文名称</th>
+<th>音标</th>
+<th>...</th>
+<th>证明性</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>原理</strong></td>
+<td><strong>Principle</strong></td>
+<td>/ˈprɪnsɪpəl/</td>
+<td>经验总结出的广泛规则或假设</td>
+<td>不需要严格证明</td>
+<td>最小作用量原理、费马原理</td>
+</tr>
+<tr>
+<td><strong>公理</strong></td>
+<td><strong>Axiom</strong></td>
+<td>/ˈæksiəm/</td>
+<td>理论体系中的基本假设或前提，无需证明</td>
+<td>不需要证明</td>
+<td>欧几里得几何的平行公理</td>
+</tr>
+<tr>
+<td><strong>定理</strong></td>
+<td><strong>Theorem</strong></td>
+<td>/ˈθɪərəm/</td>
+<td>通过逻辑推理，从公理或其他定理推导出的结论</td>
+<td>需要严格证明</td>
+<td>勾股定理、费马小定理</td>
+</tr>
+<tr>
+<td><strong>定律</strong></td>
+<td><strong>Law</strong></td>
+<td>/lɔː/</td>
+<td>对自然界现象的普遍性描述，通常基于实验和观察</td>
+<td>不需要证明，但需验证</td>
+<td>牛顿运动定律、热力学第一定律、欧姆定律</td>
+</tr>
+<tr>
+<td><strong>假设</strong></td>
+<td><strong>Hypothesis</strong></td>
+<td>/haɪˈpɒθɪsɪs/</td>
+<td>对某个现象或问题的暂时性解释或假定，等待验证</td>
+<td>需要验证或证伪</td>
+<td>进化假设、宇宙膨胀假设</td>
+</tr>
+<tr>
+<td><strong>猜想</strong></td>
+<td><strong>Conjecture</strong></td>
+<td>/kənˈdʒɛktʃər/</td>
+<td>基于观察或直觉提出的命题，尚未被证明</td>
+<td>需要证明或证伪</td>
+<td>哥德巴赫猜想、庞加莱猜想</td>
+</tr>
+<tr>
+<td><strong>模型</strong></td>
+<td><strong>Model</strong></td>
+<td>/ˈmɒdəl/</td>
+<td>用于解释、预测或模拟某些现象的简化系统或结构</td>
+<td>不需要严格证明，但需验证</td>
+<td>原子模型、气体分子运动模型</td>
+</tr>
+<tr>
+<td><strong>假说</strong></td>
+<td><strong>Postulate</strong></td>
+<td>/ˈpɒstʃʊlɪt/</td>
+<td>在理论体系中被假定为真的陈述，通常用作推导其他结论的基础</td>
+<td>不需要证明</td>
+<td>狭义相对论的光速不变假说</td>
+</tr>
+<tr>
+<td><strong>推论</strong></td>
+<td><strong>Corollary</strong></td>
+<td>/ˈkɒrəlɛri/</td>
+<td>从一个已证明的定理或命题直接得出的结论</td>
+<td>基于已知定理的证明</td>
+<td>勾股定理的推论：等腰直角三角形的斜边与直角边的比例为 √2</td>
+</tr>
+<tr>
+<td><strong>定则</strong></td>
+<td><strong>Rule</strong></td>
+<td>/ruːl/</td>
+<td>特定领域的经验性总结，用于描述某类现象的行为模式或操作方式</td>
+<td>通常不需要严格证明</td>
+<td>克拉默定则</td>
+</tr>
+<tr>
+<td><strong>效应</strong></td>
+<td><strong>Effect</strong></td>
+<td>/ɪˈfɛkt/</td>
+<td>特定条件下的因果关系现象，通常是实验观察中的结果</td>
+<td>不需要证明，但需验证</td>
+<td>多普勒效应、光电效应</td>
+</tr>
+</tbody>
+</table>
+<p>怎么能图形化显示一下？，chatgpt给出下面一个表，凑活看一下</p>
+<div class="mermaid">
+graph TD
+    A[理论基础] -->|公理| C[Axiom]
+    A -->|原理| I[Principle]
+    A -->|假说| K[Postulate]
+    A -->|假设| B[Hypothesis]
+
+    B -->|验证/证伪| D[Theory/Model]
+    B -->|未验证| J[Conjecture]
+
+    C -->|推导| E[Theorem]
+    E -->|直接推导| F[Corollary]
+
+    D -->|总结| G[Law]
+    D -->|简化描述| H[Model]
+
+    D -->|具体现象| L[Effect]
+    G -->|特定场景应用| M[Rule]
+</div>
+
+<h3 id="_3">作用量？</h3>
+<blockquote>
+<p>Action 作用量？？？ 神奇的翻译，Action为什么翻译成作用量，源于日语翻译？？</p>
+</blockquote>
+<p>作用量的核心思想是：它是某个物理系统在一定时间间隔内经历的运动的整体度量。</p>
+<p>取决于所研究的系统和使用的理论框架，作用量在不同的物理学理论中有不同的形式：</p>
+<ul>
+<li>莫培督的定义：作用量是动量与路径长度的积分。【简略作用量（泛函）】</li>
+<li>经典力学：作用量等于拉格朗日量在时间上的积分。【作用量（泛函）】</li>
+<li>哈密顿力学：作用量可以表示为动量和广义坐标的积分。</li>
+<li>广义相对论：爱因斯坦-希尔伯特作用量用于描述引力场的动态行为。</li>
+<li>费曼路径积分：作用量用于描述所有可能路径的概率幅。</li>
+<li>杨-米尔斯理论：作用量用于描述规范场的行为。</li>
+<li>场论：作用量通过拉格朗日密度在时空上的积分来定义。</li>
+</ul>
+<h3 id="_4">最小？</h3>
+<p>最小 到 驻点 演变：</p>
+<ul>
+<li>最小作用原理：最早由莫培督提出，认为物理系统沿着使作用量最小的路径演化。这一思想也体现在费马的最小时间原理中。</li>
+<li>拉格朗日力学：拉格朗日通过动能和势能的差来定义作用量，并基于最小作用原理导出了经典力学的运动方程。</li>
+<li>变分法的发展：随着数学变分法的发展，物理学家意识到系统的实际路径并不总是最小作用量的路径，而是驻定作用量的路径。</li>
+<li>驻点作用原理：最终导致了从“最小作用原理”到“驻点作用原理”的演变。</li>
+</ul>
+<h2 id="_5">莫培督原理 与 哈密顿原理</h2>
+<p>最小作用原理名字不够准确，一般用“哈密顿原理”称呼。而莫培督提出的最小作用量原理，用“莫培督原理”称呼。</p>
+<h3 id="_6">莫培督原理</h3>
+<p><strong>莫培督原理</strong>（Maupertuis's Principle）表述如下：</p>
+<p>对于一个物理系统，其真实运动轨迹是在<strong>固定能量</strong>条件下，使得某种物理量（称为<strong>作用量</strong>）达到极小值的轨迹。莫培督原理适用于描述系统在空间中的路径，并通过动量和位移的关系来表达。</p>
+<p>作用量 <span class="math inline">W</span> 定义为：</p>
+<div class="math display">
+W = \int_{x_1}^{x_2} p \, dx = \int_{x_1}^{x_2} mv \, ds
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">p = mv</span> 是系统的动量，</li>
+<li><span class="math inline">v</span> 是系统的速度，</li>
+<li><span class="math inline">m</span> 是系统的质量，</li>
+<li><span class="math inline">ds</span> 是沿路径的微小位移。</li>
+</ul>
+<p>莫培督原理指出，系统的真实路径是使作用量 <span class="math inline">W</span> 取极小值的路径。这意味着系统选择的运动轨迹使得动量 <span class="math inline">p</span> 与位移 <span class="math inline">ds</span> 的积分最小化。在数学上，这可以表述为：</p>
+<div class="math display">
+(\delta W)_E = 0
+</div>
+
+<p>这里，<span class="math inline">E</span> 表示系统的总能量保持不变。</p>
+<p>换句话说，物理系统在固定能量下选择的路径是使动量与位移的乘积积分最小的路径，即系统在空间中“节约”它的运动。</p>
+<h3 id="_7">哈密顿原理</h3>
+<p><strong>哈密顿原理</strong>（Hamilton's Principle）表述如下：</p>
+<p>对于一个由广义坐标 <span class="math inline">q = (q_1, q_2, ..., q_N)</span> 描述的物理系统，其在两个给定时刻 <span class="math inline">t_1</span> 和 <span class="math inline">t_2</span> 之间的真实演化轨迹 <span class="math inline">q(t)</span> 是使得<strong>作用量</strong>（Action）泛函 <span class="math inline">S[q]</span> 取驻值（通常为极值）的轨迹。作用量 <span class="math inline">S[q]</span> 由系统的<strong>拉格朗日量</strong> <span class="math inline">L(q, \dot{q}, t)</span> 随时间的积分定义：</p>
+<div class="math display">
+S[q] = \int_{t_1}^{t_2} L(q(t), \dot{q}(t), t) \, dt
+</div>
+
+<p>哈密顿原理指出，物理系统的真实演化轨迹满足以下条件：在固定的边界条件（即在 <span class="math inline">t_1</span> 和 <span class="math inline">t_2</span> 的时刻，系统的状态 <span class="math inline">q(t_1)</span> 和 <span class="math inline">q(t_2)</span> 是固定的）下，作用量 <span class="math inline">S[q]</span> 对轨迹 <span class="math inline">q(t)</span> 的一阶变分为零：</p>
+<div class="math display">
+\frac{\delta S}{\delta q(t)} = 0
+</div>
+
+<p>换句话说，系统的真实运动轨迹是作用量泛函的<strong>驻定点</strong>，也就是系统所选择的路径使得作用量在所有可能路径中取极值（通常是最小值）。</p>
+<h2 id="_8">作用原理 与 牛顿定律</h2>
+<p>在经典力学中，作用原理和牛顿定律是两种不同的理论框架，虽然它们的数学表述和逻辑基础不同，但它们在结果上是等价的。</p>
+<ul>
+<li><strong>牛顿力学</strong>：直观、简单，适用于质点和刚体等简单系统。</li>
+<li><strong>拉格朗日力学</strong>：适合处理复杂约束系统，通过最小作用原理描述运动。</li>
+<li><strong>哈密顿力学</strong>：更抽象，适用于经典和量子力学，广泛应用于现代物理学。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>特性</strong></th>
+<th><strong>牛顿力学</strong></th>
+<th><strong>拉格朗日力学</strong></th>
+<th><strong>哈密顿力学</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>基本方程</strong></td>
+<td><span class="math inline">F = ma</span></td>
+<td><span class="math inline">\frac{d}{dt} \left( \frac{\partial L}{\partial \dot{q}_i} \right) = \frac{\partial L}{\partial q_i}</span></td>
+<td><span class="math inline">\dot{q}_i = \frac{\partial H}{\partial p_i}, \quad \dot{p}_i = -\frac{\partial H}{\partial q_i}</span></td>
+</tr>
+<tr>
+<td><strong>变量</strong></td>
+<td>位置<span class="math inline">r(t)</span>，速度 <span class="math inline">v(t)</span></td>
+<td>广义坐标<span class="math inline">q_i(t)</span>，广义速度 <span class="math inline">\dot{q}_i(t)</span></td>
+<td>广义坐标<span class="math inline">q_i(t)</span>，共轭动量 <span class="math inline">p_i(t)</span></td>
+</tr>
+<tr>
+<td><strong>描述对象</strong></td>
+<td>通过<strong>力</strong>和<strong>加速度</strong>描述运动</td>
+<td>通过<strong>拉格朗日量</strong> <span class="math inline">L = T - V</span> 描述运动</td>
+<td>通过<strong>哈密顿量</strong> <span class="math inline">H = T + V</span> 描述运动</td>
+</tr>
+<tr>
+<td><strong>数学框架</strong></td>
+<td>基于牛顿第二定律的<strong>微分方程</strong></td>
+<td>基于<strong>最小作用原理</strong>的变分法，推导运动方程</td>
+<td>基于正则方程，使用广义坐标和共轭动量</td>
+</tr>
+<tr>
+<td><strong>优势</strong></td>
+<td>概念直观，适用于简单系统</td>
+<td>能处理复杂、多粒子、约束系统</td>
+<td>提供更抽象广泛的框架，适用于经典和量子系统</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_9">拉格朗日力学</h3>
+<p>在牛顿力学的基础上，达朗贝尔原理和虚功原理被提出，用以处理有约束的系统。</p>
+<ul>
+<li>达朗贝尔原理（D'Alembert's Principle）指出，对于有约束的系统，真正的受力和约束力之间存在一种平衡关系，使得系统的虚位移不做功。</li>
+<li>虚功原理（Principle of Virtual Work）为引入广义坐标奠定了基础。通过广义坐标 <span class="math inline"> q_i </span> 和广义速度 <span class="math inline"> \dot{q}_i </span> ，可以将系统的自由度进行重新表述，进而简化约束系统的分析。</li>
+</ul>
+<p>约瑟夫·拉格朗日基于上述原理，提出了一个新的动力学描述方式：<strong>拉格朗日力学</strong>。</p>
+<p>他引入了一个新的函数，称为<strong>拉格朗日量（Lagrangians）</strong> <span class="math inline"> L </span> ，它是系统动能 <span class="math inline"> T </span> 和势能 <span class="math inline"> V </span> 的差：</p>
+<div class="math display">
+L = T - V
+</div>
+
+<p>其中：</p>
+<ul>
+<li>T 是系统的动能，通常表示为 <span class="math inline"> T = \frac{1}{2} m \dot{q}^2 </span> 。</li>
+<li>V 是系统的势能，表示为 <span class="math inline"> V = V(q) </span> ，它依赖于系统的位置。</li>
+</ul>
+<p>拉格朗日量的引入与<strong>最小作用原理</strong>密切相关。最小作用原理指出，物理系统的演化路径是使得总作用量 <span class="math inline"> S </span> 取极值（通常是最小值）的路径。作用量 <span class="math inline"> S </span> 是拉格朗日量在时间上的积分：</p>
+<div class="math display">
+S = \int_{t_1}^{t_2} L \, dt
+</div>
+
+<p>通过对作用量 <span class="math inline"> S </span> 取变分 <span class="math inline"> \delta S = 0 </span>，可以得到系统的运动方程。这一过程称为<strong>变分法</strong>，最终推导出<strong>欧拉-拉格朗日方程</strong>：</p>
+<div class="math display">
+\frac{d}{dt} \left( \frac{\partial L}{\partial \dot{q}} \right) - \frac{\partial L}{\partial q} = 0
+</div>
+
+<p>欧拉-拉格朗日方程是拉格朗日力学的核心方程，它取代了牛顿的运动方程，给出了物理系统的更一般的运动描述。</p>
+<h3 id="_10">哈密顿力学</h3>
+<p><strong>哈密顿力学</strong>是经典力学的一种重要表述方式，由<strong>威廉·哈密顿</strong>（William Rowan Hamilton）在1833年提出。它与拉格朗日力学一样，基于<strong>最小作用量原理</strong>，但通过引入新的变量——<strong>哈密顿量</strong>（Hamiltonian）和<strong>正则共轭变量</strong>，为描述物理系统提供了一个更加对称、通用的框架。这种形式在现代物理学，尤其是量子力学和统计力学中，具有广泛的应用。</p>
+<p>在哈密顿力学中，系统的状态由一组<strong>广义坐标</strong> <span class="math inline">q_i</span> 和与之共轭的<strong>广义动量</strong> <span class="math inline">p_i</span> 描述。哈密顿力学的核心是<strong>哈密顿量</strong> <span class="math inline">H(q, p, t)</span>，它通常是系统的<strong>总能量</strong>，即动能与势能的和。</p>
+<ul>
+<li><strong>广义坐标</strong> <span class="math inline">q_i</span>：描述系统的配置或位置。</li>
+<li><strong>广义动量</strong> <span class="math inline">p_i</span>：与 <span class="math inline">q_i</span> 共轭的动量，定义为拉格朗日量 <span class="math inline">L</span> 对广义速度 <span class="math inline">\dot{q}_i</span> 的偏导数：</li>
+</ul>
+<div class="math display">
+p_i = \frac{\partial L}{\partial \dot{q}_i}
+</div>
+
+<ul>
+<li><strong>哈密顿量</strong> <span class="math inline">H(q, p, t)</span>：系统的总能量函数，定义为拉格朗日量 <span class="math inline">L</span> 的勒让德变换（Legendre Transform）：</li>
+</ul>
+<div class="math display">
+H(q, p, t) = \sum_i p_i \dot{q}_i - L(q, \dot{q}, t)
+</div>
+
+<p>哈密顿力学的核心是<strong>哈密顿方程（Hamilton's Equations）</strong>，也叫做正则方程，它描述了系统随时间的演化。哈密顿方程由一组一阶微分方程组成，给出了广义坐标和广义动量随时间的变化：</p>
+<div class="math display">
+\dot{q}_i = \frac{\partial H}{\partial p_i}, \quad \dot{p}_i = -\frac{\partial H}{\partial q_i}
+</div>
+
+<ul>
+<li><span class="math inline">\dot{q}_i = \frac{\partial H}{\partial p_i}</span>：广义坐标的变化等于哈密顿量对广义动量的偏导数。</li>
+<li><span class="math inline">\dot{p}_i = -\frac{\partial H}{\partial q_i}</span>：广义动量的变化等于哈密顿量对广义坐标的负偏导数。</li>
+</ul>
+<p>哈密顿力学与拉格朗日力学是经典力学的两种等价表述。拉格朗日力学使用<strong>广义坐标</strong> <span class="math inline">q_i</span> 和<strong>广义速度</strong> <span class="math inline">\dot{q}_i</span> 来描述系统，而哈密顿力学则使用<strong>广义坐标</strong> <span class="math inline">q_i</span> 和<strong>广义动量</strong> <span class="math inline">p_i</span>。</p>
+<ul>
+<li>在拉格朗日力学中，运动方程由<strong>欧拉-拉格朗日方程</strong>给出：</li>
+</ul>
+<div class="math display">
+\frac{d}{dt} \left( \frac{\partial L}{\partial \dot{q}_i} \right) - \frac{\partial L}{\partial q_i} = 0
+</div>
+
+<ul>
+<li>在哈密顿力学中，这些二阶微分方程被转化为一组一阶的哈密顿方程：</li>
+</ul>
+<div class="math display">
+\dot{q}_i = \frac{\partial H}{\partial p_i}, \quad \dot{p}_i = -\frac{\partial H}{\partial q_i}
+</div>
+
+<p>这两个表述方式实际上是等价的，但哈密顿力学在某些问题中提供了更大的便利和对称性。</p>
+<h2 id="_11">路径积分 与 薛定谔方程</h2>
+<p>薛定谔方程可以通过费曼的路径积分表述重新解释，路径积分方法被认为是一种更具普遍性的量子力学框架，它与薛定谔方程等价。</p>
+<table>
+<thead>
+<tr>
+<th><strong>对比维度</strong></th>
+<th><strong>薛定谔方程</strong></th>
+<th><strong>路径积分表述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>历史背景</strong></td>
+<td>由薛定谔提出，基于波动力学理论</td>
+<td>由费曼提出，基于狄拉克的量子作用思想</td>
+</tr>
+<tr>
+<td><strong>数学形式</strong></td>
+<td>偏微分方程</td>
+<td>路径积分，即对所有可能路径的求和</td>
+</tr>
+<tr>
+<td><strong>物理意义</strong></td>
+<td>描述波函数的时间演化，给出概率幅</td>
+<td>对所有可能路径的干涉进行求和，给出传播振幅</td>
+</tr>
+<tr>
+<td><strong>计算方法</strong></td>
+<td>通过求解微分方程得到波函数</td>
+<td>通过对路径积分得到传播子</td>
+</tr>
+<tr>
+<td><strong>经典极限</strong></td>
+<td>WKB近似，经典轨迹</td>
+<td>经典路径的贡献最大，符合最小作用原理</td>
+</tr>
+<tr>
+<td><strong>直观性</strong></td>
+<td>波函数较为抽象</td>
+<td>强调所有可能路径的叠加，直观反映量子态的干涉效应</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_12">薛定谔方程</h3>
+<p>薛定谔方程是量子力学的基本方程，用来描述系统的波函数 <span class="math inline"> \psi(\mathbf{r}, t) </span> 随时间的演化。对于一个非相对论、无自旋的单粒子系统，薛定谔方程为：</p>
+<div class="math display">
+i\hbar \frac{\partial}{\partial t} \psi(\mathbf{r}, t) = \hat{H} \psi(\mathbf{r}, t)
+</div>
+
+<p>其中 <span class="math inline"> \hat{H} </span> 是哈密顿算符，通常包含动能和势能部分：</p>
+<div class="math display">
+\hat{H} = -\frac{\hbar^2}{2m} \nabla^2 + V(\mathbf{r}, t)
+</div>
+
+<p>这个方程描述了粒子的波函数随时间的演化，给出量子态的时间演化规则。</p>
+<h3 id="_13">积分路径</h3>
+<p>传播子可以写成：</p>
+<div class="math display">
+K(\mathbf{r}_2, t_2; \mathbf{r}_1, t_1) = \int \mathcal{D}[\mathbf{r}(t)] \exp \left( \frac{i}{\hbar} S[\mathbf{r}(t)] \right)
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline"> \mathcal{D}[\mathbf{r}(t)] </span> 表示对所有可能路径 <span class="math inline"> \mathbf{r}(t) </span> 的积分。</li>
+<li><span class="math inline"> S[\mathbf{r}(t)] </span> 是路径上的<strong>作用量</strong>，由拉格朗日量 <span class="math inline"> L </span> 对时间的积分给出：</li>
+</ul>
+<div class="math display">
+S[\mathbf{r}(t)] = \int_{t_1}^{t_2} L(\mathbf{r}(t), \dot{\mathbf{r}}(t)) dt
+</div>
+
+<p>对于一个经典的粒子，拉格朗日量为：</p>
+<div class="math display">
+L(\mathbf{r}, \dot{\mathbf{r}}) = \frac{m}{2} \dot{\mathbf{r}}^2 - V(\mathbf{r})
+</div>
+
+<p>因此，路径积分表述将粒子的传播振幅 <span class="math inline"> K(\mathbf{r}_2, t_2; \mathbf{r}_1, t_1) </span> 解释为所有可能路径对的贡献，其中每条路径的贡献由经典作用量 <span class="math inline"> S[\mathbf{r}(t)] </span> 决定。</p>
+<h2 id="_14">泛函</h2>
+<p><strong>泛函</strong>是函数的一个推广。泛函是“函数的函数”（注意不同于复合函数）。</p>
+<h3 id="function">函数（Function）</h3>
+<blockquote>
+<p>Function 为什么翻译成“函数”？<strong>函</strong>原意是“信函”或“封套”的意思，表示包裹、包含或传递信息。在数学中，“函” 引申为“包含某种关系的映射”。<strong>数</strong>表示数字或数值。</p>
+</blockquote>
+<p><strong>函数</strong>是一种数学映射，它将一个数或一组数映射到另一个数。更形式化地说，函数是定义在某个集合上的一种规则，它将集合中的每一个元素映射到另一个集合中的唯一一个元素。</p>
+<p>如果 <span class="math inline">x</span> 是一个变量，<span class="math inline">f(x)</span> 是一个函数，则函数 <span class="math inline">f</span> 是将变量 <span class="math inline">x</span> 映射到一个值的规则，通常写作：</p>
+<div class="math display">
+y = f(x)
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">x</span> 是函数的输入（自变量），</li>
+<li><span class="math inline">y</span> 是函数的输出（因变量）。</li>
+</ul>
+<h4 id="_15">区分函数与函数值</h4>
+<ul>
+<li>函数是一种映射关系。（注：20世纪初，大家默认函数=公式？）</li>
+<li>函数值是一个数值。</li>
+</ul>
+<h3 id="functional">泛函（Functional）</h3>
+<p><strong>泛函</strong>是函数的一个推广。与函数不同的是，<strong>泛函的输入是一个函数，输出是一个标量</strong>。简而言之，泛函是“函数的函数”。</p>
+<p>如果 <span class="math inline">f(x)</span> 是一个函数，泛函 <span class="math inline">S</span> 是一个将**函数 <span class="math inline">f(x)`** 映射到一个**标量**的规则。通常，泛函的形式为一个涉及函数 $`f</span> 及其导数的积分表达式：</p>
+<div class="math display">
+S[f] = \int_{a}^{b} F(x, f(x), f'(x)) \, dx
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">f(x)</span> 是泛函的输入，</li>
+<li><span class="math inline">S[f]</span> 是泛函的输出，是一个标量，</li>
+<li><span class="math inline">F(x, f(x), f'(x))</span> 是一个包含 <span class="math inline">x</span>、<span class="math inline">f(x)</span> 和 <span class="math inline">f'(x)</span> 的函数，</li>
+<li><span class="math inline">a</span> 和 <span class="math inline">b</span> 是积分的上下限。</li>
+</ul>
+<p><strong>泛函的输入是一个函数，输出是一个数值（标量）</strong>。</p>
+<h4 id="linear-functional">线性泛函（Linear Functional）</h4>
+<p><strong>线性泛函</strong>是泛函的一种特殊形式，它是<strong>线性映射</strong>，将<strong>向量空间中的向量（函数）映射到实数或复数</strong>。简单来说，线性泛函是作用在向量空间上的线性函数，并且输出是一个标量。</p>
+<p>设 <span class="math inline">V</span> 是一个<strong>向量空间</strong>，其中的元素可以是向量或函数。一个<strong>线性泛函</strong> <span class="math inline">L</span> 是定义在 <span class="math inline">V</span> 上的一个映射，它将 <span class="math inline">V</span> 中的每个元素 <span class="math inline">v</span> 映射到一个标量（通常是实数或复数）上，并且满足以下两个性质：</p>
+<ul>
+<li><strong>齐次性</strong>（Homogeneity）：对于任意的标量 <span class="math inline">a</span> 和向量 <span class="math inline">v \in V</span>，有：</li>
+</ul>
+<div class="math display">
+  L(a v) = a L(v)
+</div>
+
+<ul>
+<li><strong>可加性</strong>（Additivity）：对于任意的向量 <span class="math inline">v_1, v_2 \in V</span>，有：</li>
+</ul>
+<div class="math display">
+  L(v_1 + v_2) = L(v_1) + L(v_2)
+</div>
+
+<p>这两个性质合起来就是<strong>线性性质</strong>，因此这种类型的泛函就是<strong>线性泛函</strong>。</p>
+<h4 id="calculus-of-variation">变分（Calculus of Variation）</h4>
+<p>变分与泛函之间的关系可以类比为<strong>微分与函数</strong>的关系：</p>
+<ul>
+<li><strong>函数与微分</strong>：对于普通的函数 <span class="math inline">f(x)</span>，其微分描述了在 <span class="math inline">x</span> 发生微小变化时，函数 <span class="math inline">f(x)</span> 如何变化。</li>
+</ul>
+<div class="math display">
+df = \frac{df}{dx} \, dx
+</div>
+
+<ul>
+<li><strong>泛函与变分</strong>：对应地，对于泛函 <span class="math inline">S[f]</span>，其变分描述了在输入的函数 <span class="math inline">f(x)</span> 发生微小变化时，泛函 <span class="math inline">S[f]</span> 如何变化。</li>
+</ul>
+<p>设 <span class="math inline">f(x)</span> 是函数，<span class="math inline">\eta(x)</span> 是一个小扰动函数，<span class="math inline">\epsilon</span> 是一个非常小的实数，则 <span class="math inline">f(x) + \epsilon \eta(x)</span> 表示 <span class="math inline">f(x)</span> 的微小变化。在这种情况下，泛函 <span class="math inline">S[f]</span> 的变分定义为：</p>
+<div class="math display">
+\delta S[f] = \lim_{\epsilon \to 0} \frac{S[f + \epsilon \eta] - S[f]}{\epsilon}
+</div>
+
+<p>这个变化量 <span class="math inline">\delta S[f]</span> 就是泛函 <span class="math inline">S[f]</span> 的<strong>变分</strong>（变分也是一个函数）。</p>
+<h2 id="_16">参考</h2>
+<ul>
+<li>许良 《最小作用量原理与物理学的发展》</li>
+<li>https://en.wikipedia.org/wiki/Action_principles</li>
+<li>https://en.wikipedia.org/wiki/History_of_variational_principles_in_physics</li>
+<li>https://en.wikipedia.org/wiki/Hamilton%27s_principle</li>
+<li>https://en.wikipedia.org/wiki/Calculus_of_variations</li>
+</ul>
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+</script></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-09-15T22:20:00+08:00" pubdate>Sun 15 September 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/science.html'>Science</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

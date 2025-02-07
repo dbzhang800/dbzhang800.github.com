@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>现代CMake学习笔记（二） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">现代CMake学习笔记（二）</h1>
+    <p class="meta">
+<time datetime="2023-12-02T12:04:00+08:00" pubdate>Sat 02 December 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><p>接<a href="https://blog.debao.me/2023/11/modern-cmake-study-notes-part1/">现代CMake学习笔记（一）</a>，捋一捋CMake中的一些容易被忽略的问题。先列一下本文内容，然后再就用一个最简单的C++例子，看看能发散多少</p>
+<p>知识点：</p>
+<ul>
+<li><code>cmake -h</code> 查看生成器列表与默认值。<code>-G</code> 用于选择生成器</li>
+<li><code>cmake --build .</code> 隐藏不同生成器的执行差异</li>
+<li><code>-S</code> <code>-B</code> 与 <code>--build</code>  实现了在源码目录下直接执行out-of-source-build，不需要切换目录</li>
+<li>务必为 cmake指定构建类型 ，如果你不喜欢薛定谔的猫的话。它默认<strong>既不是</strong>Release<strong>也不是</strong>Debug</li>
+<li>Debug和Release的选择，区分单配置和多配置的生成器。单配置在config时指定，多配置在build时指定</li>
+</ul>
+<p>以上几点合并起来——如果我要编译release版本程序，且生成产物放置到<code>my-release-dir</code>下，只需要在源码目录下执行如下命令：</p>
+<ul>
+<li>对单配置生成器（以Ninja为例）</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>my-release-dir<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release
+cmake<span class="w"> </span>--build<span class="w"> </span>my-release-dir
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>对多配置生成器（以Visual Studio 16 2019为例）</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>my-release-dir<span class="w"> </span>-G<span class="w"> </span><span class="s2">&quot;Visual Studio 16 2019&quot;</span>
+cmake<span class="w"> </span>--build<span class="w"> </span>my-release-dir<span class="w"> </span>--config<span class="w"> </span>Release
+</code></pre></div></td></tr></table></div>
+
+<p>言归正传，如下正文：</p>
+<h2 id="cmake">CMake简单使用？使用简单？</h2>
+<p>CMake用起来很简单，只需要写一个代码文件和工程文件：</p>
+<ul>
+<li>main.cpp 文件</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;Hi 1+1=10 ...</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>CMakeLists.txt</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">project</span><span class="p">(</span><span class="s">simple-test</span><span class="p">)</span>
+<span class="nb">add_executable</span><span class="p">(</span><span class="s">hello</span><span class="w"> </span><span class="s">main.cpp</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>然后就可以放飞自我，在众多平台下构建了：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>cmake<span class="w"> </span>.
+cmake<span class="w"> </span>--build<span class="w"> </span>.
+</code></pre></div></td></tr></table></div>
+
+<p>这时得到一个名为<code>hello</code>可执行程序，任务完成。</p>
+<ul>
+<li>第一条命令：为make生成Makefile文件或为其他工具生成工程文件，生成在当前目录下</li>
+<li>第二条命令：调用make或其他工具，在当前目录进行构建</li>
+</ul>
+<p>就这么简单！</p>
+<p>就这么简单？？不妨看看这里面到底有多少注意点...</p>
+<h2 id="make-cmake-build">make? cmake --build?</h2>
+<p>在上面的例子中，我们使用了<code>cmake --build .</code> 而不是直接 <code>make</code>。明明下面这样更简单啊。</p>
+<p>而且很多资料也是这么用的，不是么？</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>cmake .
+make                       # 或者 nmake 或 jom 或 ...
+</code></pre></div></td></tr></table></div>
+
+<p>因为cmake 有不同的生成器，针对不同的生成器，需要我们需调用不同的命令make/nmake/jom/ninja/msbuild/...</p>
+<p>最终写起来很费心，用<code>--build</code>这个选项，就不用分情况讨论了。</p>
+<blockquote>
+<p>注：构建时使用 <code>-v</code>或<code>--verbose</code>参数，有时候很有用
+<code>cmake --build -v .</code></p>
+</blockquote>
+<h3 id="generator">生成器（Generator）</h3>
+<p>可用的的生成器有哪些，默认是哪个？可如下命令可以查看。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>cmake<span class="w"> </span>-h
+</code></pre></div></td></tr></table></div>
+
+<p>比如，cmake在Ubuntu下的结果如下：（从中可见，该配置下默认是Unix Makefiles）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code>Generators
+
+The following generators are available on this platform (* marks default):
+  Green Hills MULTI            = Generates Green Hills MULTI files
+                                 (experimental, work-in-progress).
+<span class="k">*</span> Unix Makefiles               = Generates standard UNIX makefiles.
+  Ninja                        = Generates build.ninja files.
+  Ninja Multi-Config           = Generates build-&lt;Config&gt;.ninja files.
+  Watcom WMake                 = Generates Watcom WMake makefiles.
+  CodeBlocks - Ninja           = Generates CodeBlocks project files.
+  CodeBlocks - Unix Makefiles  = Generates CodeBlocks project files.
+  CodeLite - Ninja             = Generates CodeLite project files.
+  CodeLite - Unix Makefiles    = Generates CodeLite project files.
+  Eclipse CDT4 - Ninja         = Generates Eclipse CDT 4.0 project files.
+  Eclipse CDT4 - Unix Makefiles= Generates Eclipse CDT 4.0 project files.
+  Kate - Ninja                 = Generates Kate project files.
+  Kate - Unix Makefiles        = Generates Kate project files.
+  Sublime Text 2 - Ninja       = Generates Sublime Text 2 project files.
+  Sublime Text 2 - Unix Makefiles
+                               = Generates Sublime Text 2 project files.
+</code></pre></div></td></tr></table></div>
+
+<p>要切换不同的Generator，可使用 <code>-G</code> 参数，比如，工程可以这么构建：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>cmake<span class="w"> </span>.<span class="w"> </span>-G<span class="w"> </span>Ninja
+cmake<span class="w"> </span>--build<span class="w"> </span>.
+</code></pre></div></td></tr></table></div>
+
+<p>另外，如果要改变默认的生成器，可以设置环境变量（就不用每次用<code>-G</code>指定了）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>CMAKE_GENERATOR=Ninja
+</code></pre></div></td></tr></table></div>
+
+<p>注：如果用conan的话，使用如下环境变量</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>CONAN_CMAKE_GENERATOR=Ninja
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_1">只用一个生成器？</h3>
+<blockquote>
+<p>CMake本身是跨平台的方案，如果只考虑一个环境。cmake不一定简单了。</p>
+<p>而且如果只用一个平台，且用的Visual Studio或XCode的话，也确实没必要碰cmake。</p>
+</blockquote>
+<p>对上面例子来说，我们只要写一个 main.cpp 文件，然后：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>g++ main.cpp
+</code></pre></div></td></tr></table></div>
+
+<p>或者</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>cl main.cpp
+</code></pre></div></td></tr></table></div>
+
+<p>不就得了？？ 既不需要工程文件，也不需要执行执行两次命令。多简单</p>
+<p>即使文件比较多，要高级一点，也就写个Makefile文件，比如</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">main</span><span class="o">:</span>
+<span class="w">    </span><span class="n">g</span><span class="o">++</span><span class="w"> </span><span class="n">main</span><span class="o">.</span><span class="na">cpp</span>
+</code></pre></div></td></tr></table></div>
+
+<p>每次构建也只需要调用下面一条命令就够了</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>make
+</code></pre></div></td></tr></table></div>
+
+<p>嗯，这样确实不需要cmake，且似乎更简单。</p>
+<blockquote>
+<p>尽管如此，cmake还是有一定优势，毕竟可以逃避学更底层的一些东西，比如Makefile的规则。</p>
+</blockquote>
+<h2 id="in-source-buildout-of-source-build">In-source build？Out-of-source build?</h2>
+<p>在上面例子中，构建的中间产物和目标产物都和源码在一个目录下（即In-source-build)。</p>
+<p>尽管命令简单，但缺点也比较明显。</p>
+<ul>
+<li>污染源码目录，不方便源码管控。需要精细配置 .gitignore等文件</li>
+<li>如果一套源码在不同的编译器下编译，不便于隔离。</li>
+<li>...</li>
+</ul>
+<p>建议的操作方式是，构建和源码目录隔离，单独创建构建目录（Out-of-source-build)。</p>
+<p>其实操作不复杂</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build-dir
+cmake<span class="w"> </span>--build<span class="w"> </span>build-dir
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>第一条命令：为make生成Makefile文件或为其他工具生成工程文件。使用<code>-S</code>指定源码目录，<code>-B</code>指定构建目录</li>
+<li>第二条命令：调用make或其他工具，在指定目录下进行构建</li>
+</ul>
+<p>这样源码目录没那么乱了：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code>.
+├── CMakeLists.txt
+├── main.cpp
+├── build
+│   ├── CMakeCache.txt
+│   ├── CMakeFiles
+...
+│   ├── cmake_install.cmake
+│   ├── hello
+</code></pre></div></td></tr></table></div>
+
+<p>当前，可以构建目录和源码目录平行，这样...</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code>.
+├── src
+│   ├── CMakeLists.txt
+│   ├── main.cpp
+│ 
+├── build-msvc2019
+├── build-mingw
+├── build-clang
+</code></pre></div></td></tr></table></div>
+
+<p><strong>注意，我们在这儿没有显式切换目录</strong>，如果你看过老版本的CMake，操作主要在构建目录下进行，写下来会像下面这样：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>mkdir build-dir
+cd build-dir
+cmake ..
+cmake --build .
+</code></pre></div></td></tr></table></div>
+
+<h2 id="debug-release-single-configuration">Debug？ Release ？（单配置生成器 single-configuration）</h2>
+<blockquote>
+<p>这个一个坑！！！</p>
+<p>我们某个程序Linux下某程序运行很慢，怀疑没用release模式构建。同事排查后：里面没有Debug信息，肯定是Release。</p>
+</blockquote>
+<p>对于单配置的生成器（比如Makefile 和 Ninja）来说，构建类型通过<code>CMAKE_BUILD_TYPE</code>来指定，它的典型值如下：</p>
+<ul>
+<li><code>Debug</code>,</li>
+<li><code>Release</code>,</li>
+<li><code>RelWithDebInfo</code></li>
+<li><code>MinSizeRel</code></li>
+</ul>
+<p>比如我们要构建release和debug：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build-release<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release
+cmake<span class="w"> </span>--build<span class="w"> </span>build-release
+
+cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build-debug<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Debug
+cmake<span class="w"> </span>--build<span class="w"> </span>build-debug
+</code></pre></div></td></tr></table></div>
+
+<p>如果不加type，默认是那个呢？</p>
+<h3 id="_2">默认是什么东西？</h3>
+<ul>
+<li>https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html</li>
+</ul>
+<p>手册中说：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">This</span><span class="w"> </span><span class="n">variable</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">initialized</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">first</span><span class="w"> </span><span class="n">project</span><span class="p">()</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">enable_language</span><span class="p">()</span><span class="w"> </span><span class="n">command</span><span class="w"> </span><span class="n">called</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">project</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">new</span><span class="w"> </span><span class="n">build</span><span class="w"> </span><span class="n">tree</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">first</span><span class="w"> </span><span class="n">created</span><span class="o">.</span><span class="w"> </span><span class="n">If</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">CMAKE_BUILD_TYPE</span><span class="w"> </span><span class="n">environment</span><span class="w"> </span><span class="n">variable</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">set</span><span class="p">,</span><span class="w"> </span><span class="n">its</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">used</span><span class="o">.</span><span class="w"> </span><span class="n">Otherwise</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">toolchain</span><span class="o">-</span><span class="n">specific</span><span class="w"> </span><span class="n">default</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">chosen</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">language</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">enabled</span><span class="o">.</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">default</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">often</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="n">empty</span><span class="w"> </span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">but</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">usually</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">desirable</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">other</span><span class="w"> </span><span class="n">standard</span><span class="w"> </span><span class="n">build</span><span class="w"> </span><span class="n">types</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">usually</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="n">appropriate</span><span class="o">.</span>
+</code></pre></div></td></tr></table></div>
+
+<p>手册中说，默认<strong>经常</strong>是空值，<strong>通常</strong>不符合预期。</p>
+<blockquote>
+<p>以Ubuntu为例，默认时，编译选项中既没有<code>-g</code>来生成调试信息，也没有<code>-O3</code>等优化选项。</p>
+<p>完全就是玩具，不要再生产环境用！！（其实这也不全是cmake的锅，前面我们直接调g++不也没有加选项嘛，但是cmake这样弄还是有点接受不了）</p>
+</blockquote>
+<p>另外，Debug、Release 到底是大写、小写还是首字符大写。官方也没有确定的说法。</p>
+<h3 id="_3">查看不同类型编译选项</h3>
+<p>要查看编译选项，可以在CMakeLists.txt中添加</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;debug flags:&quot;</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_CXX_FLAGS_DEBUG</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">message</span><span class="p">(</span><span class="s2">&quot;release flags:&quot;</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_CXX_FLAGS_RELEASE</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">message</span><span class="p">(</span><span class="s2">&quot;min size flags:&quot;</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_CXX_FLAGS_MINSIZEREL</span><span class="o">}</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行cmake，在Linux下大致是下面这样的结果</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="s s-Atom">debug</span> <span class="s s-Atom">flags</span><span class="p">:</span><span class="o">-</span><span class="s s-Atom">g</span>
+<span class="s s-Atom">release</span> <span class="s s-Atom">flags</span><span class="p">:</span><span class="o">-</span><span class="nv">O3</span> <span class="o">-</span><span class="nv">DNDEBUG</span>
+<span class="s s-Atom">min</span> <span class="s s-Atom">size</span> <span class="s s-Atom">flags</span><span class="p">:</span><span class="o">-</span><span class="nv">Os</span> <span class="o">-</span><span class="nv">DNDEBUG</span>
+</code></pre></div></td></tr></table></div>
+
+<p>或者直接运行 <code>cmake -LA .</code> 来查看当前项目所有变量值</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>...
+CMAKE_CXX_FLAGS:STRING=
+CMAKE_CXX_FLAGS_DEBUG:STRING=-g
+CMAKE_CXX_FLAGS_MINSIZEREL:STRING=-Os -DNDEBUG
+CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -DNDEBUG
+CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
+...
+</code></pre></div></td></tr></table></div>
+
+<h2 id="debug-release-multi-configuration">Debug？ Release ？（多配置生成器 Multi-configuration）</h2>
+<p>对于  <code>Visual Studio</code>、<code>Xcode</code> 与 <code>Ninja Multi-Config</code>这些多配置生成器来说，在config阶段生效的 <code>CMAKE_BUILD_TYPE</code> 变量没有任何作用，<strong>会直接被忽略掉</strong>。</p>
+<p>配置时，不需要指定类型，但是构建时，需要通过<code>--config</code>来指定。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build-dir
+cmake<span class="w"> </span>--build<span class="w"> </span>build-dir<span class="w"> </span>--config<span class="w"> </span>Debug
+</code></pre></div></td></tr></table></div>
+
+<p>那么config后面可以跟什么呢，手册中说<a href="[cmake-buildsystem(7) — CMake 3.28.0-rc6 Documentation](https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#build-configurations)">预定义这么几个</a>：</p>
+<ul>
+<li><code>Debug</code></li>
+<li><code>Release</code></li>
+<li><code>RelWithDebInfo</code></li>
+<li><code>MinSizeRel</code></li>
+</ul>
+<p>这个列表可以使用<code>CMAKE_CONFIGURATION_TYPES</code>可以手动修改/指定。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CMAKE_CONFIGURATION_TYPES</span><span class="o">:</span><span class="n">STRING</span><span class="o">=</span><span class="n">Debug</span><span class="o">;</span><span class="n">Release</span><span class="o">;</span><span class="n">MinSizeRel</span><span class="o">;</span><span class="n">RelWithDebInfo</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意：单配置生成器<strong>会直接忽略</strong> <code>CMAKE_CONFIGURATION_TYPES</code> 选项。</p>
+</blockquote>
+<p>对于config值，同前面单配置的坑一样，手册中<strong>强调</strong>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">The</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">value</span><span class="w"> </span><span class="nx">will</span><span class="w"> </span><span class="nx">often</span><span class="w"> </span><span class="nx">be</span><span class="w"> </span><span class="nx">none</span><span class="w"> </span><span class="nx">of</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">above</span><span class="w"> </span><span class="nx">standard</span><span class="w"> </span><span class="nx">configurations</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="nx">will</span><span class="w"> </span><span class="nx">instead</span><span class="w"> </span><span class="nx">be</span><span class="w"> </span><span class="nx">an</span><span class="w"> </span><span class="nx">empty</span><span class="w"> </span><span class="kt">string</span><span class="p">.</span><span class="w"> </span><span class="nx">A</span><span class="w"> </span><span class="nx">common</span><span class="w"> </span><span class="nx">misunderstanding</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="nx">that</span><span class="w"> </span><span class="nx">this</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">same</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nx">Debug</span><span class="p">,</span><span class="w"> </span><span class="nx">but</span><span class="w"> </span><span class="nx">that</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="k">case</span><span class="p">.</span><span class="w"> </span><span class="nx">Users</span><span class="w"> </span><span class="nx">should</span><span class="w"> </span><span class="nx">always</span><span class="w"> </span><span class="nx">explicitly</span><span class="w"> </span><span class="nx">specify</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">build</span><span class="w"> </span><span class="k">type</span><span class="w"> </span><span class="nx">instead</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="nx">avoid</span><span class="w"> </span><span class="nx">this</span><span class="w"> </span><span class="nx">common</span><span class="w"> </span><span class="nx">problem</span><span class="p">.</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>默认值通常不是上面几个值中的一个，而是一个空值。</li>
+</ul>
+<ul>
+<li>不要将默认值 等同于 Debug</li>
+</ul>
+<ul>
+<li><strong>你应该始终显式指定构建类型</strong></li>
+</ul>
+<p>比如我们要构建release和debug：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build-dir
+cmake<span class="w"> </span>--build<span class="w"> </span>build-dir<span class="w"> </span>--config<span class="w"> </span>Release
+cmake<span class="w"> </span>--build<span class="w"> </span>build-dir<span class="w"> </span>--config<span class="w"> </span>Debug
+</code></pre></div></td></tr></table></div>
+
+<h2 id="release">如何默认Release构建？</h2>
+<p>如果只是自己用，设置如下环境变量就行了：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>CMAKE_BUILD_TYPE=Release
+</code></pre></div></td></tr></table></div>
+
+<p>如果不想让项目每个参与者都设置环境变量，那么，可以像下面这样改项目的CMakeLists.txt文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">get_property</span><span class="p">(</span><span class="s">isMultiConfig</span><span class="w">  </span><span class="s">GLOBAL</span><span class="w"> </span><span class="s">PROPERTY</span><span class="w"> </span><span class="s">GENERATOR_IS_MULTI_CONFIG</span><span class="p">)</span>
+<span class="nb">if</span><span class="p">(</span><span class="s">NOT</span><span class="w"> </span><span class="s">isMultiConfig</span><span class="w"> </span><span class="s">AND</span><span class="w"> </span><span class="s">NOT</span><span class="w"> </span><span class="p">(</span><span class="s">CMAKE_BUILD_TYPE</span><span class="w"> </span><span class="s">OR</span><span class="w"> </span><span class="s">DEFINED</span><span class="w"> </span><span class="s">ENV{CMAKE_BUILD_TYPE}</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_BUILD_TYPE</span><span class="w"> </span><span class="s">Release</span><span class="w"> </span><span class="s">CACHE</span><span class="w"> </span><span class="s">STRING</span><span class="w"> </span><span class="s2">&quot;I prefer Release to Debug&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意：里面用到了全局属性<code>GENERATOR_IS_MULTI_CONFIG</code>来判定生成器类型，这一属性是CMAKE 3.9 引入的。</p>
+<h2 id="_4">参考</h2>
+<ul>
+<li>https://blog.feabhas.com/2021/07/cmake-part-2-release-and-debug-builds/</li>
+<li>https://stackoverflow.com/questions/23995019/what-is-the-modern-method-for-setting-general-compile-flags-in-cmake</li>
+<li>https://stackoverflow.com/questions/16851084/how-to-list-all-cmake-build-options-and-their-default-values</li>
+<li>https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html</li>
+<li>https://cmake.org/cmake/help/latest/variable/CMAKE_CONFIGURATION_TYPES.html</li>
+<li>https://blog.csdn.net/weixin_39766005/article/details/122439200</li>
+<li>https://www.kitware.com/cmake-and-the-default-build-type/</li>
+<li>https://www.scivision.dev/cmake-default-build-type/</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-12-02T12:04:00+08:00" pubdate>Sat 02 December 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/cmake.html">cmake</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

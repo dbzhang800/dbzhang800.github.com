@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Jupyter 学习小记（一） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/python.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Jupyter 学习小记（一）</h1>
+    <p class="meta">
+<time datetime="2025-01-04T10:08:00+08:00" pubdate>Sat 04 January 2025</time>    </p>
+</header>
+
+  <div class="entry-content"><div class="toc">
+<ul>
+<li><a href="#_1">简介</a><ul>
+<li><a href="#jupyter">Jupyter 是什么？</a></li>
+<li><a href="#_2">历史</a></li>
+<li><a href="#_3">安装</a><ul>
+<li><a href="#jupyterlab">安装 jupyterlab</a></li>
+<li><a href="#jupyter-console">安装 jupyter-console</a></li>
+<li><a href="#qtconsole">安装 qtconsole</a></li>
+<li><a href="#notebook">安装 notebook</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#ipynb">.ipynb</a><ul>
+<li><a href="#_4">方括号？</a></li>
+<li><a href="#_5">魔法指令</a></li>
+<li><a href="#shell">Shell 命令</a></li>
+</ul>
+</li>
+<li><a href="#_6">扩展？</a></li>
+<li><a href="#_7">注意事项</a><ul>
+<li><a href="#kernel">内核管理（Kernel）</a></li>
+<li><a href="#_8">单元格的运行顺序</a></li>
+<li><a href="#_9">文件路径问题</a></li>
+</ul>
+</li>
+<li><a href="#_10">参考</a></li>
+</ul>
+</div>
+<h2 id="_1">简介</h2>
+<h3 id="jupyter">Jupyter 是什么？</h3>
+<p>Jupyter（发音 /ˈdʒuːpɪtər/ ）是一个开源的<strong>交互式计算</strong>(interactive computing)项目，起源于数据科学和科学计算领域，目的是为用户提供一种整合代码、文档、数学公式和可视化的直观工具。它的历史可以追溯到 IPython 项目，逐步演变为如今广泛使用的 Jupyter 生态系统。</p>
+<p><img alt="icon" src="https://blog.debao.me/images/python/jupyter-rectanglelogo-greytext-orangebody-greymoons.svg"></p>
+<ul>
+<li>Jupyter 的名称源于其所支持的三种核心编程语言，即 <strong>Ju</strong>lia、<strong>Pyt</strong>hon 和 <strong>R</strong>。</li>
+<li>它的名字和标志是对伽利略（Galileo）发现木星（Jupiter）卫星的致敬。</li>
+</ul>
+<p><img alt="notebook" src="https://blog.debao.me/images/python/jupyter_notebook.png"></p>
+<p>一个典型的 Jupyter Notebook 文件的后缀是 .ipynb，它由一系列的 单元格（Cell） 组成，主要分为以下两种类型：</p>
+<ul>
+<li>代码单元格（Code Cell）：<ul>
+<li>用于编写代码。</li>
+<li>支持即时运行，并在单元格下方显示结果。</li>
+</ul>
+</li>
+<li>Markdown 单元格（Markdown Cell）：<ul>
+<li>用于编写文档，支持 Markdown 语法。</li>
+<li>可以插入标题、文本、列表、公式（LaTeX 语法）等。</li>
+</ul>
+</li>
+</ul>
+<h3 id="_2">历史</h3>
+<ul>
+<li>2001 年：IPython 项目诞生，由 Fernando Pérez 开发，作为增强版的 Python 交互式命令行工具。</li>
+<li>2011 年：发布 IPython Notebook，支持代码、文本、数学公式和可视化的集成开发环境。</li>
+<li><strong>2014 年</strong>：IPython Notebook 更名为 <strong>Jupyter</strong> Notebook，支持多种语言（如 Python、R、Julia）。</li>
+<li>2015 年：Jupyter Notebook 在数据科学和教学领域迅速普及，成为主流工具。</li>
+<li><strong>2018 年</strong>：推出 <strong>JupyterLab</strong>，作为下一代用户界面，支持更复杂的项目开发。</li>
+<li>2023 年：发布 Jupyter Notebook 7，基于 JupyterLab 技术栈，升级经典 Notebook。</li>
+</ul>
+<h3 id="_3">安装</h3>
+<h4 id="jupyterlab">安装 jupyterlab</h4>
+<p><img alt="jupyter lab" src="https://blog.debao.me/images/python/jupyter_lab.png"></p>
+<p>通过</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>jupyterlab
+</code></pre></div></td></tr></table></div>
+
+<p>或者</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>jupyterlab
+</code></pre></div></td></tr></table></div>
+
+<p>安装完成后，在site-packages下会有如下一堆包</p>
+<table>
+<thead>
+<tr>
+<th><strong>模块</strong></th>
+<th><strong>功能简介</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>jupyter_client</strong></td>
+<td>管理前端与 Kernel 的通信。</td>
+</tr>
+<tr>
+<td><strong>jupyter_core</strong></td>
+<td>提供核心配置和工具，是整个生态的基础模块。</td>
+</tr>
+<tr>
+<td><strong>jupyter_events</strong></td>
+<td>处理事件流和内部通信。</td>
+</tr>
+<tr>
+<td><strong>jupyter_lsp</strong></td>
+<td>提供语言服务器协议支持，增强代码编辑体验（如补全、检查）。</td>
+</tr>
+<tr>
+<td><strong>jupyter_server</strong></td>
+<td>核心服务器，管理文件系统、Kernel 会话和 REST API。</td>
+</tr>
+<tr>
+<td><strong>jupyterlab</strong></td>
+<td>JupyterLab 的前端界面，提供现代化的交互式开发环境。</td>
+</tr>
+<tr>
+<td><strong>jupyterlab_server</strong></td>
+<td>支持 JupyterLab 的扩展和静态文件服务。</td>
+</tr>
+<tr>
+<td><strong>jupyterlab_pygments</strong></td>
+<td>提供代码语法高亮功能，基于 Pygments 实现。</td>
+</tr>
+</tbody>
+</table>
+<p>在Scripts下，更是一堆可执行程序（以Windows为例），比如：</p>
+<ul>
+<li><strong>jupyter.exe</strong></li>
+<li>jupyter-dejavu.exe</li>
+<li>jupyter-kernel.exe</li>
+<li>jupyter-kernelspec.exe</li>
+<li><strong>jupyter-lab.exe</strong></li>
+<li>jupyter-labextension.exe</li>
+<li>jupyter-labhub.exe</li>
+<li>jupyter-migrate.exe</li>
+<li><strong>jupyter-nbconvert.exe</strong></li>
+<li>jupyter-run.exe</li>
+<li><strong>jupyter-server.exe</strong></li>
+<li>jupyter-troubleshoot.exe</li>
+<li>jupyter-trust.exe</li>
+</ul>
+<p>执行如下命令，会调用jupyter-lab 来启动浏览器界面</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>jupiter lab
+</code></pre></div></td></tr></table></div>
+
+<h4 id="jupyter-console">安装 jupyter-console</h4>
+<p>jupyter-console 是 Jupyter 提供的一个 基于命令行的交互式计算环境，它允许用户通过终端（或命令行）直接与 Jupyter Kernel 进行交互。</p>
+<p><img alt="jupyter console" src="https://blog.debao.me/images/python/jupyter_console.png"></p>
+<p>安装：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>jupyter-console
+</code></pre></div></td></tr></table></div>
+
+<p>执行：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>jupyter console
+</code></pre></div></td></tr></table></div>
+
+<p>特点：</p>
+<ul>
+<li>无需图形界面，比 Jupyter Notebook 或 JupyterLab 的图形界面更轻量。</li>
+<li>类似于 IPython，但支持 Jupyter 的多语言 Kernel</li>
+</ul>
+<h4 id="qtconsole">安装 qtconsole</h4>
+<p><img alt="qtconsole" src="https://blog.debao.me/images/python/jupyter_qtconsole.png"></p>
+<p>QtConsole 是 Jupyter 生态系统中的一个 图形化的交互式控制台，提供了类似于命令行的界面，但比终端更强大、更直观。它基于 Qt 框架开发，支持丰富的功能，包括代码高亮、内嵌图形显示、Markdown 渲染等。</p>
+<p>安装（它依赖于PyQt或PySide）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>conda install qtconsole
+</code></pre></div></td></tr></table></div>
+
+<p>运行：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>jupyter qtconsole
+</code></pre></div></td></tr></table></div>
+
+<h4 id="notebook">安装 notebook</h4>
+<p><img alt="notebook" src="https://blog.debao.me/images/python/jupyter_notebook.png"></p>
+<p>安装：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>conda install -c anaconda notebook
+</code></pre></div></td></tr></table></div>
+
+<p>运行</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>jupyter notebook
+</code></pre></div></td></tr></table></div>
+
+<h2 id="ipynb">.ipynb</h2>
+<p>.ipynb 是 Jupyter Notebook 的文件格式，全称是 "Interactive Python Notebook"。它是 Jupyter Notebook 使用的核心文件类型，支持 代码、文本、图表 和 交互式内容 的组合，是一种用于交互式计算的文档格式。</p>
+<p>.ipynb 文件的结构是基于 JSON（JavaScript Object Notation） 的纯文本文件。它可以分为以下几个部分：</p>
+<ul>
+<li>cells：存储每个单元格的内容，包括代码、Markdown 文本等。</li>
+<li>metadata：Notebook 的全局元数据，例如 Kernel 和语言信息。</li>
+<li>nbformat 和 nbformat_minor：文件格式的版本号。</li>
+<li>outputs：存储代码单元的执行结果，包括文本输出、图形、错误信息等。</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w"> </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;cell_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;code&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;execution_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0ca5ef4a&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">   </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;stdout&quot;</span><span class="p">,</span>
+<span class="w">     </span><span class="nt">&quot;output_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;stream&quot;</span><span class="p">,</span>
+<span class="w">     </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;Hello, 1+1=10!\n&quot;</span>
+<span class="w">     </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">   </span><span class="p">],</span>
+<span class="w">   </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;print(&#39;Hello, 1+1=10!&#39;)&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;cell_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;markdown&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;6dd9d4f5&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">   </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;# This is a Markdown cell\n&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;You can write text here.&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w"> </span><span class="p">],</span>
+<span class="w"> </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;kernelspec&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;display_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python 3 (ipykernel)&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;language&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python3&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;language_info&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;codemirror_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ipython&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;file_extension&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;.py&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;mimetype&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;text/x-python&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;nbconvert_exporter&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;pygments_lexer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ipython3&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.12.8&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w"> </span><span class="p">},</span>
+<span class="w"> </span><span class="nt">&quot;nbformat&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w"> </span><span class="nt">&quot;nbformat_minor&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_4">方括号？</h3>
+<p><img alt="notebook" src="https://blog.debao.me/images/python/jupyter_notebook_2.png"></p>
+<p>方括号中的数字表示该单元格 被执行的顺序。每次运行一个代码单元时，Jupyter 会为其分配一个递增的执行计数。</p>
+<p>例如：</p>
+<ul>
+<li>第一个运行的单元格显示 <code>[1]</code>。</li>
+<li>第二个运行的单元格显示 <code>[2]</code>。</li>
+<li>第三个运行的单元格显示 <code>[3]</code>。</li>
+<li>如果单元格 <strong>未被运行过</strong>，方括号会显示为空白：<code>[ ]</code>。</li>
+<li>如果 <strong>再次运行</strong> 某个单元格，数字会更新为最新的执行顺序。如果之前某个单元格的方括号是 <code>[2]</code>，再次运行后会更新为当前的执行计数（如 <code>[5]</code>）。</li>
+<li>如果 <strong>重新启动</strong> 了 Kernel，所有的执行计数会重置。所有单元格的方括号会变成 <code>[ ]</code>，表示未执行。</li>
+</ul>
+<h3 id="_5">魔法指令</h3>
+<p>Jupyter的魔法命令（Magic Commands）用于简化操作和扩展 Notebook 的功能。分为两种类型：</p>
+<p><strong>行魔法命令（Line Magics）</strong></p>
+<ul>
+<li>以单个 % 开头。</li>
+<li>只作用于当前 行。</li>
+<li>一行中只能包含魔法命令。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>魔法命令</strong></th>
+<th><strong>功能</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%time</code></td>
+<td>测量 <strong>一行代码</strong> 的执行时间。</td>
+</tr>
+<tr>
+<td><code>%timeit</code></td>
+<td>多次运行 <strong>一行代码</strong> 并测量平均执行时间。</td>
+</tr>
+<tr>
+<td><code>%pwd</code></td>
+<td>显示当前工作目录。</td>
+</tr>
+<tr>
+<td><code>%ls</code></td>
+<td>列出当前目录中的文件和文件夹。</td>
+</tr>
+<tr>
+<td><code>%env</code></td>
+<td>列出当前环境变量。</td>
+</tr>
+<tr>
+<td><code>%who</code></td>
+<td>列出当前会话中的变量。</td>
+</tr>
+<tr>
+<td><code>%pip install</code></td>
+<td>安装 Python 包（等同于在终端中运行 <code>pip install</code>）。</td>
+</tr>
+<tr>
+<td><code>%debug</code></td>
+<td>进入调试模式。</td>
+</tr>
+<tr>
+<td><code>...</code></td>
+<td>....</td>
+</tr>
+</tbody>
+</table>
+<p><strong>单元魔法命令（Cell Magics）</strong></p>
+<ul>
+<li>以两个 %% 开头。</li>
+<li>作用于整个 单元格。</li>
+<li>单元格中可以包含多行代码或指令。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>魔法命令</strong></th>
+<th><strong>功能</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%%time</code></td>
+<td>测量 <strong>整个单元格</strong> 的执行时间。</td>
+</tr>
+<tr>
+<td><code>%%timeit</code></td>
+<td>多次运行 <strong>整个单元格</strong> 并测量平均执行时间。</td>
+</tr>
+<tr>
+<td><code>%%writefile</code></td>
+<td>将单元格中的内容写入一个文件中。</td>
+</tr>
+<tr>
+<td><code>%%capture</code></td>
+<td>捕获单元格中的输出（标准输出和标准错误），可以保存到变量中。</td>
+</tr>
+<tr>
+<td><code>%%bash</code></td>
+<td>在单元格中运行 Bash 命令。</td>
+</tr>
+<tr>
+<td><code>%%HTML</code></td>
+<td>渲染 HTML 代码。</td>
+</tr>
+<tr>
+<td><code>%%latex</code></td>
+<td>渲染 LaTeX 代码。</td>
+</tr>
+<tr>
+<td><code>%%script</code></td>
+<td>在单元格中运行不同语言的脚本（如 Python、Ruby、Perl 等，需安装对应的内核）。</td>
+</tr>
+<tr>
+<td><code>...</code></td>
+<td>....</td>
+</tr>
+</tbody>
+</table>
+<h3 id="shell">Shell 命令</h3>
+<p>在 Jupyter 中，还可以使用以 ! 开头的命令。这些命令并不属于 Jupyter 的魔法命令（Magic Commands），而是调用系统的 Shell 环境执行命令。</p>
+<p>比如：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="sx">!dir</span>
+<span class="sx">!ls</span>
+<span class="sx">!pip install numpy</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_6">扩展？</h2>
+<ul>
+<li>https://github.com/jupyterlab/extension-examples</li>
+<li>https://jupyterlab.readthedocs.io/en/4.2.x/user/extensions.html</li>
+</ul>
+<p>在 jupyter lab 启动的界面中，可以查看和安装扩展</p>
+<p><img alt="ext" src="https://blog.debao.me/images/python/jupyter_lab_extensions.png"></p>
+<p>如果，在命令行下，那么</p>
+<p>查看已安装扩展：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>jupyter labextension list
+</code></pre></div></td></tr></table></div>
+
+<p>安装扩展，使用pip或conda，比如：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip install jupyterlab-code-formatter
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_7">注意事项</h2>
+<h3 id="kernel">内核管理（Kernel）</h3>
+<blockquote>
+<p>Jupyter Notebook 的代码执行依赖一个运行中的 内核（Kernel），它的状态会直接影响 Notebook 的运行。</p>
+</blockquote>
+<ul>
+<li>所有单元格共享一个内核（即所有变量、函数、导入的模块在内核中是全局可见的）。</li>
+<li>变量的值会随着单元格的执行而变化，即使重新运行某些单元格，之前的变量值可能仍然存在。</li>
+<li>重启内核后，所有之前运行的变量都会消失，需要重新运行相关单元格。</li>
+</ul>
+<h3 id="_8">单元格的运行顺序</h3>
+<blockquote>
+<p>Jupyter Notebook 的单元格可以按任意顺序运行，这可能导致代码之间的依赖关系出现问题。</p>
+</blockquote>
+<ul>
+<li>从头运行所有单元格：使用 Kernel &gt; Restart &amp; Run All，确保代码按正确顺序运行。</li>
+<li>保持单元格的逻辑性：将相互依赖的代码放在相邻的单元格中，便于维护和运行。</li>
+</ul>
+<h3 id="_9">文件路径问题</h3>
+<blockquote>
+<p>Notebook 的工作目录（当前路径）是启动 Jupyter 的目录，而不是 Notebook 文件所在的目录。</p>
+</blockquote>
+<ul>
+<li>相对路径问题：在 Notebook 中使用相对路径加载文件（如 data/file.csv），路径是相对于运行 Jupyter 的工作目录，而不是 Notebook 的文件位置。</li>
+<li>切换路径可能引发混淆：如在 Notebook 中切换了 os.getcwd()，后续路径引用可能会出错</li>
+</ul>
+<h2 id="_10">参考</h2>
+<ul>
+<li>https://jupyter.org</li>
+<li>https://github.com/jupyter</li>
+<li>https://en.wikipedia.org/wiki/Project_Jupyter</li>
+<li>https://jupyterlab-contrib.github.io/migrate_from_classical.html</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2025-01-04T10:08:00+08:00" pubdate>Sat 04 January 2025</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/python.html'>Python</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

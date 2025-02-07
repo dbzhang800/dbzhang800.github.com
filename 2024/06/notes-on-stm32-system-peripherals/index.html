@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>STM32系统外设小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/ee.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">STM32系统外设小记</h1>
+    <p class="meta">
+<time datetime="2024-06-02T20:00:00+08:00" pubdate>Sun 02 June 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>接前面<a href="https://blog.debao.me/2024/05/notes-on-keil-mdk-community/">Keil MDK 社区版小记</a>与<a href="https://blog.debao.me/2024/05/notes-on-stm32cubemx/">STM32CubeMX小记</a>，已经可以实现，让 CubeMX 生成的代码，同时兼容Keil MDK和CubeIDE两套环境：一套代码，两个IDE可以自由切换，两个人可以用不同的IDE协同工作。</p>
+<blockquote>
+<p>只是想不通，国内各种资料为什么执着于Keil MDK这个开发环境（其社区版又不能商用）。</p>
+</blockquote>
+<p>现在可以回到起点，了解一下STM32的系统外设了...</p>
+<h2 id="_1">系统外设？</h2>
+<p>ST的 <a href="https://wiki.st.com/stm32mcu/wiki/Category:Getting_started_with_STM32_system_peripherals">wiki</a> 中列的4类14种：</p>
+<ul>
+<li>系统外设（System Peripherals）：GPIO，EXTI，PWR，LPBAM，DMA</li>
+<li>基本通讯外设（Basic communication peripherals）：UART，SPI，I2C，I3C</li>
+<li>定时外设（Timing peripherals）：RTC，WDG，HRTIM</li>
+<li>模拟外设（Analog peripherals）：DAC，ADC</li>
+</ul>
+<p>列个表</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>全称</th>
+<th>功能</th>
+<th>主要特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GPIO</strong></td>
+<td>General-Purpose Input/Output</td>
+<td>通用输入/输出端口，用于控制和读取外部设备的状态</td>
+<td>可配置为输入、输出、复用功能；支持上拉、下拉电阻</td>
+</tr>
+<tr>
+<td><strong>EXTI</strong></td>
+<td>External Interrupt/Event Controller</td>
+<td>外部中断/事件控制器，用于处理外部信号触发的中断</td>
+<td>支持多种触发模式（上升沿、下降沿、双边沿）；灵活的中断优先级配置</td>
+</tr>
+<tr>
+<td><strong>PWR</strong></td>
+<td>Power Control</td>
+<td>电源管理模块，用于控制微控制器的电源状态和低功耗模式</td>
+<td>支持不同的低功耗模式（睡眠、停止、待机）；电压监控和电池管理</td>
+</tr>
+<tr>
+<td><strong>LPBAM</strong></td>
+<td>Low Power Background Autonomous Mode</td>
+<td>低功耗自动模式，用于在低功耗状态下执行后台任务</td>
+<td>允许在低功耗模式下执行特定任务，如数据传输和采集</td>
+</tr>
+<tr>
+<td><strong>DMA</strong></td>
+<td>Direct Memory Access</td>
+<td>直接存储器访问，用于在外设和内存之间快速传输数据</td>
+<td>减少CPU负载，提高数据传输效率；支持多通道和多种传输模式</td>
+</tr>
+<tr>
+<td><strong>UART</strong></td>
+<td>Universal Asynchronous Receiver/Transmitter</td>
+<td>通用异步收发器，用于串行通信</td>
+<td>支持全双工通信，波特率可编程；具有硬件流控制和多种错误检测机制</td>
+</tr>
+<tr>
+<td><strong>SPI</strong></td>
+<td>Serial Peripheral Interface</td>
+<td>串行外设接口，用于高速同步串行通信</td>
+<td>支持主从模式、多从设备；全双工通信，数据传输速率高</td>
+</tr>
+<tr>
+<td><strong>I2C</strong></td>
+<td>Inter-Integrated Circuit</td>
+<td>集成电路间通信，用于短距离通信的多主多从总线</td>
+<td>支持多主多从模式；具有从设备地址识别和7位或10位地址模式</td>
+</tr>
+<tr>
+<td><strong>I3C</strong></td>
+<td>Improved Inter-Integrated Circuit</td>
+<td>改进型集成电路间通信，I2C 的升级版</td>
+<td>兼容 I2C；更高的速度和更低的功耗；支持动态地址分配</td>
+</tr>
+<tr>
+<td><strong>RTC</strong></td>
+<td>Real-Time Clock</td>
+<td>实时时钟，用于提供准确的时间和日期信息</td>
+<td>支持闹钟、中断和时间戳功能；内置备份电池，掉电后仍能保持时间</td>
+</tr>
+<tr>
+<td><strong>WDG</strong></td>
+<td>Watchdog Timer</td>
+<td>看门狗定时器，用于防止系统失效或卡死</td>
+<td>定时器溢出时触发系统复位；可编程超时时间</td>
+</tr>
+<tr>
+<td><strong>HRTIM</strong></td>
+<td>High-Resolution Timer</td>
+<td>高分辨率定时器，用于精确的时间控制和信号生成</td>
+<td>提供高分辨率的PWM输出；支持复杂的时间和事件控制</td>
+</tr>
+<tr>
+<td><strong>DAC</strong></td>
+<td>Digital-to-Analog Converter</td>
+<td>数模转换器，用于将数字信号转换为模拟信号</td>
+<td>支持多通道输出；分辨率和采样率可编程</td>
+</tr>
+<tr>
+<td><strong>ADC</strong></td>
+<td>Analog-to-Digital Converter</td>
+<td>模数转换器，用于将模拟信号转换为数字信号</td>
+<td>高速采样、分辨率可调；支持多通道输入和多种触发模式</td>
+</tr>
+</tbody>
+</table>
+<p>东西太多了，先了解一下其中的 GPIO、UART、SPI</p>
+<h2 id="gpio">GPIO</h2>
+<p>这个东西...</p>
+<h3 id="gpio_1">GPIO是什么？</h3>
+<blockquote>
+<p>GPIO（General Purpose Input/Output，通用输入/输出）是微控制器或其他集成电路上的一种通用引脚，用于与外部设备进行数字信号交互。GPIO 引脚没有特定的功能，可以通过软件配置来实现多种用途，因此称为“通用”。</p>
+</blockquote>
+<p>先借ST官方<a href="https://wiki.st.com/stm32mpu/wiki/GPIO_internal_peripheral">GPIO internal peripheral</a>一张图：</p>
+<p><img alt="stm32-gpio-internal" src="https://blog.debao.me/images/arm/stm32-gpio-internal.png"></p>
+<p>对于GPIO的几种模式，可以列个表：</p>
+<table>
+<thead>
+<tr>
+<th>模式名称</th>
+<th>宏定义</th>
+<th>详细描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>输入模式</strong></td>
+<td><code>GPIO_Mode_IN</code></td>
+<td>配置引脚为输入模式，用于读取外部信号。</td>
+</tr>
+<tr>
+<td><strong>输出模式</strong></td>
+<td><code>GPIO_Mode_OUT</code></td>
+<td>配置引脚为输出模式，用于驱动外部设备。可以选择推挽输出（Push-pull Output）或开漏输出（Open-drain Output）。</td>
+</tr>
+<tr>
+<td><strong>复用功能模式</strong></td>
+<td><code>GPIO_Mode_AF</code></td>
+<td>配置引脚为复用功能模式，用于连接内部外设（如 UART、I2C、SPI 等）。具体的复用功能由引脚的 AF（Alternate Function）寄存器配置。</td>
+</tr>
+<tr>
+<td><strong>模拟模式</strong></td>
+<td><code>GPIO_Mode_AN</code></td>
+<td>配置引脚为模拟模式，用于模拟信号处理。常用于 ADC 输入或 DAC 输出。</td>
+</tr>
+</tbody>
+</table>
+<p>对于输出模式PuPd：</p>
+<ul>
+<li>推挽输出（Push-pull Output）：标准的输出模式，能够提供强驱动能力。</li>
+<li>开漏输出（Open-drain Output）：适用于需要外部上拉电阻的应用，如 I2C 总线。</li>
+</ul>
+<h3 id="hal">HAL函数</h3>
+<p>HAL库中主要的一些GPIO相关函数（具体可以查看stm32xxxx_hal_gpio.h文件)</p>
+<ul>
+<li>初始化和配置相关</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">HAL_GPIO_Init</span><span class="p">(</span><span class="n">GPIO_TypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">GPIOx</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_InitTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">GPIO_Init</span><span class="p">)</span>
+<span class="n">HAL_GPIO_DeInit</span><span class="p">(</span><span class="n">GPIO_TypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">GPIOx</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">GPIO_Pin</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>状态读写</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">HAL_GPIO_ReadPin</span><span class="p">(</span><span class="n">GPIO_TypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">GPIOx</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">GPIO_Pin</span><span class="p">)</span>
+<span class="n">HAL_GPIO_WritePin</span><span class="p">(</span><span class="n">GPIO_TypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">GPIOx</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">GPIO_Pin</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_PinState</span><span class="w"> </span><span class="n">PinState</span><span class="p">)</span>
+<span class="n">HAL_GPIO_TogglePin</span><span class="p">(</span><span class="n">GPIO_TypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">GPIOx</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">GPIO_Pin</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>中断配置和处理</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">HAL_GPIO_EXTI_IRQHandler</span><span class="p">(</span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">GPIO_Pin</span><span class="p">)</span>
+<span class="n">HAL_GPIO_EXTI_Callback</span><span class="p">(</span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">GPIO_Pin</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_2">使用</h3>
+<p>cubemx或cubeide可以直接生成配置代码。剩下的编写读写代码就行了。单独控制一个灯闪烁，很简单：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="cm">/* Infinite loop */</span>
+<span class="w">  </span><span class="cm">/* USER CODE BEGIN WHILE */</span>
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">        </span><span class="n">HAL_GPIO_TogglePin</span><span class="p">(</span><span class="n">GPIOA</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_PIN_2</span><span class="p">);</span>
+<span class="w">        </span><span class="n">HAL_Delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+
+<span class="w">    </span><span class="cm">/* USER CODE END WHILE */</span>
+</code></pre></div></td></tr></table></div>
+
+<p>引脚可以通过cubemx设置别名（对应C语言的宏），那么：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">        </span><span class="n">HAL_GPIO_TogglePin</span><span class="p">(</span><span class="n">LED_GPIO_Port</span><span class="p">,</span><span class="w"> </span><span class="n">LED_Pin</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果不使用toggle，可以直接设置值：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">        </span><span class="n">HAL_GPIO_WritePin</span><span class="p">(</span><span class="n">LED_GPIO_Port</span><span class="p">,</span><span class="w"> </span><span class="n">LED_Pin</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_PIN_RESET</span><span class="p">);</span>
+<span class="w">        </span><span class="n">HAL_Delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+<span class="w">        </span><span class="n">HAL_GPIO_WritePin</span><span class="p">(</span><span class="n">LED_GPIO_Port</span><span class="p">,</span><span class="w"> </span><span class="n">LED_Pin</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_PIN_SET</span><span class="p">);</span>
+<span class="w">        </span><span class="n">HAL_Delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>使用Delay延迟比较比较傻，正常应该使用定时器中断，比如配置使用CubeMX配置，TIM2定时器。而后在main.c 中定义：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// 定时器中断回调函数</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">HAL_TIM_PeriodElapsedCallback</span><span class="p">(</span><span class="n">TIM_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">htim</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">htim</span><span class="o">-&gt;</span><span class="n">Instance</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">TIM2</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// 切换 LED 状态</span>
+<span class="w">        </span><span class="n">HAL_GPIO_TogglePin</span><span class="p">(</span><span class="n">GPIOA</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_PIN_5</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>这是一个弱定义函数。</p>
+</blockquote>
+<p>它能工作，另一方面是因为在stm32xxx_it.c中的中断处理函数调用HAL的函数。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">TIM2_IRQHandler</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">HAL_TIM_IRQHandler</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htim2</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="uart">UART</h2>
+<p>RS232等uart串口概念简单</p>
+<h3 id="hal_1">HAL函数</h3>
+<ul>
+<li>初始化与配置</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">HAL_UART_Init</span><span class="p">(</span><span class="n">UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">)</span>
+<span class="n">HAL_UART_DeInit</span><span class="p">(</span><span class="n">UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>UART数据传输</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">HAL_UART_Transmit</span><span class="p">(</span><span class="n">UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">Timeout</span><span class="p">)</span>
+<span class="n">HAL_UART_Receive</span><span class="p">(</span><span class="n">UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">Timeout</span><span class="p">)</span>
+
+<span class="n">HAL_UART_Transmit_IT</span><span class="p">(</span><span class="n">UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">)</span>
+<span class="n">HAL_UART_Receive_IT</span><span class="p">(</span><span class="n">UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">)</span>
+
+<span class="n">HAL_UART_Transmit_DMA</span><span class="p">(</span><span class="n">UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">)</span>
+<span class="n">HAL_UART_Receive_DMA</span><span class="p">(</span><span class="n">UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>中断处理</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">HAL_UART_IRQHandler</span><span class="p">(</span><span class="n">UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">)</span>
+<span class="n">HAL_UART_TxCpltCallback</span><span class="p">(</span><span class="n">UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">)</span>
+<span class="n">HAL_UART_RxCpltCallback</span><span class="p">(</span><span class="n">UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_3">使用</h3>
+<p>初始化代码cubemx可以生成。只需关注数据传输，数据传输有三个编程模式</p>
+<ul>
+<li>轮询方式</li>
+<li>中断方式（IT)</li>
+<li>DMA方式（DMA）</li>
+</ul>
+<p>先只考虑其中的中断方式。</p>
+<h4 id="_4">全局变量</h4>
+<p>main函数外，定义全局变量，代表发送和接受缓冲区</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cm">/* USER CODE BEGIN PV */</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">recv_buffer</span><span class="p">[</span><span class="mi">128</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">send_buffer</span><span class="p">[</span><span class="mi">128</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
+<span class="cm">/* USER CODE END PV */</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_5">接收</h4>
+<p>main函数中，在while之外，启动接收</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cm">/* USER CODE BEGIN 2 */</span>
+<span class="n">HAL_UART_Receive_IT</span><span class="p">(</span><span class="o">&amp;</span><span class="n">huart1</span><span class="p">,</span><span class="w"> </span><span class="n">recv_buffef</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="cm">/* USER CODE END 2 */</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_6">中断处理</h4>
+<p>main函数外，定义回调函数，内部书写比较自由</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cm">/* USER CODE BEGIN 4 */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">HAL_UART_RxCpltCallback</span><span class="p">(</span><span class="n">UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">HAL_GPIO_TogglePin</span><span class="p">(</span><span class="n">GPIOA</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_PIN_2</span><span class="p">);</span>
+<span class="w">    </span><span class="n">memcpy</span><span class="p">(</span><span class="n">send_buffer</span><span class="p">,</span><span class="w"> </span><span class="n">recv_buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="w">    </span><span class="n">HAL_UART_Transmit_IT</span><span class="p">(</span><span class="n">huart</span><span class="p">,</span><span class="w"> </span><span class="n">send_buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="w">    </span><span class="n">HAL_UART_Receive_IT</span><span class="p">(</span><span class="n">huart</span><span class="p">,</span><span class="w"> </span><span class="n">recv_buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cm">/* USER CODE END 4 */</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意：这个函数名<strong>一定不能</strong>拼错了（Cplt是完成Complete的意思），拼错后也不会报错，没有这个函数也不会报错。因为:</p>
+<blockquote>
+<p>在 STM32 HAL 库中，HAL_UART_RxCpltCallback 是一个弱定义（__weak）的函数。这意味着，如果用户没有显式地定义这个函数，链接器会使用库中提供的默认实现；如果用户定义了这个函数，链接器会使用用户提供的实现而不是默认的实现。</p>
+</blockquote>
+<p>可用的回调，可以通过<code>stm32xxxx_hal_uart.h</code>文件查看：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">TxHalfCpltCallback</span><span class="p">)(</span><span class="k">struct</span><span class="w"> </span><span class="nc">__UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">);</span><span class="w">        </span><span class="cm">/*!&lt; UART Tx Half Complete Callback        */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">TxCpltCallback</span><span class="p">)(</span><span class="k">struct</span><span class="w"> </span><span class="nc">__UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">);</span><span class="w">            </span><span class="cm">/*!&lt; UART Tx Complete Callback             */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">RxHalfCpltCallback</span><span class="p">)(</span><span class="k">struct</span><span class="w"> </span><span class="nc">__UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">);</span><span class="w">        </span><span class="cm">/*!&lt; UART Rx Half Complete Callback        */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">RxCpltCallback</span><span class="p">)(</span><span class="k">struct</span><span class="w"> </span><span class="nc">__UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">);</span><span class="w">            </span><span class="cm">/*!&lt; UART Rx Complete Callback             */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">ErrorCallback</span><span class="p">)(</span><span class="k">struct</span><span class="w"> </span><span class="nc">__UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">);</span><span class="w">             </span><span class="cm">/*!&lt; UART Error Callback                   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">AbortCpltCallback</span><span class="p">)(</span><span class="k">struct</span><span class="w"> </span><span class="nc">__UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">);</span><span class="w">         </span><span class="cm">/*!&lt; UART Abort Complete Callback          */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">AbortTransmitCpltCallback</span><span class="p">)(</span><span class="k">struct</span><span class="w"> </span><span class="nc">__UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">);</span><span class="w"> </span><span class="cm">/*!&lt; UART Abort Transmit Complete Callback */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">AbortReceiveCpltCallback</span><span class="p">)(</span><span class="k">struct</span><span class="w"> </span><span class="nc">__UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">);</span><span class="w">  </span><span class="cm">/*!&lt; UART Abort Receive Complete Callback  */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">WakeupCallback</span><span class="p">)(</span><span class="k">struct</span><span class="w"> </span><span class="nc">__UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">);</span><span class="w">            </span><span class="cm">/*!&lt; UART Wakeup Callback                  */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">RxEventCallback</span><span class="p">)(</span><span class="k">struct</span><span class="w"> </span><span class="nc">__UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Pos</span><span class="p">);</span><span class="w"> </span><span class="cm">/*!&lt; UART Reception Event Callback     */</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">MspInitCallback</span><span class="p">)(</span><span class="k">struct</span><span class="w"> </span><span class="nc">__UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">);</span><span class="w">           </span><span class="cm">/*!&lt; UART Msp Init callback                */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="w"> </span><span class="n">MspDeInitCallback</span><span class="p">)(</span><span class="k">struct</span><span class="w"> </span><span class="nc">__UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">);</span><span class="w">         </span><span class="cm">/*!&lt; UART Msp DeInit callback              */</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="spi">SPI</h2>
+<p>SPI（Serial Peripheral Interface，串行外设接口）是一种同步串行通信协议，通常用于微控制器与各种外围设备（如传感器、存储设备、显示屏等）之间的通信。SPI 由 Motorola 公司开发，是一种全双工通信协议，具有高速、简单和灵活的特点。</p>
+<p>四条主要信号线：</p>
+<ul>
+<li>MISO（Master In Slave Out）：主设备输入、从设备输出。这条线用于从设备向主设备发送数据。</li>
+<li>MOSI（Master Out Slave In）：主设备输出、从设备输入。这条线用于主设备向从设备发送数据。</li>
+<li>SCLK（Serial Clock）：串行时钟信号，由主设备生成，用于同步数据传输。</li>
+<li>SS（Slave Select）或 CS（Chip Select）：从设备选择信号。通常由主设备控制，用于选择哪个从设备进行通信。</li>
+</ul>
+<h3 id="hal_2">HAL函数</h3>
+<p>和串口一样，也是支持轮询、中断、DMA三种传输方式。</p>
+<ul>
+<li>初始化与配置</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="nf">HAL_SPI_Init</span><span class="p">(</span><span class="n">SPI_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">hspi</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>数据传输</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="nf">HAL_SPI_Transmit</span><span class="p">(</span><span class="n">SPI_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">hspi</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">Timeout</span><span class="p">);</span>
+<span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="nf">HAL_SPI_Receive</span><span class="p">(</span><span class="n">SPI_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">hspi</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">Timeout</span><span class="p">);</span>
+<span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="nf">HAL_SPI_TransmitReceive</span><span class="p">(</span><span class="n">SPI_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">hspi</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pTxData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pRxData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">Timeout</span><span class="p">);</span>
+
+<span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="nf">HAL_SPI_Transmit_IT</span><span class="p">(</span><span class="n">SPI_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">hspi</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">);</span>
+<span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="nf">HAL_SPI_Receive_IT</span><span class="p">(</span><span class="n">SPI_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">hspi</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">);</span>
+<span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="nf">HAL_SPI_TransmitReceive_IT</span><span class="p">(</span><span class="n">SPI_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">hspi</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pTxData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pRxData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">);</span>
+
+<span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="nf">HAL_SPI_Transmit_DMA</span><span class="p">(</span><span class="n">SPI_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">hspi</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">);</span>
+<span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="nf">HAL_SPI_Receive_DMA</span><span class="p">(</span><span class="n">SPI_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">hspi</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">);</span>
+<span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="nf">HAL_SPI_TransmitReceive_DMA</span><span class="p">(</span><span class="n">SPI_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">hspi</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pTxData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pRxData</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>状态监控</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">HAL_SPI_StateTypeDef</span><span class="w"> </span><span class="nf">HAL_SPI_GetState</span><span class="p">(</span><span class="n">SPI_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">hspi</span><span class="p">);</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="nf">HAL_SPI_GetError</span><span class="p">(</span><span class="n">SPI_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">hspi</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="c">C语言知识补充</h2>
+<p>之前没关注这个</p>
+<h3 id="_7">关于弱定义</h3>
+<blockquote>
+<p>弱定义（Weak Symbol）是一种符号（可以是函数或变量）的声明方式，它允许在链接过程中，如果没有强定义（Strong Symbol）与之对应，则使用该弱定义。弱定义通常用于库和框架中，以提供默认实现或默认值，而用户可以通过提供自己的强定义来覆盖这些默认行为。</p>
+</blockquote>
+<p>不同的编译器通过不同的方式支持弱定义。以下是一些常见编译器的支持方式：</p>
+<ul>
+<li>GCC 和 Clang：使用 <strong>attribute</strong>((weak))。</li>
+<li>ARM 编译器：使用 __weak。</li>
+<li>MSVC：不直接支持，但可以通过链接器选项 /alternatename 实现类似功能。</li>
+</ul>
+<h2 id="_8">参考</h2>
+<ul>
+<li>https://wiki.st.com/stm32mcu/wiki/Category:Getting_started_with_STM32_system_peripherals</li>
+<li><a href="https://en.wikipedia.org/wiki/Weak_symbol">Weak symbol - Wikipedia</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-06-02T20:00:00+08:00" pubdate>Sun 02 June 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/ee.html'>EE</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/stm32.html">STM32</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

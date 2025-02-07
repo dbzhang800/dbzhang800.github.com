@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Gitlab与Gerrit小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Gitlab与Gerrit小记</h1>
+    <p class="meta">
+<time datetime="2023-11-23T20:11:00+08:00" pubdate>Thu 23 November 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>9年前在公司内网部署了Gerrit2，一直使用至今。是时候重现看看Gerrit2和GitLab了...</p>
+</blockquote>
+<h2 id="gerrit-gitlab">Gerrit 与 GitLab</h2>
+<p>Gerrit在特定领域（如Android开源项目）和特定组织中仍然很受欢迎，</p>
+<p>GitLab的用户群更加广泛。GitLab提供了更全面的功能和工具。</p>
+<h3 id="gerrit">Gerrit</h3>
+<ul>
+<li><a href="https://www.gerritcodereview.com/">Gerrit Code Review | Gerrit Code Review</a></li>
+</ul>
+<p>Gerrit： Gerrit是由Google的一位工程师Shawn  Pearce于2008年创建的。最初，Gerrit是为了解决Android开源项目的代码审查需求而开发的。Gerrit提供了一种基于Web的代码审查工作流，允许开发人员在代码变更之前进行同行评审和讨论。它的目标是提供一个高效的代码审核平台，以促进团队合作和代码质量的提高。</p>
+<h3 id="gitlab">GitLab</h3>
+<ul>
+<li><a href="https://about.gitlab.com/">The most-comprehensive AI-powered DevSecOps platform | GitLab</a></li>
+</ul>
+<p>GitLab： GitLab是由Dmitriy Zaporozhets和Valery  Sizov于2011年创建的。最初，GitLab只是一个基于Git的代码托管平台，它提供了类似于GitHub的功能，但在自托管方面更加强调。然而，随着时间的推移，GitLab逐渐发展成为一个全面的DevOps平台，为软件开发生命周期的各个阶段提供支持。</p>
+<h2 id="_1">对比</h2>
+<p>Gerrit2界面简单，专注于代码审核以变更集管理：强调逐行代码审核，基于变更集每个变更都是独立的单元，权限控制更细。</p>
+<p>Gitlab功能更全面，是一个DevOps平台。单就代码审核的话，比Gerrit2逊色。</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Gerrit</th>
+<th>GitLab</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>主要用途</strong></td>
+<td>代码审查和代码仓库管理</td>
+<td>DevOps 平台，集成代码仓库、CI/CD、项目管理</td>
+</tr>
+<tr>
+<td><strong>代码审查</strong></td>
+<td>强调逐行代码审查，适用于大规模代码库</td>
+<td>提供代码审查功能，但不如 Gerrit 专注</td>
+</tr>
+<tr>
+<td><strong>CI/CD</strong></td>
+<td>需要集成其他工具（如 Jenkins）</td>
+<td>内置 CI/CD 功能，支持自动化流水线</td>
+</tr>
+<tr>
+<td><strong>分支管理</strong></td>
+<td>基于变更集（Change Set），每个变更都是一个独立的单元</td>
+<td>基于 Git 分支模型，支持分支保护和合并请求</td>
+</tr>
+<tr>
+<td><strong>权限控制</strong></td>
+<td>细粒度权限控制，适合复杂项目</td>
+<td>提供角色和权限管理，适合团队协作</td>
+</tr>
+<tr>
+<td><strong>用户界面</strong></td>
+<td>相对简洁，专注于代码审查和变更集管理</td>
+<td>现代化界面，包含丰富的项目管理功能</td>
+</tr>
+<tr>
+<td><strong>集成工具</strong></td>
+<td>需要手动集成多种工具和服务</td>
+<td>集成了大量 DevOps 工具，如 Docker、Kubernetes</td>
+</tr>
+<tr>
+<td><strong>易用性</strong></td>
+<td>学习曲线较陡峭，适合有经验的开发团队</td>
+<td>易于上手，适合各种规模的开发团队</td>
+</tr>
+<tr>
+<td><strong>托管选项</strong></td>
+<td>主要为自托管</td>
+<td>提供自托管和 GitLab.com 托管服务</td>
+</tr>
+<tr>
+<td><strong>社区与支持</strong></td>
+<td>社区支持，企业版需付费支持</td>
+<td>社区版免费，企业版提供商业支持</td>
+</tr>
+<tr>
+<td><strong>扩展性</strong></td>
+<td>可通过插件和脚本扩展功能</td>
+<td>丰富的 API 和插件市场，易于扩展</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_2">其他人总结</h3>
+<ul>
+<li>https://zhangmengpl.gitbooks.io/gitlab-guide/content/gitlabvsgerrit.html</li>
+</ul>
+<p>风格</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>gitlab的特点是一个人维系一个分支。
+gerrit的特点是一个团队维系一个分支。（这里的分支对应一个业务需求）
+</code></pre></div></td></tr></table></div>
+
+<p>权限</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>gitlab提供了比较多的选择，可以根据需要创建project，每个团队可以根据自己的需求管理自己的代码，方式更加的灵活。
+gerrit比较单一，而且权限配置比较复杂，往往都是要联系管理员做出修改，每个团队很难做到对代码的个性化管理。
+</code></pre></div></td></tr></table></div>
+
+<p>评审</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>gitlab是以merge request作为一次review，merge request中可能包含多个 commit，如果review不通过也不需要发起另一次merge request。
+gerrit是以commit作为一次review，由于changeId的存在，可以对一次commit反复的进行review。
+如果task划分的粒度够细的话，并不会影响各个团队的review习惯。
+</code></pre></div></td></tr></table></div>
+
+<p>团队协作：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>gitlab可以选择公开代码，团队间可以看到互相的代码，有利于团队的协作。
+gerrit由于权限控制问题，只能在权限范围内公开代码。
+</code></pre></div></td></tr></table></div>
+
+<p>共享</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>gitlab 可以提供issues，wiki等功能方便开发者与使用者之间的沟通，并且gitlab可以无缝的与一些项目管理工具集成，比如:jira。
+gerrit 这个方面比较欠缺。
+gitlab每个项目都有自己的wiki，很方便查看。
+</code></pre></div></td></tr></table></div>
+
+<h2 id="mediawiki-gitlab">维基（MediaWiki） gitlab迁移</h2>
+<p>2020年，从gerrit迁移到gitalb。他们做了大量评估工作</p>
+<p>操作比较</p>
+<ul>
+<li>https://www.mediawiki.org/wiki/GitLab/Gerrit_to_GitLab</li>
+</ul>
+<p>比如：</p>
+<ul>
+<li>gerrit能够 -2, -1, 0, 1, 2打分。-2可以阻挡后续进行</li>
+<li>gerrit有dashboards看板，待review的change。可以设置email通知</li>
+<li>gerrit方便添加reviewer人员</li>
+<li>gerrit的评审是基于 commit 而不是 branch 的，粒度更细</li>
+</ul>
+<p>迁移决定：</p>
+<ul>
+<li><a href="https://www.mediawiki.org/wiki/GitLab_consultation">GitLab consultation - MediaWiki</a></li>
+<li>[From Gerrit to Gitlab: join the discussion – <a href="https://techblog.wikimedia.org/2020/09/21/from-gerrit-to-gitlab-join-the-discussion/">[WM:TECHBLOG]] (wikimedia.org)</a></li>
+<li><a href="https://www.mediawiki.org/wiki/GitLab">GitLab - MediaWiki</a></li>
+</ul>
+<p>注意：mediawiki不使用 gitlab的 wiki 等功能，只是用git相关的功能以及review</p>
+<h2 id="gerrit_1">其他人对 gerrit抱怨</h2>
+<p>主要是gerrit与后面主流的github、gitlab、bitbucket工作流不太一样。</p>
+<ul>
+<li><a href="https://www.reddit.com/r/git/comments/kbn8ri/gerrit_is_insanity_why_should_i_use_it/">Gerrit is Insanity. Why should I use it? : r/git (reddit.com)</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-11-23T20:11:00+08:00" pubdate>Thu 23 November 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/git.html">Git</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

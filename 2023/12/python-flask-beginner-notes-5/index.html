@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Python flask入门笔记（五） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/python.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Python flask入门笔记（五）</h1>
+    <p class="meta">
+<time datetime="2023-12-18T22:58:00+08:00" pubdate>Mon 18 December 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><ul>
+<li><a href="https://blog.debao.me/2023/12/python-wsgi-beginner-notes/">WSGI入门笔记</a>：WSGI入门</li>
+<li><a href="https://blog.debao.me/2023/12/python-flask-beginner-notes-1/">Flask入门一</a>：Flask入门与routing机制（wekzeug）</li>
+<li><a href="https://blog.debao.me/2023/12/python-flask-beginner-notes-2/">Flask入门二</a>：Flask模板与Jinja</li>
+<li><a href="https://blog.debao.me/2023/12/python-flask-beginner-notes-3/">Flask入门三</a>：Flask获取HTTP请求数据</li>
+<li><a href="https://blog.debao.me/2023/12/python-flask-beginner-notes-4/">Flask入门四</a>：Flask应用配置与routing中的subdomain</li>
+<li>Flask入门五：Flask路由之endpoint参数</li>
+</ul>
+<blockquote>
+<p>接触flask这几天，一直在遇到endpoint 这个东西。不能一直跳过它...</p>
+</blockquote>
+<h2 id="endpoint">endpoint</h2>
+<h3 id="_1">例子</h3>
+<p>在前面，一直在使用装饰器<code>route()</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;Hello World!&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这个写法等价于显式使用<code>endpoint</code>的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;Hello World!&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果不用装饰器，也可以用<code>add_url_rule</code>写成：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;Hello World!&quot;</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>更容易理解的，可能是写成这样？：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;Hello World!&quot;</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;index&#39;</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">view_functions</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span>
+</code></pre></div></td></tr></table></div>
+
+<p>从这儿可以看到：</p>
+<ul>
+<li>URL rule 和 endpoint 是一组</li>
+<li>endpoint 和 <code>view_func</code>函数 是另一组</li>
+</ul>
+<h3 id="route">route() 参数</h3>
+<p>而不管装饰器<code>route</code>，还是函数<code>add_url_rule</code>，都接收如下参数：</p>
+<ul>
+<li>rule：URL规则</li>
+<li><strong>endpoint</strong>：一个字符串，代表URL规则。Flask默认使用<code>view_func</code>的名字作为endpoint。</li>
+<li><code>view_func</code>：endpoint对应的<code>view_func</code>。一个<code>view_func</code>可以对应多个endpoint。装饰器route()不用指定这个参数，会自动生成。<code>add_rul_rule()</code>如果不指定，需要手动修改<code>view_functions</code>将其加入进去。</li>
+<li>defaults：一个dict，为变量定义默认值。</li>
+<li>subdomain：子域名，与应用配置<code>SERVER_NAME</code>相关。</li>
+<li><code>**options</code>：其他选项，传递给Rule对象，通过关键字参数指定。常用的有 <strong>method</strong>。</li>
+</ul>
+<h3 id="url_map-view_functions">url_map 与 view_functions</h3>
+<p>Flask内部维护了两张表：</p>
+<ul>
+<li><code>url_map</code>：url与endpoint的关系</li>
+<li><code>view_functions</code>：endpoint与function的关系</li>
+</ul>
+<p>要作为<code>view_functions</code>的key，endpoint需要是唯一的（等同于一个标识符）。多个不同的endpoint可以对应同一个<code>view_func</code>。</p>
+<p>看一个例子</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/debao&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;Hello World!&quot;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">url_map</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">view_functions</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>其控制台，结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nf">Map</span><span class="p">([</span><span class="o">&lt;</span><span class="kt">Rule</span><span class="w"> </span><span class="s">&#39;/static/&lt;filename&gt;&#39;</span><span class="w"> </span><span class="p">(</span><span class="n">GET</span><span class="p">,</span><span class="w"> </span><span class="n">HEAD</span><span class="p">,</span><span class="w"> </span><span class="n">OPTIONS</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">static</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w"> </span><span class="o">&lt;</span><span class="kt">Rule</span><span class="w"> </span><span class="s">&#39;/debao&#39;</span><span class="w"> </span><span class="p">(</span><span class="n">GET</span><span class="p">,</span><span class="w"> </span><span class="n">HEAD</span><span class="p">,</span><span class="w"> </span><span class="n">OPTIONS</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">index</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w"> </span><span class="o">&lt;</span><span class="kt">Rule</span><span class="w"> </span><span class="s">&#39;/&#39;</span><span class="w"> </span><span class="p">(</span><span class="n">GET</span><span class="p">,</span><span class="w"> </span><span class="n">HEAD</span><span class="p">,</span><span class="w"> </span><span class="n">OPTIONS</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">index</span><span class="o">&gt;</span><span class="p">])</span>
+
+<span class="p">{</span><span class="s">&#39;static&#39;</span><span class="o">:</span><span class="w"> </span><span class="o">&lt;</span><span class="kr">function</span><span class="w"> </span><span class="n">Flask</span><span class="p">.</span><span class="n">__init__</span><span class="p">.</span><span class="o">&lt;</span><span class="n">locals</span><span class="o">&gt;</span><span class="p">.</span><span class="o">&lt;</span><span class="n">lambda</span><span class="o">&gt;</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="mh">0x000001CBABC6DBC0</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;index&#39;</span><span class="o">:</span><span class="w"> </span><span class="o">&lt;</span><span class="kr">function</span><span class="w"> </span><span class="nf">index</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="mh">0x000001CBAE6E7600</span><span class="o">&gt;</span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>从这儿可以看到：</p>
+<ul>
+<li>URL到"index"这个endpoint有两个规则</li>
+<li>"index"这个endpoint到view有一个规则</li>
+</ul>
+<ul>
+<li>flask有夹带私货：把静态资源static 规则默认添加进去了</li>
+</ul>
+<h3 id="url_for">url_for()</h3>
+<p>这个函数接收的第一个参数是 endpoint。用于反向构建URL字符串。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code> <span class="n">url_for</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">_anchor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_scheme</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_external</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">values</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这个函数也挺复杂，受<code>SERVER_NAME</code>等一堆东西影响...</p>
+<h2 id="werkzeug">Werkzeug</h2>
+<p>Werkzeug，/ˈvɛrkʦɔyk/，德语，工具的意思。好吧，已经好几天了，看着音标我还是不会发这个音。</p>
+<p>其实到现在为止，我还是没理解到endpoint的设计精髓，只是看到它把URL和对应处理函数<code>view_func</code>的映射拆成两部分，有助于解耦。</p>
+<p>换个角度看：URL到 endpoint的映射，是wekzeug框架的内容；而endpoint到view函数的映射，是属于Flask自己内容。真要找答案，后面需要了解werkzeug才行</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">werkzeug.routing</span> <span class="kn">import</span> <span class="n">Map</span><span class="p">,</span> <span class="n">Rule</span>
+
+<span class="n">url_map</span> <span class="o">=</span> <span class="n">Map</span><span class="p">([</span>
+    <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;blog/index&#39;</span><span class="p">),</span>
+    <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&lt;int:year&gt;/&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;blog/archive&#39;</span><span class="p">),</span>
+    <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&lt;int:year&gt;/&lt;int:month&gt;/&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;blog/archive&#39;</span><span class="p">),</span>
+    <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&lt;int:year&gt;/&lt;int:month&gt;/&lt;int:day&gt;/&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;blog/archive&#39;</span><span class="p">),</span>
+    <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/about&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;blog/about_me&#39;</span><span class="p">),</span>
+    <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/feeds/&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;blog/feeds&#39;</span><span class="p">),</span>
+    <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/feeds/&lt;feed_name&gt;.rss&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;blog/show_feed&#39;</span><span class="p">)</span>
+<span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+
+<p>回到flask，还可以这么玩（先建立URL和endpoint关系，再使用endpoint装饰器）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">werkzeug.routing</span> <span class="kn">import</span> <span class="n">Rule</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">url_map</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">))</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">endpoint</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_index</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;Hello world&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_2">参考</h2>
+<ul>
+<li>https://github.com/pallets/flask</li>
+<li>https://flask.palletsprojects.com</li>
+<li>https://werkzeug.palletsprojects.com/en/3.0.x/routing/</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-12-18T22:58:00+08:00" pubdate>Mon 18 December 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/python.html'>Python</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/python.html">python</a>,    <a class="category" href="https://blog.debao.me/tags/web.html">web</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

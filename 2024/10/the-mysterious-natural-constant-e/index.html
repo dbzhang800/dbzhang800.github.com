@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>神秘的自然常数e &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/science.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">神秘的自然常数e</h1>
+    <p class="meta">
+<time datetime="2024-10-11T09:39:00+08:00" pubdate>Fri 11 October 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>数字 <span class="math inline">e</span> 在数学中具有重要的地位，与 0、1、<span class="math inline">\pi</span> 和 <span class="math inline">i</span> 并列。这五个数都出现在欧拉恒等式 <span class="math inline">e^{i\pi} + 1 = 0</span> 这一个公式中。但 <span class="math inline">e</span> 不像其他数学常数具有清晰几何意义，它的发现源于对增长和变化的研究，其值约为 <code>2.718281828459045…</code>，是一个无理数和超越数，无法用分数表示，也不满足任何代数方程。</p>
+<p>它有多个指代名称：</p>
+<ul>
+<li>自然常数（Natural constant）/自然底数（Natural base）</li>
+<li>欧拉数（Euler's number）</li>
+<li>纳皮尔常数（Napier's constant）</li>
+</ul>
+<blockquote>
+<p>使用欧拉数称呼它时要注意上下文，也需要和欧拉常数γ区分。</p>
+</blockquote>
+<h2 id="_1">历史</h2>
+<blockquote>
+<p><span class="math inline">e</span> 的发现通常归功于 17 世纪后期的雅各布·伯努利（Jacob Bernoulli），他在研究复利（compound interest)问题时偶然发现了它。</p>
+</blockquote>
+<ul>
+<li><strong>1614年</strong>: 约翰·纳皮尔（John Napier）发明了<strong>对数</strong>，间接推动了 <span class="math inline">e</span> 的发现。</li>
+<li><strong>1683年</strong>: 雅各布·伯努利（Jacob Bernoulli）在研究复利时首次接触到自然常数 <span class="math inline">e</span>。</li>
+<li><strong>1690年代</strong>: 莱布尼茨（Leibniz）在微积分中为后来发现 <span class="math inline">e^x</span> 的导数性质奠定了基础。</li>
+<li><strong>1731年</strong>: 莱昂哈德·欧拉（Leonhard Euler）首次使用符号 <span class="math inline">e</span> 表示该常数。</li>
+<li><strong>1737年</strong>: 欧拉系统化了 <span class="math inline">e</span> 的定义，并推广了其在数学中的应用。</li>
+<li><strong>1748年</strong>: 欧拉推导出著名的欧拉公式 <span class="math inline">e^{ix} = \cos(x) + i \sin(x)</span>。</li>
+<li><strong>1873年</strong>：夏尔·埃尔米特（Charles Hermite）证明 <span class="math inline">e</span> 为超越数（transcendental number），这是数学史上的里程碑式成就。</li>
+</ul>
+<blockquote>
+<p>超越数（transcendental number）：指的是不满足任何有理系数的多项式方程的实数或复数。换句话说，超越数不是代数数（algebraic number），不能是任何整系数多项式的根。</p>
+</blockquote>
+<h2 id="_2">定义</h2>
+<p><span class="math inline">e</span> 一般使用复利增长的概念进行定义，也可以使用级数展开方式。</p>
+<h3 id="_3">通过极限</h3>
+<blockquote>
+<p>这是源自<strong>复利增长</strong>的一个定义。当复利的计算频率趋向无穷时，复利的极限值就是自然常数 <span class="math inline">e</span>。</p>
+</blockquote>
+<p>假设初始金额 <span class="math inline">P = ¥1</span>，年利率 <span class="math inline">r = 100%</span></p>
+<table>
+<thead>
+<tr>
+<th>复利频率</th>
+<th>每年复利次数</th>
+<th>公式</th>
+<th>1年后的金额</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>每年</td>
+<td>1</td>
+<td><span class="math inline">1 \left(1 + \frac{1}{1}\right)^{1} = 2</span></td>
+<td>¥2.00000000</td>
+</tr>
+<tr>
+<td>每半年</td>
+<td>2</td>
+<td><span class="math inline">1 \left(1 + \frac{1}{2}\right)^{2} = \left(\frac{3}{2}\right)^2 = 2.25</span></td>
+<td>¥2.25000000</td>
+</tr>
+<tr>
+<td>每季度</td>
+<td>4</td>
+<td><span class="math inline">1 \left(1 + \frac{1}{4}\right)^{4} = \left(\frac{5}{4}\right)^4 \approx 2.44140625</span></td>
+<td>¥2.44140625</td>
+</tr>
+<tr>
+<td>每月</td>
+<td>12</td>
+<td><span class="math inline">1 \left(1 + \frac{1}{12}\right)^{12} \approx 2.61303529</span></td>
+<td>¥2.61303529</td>
+</tr>
+<tr>
+<td>每周</td>
+<td>52</td>
+<td><span class="math inline">1 \left(1 + \frac{1}{52}\right)^{52} \approx 2.692596954</span></td>
+<td>¥2.692596954</td>
+</tr>
+<tr>
+<td>每天</td>
+<td>365</td>
+<td><span class="math inline">1 \left(1 + \frac{1}{365}\right)^{365} \approx 2.714567482</span></td>
+<td>¥2.714567482</td>
+</tr>
+<tr>
+<td>每小时</td>
+<td>8760</td>
+<td><span class="math inline">1 \left(1 + \frac{1}{8760}\right)^{8760} \approx 2.718126693</span></td>
+<td>¥2.718126693</td>
+</tr>
+<tr>
+<td>每分钟</td>
+<td>525600</td>
+<td><span class="math inline">1 \left(1 + \frac{1}{525600}\right)^{525600} \approx 2.718279243</span></td>
+<td>¥2.718279243</td>
+</tr>
+</tbody>
+</table>
+<p>随着复利频率的增加，金额逐渐逼近自然常数，可以通过以下极限定义：</p>
+<div class="math display">
+e = \lim_{n \to \infty} \left( 1 + \frac{1}{n} \right)^n
+</div>
+
+<h3 id="_4">通过级数展开</h3>
+<p>也可以通过其<strong>泰勒级数</strong>展开来定义：</p>
+<div class="math display">
+e^x = \sum_{n=0}^{\infty} \frac{x^n}{n!}
+</div>
+
+<p>当 <span class="math inline">x = 1</span> 时，我们可以得到 <span class="math inline">e</span> 的级数展开：</p>
+<div class="math display">
+e = 1 + 1 + \frac{1}{2!} + \frac{1}{3!} + \frac{1}{4!} + \cdots
+</div>
+
+<blockquote>
+<p>这个无穷级数可以用于计算 <span class="math inline">e</span> 的精确值，并且它收敛得非常快。</p>
+</blockquote>
+<h2 id="_5">微分性质</h2>
+<p><span class="math inline">e</span> 是<strong>唯一一个</strong>满足其导数等于自身的函数。即对于函数 <span class="math inline">f(x) = e^x</span> ，有：</p>
+<div class="math display">
+\frac{d}{dx} e^x = e^x
+</div>
+
+<p>这一特性使得 <span class="math inline">e</span> 在微积分中的应用非常广泛。</p>
+<p>看两个例子：</p>
+<h3 id="_6">齐次常系数微分方程</h3>
+<p>齐次常系数微分方程(homogeneous constant-coefficient differential equation)指的是所有项都与未知函数及其导数有关，且系数为常数，且方程右侧等于零的微分方程。</p>
+<blockquote>
+<p>常系数微分方程有点像y的多项式，只不过它用的是y的导数，而不是幂。</p>
+</blockquote>
+<h4 id="_7">一阶齐次常系数微分方程</h4>
+<div class="math display">
+\frac{dy}{dx} + py = 0
+</div>
+
+<p>解的形式：</p>
+<div class="math display">
+y(x) = C e^{-px}
+</div>
+
+<h4 id="_8">二阶齐次常系数微分方程</h4>
+<div class="math display">
+y'' + p y' + q y = 0
+</div>
+
+<p>根据其特征方程：</p>
+<div class="math display">
+r^2 + pr + q = 0
+</div>
+
+<p>分别讨论：</p>
+<ul>
+<li><strong>两个不同实根</strong> <span class="math inline">r_1</span> 和 <span class="math inline">r_2</span>：</li>
+</ul>
+<div class="math display">
+y(x) = C_1 e^{r_1 x} + C_2 e^{r_2 x}
+</div>
+
+<ul>
+<li><strong>两个相同实根</strong> <span class="math inline">r_1 = r_2 = r</span>：</li>
+</ul>
+<div class="math display">
+y(x) = (C_1 + C_2 x) e^{r x}
+</div>
+
+<ul>
+<li><strong>两个共轭复根</strong> <span class="math inline">r_1 = \alpha + i\beta</span>，<span class="math inline">r_2 = \alpha - i\beta</span>：</li>
+</ul>
+<div class="math display">
+y(x) = e^{\alpha x} (C_1 \cos(\beta x) + C_2 \sin(\beta x))
+</div>
+
+<h3 id="_9">泰勒级数</h3>
+<blockquote>
+<p><span class="math inline">e^x</span>这个微分特性配合泰勒级数/麦克劳林级数很容易展开。</p>
+</blockquote>
+<p><strong>泰勒级数</strong>是将一个函数在某点附近通过无穷级数展开的方式来近似表示。给定函数 <span class="math inline">f(x)</span> 在点 <span class="math inline">a</span> 处，如果该函数在 <span class="math inline">a</span> 附近具有足够的导数，那么它可以用以下形式的<strong>泰勒级数</strong>表示：</p>
+<div class="math display">
+f(x) = f(a) + f'(a)(x - a) + \frac{f''(a)}{2!}(x - a)^2 + \frac{f^{(3)}(a)}{3!}(x - a)^3 + \cdots
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">f^{(n)}(a)</span> 表示函数 <span class="math inline">f(x)</span> 在点 <span class="math inline">a</span> 处的第 <span class="math inline">n</span> 阶导数。</li>
+<li><span class="math inline">n!</span> 表示 <span class="math inline">n</span> 的阶乘，即 <span class="math inline">n! = n \cdot (n-1) \cdot \dots \cdot 1</span>。</li>
+</ul>
+<blockquote>
+<p>当 <span class="math inline">a = 0</span> 时，泰勒级数简化为<strong>麦克劳林级数</strong>。</p>
+</blockquote>
+<p>函数 <span class="math inline">e^x</span> 在 <span class="math inline">a = 0</span> 处的麦克劳林级数为：</p>
+<div class="math display">
+e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \frac{x^4}{4!} + \cdots
+</div>
+
+<p>这个级数在整个实数范围内收敛，并且是 <span class="math inline">e^x</span> 的精确表示。</p>
+<h2 id="_10">自然对数</h2>
+<blockquote>
+<p>在16世纪末和17世纪初，科学、天文学和航海等领域需要进行大量的复杂计算，尤其是涉及到乘法、除法、乘方和开方的计算。这些计算在没有现代计算工具的情况下非常耗时且容易出错。为了简化这些繁琐的计算，纳皮尔提出对数，它可以将乘法运算转换为加法，将除法运算转换为减法，极大地减少计算的复杂性。</p>
+</blockquote>
+<h3 id="_11">对数</h3>
+<p>对于任意正数 <span class="math inline">x</span> 和底数 <span class="math inline">b</span>（<span class="math inline">b &gt; 0</span> 且 <span class="math inline">b \neq 1</span>），<span class="math inline">b</span> 的对数可以定义为：</p>
+<div class="math display">
+\log_b(x) = y \quad \text{当且仅当} \quad b^y = x
+</div>
+
+<p>常用的对数有以10为底数和以自然常数为底的。</p>
+<h3 id="_12">自然对数的底</h3>
+<p>自然常数也是<strong>自然对数</strong>（<span class="math inline">\ln(x)</span>）的底数。自然对数是 <span class="math inline">e^x</span> 的反函数：</p>
+<div class="math display">
+\ln(e) = 1
+</div>
+
+<p>涉及自然对数一些恒等式（注意大于0的条件），可放个全家福：</p>
+<table>
+<thead>
+<tr>
+<th><strong>恒等式</strong></th>
+<th><strong>解释</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math inline">\ln(1) = 0</span></td>
+<td>自然对数 1 的值为 0</td>
+</tr>
+<tr>
+<td><span class="math inline">\ln(e) = 1</span></td>
+<td>自然对数<span class="math inline">e</span> 的值为 1</td>
+</tr>
+<tr>
+<td><span class="math inline">\ln(ab) = \ln(a) + \ln(b)</span></td>
+<td>自然对数将乘法转化为加法</td>
+</tr>
+<tr>
+<td><span class="math inline">\ln\left(\frac{a}{b}\right) = \ln(a) - \ln(b)</span></td>
+<td>自然对数将除法转化为减法</td>
+</tr>
+<tr>
+<td><span class="math inline">\ln(a^b) = b \cdot \ln(a)</span></td>
+<td>对数的幂可以作为系数提到前面</td>
+</tr>
+<tr>
+<td><span class="math inline">\ln(e^x) = x</span></td>
+<td>自然对数与指数函数互为反函数</td>
+</tr>
+<tr>
+<td><span class="math inline">e^{\ln(x)} = x</span></td>
+<td>指数运算和自然对数互为反函数</td>
+</tr>
+<tr>
+<td><span class="math inline">\log_b(a) = \frac{\ln(a)}{\ln(b)}</span></td>
+<td>任意底数<span class="math inline">b</span> 的对数通过自然对数转换【换底公式】</td>
+</tr>
+<tr>
+<td><span class="math inline">\frac{d}{dx} \ln(x) = \frac{1}{x}</span></td>
+<td>自然对数函数的导数【神奇】</td>
+</tr>
+<tr>
+<td><span class="math inline">\int \ln(x) \, dx = x \ln(x) - x + C</span></td>
+<td>自然对数函数的积分公式</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1x">1/x 的积分</h3>
+<blockquote>
+<p>难以想象，<span class="math inline">1/x</span>的积分会是自然对数 <span class="math inline">\ln(x)</span>。</p>
+</blockquote>
+<p>在微积分中，幂函数 <span class="math inline">f(x) = x^n</span> 的积分通常遵循一个简单的规则，称为<strong>幂函数积分法则</strong>。对于 <span class="math inline">n \neq -1</span> 的幂函数，积分公式为：</p>
+<div class="math display">
+\int x^n \, dx = \frac{x^{n+1}}{n+1} + C
+</div>
+
+<p>当 <span class="math inline">n = -1</span> 时，直接使用幂函数积分法则会导致分母为零（<span class="math inline">n + 1 = 0</span>），因此该公式不适用。这就使得 <span class="math inline">\frac{1}{x}</span>（即 <span class="math inline">x^{-1}</span>）变得特别，它的积分必须通过其他方法来处理。</p>
+<div class="math display">
+\int \frac{1}{x} \, dx = \ln |x| + C
+</div>
+
+<blockquote>
+<p>注意公式中的绝对值，这可以写成一个分段函数，而且两段的 <span class="math inline">C</span> 的值还不一样。</p>
+</blockquote>
+<p>这一性质源自对数函数的定义。自然对数函数 <span class="math inline">\ln(x)</span> 是 <span class="math inline">e^x</span> 的反函数，并且它的导数恰好是 <span class="math inline">\frac{1}{x}</span>：</p>
+<div class="math display">
+\frac{d}{dx} \ln(x) = \frac{1}{x}
+</div>
+
+<blockquote>
+<p>该公式的证明直接使用导数定义（并配合对数法则）进行。</p>
+</blockquote>
+<h2 id="_13">与复数（三角函数）的关系</h2>
+<p>在<strong>欧拉公式</strong>中：</p>
+<div class="math display">
+e^{i\theta} = \cos(\theta) + i\sin(\theta)
+</div>
+
+<p>当 <span class="math inline">\theta = \pi</span> 时，欧拉公式推导出一个非常美丽的结果，称为<strong>欧拉恒等式</strong>：</p>
+<div class="math display">
+e^{i\pi} + 1 = 0
+</div>
+
+<p>这个公式将数学中五个最重要的常数 <span class="math inline">e</span>、<span class="math inline">\pi</span>、<span class="math inline">i</span>、1 和 0 联系在了一起。</p>
+<h3 id="_14">复平面点坐标</h3>
+<p>在复平面极坐标系内，坐标点用<span class="math inline">(r, \theta)</span>表示，可以通过如下公式转到笛卡尔坐标系：</p>
+<div class="math display">
+x = r\cos(\theta)
+\\
+y = r\sin(\theta)
+</div>
+
+<p>所以，复数</p>
+<div class="math display">
+z = x + iy= r\cos(\theta) + r\sin(\theta)
+</div>
+
+<blockquote>
+<p>前面欧拉公式右侧是复平面单位圆上点的坐标。</p>
+</blockquote>
+<p>如果 <span class="math inline">(r, \theta)</span> 和 <span class="math inline">(x,y)</span>是同一个点，有</p>
+<div class="math display">
+x + iy = r e^{i\theta}
+</div>
+
+<h3 id="_15">欧拉公式证明</h3>
+<p>将<span class="math inline">e^{ix}</span> 的幂级数展开：</p>
+<div class="math display">
+e^{ix} = \sum_{n=0}^{\infty} \frac{(ix)^n}{n!}
+</div>
+
+<ul>
+<li>当 <span class="math inline">n</span> 为偶数时，<span class="math inline">(ix)^n = i^n \cdot x^n = (-1)^{n/2} \cdot x^n</span>，因为 <span class="math inline">i^2 = -1</span>。</li>
+<li>当 <span class="math inline">n</span> 为奇数时，<span class="math inline">(ix)^n = i^n \cdot x^n = (-1)^{(n-1)/2} \cdot i \cdot x^n</span>。</li>
+</ul>
+<p>将 <span class="math inline">e^{ix}</span> 的幂级数展开为偶数项和奇数项：</p>
+<div class="math display">
+e^{ix} = \sum_{n=0}^{\infty} \frac{(ix)^n}{n!} = \sum_{n=0}^{\infty} \frac{(-1)^{n} x^{2n}}{(2n)!} + i \sum_{n=0}^{\infty} \frac{(-1)^n x^{2n+1}}{(2n+1)!}
+</div>
+
+<p>其中：</p>
+<ul>
+<li>实部，是所有偶数幂项的和。它正是 <span class="math inline">\cos(x)</span>的泰勒展开式。</li>
+<li>虚部，是所有奇数幂项的和。它正是 <span class="math inline">\sin(x)</span>的泰勒展开式。</li>
+</ul>
+<h3 id="_16">双曲函数</h3>
+<blockquote>
+<p>双曲函数（<strong>hyperbolic functions</strong>）与三角函数类似，但定义在指数函数的基础上。最常用的双曲函数是<strong>双曲正弦</strong> <span class="math inline">\sinh(x)</span> 和<strong>双曲余弦</strong> <span class="math inline">\cosh(x)</span>。</p>
+</blockquote>
+<p>三角函数</p>
+<ul>
+<li><span class="math inline">\cos(\theta) = \frac{e^{i\theta} + e^{-i\theta}}{2}</span></li>
+<li><span class="math inline">\sin(\theta) = \frac{e^{i\theta} - e^{-i\theta}}{2i}</span></li>
+</ul>
+<p>双曲函数</p>
+<ul>
+<li><span class="math inline">\sinh(x) = \frac{e^x - e^{-x}}{2}</span></li>
+<li><span class="math inline">\cosh(x) = \frac{e^x + e^{-x}}{2}</span></li>
+</ul>
+<h2 id="_17">应用</h2>
+<p>放几个微分相关例子</p>
+<h3 id="_18">电路中的电容放电</h3>
+<p>电容器的放电过程遵循一阶齐次微分方程。考虑一个电容通过电阻放电的电路，根据电流连续性，可列电压 <span class="math inline">V(t)</span> 随时间的变化方程：</p>
+<div class="math display">
+C\frac{dV}{dt} + \frac{V}{R} = 0
+</div>
+
+<p>即：</p>
+<div class="math display">
+\frac{dV}{dt} + \frac{1}{RC} V = 0
+</div>
+
+<p>解的形式为：</p>
+<div class="math display">
+V(t) = V_0 e^{-\frac{t}{RC}}
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">V_0</span> 是初始电压，</li>
+<li><span class="math inline">R</span> 是电阻，</li>
+<li><span class="math inline">C</span> 是电容。</li>
+</ul>
+<h3 id="_19">牛顿冷却定律</h3>
+<p><strong>牛顿冷却定律</strong>描述了物体的温度变化速率与其温度 <span class="math inline">T(t)</span> 和环境温度 <span class="math inline">T_{\text{env}}</span> 之间的差异成正比：</p>
+<div class="math display">
+\frac{dT}{dt} = -k \left( T(t) - T_{\text{env}} \right)
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">T(t)</span> 是物体在时刻 <span class="math inline">t</span> 的温度。</li>
+<li><span class="math inline">T_{\text{env}}</span> 是环境温度（常数）。</li>
+<li><span class="math inline">k</span> 是冷却常数，代表冷却的速度。</li>
+</ul>
+<p>其解：</p>
+<div class="math display">
+T(t) = T_{\text{env}} + (T_0 - T_{\text{env}}) e^{-kt}
+</div>
+
+<h3 id="rlc">RLC电路中的振荡</h3>
+<p>RLC电路的响应可以用二阶齐次常系数微分方程来描述。根据回路电压和为零，RLC串联电路的电流 <span class="math inline">I(t)</span> 满足以下方程：</p>
+<div class="math display">
+L \frac{dI}{dt} + R I + \frac{1}{C} \int I(t) dt = 0
+</div>
+
+<p>执行一次微分操作消除积分，可以得到方程：</p>
+<div class="math display">
+L \frac{d^2I}{dt^2} + R \frac{dI}{dt} + \frac{1}{C} I = 0
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">L</span> 是电感，</li>
+<li><span class="math inline">R</span> 是电阻，</li>
+<li><span class="math inline">C</span> 是电容。</li>
+</ul>
+<p>特征方程为：</p>
+<div class="math display">
+Lr^2 + Rr + \frac{1}{C} = 0
+</div>
+
+<p>根据判别式 <span class="math inline">\Delta = R^2 - 4L/C</span> 的值，电路可以表现出：</p>
+<ul>
+<li><strong>欠阻尼振荡</strong>（振荡电流随时间逐渐衰减）；</li>
+<li><strong>过阻尼</strong>（电流缓慢趋于零）；</li>
+<li><strong>临界阻尼</strong>（最快的无振荡衰减）。</li>
+</ul>
+<h4 id="_20">机械系统中的振动</h4>
+<p>在机械工程中，简单的<strong>阻尼振子</strong>（如弹簧-阻尼系统）可以用二阶齐次常系数微分方程来描述。方程形式为：</p>
+<div class="math display">
+m\frac{d^2x}{dt^2} + c\frac{dx}{dt} + kx = 0
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">m</span> 是质量，</li>
+<li><span class="math inline">c</span> 是阻尼系数，阻尼力和速度成正比，方向相反。</li>
+<li><span class="math inline">k</span> 是弹簧常数。弹力和位移成正比，方向相反。</li>
+</ul>
+<p>这就是<strong>阻尼振动方程</strong>，其特征方程为：</p>
+<div class="math display">
+mr^2 + cr + k = 0
+</div>
+
+<p>根据判别式的不同，解可以是<strong>欠阻尼</strong>、<strong>临界阻尼</strong>或<strong>过阻尼</strong>的形式：</p>
+<ul>
+<li><strong>欠阻尼</strong>：<span class="math inline">x(t) = e^{-\alpha t} (C_1 \cos(\omega t) + C_2 \sin(\omega t))</span></li>
+<li><strong>临界阻尼</strong>：<span class="math inline">x(t) = (C_1 + C_2 t) e^{-\alpha t}</span></li>
+<li><strong>过阻尼</strong>：<span class="math inline">x(t) = C_1 e^{r_1 t} + C_2 e^{r_2 t}</span></li>
+</ul>
+<h2 id="_21">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/E_(mathematical_constant)</li>
+<li>https://en.wikipedia.org/wiki/Linear_differential_equation</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-10-11T09:39:00+08:00" pubdate>Fri 11 October 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/science.html'>Science</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

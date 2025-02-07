@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>C++协程小记-2 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/c.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">C++协程小记-2</h1>
+    <p class="meta">
+<time datetime="2024-04-07T22:24:00+08:00" pubdate>Sun 07 April 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>接前面 <a href="https://blog.debao.me/2024/03/notes-on-cpp-coroutines/">C++ 协程小记</a>，继续学习C++中的协程。</p>
+<p><img alt="coroutine-cpp20" src="https://blog.debao.me/images/coroutine-cpp20-non-uml-diagram.png"></p>
+<p>协程(coroutine)是一种可以挂起自身并被调用者恢复的函数。与从头到尾顺序执行的普通函数/子程序(subroutine)不同，协程允许控制执行的挂起和恢复。这使我们能够编写看起来是同步的代码，但可以高效地处理异步操作而不阻塞调用线程。</p>
+<h2 id="_1">例子</h2>
+<p>还是先从一个简短例子看起：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;coroutine&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Task</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">promise_type</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Task</span><span class="w"> </span><span class="nf">get_return_object</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">promise_type</span><span class="o">&gt;::</span><span class="n">from_promise</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">suspend_always</span><span class="w"> </span><span class="nf">initial_suspend</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">suspend_always</span><span class="w"> </span><span class="nf">final_suspend</span><span class="p">()</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="kt">void</span><span class="w"> </span><span class="nf">return_void</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">        </span><span class="kt">void</span><span class="w"> </span><span class="nf">unhandled_exception</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="n">Task</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">promise_type</span><span class="o">&gt;</span><span class="w"> </span><span class="n">handle</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">_h</span><span class="p">{</span><span class="n">handle</span><span class="p">}</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">resume</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">_h</span><span class="p">.</span><span class="n">resume</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">destroy</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">_h</span><span class="p">.</span><span class="n">destroy</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">promise_type</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_h</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">Task</span><span class="w"> </span><span class="nf">myFunc</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Start coro</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">co_await</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">suspend_always</span><span class="p">{};</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Resume coro</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Task</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">myFunc</span><span class="p">();</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Not start yet</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">t</span><span class="p">.</span><span class="n">resume</span><span class="p">();</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Suspend coro</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">t</span><span class="p">.</span><span class="n">resume</span><span class="p">();</span>
+<span class="w">    </span><span class="n">t</span><span class="p">.</span><span class="n">destroy</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>Not start yet
+Start coro
+Suspend coro
+Resume coro
+</code></pre></div></td></tr></table></div>
+
+<p>在C++中，包含 <code>co_await</code>、<code>co_yield</code> 或 <code>co_return</code>的函数就是协程函数。可是，为什么要手动定义一个返回值类型，并且要包含一个所谓的<code>promise-type</code>??</p>
+<p>C++编译器看到<code>co_xxx</code>这几个关键词后，要做很多额外的事情，才能将这个这个函数变成协程，简单起见，可以理解成：</p>
+<ul>
+<li>借助 <code>std::coroutine_traits</code>，从返回值类型(Task)中找到所需要的<code>promise-type</code>类型</li>
+<li>创建<code>promise-type</code>对象，并将代码转成对该<code>promies-type</code>对象的调用</li>
+<li>通过<code>promies-type</code>的<code>get_return_object()</code>生成待返回对象并返回。</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">auto</span><span class="w"> </span><span class="o">*</span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">frame</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">::</span><span class="n">promise_type</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">Task</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="o">-&gt;</span><span class="n">promise</span><span class="p">.</span><span class="n">get_return_object</span><span class="p">();</span>
+<span class="n">invoke</span><span class="p">([</span><span class="o">&amp;</span><span class="p">]{</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">co_await</span><span class="w"> </span><span class="n">f</span><span class="o">-&gt;</span><span class="n">promise</span><span class="p">.</span><span class="n">initial_suspend</span><span class="p">();</span>
+<span class="w">        </span><span class="p">{...</span><span class="w"> </span><span class="n">co_</span><span class="o">*</span><span class="w"> </span><span class="p">...}</span>
+<span class="w">        </span><span class="k">co_await</span><span class="w"> </span><span class="n">f</span><span class="o">-&gt;</span><span class="n">promise</span><span class="p">.</span><span class="n">final_suspend</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="p">(...)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">initial</span><span class="o">-</span><span class="n">await</span><span class="o">-</span><span class="n">resume</span><span class="o">-</span><span class="n">called</span><span class="p">)</span>
+<span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="p">;</span>
+<span class="w">        </span><span class="n">f</span><span class="o">-&gt;</span><span class="n">promies</span><span class="p">.</span><span class="n">unhandled_exception</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">});</span>
+<span class="k">return</span><span class="w"> </span><span class="n">ret</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注：initial-await-resume-called 前后，异常处理的方式不同。</p>
+</blockquote>
+<p><code>promise_type</code>  结构体很关键，它允许用户定义了协程的 Promise 接口：</p>
+<ul>
+<li><code>initial_suspend()</code>: 如何启动</li>
+<li><code>final_suspend()</code>: 如何结束</li>
+<li><code>unhandled_exception()</code>: 如何处理异常</li>
+<li><code>get_return_object()</code>: 创建外部可用对象</li>
+</ul>
+<p>但，如果只是这样的话，肯定没有挂起和恢复的效果...</p>
+<h2 id="_2">状态机</h2>
+<p>协程本身是一个状态机。编译器看到<code>co_xxx</code>这几个关键词后，要实现状态机的代码。</p>
+<ul>
+<li><code>co_xxx</code>定义挂起点。状态机需要保存当前状态</li>
+<li>状态保存在一个在堆中申请的所谓的协程帧(frame)中</li>
+<li>该协程帧句柄类型就是 <code>std::coroutine_handle</code></li>
+<li>协程帧的生命周期可通过我们定义的协程函数返回值类型(Task)进行管理</li>
+</ul>
+<p>借助 https://cppinsights.io/，我们可以将上面的例子转换成不带<code>co_xxx</code>的版本：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;coroutine&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Task</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">promise_type</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">inline</span><span class="w"> </span><span class="n">Task</span><span class="w"> </span><span class="nf">get_return_object</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">Task</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">promise_type</span><span class="o">&gt;::</span><span class="n">from_promise</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">suspend_always</span><span class="w"> </span><span class="nf">initial_suspend</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">suspend_always</span><span class="w"> </span><span class="nf">final_suspend</span><span class="p">()</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kr">inline</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">return_void</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kr">inline</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">unhandled_exception</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// inline constexpr promise_type() noexcept = default;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="kr">inline</span><span class="w"> </span><span class="n">Task</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">promise_type</span><span class="o">&gt;</span><span class="w"> </span><span class="n">handle</span><span class="p">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">_h</span><span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">promise_type</span><span class="o">&gt;</span><span class="p">{</span><span class="n">handle</span><span class="p">}}</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kr">inline</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">resume</span><span class="p">()</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">_h</span><span class="p">.</span><span class="n">resume</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kr">inline</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">destroy</span><span class="p">()</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">_h</span><span class="p">.</span><span class="n">destroy</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">promise_type</span><span class="o">&gt;</span><span class="w"> </span><span class="n">_h</span><span class="p">;</span>
+<span class="p">};</span>
+
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">__myFuncFrame</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">resume_fn</span><span class="p">)(</span><span class="n">__myFuncFrame</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">destroy_fn</span><span class="p">)(</span><span class="n">__myFuncFrame</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">__coroutine_traits_impl</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">&gt;::</span><span class="n">promise_type</span><span class="w"> </span><span class="n">__promise</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">__suspend_index</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">__initial_await_suspend_called</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">suspend_always</span><span class="w"> </span><span class="n">__suspend_30_6</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">suspend_always</span><span class="w"> </span><span class="n">__suspend_32_14</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">suspend_always</span><span class="w"> </span><span class="n">__suspend_30_6_1</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">Task</span><span class="w"> </span><span class="nf">myFunc</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="cm">/* Allocate the frame including the promise */</span>
+<span class="w">  </span><span class="cm">/* Note: The actual parameter new is __builtin_coro_size */</span>
+<span class="w">  </span><span class="n">__myFuncFrame</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">__myFuncFrame</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="k">operator</span><span class="w"> </span><span class="k">new</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">__myFuncFrame</span><span class="p">)));</span>
+<span class="w">  </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__initial_await_suspend_called</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/* Construct the promise. */</span>
+<span class="w">  </span><span class="k">new</span><span class="w"> </span><span class="p">(</span><span class="o">&amp;</span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__promise</span><span class="p">)</span><span class="n">std</span><span class="o">::</span><span class="n">__coroutine_traits_impl</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">&gt;::</span><span class="n">promise_type</span><span class="p">{};</span>
+
+<span class="w">  </span><span class="cm">/* Forward declare the resume and destroy function. */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">__myFuncResume</span><span class="p">(</span><span class="n">__myFuncFrame</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__f</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">__myFuncDestroy</span><span class="p">(</span><span class="n">__myFuncFrame</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__f</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/* Assign the resume and destroy function pointers. */</span>
+<span class="w">  </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">resume_fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">__myFuncResume</span><span class="p">;</span>
+<span class="w">  </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">destroy_fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">__myFuncDestroy</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/* Call the made up function with the coroutine body for initial suspend.</span>
+<span class="cm">     This function will be called subsequently by coroutine_handle&lt;&gt;::resume()</span>
+<span class="cm">     which calls __builtin_coro_resume(__handle_) */</span>
+<span class="w">  </span><span class="n">__myFuncResume</span><span class="p">(</span><span class="n">__f</span><span class="p">);</span>
+
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__promise</span><span class="p">.</span><span class="n">get_return_object</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cm">/* This function invoked by coroutine_handle&lt;&gt;::resume() */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">__myFuncResume</span><span class="p">(</span><span class="n">__myFuncFrame</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__f</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* Create a switch to get to the correct resume point */</span>
+<span class="w">    </span><span class="k">switch</span><span class="p">(</span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span><span class="w"> </span><span class="k">break</span><span class="p">;</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="n">__resume_myFunc_1</span><span class="p">;</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="mi">2</span><span class="p">:</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="n">__resume_myFunc_2</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="cm">/* co_await insights.cpp:30 */</span>
+<span class="w">    </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_30_6</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__promise</span><span class="p">.</span><span class="n">initial_suspend</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_30_6</span><span class="p">.</span><span class="n">await_ready</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_30_6</span><span class="p">.</span><span class="n">await_suspend</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">::</span><span class="n">promise_type</span><span class="o">&gt;::</span><span class="n">from_address</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">__f</span><span class="p">)).</span><span class="k">operator</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="p">());</span>
+<span class="w">      </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">      </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__initial_await_suspend_called</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">      </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span>
+
+<span class="w">    </span><span class="nl">__resume_myFunc_1</span><span class="p">:</span>
+<span class="w">    </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_30_6</span><span class="p">.</span><span class="n">await_resume</span><span class="p">();</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Start coro</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="cm">/* co_await insights.cpp:32 */</span>
+<span class="w">    </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_32_14</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">suspend_always</span><span class="p">{};</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_32_14</span><span class="p">.</span><span class="n">await_ready</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_32_14</span><span class="p">.</span><span class="n">await_suspend</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">::</span><span class="n">promise_type</span><span class="o">&gt;::</span><span class="n">from_address</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">__f</span><span class="p">)).</span><span class="k">operator</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="p">());</span>
+<span class="w">      </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">      </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span>
+
+<span class="w">    </span><span class="nl">__resume_myFunc_2</span><span class="p">:</span>
+<span class="w">    </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_32_14</span><span class="p">.</span><span class="n">await_resume</span><span class="p">();</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Resume coro</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">goto</span><span class="w"> </span><span class="n">__final_suspend</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="p">(...)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__initial_await_suspend_called</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span>
+
+<span class="w">    </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__promise</span><span class="p">.</span><span class="n">unhandled_exception</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nl">__final_suspend</span><span class="p">:</span>
+
+<span class="w">  </span><span class="cm">/* co_await insights.cpp:30 */</span>
+<span class="w">  </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_30_6_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__promise</span><span class="p">.</span><span class="n">final_suspend</span><span class="p">();</span>
+<span class="w">  </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_30_6_1</span><span class="p">.</span><span class="n">await_ready</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_30_6_1</span><span class="p">.</span><span class="n">await_suspend</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">::</span><span class="n">promise_type</span><span class="o">&gt;::</span><span class="n">from_address</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">__f</span><span class="p">)).</span><span class="k">operator</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">coroutine_handle</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="p">());</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span>
+
+<span class="w">  </span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* This function invoked by coroutine_handle&lt;&gt;::destroy() */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">__myFuncDestroy</span><span class="p">(</span><span class="n">__myFuncFrame</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__f</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="cm">/* destroy all variables with dtors */</span>
+<span class="w">  </span><span class="n">__f</span><span class="o">-&gt;~</span><span class="n">__myFuncFrame</span><span class="p">();</span>
+<span class="w">  </span><span class="cm">/* Deallocating the coroutine frame */</span>
+<span class="w">  </span><span class="cm">/* Note: The actual argument to delete is __builtin_coro_frame with the promise as parameter */</span>
+<span class="w">  </span><span class="k">operator</span><span class="w"> </span><span class="k">delete</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">__f</span><span class="p">));</span>
+<span class="p">}</span>
+
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">Task</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">myFunc</span><span class="p">();</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Not start yet</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">t</span><span class="p">.</span><span class="n">resume</span><span class="p">();</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Suspend coro</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">t</span><span class="p">.</span><span class="n">resume</span><span class="p">();</span>
+<span class="w">  </span><span class="n">t</span><span class="p">.</span><span class="n">destroy</span><span class="p">();</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>可以看到，变换后的myFunc内部，其实都没有什么东西了：</p>
+<ul>
+<li>创建协程帧(<code>__myFuncFrame</code>) 并初始化。</li>
+<li>通过<code>promise-type</code>创建并返回 Task</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Task</span><span class="w"> </span><span class="nf">myFunc</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="cm">/* Allocate the frame including the promise */</span>
+<span class="w">  </span><span class="cm">/* Note: The actual parameter new is __builtin_coro_size */</span>
+<span class="w">  </span><span class="n">__myFuncFrame</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">__myFuncFrame</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="k">operator</span><span class="w"> </span><span class="k">new</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">__myFuncFrame</span><span class="p">)));</span>
+<span class="w">  </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__suspend_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__initial_await_suspend_called</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/* Construct the promise. */</span>
+<span class="w">  </span><span class="k">new</span><span class="w"> </span><span class="p">(</span><span class="o">&amp;</span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__promise</span><span class="p">)</span><span class="n">std</span><span class="o">::</span><span class="n">__coroutine_traits_impl</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">&gt;::</span><span class="n">promise_type</span><span class="p">{};</span>
+
+<span class="w">  </span><span class="cm">/* Forward declare the resume and destroy function. */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">__myFuncResume</span><span class="p">(</span><span class="n">__myFuncFrame</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__f</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">__myFuncDestroy</span><span class="p">(</span><span class="n">__myFuncFrame</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__f</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/* Assign the resume and destroy function pointers. */</span>
+<span class="w">  </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">resume_fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">__myFuncResume</span><span class="p">;</span>
+<span class="w">  </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">destroy_fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">__myFuncDestroy</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/* Call the made up function with the coroutine body for initial suspend.</span>
+<span class="cm">     This function will be called subsequently by coroutine_handle&lt;&gt;::resume()</span>
+<span class="cm">     which calls __builtin_coro_resume(__handle_) */</span>
+<span class="w">  </span><span class="n">__myFuncResume</span><span class="p">(</span><span class="n">__f</span><span class="p">);</span>
+
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">__f</span><span class="o">-&gt;</span><span class="n">__promise</span><span class="p">.</span><span class="n">get_return_object</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>但是，协程帧中这几个成员（包括其位置都有讲究）：</p>
+<ul>
+<li><code>resume_fn</code>：状态机的逻辑基本都在它里面</li>
+<li><code>destroy_fn</code>：状态机的销毁逻辑，不同状态下，保存不同的变量，需要分别考虑。</li>
+<li><code>__promise</code>：定义的promise对象</li>
+<li><code>__suspend_index</code>：挂起点位置，从哪儿恢复(resume)或销毁(destroy)</li>
+<li><code>__initial_await_suspend_called</code>：异常处理的逻辑不同</li>
+<li>...</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">__myFuncFrame</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">resume_fn</span><span class="p">)(</span><span class="n">__myFuncFrame</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">destroy_fn</span><span class="p">)(</span><span class="n">__myFuncFrame</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">__coroutine_traits_impl</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">&gt;::</span><span class="n">promise_type</span><span class="w"> </span><span class="n">__promise</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">__suspend_index</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">__initial_await_suspend_called</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">suspend_always</span><span class="w"> </span><span class="n">__suspend_30_6</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">suspend_always</span><span class="w"> </span><span class="n">__suspend_32_14</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">suspend_always</span><span class="w"> </span><span class="n">__suspend_30_6_1</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="task-generator">Task 与 Generator</h2>
+<p>协程函数的返回值可以分为这两种</p>
+<ul>
+<li>Task：做一个job，不关心返回值</li>
+<li>Generator：做一个job，并通过<code>co_yield</code>或<code>co_return</code>返回一个值。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>关键词</th>
+<th>动作</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>co_yield</code></td>
+<td>output</td>
+<td>挂起</td>
+</tr>
+<tr>
+<td><code>co_return</code></td>
+<td>output</td>
+<td>结束</td>
+</tr>
+<tr>
+<td><code>co_await</code></td>
+<td>input</td>
+<td>挂起</td>
+</tr>
+</tbody>
+</table>
+<h3 id="co_await">co_await 语句</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>value = co_await expr;
+</code></pre></div></td></tr></table></div>
+
+<p>展开后伪代码</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">auto</span><span class="w"> </span><span class="n">awaiter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">operator</span><span class="w"> </span><span class="k">co_await</span><span class="p">(</span><span class="n">expr</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">awaiter</span><span class="p">.</span><span class="n">await_ready</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">awaiter</span><span class="p">.</span><span class="n">await_suspend</span><span class="p">(</span><span class="n">coroutine_handle</span><span class="p">);</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="n">resume</span><span class="w"> </span><span class="n">here</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">coroutine_handle</span><span class="p">.</span><span class="n">resume</span><span class="p">()</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">called</span><span class="o">&gt;</span>
+<span class="p">}</span>
+
+<span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">awaiter</span><span class="p">.</span><span class="n">await_resume</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意，对于Awaiter：</p>
+<ul>
+<li><code>bool await_ready()</code>：继续或挂起，false为挂起</li>
+<li><code>await_suspend(std::coroutine_handle&lt;&gt; h)?</code>,有几种不同的返回值：<ul>
+<li><code>void await_suspend(std::coroutine_handle&lt;&gt; h)</code>：挂起</li>
+<li><code>bool await_suspend(std::coroutine_handle&lt;&gt; h)</code>：挂起，如果返回值为false则resume</li>
+<li><code>std::coroutine_handle&lt;T&gt; await_suspend(std::coroutine_handle&lt;&gt; h)</code>：挂起，返回的句柄立即被resume</li>
+</ul>
+</li>
+<li><code>await_resume()</code>：<ul>
+<li><code>T await_resume()</code>：恢复时，T是<code>co_await</code>返回值</li>
+<li><code>void await_resume()</code>：不需要/不使用返回值</li>
+</ul>
+</li>
+</ul>
+<h3 id="co_yield">co_yield 语句</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>co_yield expr;
+</code></pre></div></td></tr></table></div>
+
+<p>等价于：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>co_await promise.yield_value(expr)
+</code></pre></div></td></tr></table></div>
+
+<p><code>co_yield</code>和<code>co_await</code>一样，可以有返回值。不过：</p>
+<p>对于std::generator来说，<code>yield_value()</code> 返回的是<code>std::suspend_always</code>这个awaiter，该awaiter的<code>await_resume()</code>返回值是void。所以std::generator下的<code>co_yield</code>不能有返回值。</p>
+<h3 id="co_return">co_return 语句</h3>
+<p><code>co_return;</code> 和 <code>co_return v;</code></p>
+<p>分别对应 <code>promise.return_void()</code>与<code>promise.return_value(v)</code>，但是它们都不返回Awaitable，也就是不能用暂停协程。</p>
+<h2 id="_3">参考</h2>
+<ul>
+<li>https://lewissbaker.github.io/2022/08/27/understanding-the-compiler-transform</li>
+<li>https://itnext.io/c-20-coroutines-complete-guide-7c3fc08db89d</li>
+<li><a href="https://toughengineer.github.io/talks/C++%20Russia%202020%20Moscow/">Understanding C++ coroutines by example</a></li>
+<li>https://cppinsights.io/</li>
+<li>https://www.modernescpp.com/index.php/a-concise-introduction-to-coroutines-by-dian-lun-li/</li>
+<li><a href="https://zhuanlan.zhihu.com/p/581728325">万字好文：从无栈协程到C++异步框架！</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-04-07T22:24:00+08:00" pubdate>Sun 07 April 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/c.html'>C++</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/c.html">c++</a>,    <a class="category" href="https://blog.debao.me/tags/coroutine.html">coroutine</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

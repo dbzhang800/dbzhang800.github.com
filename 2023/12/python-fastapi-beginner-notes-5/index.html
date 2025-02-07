@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Python FastAPI入门笔记（五） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/python.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Python FastAPI入门笔记（五）</h1>
+    <p class="meta">
+<time datetime="2023-12-28T00:19:00+08:00" pubdate>Thu 28 December 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><ul>
+<li><a href="https://blog.debao.me/2023/12/python-asgi-beginner-notes/">ASGI入门笔记</a>：ASGI入门</li>
+<li><a href="https://blog.debao.me/2023/12/python-fastapi-beginner-notes-1/">FastAPI入门一</a>：FastAPI路径操作函数与响应</li>
+<li><a href="https://blog.debao.me/2023/12/python-fastapi-beginner-notes-2/">FastAPI入门二</a>：FastAPI路径参数与查询参数</li>
+<li><a href="https://blog.debao.me/2023/12/python-fastapi-beginner-notes-3/">FastAPI入门三</a>：FastAPI请求体（Request Body） </li>
+<li><a href="https://blog.debao.me/2023/12/python-fastapi-beginner-notes-4/">FastAPI入门四</a>：FastAPI中Cookie参数与Header参数</li>
+<li>FastAPI入门五：FastAPI依赖注入及其在身份认证与授权中使用</li>
+</ul>
+<p>前面接触到了用于注解的 Path、Query、Body、Field、Form、File、UploadFile、Cookie和Header等，接下来看看依赖注入机制。</p>
+<p>内容小记：</p>
+<ul>
+<li>依赖注入基本用法、依赖项嵌套、路径装饰器依赖项与全局依赖项</li>
+<li>使用依赖注入例子： HTTP Basic，OAuth2 Passwod Bearer </li>
+<li>身份认证与授权的零散知识点</li>
+</ul>
+<blockquote>
+<p>注：本文代码在python3.11下验证</p>
+</blockquote>
+<h2 id="dependency-injection">依赖注入（Dependency Injection)</h2>
+<blockquote>
+<p>FastAPI提供一个非常强大又直观的依赖注入系统。</p>
+</blockquote>
+<p>依赖注入可用于</p>
+<ul>
+<li>复用相同的逻辑代码（共享业务逻辑）</li>
+<li>共享数据库连接</li>
+<li>实现安全、验证、角色权限</li>
+<li>...</li>
+</ul>
+<h3 id="dependencydependable">创建依赖项（Dependency/Dependable)</h3>
+<blockquote>
+<p>依赖项就是一个函数，它可以使用与<em>路径操作函数</em>相同的参数</p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>async def common_params(q: str | None = None, limit: int = 100):
+    return {&quot;q&quot;: q, &quot;limit&quot;: limit}
+</code></pre></div></td></tr></table></div>
+
+<p>这个函数可以使用async def 或普通的 def进行定义。</p>
+<h3 id="_1">使用依赖项</h3>
+<p>用法上和Path、Query、Body、Header 等有些像，只不过这儿使用Depends对类型进行注解。</p>
+<p>注意：Depends接受一个参数，且该参数必须是可调用对象，比如函数。该函数接收的参数和<em>路径操作函数</em>的参数一样。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">FastAPI</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">common_params</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">q</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="n">limit</span><span class="p">}</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/items/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_items</span><span class="p">(</span><span class="n">commons</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">common_params</span><span class="p">)]):</span>
+    <span class="k">return</span> <span class="n">commons</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/users/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_users</span><span class="p">(</span><span class="n">commons</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">common_params</span><span class="p">)]):</span>
+    <span class="k">return</span> <span class="n">commons</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这样一来，如下URL都是合法地址</p>
+<ul>
+<li>localhost:8001/users/?q=2222&amp;limit=10</li>
+<li>localhost:8001/items/?q=2222&amp;limit=10</li>
+</ul>
+<h3 id="_2">使用类作为依赖项</h3>
+<p>除了可调用对象外，类可以直接作为依赖项：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">FastAPI</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">CommonParams</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">limit</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/items/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_items</span><span class="p">(</span><span class="n">commons</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">CommonParams</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">CommonParams</span><span class="p">)]):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">commons</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="n">commons</span><span class="o">.</span><span class="n">limit</span><span class="p">}</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/users/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_users</span><span class="p">(</span><span class="n">commons</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">CommonParams</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">CommonParams</span><span class="p">)]):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">commons</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="n">commons</span><span class="o">.</span><span class="n">limit</span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_3">工作方式</h3>
+<p>接收到新的请求时，<strong>FastAPI</strong> 执行如下操作：</p>
+<ul>
+<li>用正确的参数调用依赖项函数</li>
+<li>获取函数返回的结果</li>
+<li>把函数返回的结果赋值给<em>路径操作函数</em>的参数（例子中 commons 变量的值就是依赖项函数的返回值）。</li>
+</ul>
+<h3 id="_4">类型别名</h3>
+<p>使用Python的类型别名，上面的代码可以这么简化：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">FastAPI</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">common_params</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">q</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="n">limit</span><span class="p">}</span>
+
+<span class="n">CommonsDep</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">common_params</span><span class="p">)]</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/items/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_items</span><span class="p">(</span><span class="n">commons</span><span class="p">:</span> <span class="n">CommonsDep</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">commons</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/users/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_users</span><span class="p">(</span><span class="n">commons</span><span class="p">:</span> <span class="n">CommonsDep</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">commons</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_5">依赖注入嵌套</h3>
+<p>依赖项可以层层嵌套，就像下面这样，和前面例子的效果一样：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">FastAPI</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_q</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">q</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_limit</span><span class="p">(</span><span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">limit</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">common_params</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_q</span><span class="p">)],</span> <span class="n">limit</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_limit</span><span class="p">)]):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">q</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="n">limit</span><span class="p">}</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/items/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_items</span><span class="p">(</span><span class="n">commons</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">common_params</span><span class="p">)]):</span>
+    <span class="k">return</span> <span class="n">commons</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/users/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_users</span><span class="p">(</span><span class="n">commons</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">common_params</span><span class="p">)]):</span>
+    <span class="k">return</span> <span class="n">commons</span>
+</code></pre></div></td></tr></table></div>
+
+<p>每个依赖项的参数都和路径处理函数的参数处理方式是一样的。</p>
+<h3 id="_6">路径装饰器中使用依赖项</h3>
+<p>如果依赖项没有返回值，或者不需要使用依赖项的返回值的话，可以在路径装饰器里面直接指定dependencies：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">HTTPException</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_params</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">limit</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;q is too long&quot;</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/items/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">verify_params</span><span class="p">),</span> <span class="p">])</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_items</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;valid item&quot;</span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>localhost:8001/items/?q=122</li>
+<li>localhost:8001/items/?q=122456</li>
+</ul>
+<h3 id="_7">全局依赖项</h3>
+<p>如果所有路径函数都需要，可以设置成全局依赖项</p>
+<p>使用 FastAPI 的 <code>dependencies</code> 参数</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">HTTPException</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_params</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">limit</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;q is too long&quot;</span><span class="p">)</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">verify_params</span><span class="p">),</span> <span class="p">])</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/items/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_items</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;valid item&quot;</span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_8">依赖项在授权与认证上的使用</h2>
+<h3 id="http-basic">HTTP Basic 示例</h3>
+<p>看一下，最简单的HTTP Basic认证过程</p>
+<h4 id="1">例子1</h4>
+<p>简单的例子，只提示用户输入凭证信息，后台不做验证。</p>
+<ul>
+<li>路径函数中使用 <code>HTTPBasicCredentials</code> 类型的变量 credentials，用来获取用户凭证信息</li>
+<li>使用 <code>Depends(HTTPBasic())</code> 进行注解</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">FastAPI</span>
+<span class="kn">from</span> <span class="nn">fastapi.security</span> <span class="kn">import</span> <span class="n">HTTPBasic</span><span class="p">,</span> <span class="n">HTTPBasicCredentials</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="n">security</span> <span class="o">=</span> <span class="n">HTTPBasic</span><span class="p">(</span><span class="n">realm</span><span class="o">=</span><span class="s2">&quot;1+1=10&quot;</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">read_current_user</span><span class="p">(</span><span class="n">credentials</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">HTTPBasicCredentials</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">security</span><span class="p">)]):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">credentials</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">credentials</span><span class="o">.</span><span class="n">password</span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>用户输入用户名密码，其被浏览器缓存。清理操作：</p>
+<ul>
+<li>Firefox：<code>about:preferences#privacy</code> 中 “历史记录” 中的 “登录状态”</li>
+<li>Chrome：<code>chrome://settings/clearBrowserData</code> 中 Cookie及其他网站数据</li>
+<li>Edge：<code>edge://settings/clearBrowserData</code> 中的 passwords</li>
+</ul>
+<h4 id="2">例子2</h4>
+<p>使用<code>Depends</code>的嵌套能力，将用户名和密码的核验功能写成一个依赖项，并作为通过Depends让路径函数使用。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">HTTPException</span>
+<span class="kn">from</span> <span class="nn">fastapi.security</span> <span class="kn">import</span> <span class="n">HTTPBasic</span><span class="p">,</span> <span class="n">HTTPBasicCredentials</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="n">security</span> <span class="o">=</span> <span class="n">HTTPBasic</span><span class="p">(</span><span class="n">realm</span><span class="o">=</span><span class="s2">&quot;1+1=10&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">get_current_username</span><span class="p">(</span><span class="n">credentials</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">HTTPBasicCredentials</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">security</span><span class="p">)]):</span>
+    <span class="k">if</span> <span class="n">credentials</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="s2">&quot;debao&quot;</span> <span class="ow">and</span> <span class="s2">&quot;oabed&quot;</span> <span class="o">==</span> <span class="n">credentials</span><span class="o">.</span><span class="n">password</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">credentials</span><span class="o">.</span><span class="n">username</span>
+    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Invalid username or password&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;WWW-Authenticate&quot;</span><span class="p">:</span> <span class="s2">&quot;Basic&quot;</span><span class="p">})</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">read_current_user</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_current_username</span><span class="p">)]):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">username</span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="3">例子3</h4>
+<p>前面直接用 <code>==</code>进行字符串比较，不同字符串比较时间不同，容易被<code>Timing Attacks</code>攻击。比如<code>debao==3ebao</code>和<code>debao==deba3</code>，前者比较后者快。</p>
+<p>为避免问题，需要使用python标准secrets库中的<code>compare_digest</code>来进行恒定时间（<code>constant-time compare</code>）比较：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">HTTPException</span>
+<span class="kn">from</span> <span class="nn">fastapi.security</span> <span class="kn">import</span> <span class="n">HTTPBasic</span><span class="p">,</span> <span class="n">HTTPBasicCredentials</span>
+<span class="kn">import</span> <span class="nn">secrets</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="n">security</span> <span class="o">=</span> <span class="n">HTTPBasic</span><span class="p">(</span><span class="n">realm</span><span class="o">=</span><span class="s2">&quot;1+1=10&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">get_current_username</span><span class="p">(</span><span class="n">credentials</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">HTTPBasicCredentials</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">security</span><span class="p">)]):</span>
+    <span class="k">if</span> <span class="n">secrets</span><span class="o">.</span><span class="n">compare_digest</span><span class="p">(</span><span class="n">credentials</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="s2">&quot;debao&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">secrets</span><span class="o">.</span><span class="n">compare_digest</span><span class="p">(</span><span class="n">credentials</span><span class="o">.</span><span class="n">password</span><span class="p">,</span> <span class="s2">&quot;oabed&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">credentials</span><span class="o">.</span><span class="n">username</span>
+    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Invalid username or password&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;WWW-Authenticate&quot;</span><span class="p">:</span> <span class="s2">&quot;Basic&quot;</span><span class="p">})</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">read_current_user</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_current_username</span><span class="p">)]):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">username</span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="oauth2-password-bearer">OAuth2 Password Bearer 示例</h3>
+<ul>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc6749">RFC 6749</a>定义了OAuth2框架。OAuth2 有四种授权模式，password是其中一种，用于对客户端高度信任的场合，使用密码申请令牌。</li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc6750">RFC 6750</a> 示范了一种access token的具体用法，符合这种具体用法的access token统称为Bearer token。注：Bearer token不是一种token值的格式，而是一种规范的用法。</li>
+</ul>
+<p>FastAPI例子：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">...</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_9">备忘：身份认证与授权</h2>
+<p>英文中这两个词语。挺像</p>
+<ul>
+<li>authentication <code>/ ɔːˌθentɪˈkeɪʃn /</code>：身份认证、验证。</li>
+<li>authorization <code>/ˌɔːθəraɪˈzeɪʃ(ə)n /</code>：授权、批准。</li>
+</ul>
+<p>前者用于确定身份，确定你是不是张三。后者已经知道你是张三，需要看你是否由做xxx的权限。</p>
+<p>简单来说，认证是验证你的身份的过程，而授权是验证你有权访问的过程。</p>
+<p>在HTTP中，相关的状态码：</p>
+<ul>
+<li>401 Unauthorized。有人说，这个地方HTTP一开始就用错了，应该是未认证Unauthenticated。</li>
+<li>404 Forbidden。有人说，这个应该叫Unauthorized，认证通过了，但是没有权限。</li>
+</ul>
+<h3 id="_10">概念</h3>
+<h4 id="oauth2">OAuth2</h4>
+<ul>
+<li>OAuth2：这是一个规范，定义了几种处理身份认证的和授权的方法。它包含了使用第三方进行身份认证的方法。网上可见的 <em>使用Google、Github、Twitter 登录</em> 的背后机制。</li>
+<li>OAuth1：很复杂，没有被广泛使用。它包含了加密通讯的规范。</li>
+<li>OpenID Connect：一个基于OAuth2的认证规范。Google在使用它。</li>
+</ul>
+<p><a href="https://datatracker.ietf.org/doc/html/rfc6749">RFC 6749</a>定义了OAuth2框架，<a href="https://datatracker.ietf.org/doc/html/rfc6750">RFC 6750</a> 示范了一种access token的具体用法，符合这种具体用法的access token统称为Bearer token。注意：Bearer token不是一种token值的格式，而是一种规范的用法。</p>
+<p>OAuth2的流程如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">     </span><span class="o">+--------+</span><span class="w">                               </span><span class="o">+---------------+</span>
+<span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="o">|--</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="o">-</span><span class="w"> </span><span class="n">Authorization</span><span class="w"> </span><span class="n">Request</span><span class="w"> </span><span class="o">-&gt;|</span><span class="w">   </span><span class="n">Resource</span><span class="w">    </span><span class="o">|</span>
+<span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="o">|</span><span class="w">                               </span><span class="o">|</span><span class="w">     </span><span class="n">Owner</span><span class="w">     </span><span class="o">|</span>
+<span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="o">|&lt;-</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="o">--</span><span class="w"> </span><span class="n">Authorization</span><span class="w"> </span><span class="n">Grant</span><span class="w"> </span><span class="o">---|</span><span class="w">               </span><span class="o">|</span>
+<span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="o">|</span><span class="w">                               </span><span class="o">+---------------+</span>
+<span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="o">|</span>
+<span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="o">|</span><span class="w">                               </span><span class="o">+---------------+</span>
+<span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="o">|--</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">--</span><span class="w"> </span><span class="n">Authorization</span><span class="w"> </span><span class="n">Grant</span><span class="w"> </span><span class="o">--&gt;|</span><span class="w"> </span><span class="n">Authorization</span><span class="w"> </span><span class="o">|</span>
+<span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="n">Client</span><span class="w"> </span><span class="o">|</span><span class="w">                               </span><span class="o">|</span><span class="w">     </span><span class="n">Server</span><span class="w">    </span><span class="o">|</span>
+<span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="o">|&lt;-</span><span class="p">(</span><span class="n">D</span><span class="p">)</span><span class="o">-----</span><span class="w"> </span><span class="n">Access</span><span class="w"> </span><span class="kt">Token</span><span class="w"> </span><span class="o">-------|</span><span class="w">               </span><span class="o">|</span>
+<span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="o">|</span><span class="w">                               </span><span class="o">+---------------+</span>
+<span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="o">|</span>
+<span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="o">|</span><span class="w">                               </span><span class="o">+---------------+</span>
+<span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="o">|--</span><span class="p">(</span><span class="n">E</span><span class="p">)</span><span class="o">-----</span><span class="w"> </span><span class="n">Access</span><span class="w"> </span><span class="kt">Token</span><span class="w"> </span><span class="o">------&gt;|</span><span class="w">    </span><span class="n">Resource</span><span class="w">   </span><span class="o">|</span>
+<span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="o">|</span><span class="w">                               </span><span class="o">|</span><span class="w">     </span><span class="n">Server</span><span class="w">    </span><span class="o">|</span>
+<span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="o">|&lt;-</span><span class="p">(</span><span class="n">F</span><span class="p">)</span><span class="o">---</span><span class="w"> </span><span class="n">Protected</span><span class="w"> </span><span class="n">Resource</span><span class="w"> </span><span class="o">---|</span><span class="w">               </span><span class="o">|</span>
+<span class="w">     </span><span class="o">+--------+</span><span class="w">                               </span><span class="o">+---------------+</span>
+
+<span class="w">                     </span><span class="n">Figure</span><span class="w"> </span><span class="n">Abstract</span><span class="w"> </span><span class="n">Protocol</span><span class="w"> </span><span class="n">Flow</span>
+</code></pre></div></td></tr></table></div>
+
+<p>OAuth2 在 客户端（Client）与 资源服务器之间，设置了一个授权服务器（authorization server）。客户端不能直接登录服务提供商，只能登录授权服务器。客户端登录授权服务器所获得的令牌（token）用于登录资源服务器。</p>
+<p>令牌（token）与密码（password）的作用是一样的。但是：令牌是短期的，到期会自动失效，用户自己无法修改。密码一般长期有效，除非用户修改；另外，令牌可以设置权限范围。</p>
+<p>OAuth2 有4种授权模式：</p>
+<ul>
+<li>授权码（authorization code）：最常用的流程，安全性最高。先申请授权码，在利用该码获取令牌。</li>
+<li>隐含模式（implicit）：跳过授权码，直接请求颁发令牌</li>
+<li><strong>密码模式</strong>（resource owner password credentials）：用于对客户端高度信任的场合，使用密码申请令牌。</li>
+<li>客户端凭证（client credentials）：没有前端，在命令行下申请令牌</li>
+</ul>
+<p>Bearer令牌传给资源服务器有三种方式</p>
+<ul>
+<li><strong>Authorization Header</strong> 该头部定义与Basic方案类似（服务端必须支持)：</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>     GET /resource HTTP/1.1
+     Host: server.example.com
+     Authorization: Bearer mF_9.B5f-4.1JqM
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li><strong>Form-Encoded Body Parameter</strong>： </li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>     POST /resource HTTP/1.1
+     Host: server.example.com
+     Content-Type: application/x-www-form-urlencoded
+
+     access_token=mF_9.B5f-4.1JqM
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li><strong>URI Query Parameter</strong>（不建议）： </li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>     GET /resource?access_token=mF_9.B5f-4.1JqM HTTP/1.1
+     Host: server.example.com
+</code></pre></div></td></tr></table></div>
+
+<p>如果请求中没有token信息，资源服务器响应</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">401</span> <span class="ne">Unauthorized</span>
+<span class="na">WWW-Authenticate</span><span class="o">:</span> <span class="l">Bearer realm=&quot;example&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>Bearer令牌响应</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json;charset=UTF-8</span>
+<span class="na">Cache-Control</span><span class="o">:</span> <span class="l">no-store</span>
+<span class="na">Pragma</span><span class="o">:</span> <span class="l">no-cache</span>
+
+<span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;access_token&quot;</span><span class="p">:</span><span class="s2">&quot;mF_9.B5f-4.1JqM&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;token_type&quot;</span><span class="p">:</span><span class="s2">&quot;Bearer&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;expires_in&quot;</span><span class="p">:</span><span class="mi">3600</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;refresh_token&quot;</span><span class="p">:</span><span class="s2">&quot;tGzv3JOkF0XG5Qx2TlKWIA&quot;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="http">Http认证</h4>
+<p>HTTP的认证框架由RFC7235定义，它是多种认证scheme的基础。其中：</p>
+<ul>
+<li>Basic 由RFC7617定义。</li>
+<li>Bearer 由RFC6750定义</li>
+<li>Digest 由 RFC7616定义</li>
+<li>...</li>
+</ul>
+<p>以Basic为例，看看流程：</p>
+<ul>
+<li>客户端：请把主页页面给我</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nf">GET</span> <span class="nn">/</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>服务端：你访问的页面需要基本认证，请提供用户名和密码。Basic说明支持基本认证，realm说明需要这个安全区的用户名和密码。</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">401</span> <span class="ne">Unauthorized</span>
+<span class="na">WWW-Authenticate</span><span class="o">:</span> <span class="l">Basic realm=&quot;debao site&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>客户端：提示用户输入用户名密码(比如<code>aladdin:opensesame</code>），而后用base64编码并告知服务端：</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nf">GET</span> <span class="nn">/</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Authorization</span><span class="o">:</span> <span class="l">Basic YWxhZGRpbjpvcGVuc2VzYW1l</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>服务端：进行验证操作，没问题返回正常页面，否则继续提示需要凭证。</li>
+</ul>
+<p><img alt="http-auth-basic-flow" src="https://blog.debao.me/images/http-auth-basic-flow.png"></p>
+<h4 id="openapi">OpenAPI</h4>
+<p>FastAPI基于OpenAPI。</p>
+<p>OpenAPI是用于构建API的开放规范，它定义了多个安全方案的方法：</p>
+<ul>
+<li>apiKey：一个密钥，可来自查询参数、请求头、cookie</li>
+<li>http：标准的HTTP身份认证系统，包括bearer，HTTP Basic，HTTP Digest 等。</li>
+<li>oauth2</li>
+<li>openIdConnect</li>
+</ul>
+<h2 id="_11">参考</h2>
+<ul>
+<li>https://fastapi.tiangolo.com</li>
+<li>https://docs.pydantic.dev/latest/</li>
+<li>https://fastapi.tiangolo.com/tutorial/security/</li>
+<li>https://fastapi.tiangolo.com/tutorial/dependencies/</li>
+<li>https://fastapi.tiangolo.com/zh/advanced/security/http-basic-auth/</li>
+<li>https://codahale.com/a-lesson-in-timing-attacks/</li>
+<li>https://datatracker.ietf.org/doc/html/rfc7235</li>
+<li>https://datatracker.ietf.org/doc/html/rfc7617</li>
+<li>https://datatracker.ietf.org/doc/html/rfc6750</li>
+<li>https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication</li>
+<li>https://www.ruanyifeng.com/blog/2019/04/oauth_design.html</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-12-28T00:19:00+08:00" pubdate>Thu 28 December 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/python.html'>Python</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/web.html">web</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

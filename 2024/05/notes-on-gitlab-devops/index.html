@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>GitLab与DevOps小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">GitLab与DevOps小记</h1>
+    <p class="meta">
+<time datetime="2024-05-27T21:13:00+08:00" pubdate>Mon 27 May 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>接前面<a href="https://blog.debao.me/2023/11/notes-on-gitlab-and-gerrit/">Gitlab与Gerrit</a>，了解一下DevOps...</p>
+</blockquote>
+<h2 id="devops">DevOps</h2>
+<p>DevOps是Development和Operations两个词的组合。它的英文发音是 /de'vɒps/。</p>
+<p><img alt="DevOps-Life-Cycle" src="https://blog.debao.me/images/devops/DevOps-Life-Cycle.svg"></p>
+<p>有两个词经常会伴随着DevOps出现，那就是CI和CD。CI是Continuous Integration（持续集成），而CD对应多个英文，Continuous Delivery（持续交付）或Continuous Deployment（持续部署）。</p>
+<h3 id="devops_1">DevOps与瀑布和敏捷</h3>
+<table>
+<thead>
+<tr>
+<th>特点</th>
+<th>瀑布模型</th>
+<th>敏捷方法</th>
+<th>DevOps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>开发过程</strong></td>
+<td>线性顺序</td>
+<td>迭代和增量</td>
+<td>持续集成和持续交付</td>
+</tr>
+<tr>
+<td><strong>灵活性</strong></td>
+<td>低</td>
+<td>高</td>
+<td>高</td>
+</tr>
+<tr>
+<td><strong>用户参与</strong></td>
+<td>低</td>
+<td>高</td>
+<td>高</td>
+</tr>
+<tr>
+<td><strong>文档</strong></td>
+<td>详细</td>
+<td>简略</td>
+<td>自动化文档</td>
+</tr>
+<tr>
+<td><strong>交付周期</strong></td>
+<td>长</td>
+<td>短</td>
+<td>短</td>
+</tr>
+<tr>
+<td><strong>风险管理</strong></td>
+<td>集中</td>
+<td>分散</td>
+<td>分散</td>
+</tr>
+<tr>
+<td><strong>团队协作</strong></td>
+<td>开发和运维分离</td>
+<td>开发团队协作</td>
+<td>开发和运维一体化</td>
+</tr>
+<tr>
+<td><strong>适用项目</strong></td>
+<td>需求明确且稳定的小型项目</td>
+<td>需求可能变化的中大型项目</td>
+<td>需要快速交付和高稳定性的项目</td>
+</tr>
+</tbody>
+</table>
+<p>与瀑布式开发和敏捷开发相比，将开发（Development）和运维（Operations）紧密结合，强调协作和自动化。DevOps贯穿了软件全生命周期，而不仅限于开发阶段。</p>
+<p><img alt="devops-agile-devops" src="https://blog.debao.me/images/devops/devops-agile-devops.jpg"></p>
+<p>图片来源： x.com</p>
+<p><img alt="devops-agile-devops-2" src="https://blog.debao.me/images/devops/devops-agile-devops-2.jpg"></p>
+<p>图片来源：<a href="https://www.linkedin.com/pulse/agile-devops-prem-bangole/">To Agile or To DevOps | LinkedIn</a></p>
+<h3 id="devops_2">DevOps工具</h3>
+<p>DevOps各阶段，涉及到的工具太多了...</p>
+<p><img alt="DevOps-Tools" src="https://blog.debao.me/images/devops/DevOps-Tools.svg"></p>
+<h2 id="gitlab">Gitlab</h2>
+<p><img alt="gitlab-ci-workflow.png" src="https://blog.debao.me/images/devops/gitlab-ci-workflow.png">Gitlab 开发于2011年，2012年开始开发 Gitlab-CI。从Gitlab 8.0版本开始，CI集成进Gitlab中（2015年）。</p>
+<ul>
+<li><a href="https://docs.gitlab.com/ee/topics/build_your_application.html">Use CI/CD to build your application | GitLab</a></li>
+<li><a href="https://docs.gitlab.com/runner/install/">Install GitLab Runner | GitLab</a></li>
+<li><a href="https://docs.gitlab.com/ee/development/cicd/">CI/CD development guidelines | GitLab</a></li>
+<li>https://about.gitlab.com/releases/2015/09/22/gitlab-8-0-released/</li>
+</ul>
+<p>关于Jenkins与GitLab CI，两个都免费可以本地部署，前者发力早，后者官方出品与Gitlab集成更好。</p>
+<h2 id="github">Github</h2>
+<p>Github 在2018年被微软收购后，发布了github actions！！！</p>
+<ul>
+<li><a href="https://github.com/features/actions">Features • GitHub Actions · GitHub</a></li>
+<li>https://zhuanlan.zhihu.com/p/647970282</li>
+<li><a href="https://blog.csdn.net/QbitAI/article/details/99366085">GitHub免费支持CI/CD了，开发测试部署高度自动化，支持各种语言，网友：第三方凉凉...-CSDN博客</a></li>
+</ul>
+<p>在Github Actions之前，2017年有人汇总github中10大 CI工具  <a href="https://github.blog/2017-11-07-github-welcomes-all-ci-tools/">GitHub welcomes all CI tools - The GitHub Blog</a></p>
+<p>前四位是：</p>
+<ul>
+<li>Travis CI</li>
+<li>Circle CI</li>
+<li>Jenkins</li>
+<li>AppVeyor</li>
+</ul>
+<p>Travis CI 已经没有免费版本（只有刚注册第一个月有免费的点数）。</p>
+<p>Circle CI每个月有免费的分钟数</p>
+<p>Jenkins 免费，需要自行部署</p>
+<p>AppVeyor 不了解</p>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/DevOps">DevOps - Wikipedia</a></li>
+<li><a href="https://www.openxcell.com/devops/">DevOps - The Complete Guide for 2023 (openxcell.com)</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/91371659">DevOps到底是什么意思？ - 知乎 (zhihu.com)</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-05-27T21:13:00+08:00" pubdate>Mon 27 May 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/git.html">Git</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

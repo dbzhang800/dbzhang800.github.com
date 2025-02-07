@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Python类型提示与注解 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/python.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Python类型提示与注解</h1>
+    <p class="meta">
+<time datetime="2023-12-26T23:29:00+08:00" pubdate>Tue 26 December 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><p>学习FastAPI的入门文档，突然发现对标注很陌生，简单了解记录一下。</p>
+<h2 id="_1">捋一捋</h2>
+<ul>
+<li>Python 3.0 引入函数注解（Function Annotations)，PEP 3107</li>
+<li>Python 3.5 引入类型提示（Type Hints），用于函数注解，PEP 484</li>
+<li>Python 3.6 在3.5基础上，引入了变量注解，PEP 526</li>
+<li>Python 3.8 引入静态鸭子类型（Protocols），PEP 544</li>
+<li>Python 3.8 引入TypedDict，PEP 589</li>
+<li>Python 3.9 引入灵活的函数与变量注解，PEP 539</li>
+</ul>
+<h2 id="pep-3107-function-annotations">PEP 3107 引入函数注解（Function Annotations）</h2>
+<ul>
+<li>https://peps.python.org/pep-3107/</li>
+</ul>
+<blockquote>
+<p>背景：Python2.x 中，没有一个标准的方式 对函数的参数和返回值进行标注。故而在Python3.0中，引入一个单一和标准的方式来指定标准信息。</p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">myadd</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="s1">&#39;first&#39;</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="s1">&#39;second&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;sum of a and b&#39;</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">myadd</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>输出结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>{&#39;a&#39;: &#39;first&#39;, &#39;b&#39;: &#39;second&#39;, &#39;return&#39;: &#39;sum of a and b&#39;}
+</code></pre></div></td></tr></table></div>
+
+<p>基本格式：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>identifier [: expression] [= expression]
+</code></pre></div></td></tr></table></div>
+
+<p>注意看里面涉及默认值：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">myadd</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="s1">&#39;first&#39;</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="s1">&#39;second&#39;</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;sum of a and b&#39;</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">myadd</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myadd</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+
+<p>输出结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>{<span class="s1">&#39;a&#39;</span>:<span class="w"> </span><span class="s1">&#39;first&#39;</span>,<span class="w"> </span><span class="s1">&#39;b&#39;</span>:<span class="w"> </span><span class="s1">&#39;second&#39;</span>,<span class="w"> </span><span class="s1">&#39;return&#39;</span>:<span class="w"> </span><span class="s1">&#39;sum of a and b&#39;</span>}
+<span class="mi">15</span>
+</code></pre></div></td></tr></table></div>
+
+<p>Python加载模块时，会生成<code>__annotations__</code>，但是Python解释器自身不使用这些信息。</p>
+<p>注解信息可以用于</p>
+<ul>
+<li>类型检查</li>
+<li>供IDE显示函数期待的类型</li>
+<li>函数重载</li>
+<li>RPC参数</li>
+</ul>
+<p>以及为参数和返回值生成文档。</p>
+<h2 id="pep-484-type-hints">PEP 484 引入类型提示（Type Hints）</h2>
+<ul>
+<li>https://peps.python.org/pep-0484/</li>
+<li>https://peps.python.org/pep-0483/</li>
+</ul>
+<blockquote>
+<p>PEP 3107 定义了函数标注的语法，但却未定义语义。 PEP 484 明确Python仍然是是一种动态语言，不会降至成静态语言。PEP 483 引入了 typing 模块，区分type与class概念。</p>
+</blockquote>
+<p>类型提示的用法：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">myadd</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myadd</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myadd</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>输出</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="mf">15</span>
+<span class="err">{&#39;</span><span class="n">a</span><span class="err">&#39;</span><span class="p">:</span><span class="w"> </span><span class="o">&lt;</span><span class="n">class</span><span class="w"> </span><span class="err">&#39;</span><span class="nb">int</span><span class="err">&#39;</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="n">b</span><span class="err">&#39;</span><span class="p">:</span><span class="w"> </span><span class="o">&lt;</span><span class="n">class</span><span class="w"> </span><span class="err">&#39;</span><span class="nb">int</span><span class="err">&#39;</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="kr">return</span><span class="err">&#39;</span><span class="p">:</span><span class="w"> </span><span class="o">&lt;</span><span class="n">class</span><span class="w"> </span><span class="err">&#39;</span><span class="nb">int</span><span class="err">&#39;</span><span class="o">&gt;</span><span class="err">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意，类型提示，只是<strong>提示</strong>。Python作为动态类型语言，不会进行运行时检查！！</p>
+<p>下面的写法对Python来说没有问题：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">my_mul</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">my_mul</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;debao&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">my_mul</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">debaodebaodebao</span>
+{<span class="s1">&#39;a&#39;</span>:<span class="w"> </span><span class="o">&lt;</span><span class="nv">class</span><span class="w"> </span><span class="s1">&#39;int&#39;</span><span class="o">&gt;</span>,<span class="w"> </span><span class="s1">&#39;b&#39;</span>:<span class="w"> </span><span class="o">&lt;</span><span class="nv">class</span><span class="w"> </span><span class="s1">&#39;int&#39;</span><span class="o">&gt;</span>,<span class="w"> </span><span class="s1">&#39;return&#39;</span>:<span class="w"> </span><span class="o">&lt;</span><span class="nv">class</span><span class="w"> </span><span class="s1">&#39;int&#39;</span><span class="o">&gt;</span>}
+</code></pre></div></td></tr></table></div>
+
+<p>尽管如此，类型提示对IDE，以及静态代码分析工具比如 mypy 都比较有用。而且PEP484似乎就是受mypy的启发而诞生的。</p>
+<h3 id="typing">typing模块</h3>
+<p>Python3.5 增加typing模块，该模块主要提供对类型提示的支持。这个模块变化很大...</p>
+<ul>
+<li>typing中定义了内置类型的别名，比如 Dict，List、Set、ForzenSet、Tuple，【已经废弃</li>
+<li>typing中定义了collections中类型的别名，比如DefaultDict、OrderedDict、ChainMap、Counter、Deque ，【已经废弃】</li>
+<li>typing中定义的 Text，作为str别名，【已经废弃】</li>
+<li>typing中定义的 collections.abc中类型的别名，AbsractSet、Collections、Container、itemsView、KeysView、Mapping、MappingView，.... 【已经弃用】</li>
+<li>...</li>
+</ul>
+<p>感觉：能不用typing实现同样的效果，就不用typing。</p>
+<h3 id="_2">可接受的类型提示</h3>
+<ul>
+<li>内置的类（buit-in classes)，含标准库以及第三方扩展库</li>
+<li>抽象基类</li>
+<li>types中的类型</li>
+<li>用户定义的类</li>
+</ul>
+<p>除此之外</p>
+<ul>
+<li>None、Any、Union、tuple、Callable</li>
+<li>typing中的具体类，比如Sequence、Dict</li>
+<li>类型变量</li>
+<li>类型别名</li>
+</ul>
+<blockquote>
+<p>作为类型提示时，None等同于type(None)。</p>
+</blockquote>
+<h3 id="typevar">TypeVar</h3>
+<p>类型变量这个怎么理解？</p>
+<p>如下例子，运行没问题：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeVar</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">my_add</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">T</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="n">my_add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">my_add</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<span class="n">my_add</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>使用mypy进行检查，结果（最后一行不过）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">&gt;</span><span class="w"> </span><span class="n">mypy</span><span class="w"> </span><span class="n">mytest</span><span class="o">.</span><span class="n">py</span>
+<span class="n">mytest</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">10</span><span class="p">:</span><span class="w"> </span><span class="n">error</span><span class="p">:</span><span class="w"> </span><span class="n">Value</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="n">variable</span><span class="w"> </span><span class="s2">&quot;T&quot;</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="s2">&quot;my_add&quot;</span><span class="w"> </span><span class="n">cannot</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w">  </span><span class="p">[</span><span class="n">type</span><span class="o">-</span><span class="k">var</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这个和Union很像，但是Union不要求参数都一样。</p>
+<p>比如，上面代码中，T改为如下Union，mypy检查将没问题：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">T</span> <span class="o">=</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="overload">overload</h3>
+<p>同样，overload装饰器，并不是真的重载，只是用于代码检查，比如：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">overload</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">)</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;other&quot;</span><span class="p">)</span>
+
+
+<span class="n">func</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">func</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span>
+<span class="n">func</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>other
+other
+other
+</code></pre></div></td></tr></table></div>
+
+<p>如果使用mypy进行检查，结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">&gt;</span><span class="w"> </span><span class="n">mypy</span><span class="w"> </span><span class="n">mytest</span><span class="o">.</span><span class="n">py</span>
+<span class="n">mytest</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="w"> </span><span class="n">error</span><span class="p">:</span><span class="w"> </span><span class="n">No</span><span class="w"> </span><span class="n">overload</span><span class="w"> </span><span class="n">variant</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="s2">&quot;func&quot;</span><span class="w"> </span><span class="n">matches</span><span class="w"> </span><span class="n">argument</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="s2">&quot;float&quot;</span><span class="w">  </span><span class="p">[</span><span class="n">call</span><span class="o">-</span><span class="n">overload</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_3">生成器</h3>
+<p>生成器的类型提示：<code>Generator[yield_type, send_type, return_type]</code></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">echo_round</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="k">yield</span>
+    <span class="k">while</span> <span class="n">res</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="k">yield</span> <span class="nb">round</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;OK&#39;</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">echo_round</span><span class="p">()</span>
+<span class="nb">next</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="mf">2.4</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="mf">3.6</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="pep-526">PEP 526 变量注解</h2>
+<ul>
+<li>https://peps.python.org/pep-0526/</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">my_var1</span><span class="p">:</span> <span class="nb">int</span>
+<span class="n">my_var1</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">my_var2</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;hello&#39;</span>
+<span class="n">my_var3</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="vm">__annotations__</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="err">{</span><span class="s1">&#39;my_var1&#39;</span><span class="err">:</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="s1">&#39;int&#39;</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;my_var2&#39;</span><span class="err">:</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="s1">&#39;str&#39;</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;my_var3&#39;</span><span class="err">:</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意，在Python3.9之前，list需要写成下面这样（新版本中废弃）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="n">my_var3</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>对于类成员，写法类似：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Test</span><span class="p">:</span>
+    <span class="n">my_var1</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">my_var1</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">my_var2</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;hello&#39;</span>
+    <span class="n">my_var3</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">Test</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_4">只是注解！</h3>
+<p>如下例所示，<code>Test.__annotations__</code> 会包含<code>my_var1</code>，但是运行时它不存在：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Test</span><span class="p">:</span>
+    <span class="n">my_var1</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">my_var2</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;hello&#39;</span>
+    <span class="n">my_var3</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">Test</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">)</span>
+<span class="c1">#print(Test.my_var1)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="err">{</span><span class="s1">&#39;my_var1&#39;</span><span class="err">:</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="s1">&#39;int&#39;</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;my_var2&#39;</span><span class="err">:</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="s1">&#39;str&#39;</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;my_var3&#39;</span><span class="err">:</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">str</span><span class="o">]</span><span class="err">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>添加一条</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">Test</span><span class="o">.</span><span class="n">my_var1</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行报错，不存在这个属性：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Traceback</span><span class="w"> </span><span class="p">(</span><span class="n">most</span><span class="w"> </span><span class="n">recent</span><span class="w"> </span><span class="n">call</span><span class="w"> </span><span class="n">last</span><span class="p">):</span>
+<span class="w">  </span><span class="n">File</span><span class="w"> </span><span class="s2">&quot;C:\Users\dbzha\PycharmProjects\pythonProject2</span><span class="se">\a</span><span class="s2">.py&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">line</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="n">Test</span><span class="o">.</span><span class="n">my_var1</span><span class="p">)</span>
+<span class="w">          </span><span class="o">^^^^^^^^^^^^</span>
+<span class="n">AttributeError</span><span class="p">:</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="n">object</span><span class="w"> </span><span class="s1">&#39;Test&#39;</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="n">no</span><span class="w"> </span><span class="n">attribute</span><span class="w"> </span><span class="s1">&#39;my_var1&#39;</span><span class="o">.</span><span class="w"> </span><span class="n">Did</span><span class="w"> </span><span class="n">you</span><span class="w"> </span><span class="n">mean</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;my_var2&#39;</span><span class="err">?</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="classvar">ClassVar</h3>
+<p>用于标识类变量，还是实例变量。比如如下代码，正常运行是没问题的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">ClassVar</span>
+<span class="k">class</span> <span class="nc">Test</span><span class="p">:</span>
+    <span class="n">my_var1</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">my_var2</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">Test</span><span class="p">()</span>
+<span class="n">t</span><span class="o">.</span><span class="n">my_var1</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">t</span><span class="o">.</span><span class="n">my_var2</span> <span class="o">=</span> <span class="mi">4</span>
+</code></pre></div></td></tr></table></div>
+
+<p>使用mypy进行检查，结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">&gt;</span><span class="w"> </span><span class="n">mypy</span><span class="w"> </span><span class="n">mytest</span><span class="p">.</span><span class="n">py</span>
+<span class="n">mytest</span><span class="p">.</span><span class="nl">py</span><span class="p">:</span><span class="mi">8</span><span class="err">:</span><span class="w"> </span><span class="nl">error</span><span class="p">:</span><span class="w"> </span><span class="n">Cannot</span><span class="w"> </span><span class="n">assign</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="k">variable</span><span class="w"> </span><span class="ss">&quot;my_var1&quot;</span><span class="w"> </span><span class="n">via</span><span class="w"> </span><span class="n">instance</span><span class="w">  </span><span class="o">[</span><span class="n">misc</span><span class="o">]</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="namedtuple">NamedTuple</h3>
+<blockquote>
+<p>这个和TypedDict看起来很像，但是有很大不同。</p>
+</blockquote>
+<p>这是collections.namedtuple()的对应版本，不直接用作注解。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Employee</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+</code></pre></div></td></tr></table></div>
+
+<p>相当于：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Employee</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Employee&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="pep-544-protocol">PEP 544 静态鸭子类型 Protocol</h2>
+<ul>
+<li>https://peps.python.org/pep-0544/</li>
+</ul>
+<p>Protocol 这个名字，让人很晕。协议？接口？...</p>
+<p>另外，这儿有两个概念，也不知道该怎么翻译：</p>
+<ul>
+<li>Nominal Subtyping：名义子类型？PEP 484的涉及的范畴，按类型的字面量理解。</li>
+<li>Structural Subtyping：结构子类型？本PEP的范畴，按照结构（行为）进行理解？</li>
+</ul>
+<p>总之，手册看的晕乎乎的，还是从小例子入手。</p>
+<h3 id="_5">例子</h3>
+<ul>
+<li>定义Dog和Cat类</li>
+<li>定义函数walk()可以接受有walk成员的对象（鸭子类型）</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Dog</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dog is walking&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Cat</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cat is walking&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="n">animal</span><span class="p">):</span>
+    <span class="n">animal</span><span class="o">.</span><span class="n">walk</span><span class="p">()</span>
+
+<span class="n">walk</span><span class="p">(</span><span class="n">Dog</span><span class="p">())</span>
+<span class="n">walk</span><span class="p">(</span><span class="n">Cat</span><span class="p">())</span>
+</code></pre></div></td></tr></table></div>
+
+<p>问题：<code>def walk(animal)</code>  <strong>如何对参数添加类型提示</strong>？？</p>
+<h3 id="_6">添加类型提示？</h3>
+<p>单纯添加，简单。这么就可以了？</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="n">animal</span><span class="p">:</span> <span class="n">Dog</span> <span class="o">|</span> <span class="n">Cat</span><span class="p">):</span>
+    <span class="n">animal</span><span class="o">.</span><span class="n">walk</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<p>只是太傻了，再来几个动物怎么办，不能天天改这个吧？</p>
+<p>不过也好办，那就弄个基类吧：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Animal</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Animal is walking&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Dog</span><span class="p">(</span><span class="n">Animal</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dog is walking&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Cat</span><span class="p">(</span><span class="n">Animal</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cat is walking&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="n">animal</span><span class="p">:</span> <span class="n">Animal</span><span class="p">):</span>
+    <span class="n">animal</span><span class="o">.</span><span class="n">walk</span><span class="p">()</span>
+
+<span class="n">walk</span><span class="p">(</span><span class="n">Dog</span><span class="p">())</span>
+<span class="n">walk</span><span class="p">(</span><span class="n">Cat</span><span class="p">())</span>
+</code></pre></div></td></tr></table></div>
+
+<p>问题解决了，但是不符合Python的鸭子哲学</p>
+<h3 id="_7">添加类型提示！</h3>
+<p>Protocol方案。</p>
+<ul>
+<li>定义一个<code>接口协议</code> Animal，但是Dog、Cat不需要从它进行继承</li>
+<li>Animal 可以用作类型提示。代表 Dog 和 Cat，因为它们有Animal的同样的成员</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Protocol</span>
+
+<span class="k">class</span> <span class="nc">Animal</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Dog</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dog is walking&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Cat</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cat is walking&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="n">animal</span><span class="p">:</span> <span class="n">Animal</span><span class="p">):</span>
+    <span class="n">animal</span><span class="o">.</span><span class="n">walk</span><span class="p">()</span>
+
+<span class="n">walk</span><span class="p">(</span><span class="n">Dog</span><span class="p">())</span>
+<span class="n">walk</span><span class="p">(</span><span class="n">Cat</span><span class="p">())</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="pep-589-typeddict">PEP 589 TypedDict</h2>
+<ul>
+<li>https://peps.python.org/pep-0589/</li>
+</ul>
+<p>PEP 589引入TypedDict类型，可以为不同的键设置不同的值类型提示。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypedDict</span>
+
+<span class="k">class</span> <span class="nc">Movie</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">year</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="n">m1</span><span class="p">:</span> <span class="n">Movie</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;The Godfather&#39;</span><span class="p">,</span> <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="mi">1972</span><span class="p">}</span>
+<span class="n">m2</span><span class="p">:</span> <span class="n">Movie</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;The Godfather&#39;</span><span class="p">,</span> <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="s1">&#39;1972&#39;</span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>以上代码执行没问题，但无法通过mypy的检查</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">&gt;</span><span class="w"> </span><span class="nx">mypy</span><span class="w"> </span><span class="p">.</span><span class="err">\</span><span class="nx">anotation</span><span class="p">.</span><span class="nx">py</span>
+<span class="nx">anotation</span><span class="p">.</span><span class="nx">py</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="w"> </span><span class="nx">error</span><span class="p">:</span><span class="w"> </span><span class="nx">Incompatible</span><span class="w"> </span><span class="nx">types</span><span class="w"> </span><span class="p">(</span><span class="nx">expression</span><span class="w"> </span><span class="nx">has</span><span class="w"> </span><span class="k">type</span><span class="w"> </span><span class="s">&quot;str&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">TypedDict</span><span class="w"> </span><span class="nx">item</span><span class="w"> </span><span class="s">&quot;year&quot;</span><span class="w"> </span><span class="nx">has</span><span class="w"> </span><span class="k">type</span><span class="w"> </span><span class="s">&quot;int&quot;</span><span class="p">)</span><span class="w">  </span><span class="p">[</span><span class="nx">typeddict</span><span class="o">-</span><span class="nx">item</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="notrequired">NotRequired</h3>
+<ul>
+<li>https://peps.python.org/pep-0655/</li>
+</ul>
+<p>PEP 589没有未TypedDict定义可选项，PEP655完善这部分内容：</p>
+<p>NotRequired 用于定义某个字段是不是必须的。注意，这个和可选的Optional不同，Optional只是指可以为None。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Point2D</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">label</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果全都非必须，可以设置<code>total=False</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Point2D</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="pep-539">PEP 539 灵活的函数与变量注解</h2>
+<ul>
+<li>https://peps.python.org/pep-0593</li>
+</ul>
+<blockquote>
+<p>PEP 539 引入一个机制，将 PEP 484的类型标注扩展到任意的元数据(metadata)。</p>
+</blockquote>
+<p>Python 3.9 增加新的类型 Annotated。比如，类型T用一个元数据x进行注解，<code>Annotated[T, x]</code>。</p>
+<p>例子：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">import</span> <span class="nn">types</span>
+
+<span class="k">def</span> <span class="nf">myadd</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;first&quot;</span><span class="p">],</span> <span class="n">b</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">]</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">myadd</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myadd</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="mf">15</span>
+<span class="err">{&#39;</span><span class="n">a</span><span class="err">&#39;</span><span class="p">:</span><span class="w"> </span><span class="n">typing</span><span class="mf">.</span><span class="n">Annotated</span><span class="err">[</span><span class="nb">int</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="n">first</span><span class="err">&#39;]</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="n">b</span><span class="err">&#39;</span><span class="p">:</span><span class="w"> </span><span class="n">typing</span><span class="mf">.</span><span class="n">Annotated</span><span class="err">[</span><span class="nb">int</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="n">second</span><span class="err">&#39;]</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="kr">return</span><span class="err">&#39;</span><span class="p">:</span><span class="w"> </span><span class="o">&lt;</span><span class="n">class</span><span class="w"> </span><span class="err">&#39;</span><span class="nb">int</span><span class="err">&#39;</span><span class="o">&gt;</span><span class="err">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="metadata">注解与metadata</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+
+<span class="n">T1</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;first&quot;</span><span class="p">]</span>
+<span class="n">T2</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T1</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">T1</span><span class="o">.</span><span class="n">__metadata__</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">T2</span><span class="o">.</span><span class="n">__metadata__</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>(&#39;first&#39;,)
+(&#39;first&#39;, &#39;second&#39;)
+</code></pre></div></td></tr></table></div>
+
+<p>从T2看出，嵌套的注解会被展平。也就是，下面是成立的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">assert</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;first&quot;</span><span class="p">],</span> <span class="s2">&quot;second&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>但是，要注意顺序，下面的不成立：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">assert</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="s2">&quot;first&quot;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="get_type_hints">get_type_hints()</h3>
+<p>代码：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">get_type_hints</span>
+<span class="kn">import</span> <span class="nn">types</span>
+
+<span class="k">def</span> <span class="nf">myadd</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;first&quot;</span><span class="p">],</span> <span class="n">b</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">]</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">myadd</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">get_type_hints</span><span class="p">(</span><span class="n">myadd</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>{<span class="s1">&#39;a&#39;</span>:<span class="w"> </span><span class="nv">typing</span>.<span class="nv">Annotated</span>[<span class="nv">int</span>,<span class="w"> </span><span class="s1">&#39;first&#39;</span>],<span class="w"> </span><span class="s1">&#39;b&#39;</span>:<span class="w"> </span><span class="nv">typing</span>.<span class="nv">Annotated</span>[<span class="nv">int</span>,<span class="w"> </span><span class="s1">&#39;second&#39;</span>],<span class="w"> </span><span class="s1">&#39;return&#39;</span>:<span class="w"> </span><span class="o">&lt;</span><span class="nv">class</span><span class="w"> </span><span class="s1">&#39;int&#39;</span><span class="o">&gt;</span>}
+{<span class="s1">&#39;a&#39;</span>:<span class="w"> </span><span class="o">&lt;</span><span class="nv">class</span><span class="w"> </span><span class="s1">&#39;int&#39;</span><span class="o">&gt;</span>,<span class="w"> </span><span class="s1">&#39;b&#39;</span>:<span class="w"> </span><span class="o">&lt;</span><span class="nv">class</span><span class="w"> </span><span class="s1">&#39;int&#39;</span><span class="o">&gt;</span>,<span class="w"> </span><span class="s1">&#39;return&#39;</span>:<span class="w"> </span><span class="o">&lt;</span><span class="nv">class</span><span class="w"> </span><span class="s1">&#39;int&#39;</span><span class="o">&gt;</span>}
+</code></pre></div></td></tr></table></div>
+
+<p>另外Python3.10引入的<code>get_annotations()</code>可以取代<code>__annotations__</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">get_annotations</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myadd</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">get_annotations</span><span class="p">(</span><span class="n">myadd</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_8">带有类型参数的类型</h2>
+<p>有些容器可以包含其他值，比如dict、list、set、tuple。</p>
+<h3 id="_9">容器类型</h3>
+<blockquote>
+<p>从Python3.9起，它们在typing中对应的Dict，List、Set、Tuple已经不建议使用。</p>
+</blockquote>
+<p>比如，由str构成的list：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nl">items</span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="o">[</span><span class="n">str</span><span class="o">]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>由三个元素构成的tuple：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">items_t</span><span class="o">:</span><span class="w"> </span><span class="n">tuple</span><span class="o">[</span><span class="n">int</span><span class="o">,</span><span class="w"> </span><span class="n">int</span><span class="o">,</span><span class="w"> </span><span class="n">str</span><span class="o">]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>由bytes构成的set：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nl">items_s</span><span class="p">:</span><span class="w"> </span><span class="k">set</span><span class="o">[</span><span class="n">bytes</span><span class="o">]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>dict需要指定键和值的类型，比如键为str，值为float：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">prices</span><span class="o">:</span><span class="w"> </span><span class="n">dict</span><span class="o">[</span><span class="n">str</span><span class="o">,</span><span class="w"> </span><span class="n">float</span><span class="o">]</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="union">Union</h3>
+<blockquote>
+<p>Python3.9 不需要导入typing中的 Union类型，直接使用<code>|</code>即可。</p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">item</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">str</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="optional">Optional</h3>
+<blockquote>
+<p>typing中的 Optional 也没必要用了，直接用Union即可。</p>
+<p>Optional 会给人一个值可选的感觉，但实际上它只意味着可以为None。</p>
+</blockquote>
+<p>比如</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span><span class="w"> </span><span class="n">Optional</span>
+<span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">None</span>
+</code></pre></div></td></tr></table></div>
+
+<p>等同于</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">None</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">None</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_10">参考</h2>
+<ul>
+<li>https://peps.python.org/pep-3107/</li>
+<li>https://peps.python.org/pep-0483/</li>
+<li>https://peps.python.org/pep-0484/</li>
+<li>https://peps.python.org/pep-0526/</li>
+<li>https://peps.python.org/pep-0544/</li>
+<li>https://peps.python.org/pep-0589/</li>
+<li>https://peps.python.org/pep-0593</li>
+<li>https://peps.python.org/pep-0655/</li>
+<li>https://docs.python.org/zh-cn/3/howto/annotations.html</li>
+<li>https://docs.python.org/zh-cn/3/library/typing.html</li>
+<li>https://medium.com/@life-is-short-so-enjoy-it/research-about-python-typing-annotated-95c9093f97c3</li>
+<li>https://so1n.me/2020/06/03/Python%E7%9A%84TypeHints/</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-12-26T23:29:00+08:00" pubdate>Tue 26 December 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/python.html'>Python</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/python.html">python</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

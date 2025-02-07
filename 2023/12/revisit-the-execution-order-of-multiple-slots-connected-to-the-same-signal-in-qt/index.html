@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>重看Qt中连接到同一signal的多个slots的执行顺序问题 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">重看Qt中连接到同一signal的多个slots的执行顺序问题</h1>
+    <p class="meta">
+<time datetime="2023-12-02T22:30:00+08:00" pubdate>Sat 02 December 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>十多年前基于Qt4简单写过 <a href="https://blog.csdn.net/dbzhang800/article/details/7100309">Qt中连接到同一signal的多个slots的执行顺序问题</a>，或许是时候再回顾一下了...</p>
+</blockquote>
+<p>首先，结论没有变：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>in the order they have been connected
+</code></pre></div></td></tr></table></div>
+
+<p>只是本次稍微扩充一下，同时将内容从Qt4更新到Qt6</p>
+<ul>
+<li>先看Qt手册【中的片段】</li>
+<li>用十个简短的例子进行演示说明</li>
+<li>再看Qt源码【中的片段】</li>
+</ul>
+<h2 id="qt">Qt手册</h2>
+<blockquote>
+<p>学习Qt，还是建议手册优先。</p>
+</blockquote>
+<p>在Qt6.5手册中</p>
+<ul>
+<li>https://doc.qt.io/qt-6.5/signalsandslots.html：</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">If</span><span class="w"> </span><span class="n">several</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">connected</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="k">signal</span><span class="p">,</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">executed</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">after</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">other</span><span class="p">,</span><span class="w"> </span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>https://doc.qt.io/qt-6.5/qobject.html</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">If</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">signal</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">connected</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">several</span><span class="w"> </span><span class="n">slots</span><span class="p">,</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">activated</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">same</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">connections</span><span class="w"> </span><span class="n">were</span><span class="w"> </span><span class="n">made</span><span class="p">,</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">signal</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">emitted</span><span class="o">.</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>需要注意的是，一些<strong>老的书籍或资料</strong>中，认为槽函数的执行顺序是<strong>随机</strong>的。</p>
+</blockquote>
+<p>这是因为在Qt4.5以及之前版本中，Qt官方是这么说的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">If</span><span class="w"> </span><span class="n">several</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">connected</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="k">signal</span><span class="p">,</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">executed</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">after</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">other</span><span class="p">,</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="n">arbitrary</span><span class="w"> </span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">signal</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">emitted</span><span class="o">.</span>
+</code></pre></div></td></tr></table></div>
+
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">If</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">signal</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">connected</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">several</span><span class="w"> </span><span class="n">slots</span><span class="p">,</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">activated</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="n">arbitrary</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">signal</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">emitted</span><span class="o">.</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>个人理解，这个顺序一直是确定的，只是早期官方不想让用户依赖这个顺序。</p>
+</blockquote>
+<p>手册中的这一变化，是从Qt4.6开始的。另外，Qt::UniqueConnection 这一个连接类型，也是在Qt4.6引入的。</p>
+<p>另外，Qt6.0 引入新的连接类型 Qt::SingleShotConnection。</p>
+<p><strong>全家福：</strong></p>
+<table>
+<thead>
+<tr>
+<th>枚举量</th>
+<th>值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qt::AutoConnection</td>
+<td>0</td>
+<td>这个是默认值。 如果接受者位于emit所在线程，则使用Qt::DirectConnection，否则使用Qt::QueuedConnection</td>
+</tr>
+<tr>
+<td>Qt::DirectConnection</td>
+<td>1</td>
+<td><strong>基础类型</strong>，等同于直接调用</td>
+</tr>
+<tr>
+<td>Qt::QueuedConnection</td>
+<td>2</td>
+<td><strong>基础类型</strong>，发送一个事件到接收者所在线程的事件队列，接收者线程处理到该事件时，调用对应的槽函数。</td>
+</tr>
+<tr>
+<td>Qt::BlockingQueuedConnection</td>
+<td>3</td>
+<td>与Qt::QueuedConnection类似，emit所在线程会被阻塞</td>
+</tr>
+<tr>
+<td>Qt::UniqueConnection</td>
+<td>0x80</td>
+<td>Qt4.6 引入，可与上面类型进行”与“操作。</td>
+</tr>
+<tr>
+<td>Qt::SingleShotConnection</td>
+<td>0x100</td>
+<td>Qt6.0 引入，可与上面类型进行”与“操作。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">执行顺序演示</h2>
+<p>我们还是以具体的例子开始。</p>
+<blockquote>
+<p>为了简单起见，每个例子均只有一个main.cpp文件构成，可用cmake或qmake构建。</p>
+</blockquote>
+<h3 id="_2">例子一</h3>
+<p>简单场景，使用 Qt::AutoConnection 模式，单线程模式：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// By dbzhang800, 2023-12-02</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QCoreApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QDebug&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QThread&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyObject</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QObject</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">Q_OBJECT</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="n">MyObject</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="nl">signals</span><span class="p">:</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">dbSignal</span><span class="p">();</span>
+
+<span class="k">public</span><span class="w"> </span><span class="n">slots</span><span class="o">:</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">dbSlot1</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QString</span><span class="p">(</span><span class="s">&quot;From %1 slot1: &quot;</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">objectName</span><span class="p">())</span>
+<span class="w">             </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">dbSlot2</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QString</span><span class="p">(</span><span class="s">&quot;From %1 slot1: &quot;</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">objectName</span><span class="p">())</span>
+<span class="w">             </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">dbSlot3</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QString</span><span class="p">(</span><span class="s">&quot;From %1 slot3: &quot;</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">objectName</span><span class="p">())</span>
+<span class="w">             </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;From main thread: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">MyObject</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot2</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">emit</span><span class="w"> </span><span class="n">obj</span><span class="p">.</span><span class="n">dbSignal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果如下（两个槽函数按连接顺序依次执行）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>From main thread:  0x8468
+&quot;From  slot1: &quot; 0x8468
+&quot;From  slot2: &quot; 0x8468
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_3">例子二</h3>
+<blockquote>
+<p>为了节省篇幅，后面的例子只包含main函数，其他部分和例子一一样（其实每个例子只有几行代码的差异）。</p>
+</blockquote>
+<p>简单场景，使用 Qt::AutoConnection 模式，多线程模式（2个线程）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;From main thread: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">MyObject</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot2</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">QThread</span><span class="w"> </span><span class="kr">thread</span><span class="p">;</span>
+<span class="w">  </span><span class="n">obj</span><span class="p">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="o">&amp;</span><span class="kr">thread</span><span class="p">);</span>
+<span class="w">  </span><span class="kr">thread</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">emit</span><span class="w"> </span><span class="n">obj</span><span class="p">.</span><span class="n">dbSignal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果如下（两个槽函数按连接顺序依次执行，从线程ID可以看出是在次线程执行）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>From main thread:  0x9058
+&quot;From  slot1: &quot; 0x8f00
+&quot;From  slot2: &quot; 0x8f00
+</code></pre></div></td></tr></table></div>
+
+<p>槽函数在同一个线程中执行，emit时会放置两个事件（event）进目标线程的事件队列。目标线程依次取出并执行它们，很自然。</p>
+<p><strong>注意</strong> ：</p>
+<p>本例中，刻意将线程操作放置到connect之后。用以展示：</p>
+<p><strong>AutoConnection 到底等同于 DirectConnection还是QueuedConnection，是在emit时确定的，而不是connect时</strong>！！</p>
+<h3 id="_4">例子三</h3>
+<p>直接使用 Qt::DirectConnection 和 Qt::QueuedConnection，多线程模式（2个线程）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;From main thread: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">MyObject</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">QueuedConnection</span><span class="p">);</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot2</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">DirectConnection</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">QThread</span><span class="w"> </span><span class="kr">thread</span><span class="p">;</span>
+<span class="w">  </span><span class="n">obj</span><span class="p">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="o">&amp;</span><span class="kr">thread</span><span class="p">);</span>
+<span class="w">  </span><span class="kr">thread</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">emit</span><span class="w"> </span><span class="n">obj</span><span class="p">.</span><span class="n">dbSignal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果直接运行的话，你看到的运行结果应该如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>From main thread:  0x759c
+&quot;From  slot2: &quot; 0x759c
+&quot;From  slot1: &quot; 0x89e4
+</code></pre></div></td></tr></table></div>
+
+<p>什么状况？说好的按顺序执行呢？！！怎么slot2抢跑了</p>
+<p>其实理解偏差在"执行"上。对Queued方式，有两个层次的”执行“：</p>
+<ol>
+<li>emit信号时，将需要执行的槽函数信息，封装成一个event，丢到目标线程的事件队列中。这个时序是确定的</li>
+<li>目标线程依次处理队列中的事件。何时处理并执行这个槽函数，对于emit线程来说，这个时间是不可控的（也不该控制）。</li>
+</ol>
+<p>槽函数依次执行，只涵盖第一层次。</p>
+<h4 id="_5">注意</h4>
+<p>上面结果是不严谨的。slot1和slot2位于两个不同线程中。具体谁先谁后是不确定的，也不能通过上面的实验测定（因为一般来说，Queued方式肯定会慢，毕竟目标线程需要发现它并执行）</p>
+<p>只要这么改一下，就可以发现问题（如果你不能复现，请把100继续改大）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">QueuedConnection</span><span class="p">);</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">      </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot2</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">DirectConnection</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code>From main thread:  0x77b4
+&quot;From  slot2: &quot; 0x77b4
+&quot;From  slot2: &quot; 0x77b4
+...
+&quot;From  slot2: &quot; 0x77b4
+&quot;From  slot1: &quot; 0x982c
+&quot;From  slot2: &quot; 0x77b4
+...
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_6">例子四</h3>
+<p>如果就是接受不了三的结果，非要同步怎么办？</p>
+<p>改变一行代码，引入 Qt::BlockingQueuedConnection</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;From main thread: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">MyObject</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">BlockingQueuedConnection</span><span class="p">);</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot2</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">DirectConnection</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">QThread</span><span class="w"> </span><span class="kr">thread</span><span class="p">;</span>
+<span class="w">  </span><span class="n">obj</span><span class="p">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="o">&amp;</span><span class="kr">thread</span><span class="p">);</span>
+<span class="w">  </span><span class="kr">thread</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">emit</span><span class="w"> </span><span class="n">obj</span><span class="p">.</span><span class="n">dbSignal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>From main thread:  0x6d44
+&quot;From  slot1: &quot; 0x9b2c
+&quot;From  slot2: &quot; 0x6d44
+</code></pre></div></td></tr></table></div>
+
+<p>现在舒服多了，唯一问题是，<strong>这会阻塞当前线程</strong>。</p>
+<h3 id="_7">例子五</h3>
+<p>继续看看 Qt::BlockingQueuedConnection</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;From main thread: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">MyObject</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot2</span><span class="p">);</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot3</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">BlockingQueuedConnection</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">QThread</span><span class="w"> </span><span class="kr">thread</span><span class="p">;</span>
+<span class="w">  </span><span class="n">obj</span><span class="p">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="o">&amp;</span><span class="kr">thread</span><span class="p">);</span>
+<span class="w">  </span><span class="kr">thread</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">emit</span><span class="w"> </span><span class="n">obj</span><span class="p">.</span><span class="n">dbSignal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>From main thread:  0x3634
+&quot;From  slot1: &quot; 0x43fc
+&quot;From  slot2: &quot; 0x43fc
+&quot;From  slot3: &quot; 0x43fc
+</code></pre></div></td></tr></table></div>
+
+<p>在emit发生时，它会依次把 slot1、slot2、slot3对应的事件放置到目标线程的事件队列中，然后等待slot3的事件被去除并执行完毕。</p>
+<p>这造成<strong>所有的槽函数都会阻塞当前线程</strong>，尽管执行顺序符合预期。</p>
+<h3 id="_8">例子六</h3>
+<p>考虑真实的多线程场景，如下，我们使用两个工作线程：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;From main thread: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">MyObject</span><span class="w"> </span><span class="n">obj1</span><span class="p">;</span>
+<span class="w">  </span><span class="n">obj1</span><span class="p">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;obj1&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">MyObject</span><span class="w"> </span><span class="n">obj2</span><span class="p">;</span>
+<span class="w">  </span><span class="n">obj2</span><span class="p">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;obj2&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj2</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">QThread</span><span class="w"> </span><span class="n">thread1</span><span class="p">;</span>
+<span class="w">  </span><span class="n">obj1</span><span class="p">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="o">&amp;</span><span class="n">thread1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">thread1</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+<span class="w">  </span><span class="n">QThread</span><span class="w"> </span><span class="n">thread2</span><span class="p">;</span>
+<span class="w">  </span><span class="n">obj2</span><span class="p">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="o">&amp;</span><span class="n">thread2</span><span class="p">);</span>
+<span class="w">  </span><span class="n">thread2</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">//thread.wait(1000);</span>
+
+<span class="w">  </span><span class="n">emit</span><span class="w"> </span><span class="n">obj1</span><span class="p">.</span><span class="n">dbSignal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果有时：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>From main thread:  0x83c8
+&quot;From obj1 slot1: &quot; 0x3540
+&quot;From obj2 slot1: &quot; 0x636c
+</code></pre></div></td></tr></table></div>
+
+<p>有时：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>From main thread:  0x1818
+&quot;From obj2 slot1: &quot; 0x9024
+&quot;From obj1 slot1: &quot; 0x7984
+</code></pre></div></td></tr></table></div>
+
+<p>同样，回归到我们例子三的解释中：</p>
+<p>对Queued方式，有两个层次的”执行“：</p>
+<ol>
+<li>emit信号时，将需要执行的槽函数信息，封装成一个event，丢到目标线程的事件队列中。这个时序是确定的</li>
+<li>目标线程依次处理队列中的事件。何时处理并执行这个槽函数，对于emit线程来说，这个时间是不可控的（也不该控制）。</li>
+</ol>
+<p>槽函数依次执行，只涵盖第一层次。而第二层次的不确定，这刚好是多线程的特质。</p>
+<h2 id="_9">其他选项</h2>
+<h3 id="_10">例子七</h3>
+<p>在例子三中，我们顺便演示了，同一个信号和槽之间可以多次建立连接，效果是槽函数执行多次。</p>
+<p>那么，如何避免这种问题？？只想执行一次怎么办？？</p>
+<p>这就需要 Qt::UniqueConnection 出场了...</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;From main thread: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">MyObject</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">QueuedConnection</span><span class="p">);</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot2</span><span class="p">,</span>
+<span class="w">                     </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Qt</span><span class="o">::</span><span class="n">ConnectionType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Qt</span><span class="o">::</span><span class="n">DirectConnection</span><span class="o">|</span><span class="n">Qt</span><span class="o">::</span><span class="n">UniqueConnection</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">QThread</span><span class="w"> </span><span class="kr">thread</span><span class="p">;</span>
+<span class="w">  </span><span class="n">obj</span><span class="p">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="o">&amp;</span><span class="kr">thread</span><span class="p">);</span>
+<span class="w">  </span><span class="kr">thread</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">emit</span><span class="w"> </span><span class="n">obj</span><span class="p">.</span><span class="n">dbSignal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>From main thread:  0x1844
+&quot;From  slot2: &quot; 0x1844
+&quot;From  slot1: &quot; 0x8820
+</code></pre></div></td></tr></table></div>
+
+<p>从结果看，重复连接被干掉了。</p>
+<h3 id="_11">例子八</h3>
+<p>新的例子，继续看 Qt::UniqueConnection </p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;From main thread: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">MyObject</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">DirectConnection</span><span class="p">);</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">,</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Qt</span><span class="o">::</span><span class="n">ConnectionType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Qt</span><span class="o">::</span><span class="n">QueuedConnection</span><span class="o">|</span><span class="n">Qt</span><span class="o">::</span><span class="n">UniqueConnection</span><span class="p">));</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">,</span><span class="w">  </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Qt</span><span class="o">::</span><span class="n">ConnectionType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Qt</span><span class="o">::</span><span class="n">DirectConnection</span><span class="o">|</span><span class="n">Qt</span><span class="o">::</span><span class="n">UniqueConnection</span><span class="p">));</span>
+
+<span class="w">  </span><span class="n">QThread</span><span class="w"> </span><span class="kr">thread</span><span class="p">;</span>
+<span class="w">  </span><span class="n">obj</span><span class="p">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="o">&amp;</span><span class="kr">thread</span><span class="p">);</span>
+<span class="w">  </span><span class="kr">thread</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">emit</span><span class="w"> </span><span class="n">obj</span><span class="p">.</span><span class="n">dbSignal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>From main thread:  0x4f0
+&quot;From  slot1: &quot; 0x4f0
+</code></pre></div></td></tr></table></div>
+
+<p>从这儿可以发现，Qt::UniqueConnection 这个选项，是在connect时生效的。不管之前已有连接是什么类型，只要存在对应连接，当前connect就会被忽略。</p>
+<h4 id="_12">注意</h4>
+<p>信号槽连接的新老用法混用，会不符合预期，比如，这个例子中，我们改成下面这样：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">DirectConnection</span><span class="p">);</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">,</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Qt</span><span class="o">::</span><span class="n">ConnectionType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Qt</span><span class="o">::</span><span class="n">QueuedConnection</span><span class="o">|</span><span class="n">Qt</span><span class="o">::</span><span class="n">UniqueConnection</span><span class="p">));</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">,</span><span class="w">  </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Qt</span><span class="o">::</span><span class="n">ConnectionType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Qt</span><span class="o">::</span><span class="n">DirectConnection</span><span class="o">|</span><span class="n">Qt</span><span class="o">::</span><span class="n">UniqueConnection</span><span class="p">));</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="n">SIGNAL</span><span class="p">(</span><span class="n">dbSignal</span><span class="p">()),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="n">SLOT</span><span class="p">(</span><span class="n">dbSlot1</span><span class="p">()),</span><span class="w">  </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Qt</span><span class="o">::</span><span class="n">ConnectionType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">Qt</span><span class="o">::</span><span class="n">DirectConnection</span><span class="o">|</span><span class="n">Qt</span><span class="o">::</span><span class="n">UniqueConnection</span><span class="p">));</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果将为</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>From main thread:  0x82f4
+&quot;From  slot1: &quot; 0x82f4
+&quot;From  slot1: &quot; 0x82f4
+</code></pre></div></td></tr></table></div>
+
+<p>也就是最后一行没起到UniqueConnection作用。</p>
+<h3 id="_13">例子九</h3>
+<p>看看Qt6引入的，Qt::SingleShotConnection的选项</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;From main thread: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">MyObject</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject</span><span class="o">::</span><span class="n">dbSlot1</span><span class="p">,</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">SingleShotConnection</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">emit</span><span class="w"> </span><span class="n">obj</span><span class="p">.</span><span class="n">dbSignal</span><span class="p">();</span>
+<span class="w">  </span><span class="n">emit</span><span class="w"> </span><span class="n">obj</span><span class="p">.</span><span class="n">dbSignal</span><span class="p">();</span>
+<span class="w">  </span><span class="n">emit</span><span class="w"> </span><span class="n">obj</span><span class="p">.</span><span class="n">dbSignal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>From main thread:  0x4f0
+&quot;From  slot1: &quot; 0x4f0
+</code></pre></div></td></tr></table></div>
+
+<p>不管信号触发多少次，槽函数第一次被调用后，这个链接就断开(disconnect)了。</p>
+<p>注意对比：Qt::UniqueConnection效力发生在connect方式时，Qt::SingleShotConnection效力发生在emit执行时。</p>
+<h3 id="_14">例子十</h3>
+<p>最后，尽管不追求十全十美，还是凑个数凑到十吧。看一下使用Qt designer时，非常常用（或者被动无意识在用）的信号槽自动连接，即<code>QMetaObject::connectSlotsByName()</code>介入进来会怎么样。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// By dbzhang800, 2023-12-02</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QCoreApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QDebug&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QThread&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyObject2</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QObject</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">Q_OBJECT</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="n">MyObject2</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&quot;obj2&quot;</span><span class="p">);}</span>
+
+<span class="nl">signals</span><span class="p">:</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">dbSignal</span><span class="p">();</span>
+
+<span class="k">public</span><span class="w"> </span><span class="n">slots</span><span class="o">:</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">on_obj2_dbSignal</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QString</span><span class="p">(</span><span class="s">&quot;From %1 slot1: &quot;</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">objectName</span><span class="p">())</span>
+<span class="w">             </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">QThread</span><span class="o">::</span><span class="n">currentThreadId</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">MyObject2</span><span class="w"> </span><span class="n">obj2</span><span class="p">;</span>
+<span class="w">  </span><span class="n">QMetaObject</span><span class="o">::</span><span class="n">connectSlotsByName</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj2</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj2</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject2</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj2</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject2</span><span class="o">::</span><span class="n">on_obj2_dbSignal</span><span class="p">);</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj2</span><span class="p">,</span><span class="w"> </span><span class="n">SIGNAL</span><span class="p">(</span><span class="n">dbSignal</span><span class="p">()),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj2</span><span class="p">,</span><span class="w"> </span><span class="n">SLOT</span><span class="p">(</span><span class="n">on_obj2_dbSignal</span><span class="p">()));</span>
+
+<span class="w">  </span><span class="n">emit</span><span class="w"> </span><span class="n">obj2</span><span class="p">.</span><span class="n">dbSignal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>&quot;From obj2 slot1: &quot; 0x3b18
+&quot;From obj2 slot1: &quot; 0x3b18
+&quot;From obj2 slot1: &quot; 0x3b18
+</code></pre></div></td></tr></table></div>
+
+<p>自动连接，加上两次手动连接，共有三个connection。故而调用了三次。</p>
+<p>在例子八中，我们提到信号槽新老写法不等价。那么connectSlotsByName()这个Qt4时代的产物，和那个连接等价呢？</p>
+<p>用下面的写法即可验证你的猜想。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj2</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject2</span><span class="o">::</span><span class="n">dbSignal</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj2</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyObject2</span><span class="o">::</span><span class="n">on_obj2_dbSignal</span><span class="p">);</span>
+<span class="w">  </span><span class="n">QObject</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">obj2</span><span class="p">,</span><span class="w"> </span><span class="n">SIGNAL</span><span class="p">(</span><span class="n">dbSignal</span><span class="p">()),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">obj2</span><span class="p">,</span><span class="w"> </span><span class="n">SLOT</span><span class="p">(</span><span class="n">on_obj2_dbSignal</span><span class="p">()),</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">UniqueConnection</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_15">源码</h2>
+<blockquote>
+<p>知其然，也要知其所以然。要不？简单看看Qt源码？</p>
+</blockquote>
+<h3 id="connection">保存connection信息</h3>
+<p>QObject的connect函数会调用到下面这个函数来保存当前连接信息：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">Connection</span><span class="w"> </span><span class="o">*</span><span class="nf">QMetaObjectPrivate::connect</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">sender</span><span class="p">,</span>
+<span class="w">                                 </span><span class="kt">int</span><span class="w"> </span><span class="n">signal_index</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">QMetaObject</span><span class="w"> </span><span class="o">*</span><span class="n">smeta</span><span class="p">,</span>
+<span class="w">                                 </span><span class="k">const</span><span class="w"> </span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">receiver</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">method_index</span><span class="p">,</span>
+<span class="w">                                 </span><span class="k">const</span><span class="w"> </span><span class="n">QMetaObject</span><span class="w"> </span><span class="o">*</span><span class="n">rmeta</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">types</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">ConnectionData</span><span class="w"> </span><span class="o">*</span><span class="n">scd</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">get</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">connections</span><span class="p">.</span><span class="n">loadRelaxed</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">type</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">UniqueConnection</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">scd</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">scd</span><span class="o">-&gt;</span><span class="n">signalVectorCount</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">signal_index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">const</span><span class="w"> </span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">Connection</span><span class="w"> </span><span class="o">*</span><span class="n">c2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">scd</span><span class="o">-&gt;</span><span class="n">signalVector</span><span class="p">.</span><span class="n">loadRelaxed</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">at</span><span class="p">(</span><span class="n">signal_index</span><span class="p">).</span><span class="n">first</span><span class="p">.</span><span class="n">loadRelaxed</span><span class="p">();</span>
+<span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">method_index_absolute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">method_index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">method_offset</span><span class="p">;</span>
+<span class="w">            </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">c2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">c2</span><span class="o">-&gt;</span><span class="n">isSlotObject</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">c2</span><span class="o">-&gt;</span><span class="n">receiver</span><span class="p">.</span><span class="n">loadRelaxed</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">receiver</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">c2</span><span class="o">-&gt;</span><span class="n">method</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">method_index_absolute</span><span class="p">)</span>
+<span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">                </span><span class="n">c2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c2</span><span class="o">-&gt;</span><span class="n">nextConnectionList</span><span class="p">.</span><span class="n">loadRelaxed</span><span class="p">();</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">type</span><span class="w"> </span><span class="o">&amp;=</span><span class="w"> </span><span class="o">~</span><span class="n">Qt</span><span class="o">::</span><span class="n">UniqueConnection</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">isSingleShot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">SingleShotConnection</span><span class="p">;</span>
+<span class="w">    </span><span class="n">type</span><span class="w"> </span><span class="o">&amp;=</span><span class="w"> </span><span class="o">~</span><span class="n">Qt</span><span class="o">::</span><span class="n">SingleShotConnection</span><span class="p">;</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">Connection</span><span class="o">&gt;</span><span class="w"> </span><span class="n">c</span><span class="p">{</span><span class="k">new</span><span class="w"> </span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">Connection</span><span class="p">};</span>
+<span class="w">    </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">sender</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+<span class="w">    </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">signal_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">signal_index</span><span class="p">;</span>
+<span class="w">    </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">receiver</span><span class="p">.</span><span class="n">storeRelaxed</span><span class="p">(</span>
+<span class="n">r</span><span class="p">);</span>
+<span class="w">    </span><span class="n">QThreadData</span><span class="w"> </span><span class="o">*</span><span class="n">td</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">r</span><span class="o">-&gt;</span><span class="n">d_func</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">threadData</span><span class="p">.</span><span class="n">loadAcquire</span><span class="p">();</span>
+<span class="w">    </span><span class="n">td</span><span class="o">-&gt;</span><span class="n">ref</span><span class="p">();</span>
+<span class="w">    </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">receiverThreadData</span><span class="p">.</span><span class="n">storeRelaxed</span><span class="p">(</span>
+<span class="n">td</span><span class="p">);</span>
+<span class="w">    </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">method_relative</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">method_index</span><span class="p">;</span>
+<span class="w">    </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">method_offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">method_offset</span><span class="p">;</span>
+<span class="w">    </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">connectionType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">type</span><span class="p">;</span>
+<span class="w">    </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">isSlotObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">argumentTypes</span><span class="p">.</span><span class="n">storeRelaxed</span><span class="p">(</span>
+<span class="n">types</span><span class="p">);</span>
+<span class="w">    </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">callFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">callFunction</span><span class="p">;</span>
+<span class="w">    </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">isSingleShot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">isSingleShot</span><span class="p">;</span>
+<span class="w">    </span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">get</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">addConnection</span><span class="p">(</span><span class="n">signal_index</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这个函数做了大量的判断，并过滤掉UniqueConnection，生成一个Connection，将其<strong>放置到内部的链表中</strong>。</p>
+<h3 id="_16">信号触发</h3>
+<p>首先，我们知道Qt中所谓signal，就是一个普通的函数，只是不用我们自己去实现它。moc会自动生成一个 moc_xxxx.cpp或者xxxx.moc文件，里面包含这个信号的实现。这样，C++编译器才能正常编译Qt程序，这部分可以参考<a href="https://blog.debao.me/zh/2010/11/from-cpp-to-qt/">从C++到Qt</a>。</p>
+<p>对我们前面的例子中，打开 main.moc，可以看到下面的代码：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// SIGNAL 0</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MyObject::dbSignal</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QMetaObject</span><span class="o">::</span><span class="n">activate</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">staticMetaObject</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>信号触发（调用信号函数时）时，activate进而会调用如下的函数：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">bool</span><span class="w"> </span><span class="n">callbacks_enabled</span><span class="o">&gt;</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">doActivate</span><span class="p">(</span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">sender</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">signal_index</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">....</span>
+<span class="w">    </span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">ConnectionDataPointer</span><span class="w"> </span><span class="n">connections</span><span class="p">(</span><span class="n">sp</span><span class="o">-&gt;</span><span class="n">connections</span><span class="p">.</span><span class="n">loadRelaxed</span><span class="p">());</span>
+<span class="w">    </span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">SignalVector</span><span class="w"> </span><span class="o">*</span><span class="n">signalVector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">connections</span><span class="o">-&gt;</span><span class="n">signalVector</span><span class="p">.</span><span class="n">loadRelaxed</span><span class="p">();</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">ConnectionList</span><span class="w"> </span><span class="o">*</span><span class="n">list</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">signal_index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">signalVector</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">())</span>
+<span class="w">        </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">signalVector</span><span class="o">-&gt;</span><span class="n">at</span><span class="p">(</span><span class="n">signal_index</span><span class="p">);</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">signalVector</span><span class="o">-&gt;</span><span class="n">at</span><span class="p">(</span><span class="mi">-1</span><span class="p">);</span>
+<span class="w">    </span><span class="p">....</span>
+
+<span class="w">    </span><span class="n">uint</span><span class="w"> </span><span class="n">highestConnectionId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">connections</span><span class="o">-&gt;</span><span class="n">currentConnectionId</span><span class="p">.</span><span class="n">loadRelaxed</span><span class="p">();</span>
+<span class="w">    </span><span class="k">do</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">Connection</span><span class="w"> </span><span class="o">*</span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">list</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">.</span><span class="n">loadRelaxed</span><span class="p">();</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">c</span><span class="p">)</span>
+<span class="w">            </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">        </span><span class="k">do</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="p">....</span>
+<span class="w">            </span><span class="c1">// determine if this connection should be sent immediately or</span>
+<span class="w">            </span><span class="c1">// put into the event queue</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">connectionType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">AutoConnection</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">receiverInSameThread</span><span class="p">)</span>
+<span class="w">                </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">connectionType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">QueuedConnection</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">queued_activate</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span><span class="w"> </span><span class="n">signal_index</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">                </span><span class="k">continue</span><span class="p">;</span>
+<span class="cp">#if QT_CONFIG(thread)</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">connectionType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">Qt</span><span class="o">::</span><span class="n">BlockingQueuedConnection</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">receiverInSameThread</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="n">qWarning</span><span class="p">(</span>
+<span class="s">&quot;Qt: Dead lock detected while activating a BlockingQueuedConnection: &quot;</span>
+<span class="w">                    </span><span class="s">&quot;Sender is %s(%p), receiver is %s(%p)&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">sender</span><span class="o">-&gt;</span><span class="n">metaObject</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">className</span><span class="p">(),</span><span class="w"> </span><span class="n">sender</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">receiver</span><span class="o">-&gt;</span><span class="n">metaObject</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">className</span><span class="p">(),</span><span class="w"> </span><span class="n">receiver</span><span class="p">);</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">isSingleShot</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">removeConnection</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+<span class="w">                    </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">                </span><span class="n">QSemaphore</span><span class="w"> </span><span class="n">semaphore</span><span class="p">;</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="n">QMutexLocker</span><span class="w"> </span><span class="nf">locker</span><span class="p">(</span><span class="n">signalSlotLock</span><span class="p">(</span><span class="n">receiver</span><span class="p">));</span>
+<span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">isSingleShot</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">receiver</span><span class="p">.</span><span class="n">loadAcquire</span><span class="p">())</span>
+<span class="w">                        </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">                    </span><span class="n">QMetaCallEvent</span><span class="w"> </span><span class="o">*</span><span class="n">ev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">isSlotObject</span><span class="w"> </span><span class="o">?</span>
+<span class="w">                        </span><span class="k">new</span><span class="w"> </span><span class="n">QMetaCallEvent</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">slotObj</span><span class="p">,</span><span class="w"> </span><span class="n">sender</span><span class="p">,</span><span class="w"> </span><span class="n">signal_index</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">semaphore</span><span class="p">)</span><span class="w"> </span><span class="o">:</span>
+<span class="w">                        </span><span class="k">new</span><span class="w"> </span><span class="n">QMetaCallEvent</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">method_offset</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">method_relative</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">callFunction</span><span class="p">,</span>
+<span class="w">                                           </span><span class="n">sender</span><span class="p">,</span><span class="w"> </span><span class="n">signal_index</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">semaphore</span><span class="p">);</span>
+<span class="w">                    </span><span class="n">QCoreApplication</span><span class="o">::</span><span class="n">postEvent</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span><span class="w"> </span><span class="n">ev</span><span class="p">);</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">                </span><span class="n">semaphore</span><span class="p">.</span><span class="n">acquire</span><span class="p">();</span>
+<span class="w">                </span><span class="k">continue</span><span class="p">;</span>
+<span class="cp">#endif</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">isSingleShot</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">removeConnection</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+<span class="w">                </span><span class="k">continue</span><span class="p">;</span><span class="w">            </span>
+<span class="w">           </span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">Sender</span><span class="w"> </span><span class="nf">senderData</span><span class="p">(</span><span class="n">receiverInSameThread</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">receiver</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="n">sender</span><span class="p">,</span><span class="w"> </span><span class="n">signal_index</span><span class="p">);</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">isSlotObject</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">SlotObjectGuard</span><span class="w"> </span><span class="n">obj</span><span class="p">{</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">slotObj</span><span class="p">};</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">call</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">callFunction</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">method_offset</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">receiver</span><span class="o">-&gt;</span><span class="n">metaObject</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">methodOffset</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="c1">//we compare the vtable to make sure we are not in the destructor of the object.</span>
+<span class="w">                </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">method_relative</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">method_relative</span><span class="p">;</span>
+<span class="w">                </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">callFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">callFunction</span><span class="p">;</span>
+<span class="w">                </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">methodIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Q_HAS_TRACEPOINTS</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">callbacks_enabled</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">method</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">                </span><span class="n">callFunction</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span><span class="w"> </span><span class="n">QMetaObject</span><span class="o">::</span><span class="n">InvokeMetaMethod</span><span class="p">,</span><span class="w"> </span><span class="n">method_relative</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">method_relative</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">method_offset</span><span class="p">;</span>
+<span class="w">                </span><span class="n">QMetaObject</span><span class="o">::</span><span class="n">metacall</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span><span class="w"> </span><span class="n">QMetaObject</span><span class="o">::</span><span class="n">InvokeMetaMethod</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span><span class="w">        </span>
+<span class="w">        </span><span class="p">....</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">((</span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">nextConnectionList</span><span class="p">.</span><span class="n">loadRelaxed</span><span class="p">())</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">nullptr</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">id</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">highestConnectionId</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">list</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">signalVector</span><span class="o">-&gt;</span><span class="n">at</span><span class="p">(</span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">((</span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">signalVector</span><span class="o">-&gt;</span><span class="n">at</span><span class="p">(</span><span class="mi">-1</span><span class="p">)),</span><span class="w"> </span><span class="nb">true</span><span class="p">));</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这个函数很长：</p>
+<ul>
+<li>找到信号对应的connection列表</li>
+<li>遍历列表</li>
+<li>对于Queued连接，调用<code>queued_activate()</code>处理</li>
+<li>对于BlockingQueued连接，发送QMetaCallEvent事件，使用信号量 QSemaphore并等待其释放。</li>
+<li>其他，分情况调用</li>
+</ul>
+<p>对于<code>queued_activate</code>来说，主要就是生成并发送QMetaCallEvent事件到接收者线程:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">queued_activate</span><span class="p">(</span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">sender</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">signal</span><span class="p">,</span><span class="w"> </span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">Connection</span><span class="w"> </span><span class="o">*</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">argumentTypes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">argumentTypes</span><span class="p">.</span><span class="n">loadRelaxed</span><span class="p">();</span>
+<span class="w">    </span><span class="p">....</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">argumentTypes</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">&amp;</span><span class="n">DIRECT_CONNECTION_ONLY</span><span class="p">)</span><span class="w"> </span><span class="c1">// cannot activate</span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">....</span>
+<span class="w">    </span><span class="n">QMetaCallEvent</span><span class="w"> </span><span class="o">*</span><span class="n">ev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">isSlotObject</span><span class="w"> </span><span class="o">?</span>
+<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">QMetaCallEvent</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">slotObj</span><span class="p">,</span><span class="w"> </span><span class="n">sender</span><span class="p">,</span><span class="w"> </span><span class="n">signal</span><span class="p">,</span><span class="w"> </span><span class="n">nargs</span><span class="p">)</span><span class="w"> </span><span class="o">:</span>
+<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">QMetaCallEvent</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">method_offset</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">method_relative</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="o">-&gt;</span><span class="n">callFunction</span><span class="p">,</span><span class="w"> </span><span class="n">sender</span><span class="p">,</span><span class="w"> </span><span class="n">signal</span><span class="p">,</span><span class="w"> </span><span class="n">nargs</span><span class="p">);</span>
+<span class="w">    </span><span class="p">....</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">isSingleShot</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">removeConnection</span><span class="p">(</span><span class="n">c</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">delete</span><span class="w"> </span><span class="n">ev</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="p">....</span>
+<span class="w">    </span><span class="n">QCoreApplication</span><span class="o">::</span><span class="n">postEvent</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span><span class="w"> </span><span class="n">ev</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>当然，这个事件，最终会到事件处理函数中</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">bool</span><span class="w"> </span><span class="nf">QObject::event</span><span class="p">(</span><span class="n">QEvent</span><span class="w"> </span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">QEvent</span><span class="o">::</span><span class="no">MetaCall</span><span class="p">:</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">QAbstractMetaCallEvent</span><span class="w"> </span><span class="o">*</span><span class="n">mce</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">QAbstractMetaCallEvent</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">d_func</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">connections</span><span class="p">.</span><span class="n">loadRelaxed</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">QMutexLocker</span><span class="w"> </span><span class="n">locker</span><span class="p">(</span><span class="n">signalSlotLock</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+<span class="w">                </span><span class="n">d_func</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">ensureConnectionData</span><span class="p">();</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="n">QObjectPrivate</span><span class="o">::</span><span class="n">Sender</span><span class="w"> </span><span class="n">sender</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="k">const_cast</span><span class="o">&lt;</span><span class="n">QObject</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">mce</span><span class="o">-&gt;</span><span class="n">sender</span><span class="p">()),</span><span class="w"> </span><span class="n">mce</span><span class="o">-&gt;</span><span class="n">signalId</span><span class="p">());</span>
+<span class="w">            </span><span class="n">mce</span><span class="o">-&gt;</span><span class="n">placeMetaCall</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">...</span>
+</code></pre></div></td></tr></table></div>
+
+<p>再展开一下</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">QMetaCallEvent::placeMetaCall</span><span class="p">(</span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">object</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="n">slotObj_</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">d</span><span class="p">.</span><span class="n">slotObj_</span><span class="o">-&gt;</span><span class="n">call</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span>
+<span class="n">d</span><span class="p">.</span><span class="n">args_</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="n">callFunction_</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">d</span><span class="p">.</span><span class="n">method_offset_</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">object</span><span class="o">-&gt;</span><span class="n">metaObject</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">methodOffset</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">d</span><span class="p">.</span><span class="n">callFunction_</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="n">QMetaObject</span><span class="o">::</span><span class="n">InvokeMetaMethod</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">.</span><span class="n">method_relative_</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">.</span><span class="n">args_</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">QMetaObject</span><span class="o">::</span><span class="n">metacall</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="n">QMetaObject</span><span class="o">::</span><span class="n">InvokeMetaMethod</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">d</span><span class="p">.</span><span class="n">method_offset_</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">d</span><span class="p">.</span><span class="n">method_relative_</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">.</span><span class="n">args_</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>而前面提到的BlockingQueued方式，用到的信号量，是在这儿释放的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">QAbstractMetaCallEvent</span><span class="o">::~</span><span class="n">QAbstractMetaCallEvent</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="cp">#if QT_CONFIG(thread)</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">semaphore_</span><span class="p">)</span>
+<span class="w">        </span><span class="n">semaphore_</span><span class="o">-&gt;</span><span class="n">release</span><span class="p">();</span>
+<span class="cp">#endif</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_17">参考</h2>
+<ul>
+<li>https://woboq.com/blog/how-qt-signals-slots-work.html</li>
+<li>https://woboq.com/blog/how-qt-signals-slots-work-part3-queuedconnection.html</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-12-02T22:30:00+08:00" pubdate>Sat 02 December 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/qt.html">qt</a>,    <a class="category" href="https://blog.debao.me/tags/c.html">c++</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

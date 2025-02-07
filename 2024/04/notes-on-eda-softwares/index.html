@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>EDA软件小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/cax.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">EDA软件小记</h1>
+    <p class="meta">
+<time datetime="2024-04-15T23:23:00+08:00" pubdate>Mon 15 April 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>EDA（Electronic design automation) 用于设计电子设备，电子设备可能包括集成电路（IC）、印制电路板（PCB）、现场可编程门阵列（FPGA）或它们的组合。</p>
+<blockquote>
+<p>先简单搜集一下网络上的资料，简单整理一下。作为以后学习的基础。主要了解一下PCB设计软件，以及常见EDA软件用于原理图、PCB图、Gerber文件的后缀。</p>
+</blockquote>
+<ul>
+<li>Candence</li>
+<li>AD</li>
+<li>PADS</li>
+<li>KiCad</li>
+<li>EASYEDA/LCEDA</li>
+</ul>
+<h2 id="ic">IC设计软件</h2>
+<p>三个巨头？</p>
+<ul>
+<li>Synopsys</li>
+<li>Cadence Design Systems</li>
+<li>Siemens EDA（原 Mentor Graphics）</li>
+</ul>
+<blockquote>
+<p>Synopsys用于半导体设计、验证、IP集成等，没有适用于小公司的 PCB设计软件，其他两家有相应的产品。</p>
+</blockquote>
+<h3 id="candence-design-systems">Candence Design Systems</h3>
+<ol>
+<li>Virtuoso Platform：专为模拟、混合信号和射频IC设计定制，提供从电路设计到版图编辑和验证的完整解决方案。</li>
+<li><strong>Allegro PCB Designer</strong>：Allegro /əˈleɪɡroʊ/ 是一种高级的印制电路板（PCB）设计解决方案，用于复杂的PCB设计和生产准备。支持高速电路设计需求，包括信号完整性分析、热分析和电磁干扰分析。</li>
+<li>Incisive Functional Verification Platform：提供全面的功能验证解决方案，支持从单一IP到系统级芯片的验证需求。</li>
+<li>Tempus Timing Signoff Solution：一个时序签核工具，用于分析和优化IC设计的时序。</li>
+<li>Spectre Circuit Simulator：是一个高性能模拟和混合信号电路仿真器，适用于复杂模拟电路的精确分析。</li>
+<li><strong>OrCAD</strong>：是针对较小规模设计项目的电路设计软件，提供电路图绘制、电路仿真和PCB设计工具。</li>
+</ol>
+<h3 id="siemens-eda">Siemens EDA</h3>
+<ol>
+<li>Calibre：业界领先的IC物理验证平台，用于检查IC设计的几何和电气规则一致性，确保它们符合制造工艺要求。</li>
+<li>Xpedition Enterprise：一个综合的PCB设计流程解决方案，提供从初始系统设计到最终生产的全过程支持。支持高级PCB设计功能，包括复杂的布局、布线、分析和协作工具。</li>
+<li>Tessent：提供一系列硅测试和产量分析工具，专注于增加复杂SoC设计的制造测试覆盖率和优化生产效率。</li>
+<li>Polarion：是一个企业级的应用生命周期管理（ALM）解决方案，支持需求管理、质量保证、项目管理和协作。</li>
+<li>HyperLynx：提供广泛的电子设计仿真工具，用于分析PCB设计中的信号完整性、电源完整性和电磁兼容性。</li>
+<li>Valor：是PCB制造解决方案，支持PCB设计验证、制造过程准备和管理。</li>
+<li>Capital：是针对汽车行业的电气系统和线束设计解决方案。</li>
+<li><strong>PADS</strong> Standard：面向小到中等规模的企业和个人设计师，提供足够的功能来处理相对简单到中等复杂度的PCB设计。包括基本的电路设计、布局、布线和基本的仿真工具。它是为了提供一个相对经济、易于使用的解决方案，以满足较小规模设计需求。</li>
+</ol>
+<h3 id="synopsys">Synopsys</h3>
+<ol>
+<li>Design Compiler：是一款用于逻辑综合的工具，它将RTL（寄存器传输级）代码转换成门级网表。</li>
+<li>PrimeTime：是一个静态时序分析工具，用于验证集成电路设计的时序性能是否满足规格要求。</li>
+<li>IC Compiler II： 是一款高级的物理设计工具，用于处理从网表到最终版图的布局和布线。</li>
+<li>HSPICE：是一个行业标准的SPICE（Simulation Program with Integrated Circuit Emphasis）仿真器，用于模拟分析电子电路。</li>
+<li>Verdi：是一个综合的调试平台，提供自动化的调试环境来增强芯片设计和验证的效率。</li>
+<li>Fusion Compiler： 是一款综合工具，集成了逻辑综合和物理实现，旨在优化设计流程，减少迭代次数。</li>
+<li>Formality：是一款形式验证工具，用于验证RTL代码和生成的网表之间的功能一致性。</li>
+<li>ZeBu Server： 是一款高性能的仿真加速和仿真服务器，用于SoC设计的仿真和验证。</li>
+</ol>
+<h2 id="pcb">PCB 设计软件</h2>
+<ul>
+<li>Altium Designer（原 Protel)：一款全功能的PCB设计工具，提供从概念到生产的完整设计流程。它包括电路图绘制、3D PCB设计、高级布线技术，以及集成的BOM管理和设计审查功能。</li>
+<li>Cadence Allegro PCB Designer：Allegro /əˈleɪɡroʊ/是<strong>专业级</strong>的PCB设计工具，适用于高速和复杂的电路板设计。Allegro提供先进的布线技术，如高速信号完整性分析、热分析和电磁兼容性测试。</li>
+<li>Autodesk EAGLE/Fusion 360：EAGLE(Easily Applicable Graphical Layout Editor)：是一款适用于小型团队和个人设计师的PCB设计软件。提供<strong>免费的基础版本</strong>，适合初学者和教育用途（限制： 2 张原理图、2 层信号层和 80 平方厘米（12.4 平方英寸）的电路板面积）。</li>
+<li>PADS：属于Siemens ，面向小到中等规模的企业和个人设计师，提供足够的功能来处理相对简单到中等复杂度的PCB设计。</li>
+<li>OrCAD：Cadence公司的一个产品，比Allegro弱，是针对较小规模设计项目的电路设计软件，提供电路图绘制、电路仿真和PCB设计工具。</li>
+<li>KiCad：一款<strong>开源</strong>的电子设计自动化软件，包括原理图设计、PCB设计、以及三维模型等功能，适用于学习和小型项目。</li>
+<li>EasyEDA/LCEDA：嘉立创EDA，是一个基于Web的应用程序，用户可以直接在浏览器中使用它，无需下载或安装任何软件。这款工具特别适合个人设计师、教育者、学生和小型工程团队。嘉立创EDA有标准版（std）和专业版（pro），这两个版本都有client桌面版本，都可以免费使用（专业版需要注册获取终身免费激活码），另外——前者支持spice仿真，后者不支持spice仿真；前者只支持在线和半离线模式，<strong>后者还支持全离线模式</strong>。</li>
+<li>...</li>
+</ul>
+<h3 id="pcb_1">PCB设计阶段</h3>
+<blockquote>
+<p>PCB大概分成下面几个阶段。</p>
+</blockquote>
+<ul>
+<li>原理图绘制 (Schematic Capture)</li>
+</ul>
+<p>在这一阶段，电路设计师使用专用软件（如Altium Designer、OrCAD等）来绘制电路原理图。该图表显示了电子组件之间的所有电气连接。</p>
+<blockquote>
+<p>注意：原理图绘制叫原理图捕获（Capture），据说，Capture 这个词强调了将初步的电路设计思想和理论转换成具体、详细的图形表达形式的过程。</p>
+</blockquote>
+<ul>
+<li>PCB布局 (PCB Layout)</li>
+</ul>
+<p>根据原理图，设计师进行PCB布局，这包括组件的放置在PCB上的位置。在这个阶段，需要考虑多种因素，如组件的大小、相互间的电气兼容性、热管理需求等。</p>
+<ul>
+<li>PCB布线 (Routing)</li>
+</ul>
+<p>布线是指在PCB布局中连接各个电子组件的电气路径。这需要考虑信号完整性、电源分配、噪声敏感线路的隔离、以及避免电磁干扰等因素。</p>
+<ul>
+<li>设计检查和优化 (Design Review and Optimization)</li>
+</ul>
+<p>使用自动化工具进行设计规则检查（DRC）来找出任何可能的问题，例如短路或未连接的路径。需要根据这些反馈进行设计的调整和优化。</p>
+<ul>
+<li>生成Gerber文件</li>
+</ul>
+<p>完成设计后，生成Gerber文件，这是一种标准的工业文件格式，用于指导PCB制造过程中的机器如何制造板。</p>
+<h3 id="pcb_2">各个工具 原理图和PCB后缀</h3>
+<p>简单列一下：</p>
+<table>
+<thead>
+<tr>
+<th>软件名称</th>
+<th>原理图文件格式</th>
+<th>PCB设计文件格式</th>
+<th>特点描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Altium Designer</strong></td>
+<td><code>.SchDoc</code></td>
+<td><code>.PcbDoc</code></td>
+<td>全功能PCB设计软件，支持复杂项目，提供高级仿真与数据管理功能。</td>
+</tr>
+<tr>
+<td><strong>EAGLE</strong></td>
+<td><code>.sch</code></td>
+<td><code>.brd</code></td>
+<td>适合初学者和业余爱好者，界面友好，功能适中。</td>
+</tr>
+<tr>
+<td><strong>KiCad</strong></td>
+<td><code>.sch</code> (v5及之前)，<code>.kicad_sch</code> (v6及更新)</td>
+<td><code>.kicad_pcb</code></td>
+<td>开源软件，没有布局和层数的限制，适合各种用户。</td>
+</tr>
+<tr>
+<td><strong>Cadence OrCAD</strong></td>
+<td><code>.DSN</code></td>
+<td><code>.BRD</code></td>
+<td>适合专业设计师，提供复杂的电路设计和分析工具。</td>
+</tr>
+<tr>
+<td><strong>PADS</strong></td>
+<td><code>.sch</code> 或 <code>.asc</code></td>
+<td><code>.pcb</code> 或 <code>.pcbdoc</code></td>
+<td>面向中小型企业，易于学习和使用，功能坚实。</td>
+</tr>
+<tr>
+<td><strong>Autodesk Fusion 360</strong></td>
+<td>集成在 <code>.f3d</code> 中</td>
+<td>集成在 <code>.f3d</code> 中</td>
+<td>集CAD/CAM/CAE/PCB于一体，适合需要机械和电子设计整合的项目。</td>
+</tr>
+<tr>
+<td><strong>Cadence Allegro</strong></td>
+<td><code>.brd</code> (用于PCB设计)</td>
+<td><code>.brd</code></td>
+<td>高级PCB设计软件，专为高速、大规模电路板设计优化。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>对于 KiCad</strong></p>
+<p>KiCad 原理图编辑器，支持导入如下格式：</p>
+<ul>
+<li>Altium：.schdoc</li>
+<li>CADStar：.csa</li>
+<li>Eagle: .sch</li>
+<li>EadyEDA（立创EDA）标准版：.json</li>
+<li>EadyEDA（立创EDA）专业版：.json</li>
+<li>LTspice：.asc</li>
+</ul>
+<p>KiCad PCB编辑器，支持导入如下格式：</p>
+<ul>
+<li>Altium Circuit Maker PCB: .CMPcbDoc</li>
+<li>Altium circuit Studio PCB: .CSPcbDoc</li>
+<li>Altium Designer PCB：.PcbDoc</li>
+<li>CADStar PCB：.cpa</li>
+<li>Eagle ver 5.x XML PCB：.brd</li>
+<li>EadyEDA（立创EDA）标准版：.json, .zip</li>
+<li><strong>EadyEDA（立创EDA）专业版</strong>：.epro, .zip</li>
+<li>Fabmaster PCB：.txt, .fab</li>
+<li>P-Cad 200x ASCII PCB：.pcb</li>
+<li>Solidworks PCB: .SWPcbDoc</li>
+<li>IPC-2581：.xml</li>
+</ul>
+<h3 id="_1">符号库与封装库</h3>
+<p>在电子设计自动化（EDA）中，符号库和封装库是设计过程中不可或缺的组成部分。</p>
+<ul>
+<li>符号库（Symbol Library）包括用于原理图设计的图形符号，这些符号代表实际的电子组件，如电阻器、电容器和集成电路等。</li>
+<li>封装库（Footprint Library 或 Package Library）包含了这些组件在物理PCB上的封装信息，如封装的尺寸、引脚布局等。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>EDA工具</th>
+<th>符号库文件后缀</th>
+<th>封装库文件后缀</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Altium Designer</td>
+<td><code>.SchLib</code></td>
+<td><code>.PcbLib</code></td>
+</tr>
+<tr>
+<td>Cadence OrCAD/Allegro</td>
+<td><code>.OLB</code></td>
+<td><code>.PADS</code></td>
+</tr>
+<tr>
+<td>KiCAD</td>
+<td><code>.lib</code></td>
+<td><code>.kicad_mod</code></td>
+</tr>
+<tr>
+<td>Eagle (Autodesk)</td>
+<td><code>.lbr</code></td>
+<td><code>.lbr</code></td>
+</tr>
+<tr>
+<td>EasyEDA</td>
+<td>在线符号库</td>
+<td>在线封装库</td>
+</tr>
+</tbody>
+</table>
+<h2 id="spice">SPICE</h2>
+<p>SPICE（Simulation Program with Integrated Circuit Emphasis）是一种广泛使用的电子电路模拟程序。它最初是在1970年代早期由美国加州大学伯克利分校的电子工程师团队开发的。SPICE允许工程师在物理制造之前模拟和分析电子电路的行为，是电子电路设计和测试的重要工具。</p>
+<h3 id="_2">变体</h3>
+<table>
+<thead>
+<tr>
+<th>SPICE变体</th>
+<th>开发商</th>
+<th>价格范围</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HSPICE</td>
+<td>Synopsys</td>
+<td>几万美元/年</td>
+<td>高精度，适用于复杂的IC设计与验证，广泛应用于半导体行业</td>
+</tr>
+<tr>
+<td>PSPICE</td>
+<td>Cadence Design Systems</td>
+<td>数千至数万美元</td>
+<td>强大的功能和图形用户界面，广泛用于学术和工业界</td>
+</tr>
+<tr>
+<td>NI Multisim</td>
+<td>Niagara Systems</td>
+<td>几百到几千美元</td>
+<td>用户友好，集成电路设计与仿真，适合教育和初学者</td>
+</tr>
+<tr>
+<td>LTspice</td>
+<td>Analog Devices</td>
+<td>免费</td>
+<td>高性能，为Analog Devices产品优化，适合电源电路和模拟电路设计</td>
+</tr>
+<tr>
+<td>ngspice</td>
+<td>开源社区</td>
+<td>免费</td>
+<td>开源SPICE仿真器，支持模拟和数字混合信号仿真</td>
+</tr>
+<tr>
+<td>XYCE</td>
+<td>美国桑迪亚国家实验室</td>
+<td>免费</td>
+<td>开源的SPICE兼容仿真器，特点，支持并行计算</td>
+</tr>
+<tr>
+<td>TINA-TI</td>
+<td>Texas Instruments</td>
+<td>免费</td>
+<td>针对TI器件的设计和仿真，包括交互式模拟和自定义模型，适合教育用途</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Multisim 有个在线版本，可以免费使用其受限版本，不过这个免费版越来越没意思，早期还支持25个器件，现在只支持最多5个。</p>
+</blockquote>
+<ul>
+<li>https://github.com/Xyce/Xyce</li>
+<li>https://ngspice.sourceforge.io/</li>
+</ul>
+<h3 id="ngspice">ngspice</h3>
+<p><strong>ngspice</strong> 本身是一个基于命令行的电路仿真器，但是它可以与其他图形界面工具集成，提供更友好的用户界面。以下是一些可以与 ngspice 集成，提供图形界面的工具：</p>
+<ul>
+<li>KiCad  (使用 wxwidgets 这一跨平台 C++的 UI库)</li>
+<li>gEDA （使用GTK+ 这一个gnome的UI库）</li>
+<li>Qucs-S （使用 Qt 这一跨平台 C++的 UI库）: 网址 https://ra3xdh.github.io/，派生自Qucs，但是使用Spice。</li>
+<li>EasyEDA（Web端）</li>
+<li>...</li>
+</ul>
+<p>另外，多个商业软件可以支持/使用 ngspice（当然他们支持更多的spice）：</p>
+<ul>
+<li>Eagle 8.4</li>
+<li>Altium Designer 20</li>
+<li>Autodesk fusion</li>
+<li>https://ngspice.sourceforge.io/resources.html</li>
+</ul>
+<h2 id="netlist">网表（Netlist）</h2>
+<p>网表（Netlist）是电子设计自动化 (EDA) 领域中一个重要的概念。网表通常是以文本形式表示，描述电路中所有电子元件的连接方式，用于电路仿真、布局和制造等后续处理步骤。</p>
+<blockquote>
+<p>比如 FreePCB 主要用于 PCB的布局，不直接原理图的设计。用户需要在其他EDA中设计电路原理图，而后将网表导入到FreePCB中进行PCB布局。</p>
+</blockquote>
+<h3 id="_3">网表的基本内容</h3>
+<p>网表包含以下基本信息：</p>
+<ul>
+<li>元件：列出电路中使用的所有电子元件，如电阻、电容、晶体管、集成电路等。</li>
+<li>节点：电路中的连接点，每个节点代表电路中的一个电气连接点，元件之间的连接通过这些节点定义。</li>
+<li>连接：描述哪些元件的哪些引脚连接到特定的节点，从而形成电路的完整电气结构。</li>
+</ul>
+<h3 id="_4">网表的格式</h3>
+<p>网表可以有多种格式，具体取决于所使用的工具和流程，常见的格式包括：</p>
+<ul>
+<li>SPICE: 一种广泛使用的电路仿真程序的网表格式。SPICE网表详细描述了电路中的每个组件以及它们的连接方式。</li>
+<li>EDIF (Electronic Design Interchange Format): 一种用于电子设计数据交换的格式，也能以网表形式表述电路。</li>
+<li>Verilog 和 VHDL 网表: 在数字电路设计中，这些硬件描述语言（HDL）不仅用于描述硬件功能，也常用于生成反映电路结构的网表。</li>
+</ul>
+<h3 id="_5">示例</h3>
+<h4 id="spice_1">SPICE网表</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>V1 1 0 DC 10
+R1 1 2 1000
+R2 2 0 2000
+</code></pre></div></td></tr></table></div>
+
+<p>V1 是一个电压源，从节点 1 到节点 0（通常表示地），电压为 10 伏。R1 和 R2 是电阻，R1 连接节点 1 和 2，阻值为 1000 欧姆；R2 连接节点 2 和 0，阻值为 2000 欧姆。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nf">XA1</span><span class="w"> </span><span class="err">/</span><span class="no">in1</span><span class="w"> </span><span class="err">/</span><span class="no">in2</span><span class="w"> </span><span class="err">/</span><span class="no">out</span><span class="w"> </span><span class="no">mult</span>
+<span class="nf">R1</span><span class="w"> </span><span class="err">/</span><span class="no">out</span><span class="w"> </span><span class="no">GND</span><span class="w"> </span><span class="mi">1</span><span class="no">k</span>
+<span class="nf">V2</span><span class="w"> </span><span class="err">/</span><span class="no">in1</span><span class="w"> </span><span class="no">GND</span><span class="w"> </span><span class="no">DC</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="no">SIN</span><span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="no">k</span><span class="w"> </span><span class="p">)</span>
+<span class="nf">V1</span><span class="w"> </span><span class="err">/</span><span class="no">in2</span><span class="w"> </span><span class="no">GND</span><span class="w"> </span><span class="no">DC</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="no">SIN</span><span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">)</span>
+
+<span class="na">.tran</span><span class="w"> </span><span class="mi">1</span><span class="no">us</span><span class="w"> </span><span class="mi">10</span><span class="no">ms</span>
+<span class="na">.end</span>
+</code></pre></div></td></tr></table></div>
+
+<p>两个正弦波源（V1 和 V2）分别产生不同频率的正弦信号。这些信号被输入到一个乘法器（XA1），在乘法器中，两个信号相乘，产生一个输出信号，该信号的频率和幅度是两个输入信号的函数。乘法输出连接到一个1kΩ的电阻R1，该电阻可以用于限制电流或测量电压。</p>
+<p>.tran 1us 10ms 指令用于设置时间步长和总仿真时间，以便观察输出波形和行为。</p>
+<h4 id="verilog">Verilog网表？</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">module</span><span class="w"> </span><span class="n">simple_netlist</span><span class="p">(</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="kt">wire</span><span class="w"> </span><span class="n">A</span><span class="p">,</span>
+<span class="w">    </span><span class="k">input</span><span class="w"> </span><span class="kt">wire</span><span class="w"> </span><span class="n">B</span><span class="p">,</span>
+<span class="w">    </span><span class="k">output</span><span class="w"> </span><span class="kt">wire</span><span class="w"> </span><span class="n">Y</span>
+<span class="p">);</span>
+
+<span class="c1">// 实例化一个非门</span>
+<span class="kt">wire</span><span class="w"> </span><span class="n">not_output</span><span class="p">;</span>
+<span class="k">not</span><span class="w"> </span><span class="n">not_gate</span><span class="p">(</span><span class="n">not_output</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">);</span>
+
+<span class="c1">// 实例化一个与门</span>
+<span class="k">and</span><span class="w"> </span><span class="n">and_gate</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">not_output</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+
+<span class="k">endmodule</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li><code>module simple_netlist</code>: 定义了一个模块，名为 <code>simple_netlis</code>t，有两个输入 A 和 B，以及一个输出 Y。</li>
+<li><code>not not_gate</code>: 创建了一个非门，输入为 A，输出连接到中间线 <code>not_output</code>。</li>
+<li><code>and and_gate</code>: 创建了一个与门，输入分别为 <code>not_output</code> 和 B，输出为 Y。</li>
+</ul>
+<h4 id="vhdl">VHDL网表？</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">library</span><span class="w"> </span><span class="nn">IEEE</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="nn">IEEE.STD_LOGIC_1164.</span><span class="k">ALL</span><span class="p">;</span>
+
+<span class="k">entity</span><span class="w"> </span><span class="nc">simple_netlist</span><span class="w"> </span><span class="k">is</span>
+<span class="w">    </span><span class="k">port</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="n">A</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">STD_LOGIC</span><span class="p">;</span>
+<span class="w">        </span><span class="n">B</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">STD_LOGIC</span><span class="p">;</span>
+<span class="w">        </span><span class="n">Y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">out</span><span class="w"> </span><span class="kt">STD_LOGIC</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="k">end</span><span class="w"> </span><span class="nc">simple_netlist</span><span class="p">;</span>
+
+<span class="k">architecture</span><span class="w"> </span><span class="nc">Netlist</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nc">simple_netlist</span><span class="w"> </span><span class="k">is</span>
+<span class="w">    </span><span class="k">signal</span><span class="w"> </span><span class="n">not_output</span><span class="o">:</span><span class="w"> </span><span class="kt">STD_LOGIC</span><span class="p">;</span>
+<span class="k">begin</span>
+<span class="w">    </span><span class="c1">-- 实例化一个非门</span>
+<span class="w">    </span><span class="n">NOT_GATE</span><span class="o">:</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">port</span><span class="w"> </span><span class="k">map</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">not_output</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">-- 实例化一个与门</span>
+<span class="w">    </span><span class="n">AND_GATE</span><span class="o">:</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="k">port</span><span class="w"> </span><span class="k">map</span><span class="p">(</span><span class="n">not_output</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">Y</span><span class="p">);</span>
+<span class="k">end</span><span class="w"> </span><span class="nc">Netlist</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>和上面同样功能</p>
+<h4 id="edif">EDIF 网表</h4>
+<blockquote>
+<p>EDIF 文件通常具有复杂的结构，使用 S-表达式（类似于 Lisp 语言的结构）来描述数据层次和元素。</p>
+</blockquote>
+<p>下面是一个简单的 EDIF 网表的例子，描述了一个只包含单个逻辑门（非门 NOT）的电路。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">(</span><span class="nx">edif</span><span class="w"> </span><span class="nx">SimpleNotGateExample</span>
+<span class="w">  </span><span class="p">(</span><span class="nx">edifVersion</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nx">edifLevel</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nx">keywordMap</span><span class="w"> </span><span class="p">(</span><span class="nx">keywordLevel</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="kn">library</span><span class="w"> </span><span class="nx">MyLibrary</span>
+<span class="w">    </span><span class="p">(</span><span class="nx">edifLevel</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nx">technology</span><span class="w"> </span><span class="p">(</span><span class="nx">numberDefinition</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="nx">cell</span><span class="w"> </span><span class="nx">NOT_GATE</span>
+<span class="w">      </span><span class="p">(</span><span class="nx">cellType</span><span class="w"> </span><span class="nx">GENERIC</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nx">view</span><span class="w"> </span><span class="nx">LOGIC_VIEW</span>
+<span class="w">        </span><span class="p">(</span><span class="nx">viewType</span><span class="w"> </span><span class="nx">NETLIST</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="kd">interface</span>
+<span class="w">          </span><span class="p">(</span><span class="nx">port</span><span class="w"> </span><span class="nx">I</span><span class="w"> </span><span class="p">(</span><span class="nx">direction</span><span class="w"> </span><span class="nx">INPUT</span><span class="p">))</span>
+<span class="w">          </span><span class="p">(</span><span class="nx">port</span><span class="w"> </span><span class="nx">O</span><span class="w"> </span><span class="p">(</span><span class="nx">direction</span><span class="w"> </span><span class="nx">OUTPUT</span><span class="p">))</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nx">contents</span>
+<span class="w">          </span><span class="p">(</span><span class="nx">instance</span><span class="w"> </span><span class="nx">U1</span><span class="w"> </span><span class="p">(</span><span class="nx">viewRef</span><span class="w"> </span><span class="nx">LOGIC_VIEW</span><span class="w"> </span><span class="p">(</span><span class="nx">cellRef</span><span class="w"> </span><span class="nx">NOT_GATE</span><span class="p">)))</span>
+<span class="w">          </span><span class="p">(</span><span class="nx">net</span><span class="w"> </span><span class="nx">INPUT_NET</span><span class="w"> </span><span class="p">(</span><span class="nx">joined</span><span class="w"> </span><span class="p">(</span><span class="nx">portRef</span><span class="w"> </span><span class="nx">I</span><span class="w"> </span><span class="p">(</span><span class="nx">instanceRef</span><span class="w"> </span><span class="nx">U1</span><span class="p">))))</span>
+<span class="w">          </span><span class="p">(</span><span class="nx">net</span><span class="w"> </span><span class="nx">OUTPUT_NET</span><span class="w"> </span><span class="p">(</span><span class="nx">joined</span><span class="w"> </span><span class="p">(</span><span class="nx">portRef</span><span class="w"> </span><span class="nx">O</span><span class="w"> </span><span class="p">(</span><span class="nx">instanceRef</span><span class="w"> </span><span class="nx">U1</span><span class="p">))))</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">      </span><span class="p">)</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nx">design</span><span class="w"> </span><span class="nx">MyDesign</span>
+<span class="w">    </span><span class="p">(</span><span class="nx">cellRef</span><span class="w"> </span><span class="nx">NOT_GATE</span><span class="w"> </span><span class="p">(</span><span class="nx">libraryRef</span><span class="w"> </span><span class="nx">MyLibrary</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="nx">viewRef</span><span class="w"> </span><span class="nx">LOGIC_VIEW</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这个网表对应的spice网表如下？</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">*</span><span class="w"> </span><span class="nx">Simple</span><span class="w"> </span><span class="nx">NOT</span><span class="w"> </span><span class="nx">Gate</span><span class="w"> </span><span class="nx">Circuit</span>
+<span class="p">.</span><span class="nx">SUBCKT</span><span class="w"> </span><span class="nx">NOT_GATE</span><span class="w"> </span><span class="nx">IN</span><span class="w"> </span><span class="nx">OUT</span><span class="w"> </span><span class="nx">VDD</span><span class="w"> </span><span class="nx">VSS</span>
+<span class="nx">M1</span><span class="w"> </span><span class="nx">OUT</span><span class="w"> </span><span class="nx">IN</span><span class="w"> </span><span class="nx">VSS</span><span class="w"> </span><span class="nx">VSS</span><span class="w"> </span><span class="nx">NMOS</span><span class="w"> </span><span class="nx">L</span><span class="p">=</span><span class="mi">1u</span><span class="w"> </span><span class="nx">W</span><span class="p">=</span><span class="mi">2u</span>
+<span class="nx">M2</span><span class="w"> </span><span class="nx">OUT</span><span class="w"> </span><span class="nx">IN</span><span class="w"> </span><span class="nx">VDD</span><span class="w"> </span><span class="nx">VDD</span><span class="w"> </span><span class="nx">PMOS</span><span class="w"> </span><span class="nx">L</span><span class="p">=</span><span class="mi">1u</span><span class="w"> </span><span class="nx">W</span><span class="p">=</span><span class="mi">4u</span>
+<span class="p">.</span><span class="nx">ENDS</span><span class="w"> </span><span class="nx">NOT_GATE</span>
+
+<span class="o">*</span><span class="w"> </span><span class="nx">Main</span><span class="w"> </span><span class="nx">circuit</span>
+<span class="nx">VDD</span><span class="w"> </span><span class="nx">VDD</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">5</span>
+<span class="nx">VSS</span><span class="w"> </span><span class="nx">VSS</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span>
+<span class="nx">VIN</span><span class="w"> </span><span class="nx">IN</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="nx">PULSE</span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">10</span><span class="nx">n</span><span class="w"> </span><span class="mi">1</span><span class="nx">n</span><span class="w"> </span><span class="mi">1</span><span class="nx">n</span><span class="w"> </span><span class="mi">20</span><span class="nx">n</span><span class="w"> </span><span class="mi">40</span><span class="nx">n</span><span class="p">)</span>
+<span class="nx">X1</span><span class="w"> </span><span class="nx">IN</span><span class="w"> </span><span class="nx">OUT</span><span class="w"> </span><span class="nx">VDD</span><span class="w"> </span><span class="nx">VSS</span><span class="w"> </span><span class="nx">NOT_GATE</span>
+
+<span class="o">*</span><span class="w"> </span><span class="nx">Analysis</span><span class="w"> </span><span class="nx">commands</span>
+<span class="p">.</span><span class="nx">TRAN</span><span class="w"> </span><span class="mi">1</span><span class="nx">n</span><span class="w"> </span><span class="mi">100</span><span class="nx">n</span>
+<span class="p">.</span><span class="nx">PLOT</span><span class="w"> </span><span class="nx">TRAN</span><span class="w"> </span><span class="nx">V</span><span class="p">(</span><span class="nx">IN</span><span class="p">)</span><span class="w"> </span><span class="nx">V</span><span class="p">(</span><span class="nx">OUT</span><span class="p">)</span>
+
+<span class="p">.</span><span class="nx">END</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="gerber">Gerber文件</h2>
+<p>Gerber文件格式是电子行业标准的文件格式之一，广泛用于印刷电路板（PCB）制造的数据交换。这种格式最初由Gerber Systems Corp开发，现在由美国印刷电路行业协会（IPC）管理。Gerber格式用于详细描述PCB的每层的图像，包括铜层、焊膏层、阻焊层、丝印层等。</p>
+<ul>
+<li>铜层（Top/Bottom/Inner Layers）：这些层包含导电路径，通常由铜制成，用于连接电路板上的各个组件。</li>
+<li>阻焊层（Solder Mask Layers）：这些层提供了一层保护膜，帮助防止意外的焊接和保护铜层不被氧化。</li>
+<li>丝印层（Silkscreen Layers）：常用于打印组件标识、标志和其他帮助组装和测试的信息。</li>
+<li>焊膏层（Solder Paste Layers）：这些文件用于指导SMT组装过程中，自动化设备放置焊膏的位置。</li>
+<li>剖面层（Outline Layer）：指定了PCB的外形及内部槽的位置，对于PCB切割和加工至关重要。</li>
+<li>钻孔文件（Drill Files）：钻孔文件是用于指导PCB制造中钻孔机的操作，非常重要，因为它决定了元件孔和安装孔的精确位置。</li>
+</ul>
+<h3 id="_6">类型</h3>
+<ul>
+<li>RS-274D：早期的Gerber格式，需要额外的“孔洞文件”（Drill File）来描述钻孔数据。</li>
+<li>RS-274X：也称为扩展Gerber格式或X-Gerber。这是现在最常用的格式，它包含更完整的信息，如孔径定义和图形填充信息，使得文件自包含，无需额外的孔洞文件。</li>
+</ul>
+<h2 id="_7">后缀</h2>
+<p>各层的名字与一般后缀：</p>
+<table>
+<thead>
+<tr>
+<th>层的名称（英文名字）</th>
+<th>后缀</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>顶层铜 (Top Copper)</td>
+<td><code>.gtl</code></td>
+<td>描述PCB最顶层的铜布局。</td>
+</tr>
+<tr>
+<td>底层铜 (Bottom Copper)</td>
+<td><code>.gbl</code></td>
+<td>描述PCB最底层的铜布局。</td>
+</tr>
+<tr>
+<td>顶层阻焊 (Top Solder Mask)</td>
+<td><code>.gts</code></td>
+<td>描述顶层元件不应被焊接的区域。</td>
+</tr>
+<tr>
+<td>底层阻焊 (Bottom Solder Mask)</td>
+<td><code>.gbs</code></td>
+<td>描述底层元件不应被焊接的区域。</td>
+</tr>
+<tr>
+<td>顶层丝印 (Top Silkscreen)</td>
+<td><code>.gto</code></td>
+<td>包含PCB顶面的标签和参考标记，如元件编号。</td>
+</tr>
+<tr>
+<td>底层丝印 (Bottom Silkscreen)</td>
+<td><code>.gbo</code></td>
+<td>包含PCB底面的标签和参考标记。</td>
+</tr>
+<tr>
+<td>顶层焊膏 (Top Solder Paste)</td>
+<td><code>.gtp</code></td>
+<td>用于SMT组装，描述顶层焊膏的应用位置。</td>
+</tr>
+<tr>
+<td>底层焊膏 (Bottom Solder Paste)</td>
+<td><code>.gbp</code></td>
+<td>用于SMT组装，描述底层焊膏的应用位置。</td>
+</tr>
+<tr>
+<td>内层铜 (Inner Copper)</td>
+<td><code>.g2l</code>, <code>.g3l</code> 等</td>
+<td>描述多层PCB中间的铜层。</td>
+</tr>
+<tr>
+<td>剖面层（轮廓层） (Outline Layer)</td>
+<td><code>.gko</code></td>
+<td>描述PCB的外形和内部剖面。</td>
+</tr>
+<tr>
+<td>钻孔文件 (Drill Files)</td>
+<td><code>.drl</code></td>
+<td>描述所有钻孔的位置、大小和属性。</td>
+</tr>
+</tbody>
+</table>
+<p>几个EDA使用的后缀：</p>
+<table>
+<thead>
+<tr>
+<th>EDA软件</th>
+<th>常用Gerber文件后缀</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Altium Designer</strong></td>
+<td><code>.gtl</code>, <code>.gbl</code>, <code>.gts</code>, <code>.gbs</code>, <code>.gto</code>, <code>.gbo</code>, <code>.gtp</code>, <code>.gbp</code>, <code>.gko</code>, <code>.drl</code></td>
+<td>顶层铜层, 底层铜层, 顶层阻焊, 底层阻焊, 顶层丝印, 底层丝印, 顶层焊膏, 底层焊膏, 开槽文件, 钻孔文件</td>
+</tr>
+<tr>
+<td><strong>Cadence OrCAD/Allegro</strong></td>
+<td><code>.art</code>, <code>.brd</code></td>
+<td>特定层文件, 设计文件（需转换为Gerber）</td>
+</tr>
+<tr>
+<td><strong>Eagle</strong></td>
+<td><code>.gtl</code>, <code>.gbl</code>, <code>.gts</code>, <code>.gbs</code>, 等</td>
+<td>同Altium Designer类似的层特定后缀</td>
+</tr>
+<tr>
+<td><strong>KiCad</strong></td>
+<td><code>.gtl</code>, <code>.gbl</code>, <code>.gts</code>, <code>.gbs</code>, <code>.drl</code></td>
+<td>同Altium Designer类似的层特定后缀和钻孔文件</td>
+</tr>
+<tr>
+<td><strong>Siemens EDA(Mentor Graphics )</strong></td>
+<td><code>.gbr</code>, <code>.drd</code>, <code>.drl</code></td>
+<td>标准Gerber文件和钻孔文件</td>
+</tr>
+</tbody>
+</table>
+<p>注：</p>
+<ul>
+<li>.gbr 和具体到各层的后缀（如 .gtl、.gbl 等）用于描述PCB的不同制造层。</li>
+<li>.drl 是钻孔文件，包含PCB上所有钻孔的位置和尺寸信息。</li>
+<li>部分软件（如Cadence系列）可能使用非标凑后缀（如 <strong>.art</strong>）或设计文件（如 .brd），这些文件需转换成Gerber文件供制造使用。</li>
+</ul>
+<h2 id="_8">其他</h2>
+<h3 id="fritzing">Fritzing</h3>
+<ul>
+<li>https://github.com/fritzing</li>
+<li>https://fritzing.org/</li>
+</ul>
+<p>Fritzing 是一个流行的开源硬件设计工具，专为非专业人士设计，以帮助他们轻松创建和分享电子项目。该软件提供了一个直观的用户界面，使用户可以在不同的视图之间切换，包括面包板视图、原理图视图和PCB布局视图。</p>
+<blockquote>
+<p>该软件使用 Qt 编写。</p>
+</blockquote>
+<h2 id="_9">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/Comparison_of_EDA_software</li>
+<li>https://en.wikipedia.org/wiki/List_of_free_electronics_circuit_simulators</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-04-15T23:23:00+08:00" pubdate>Mon 15 April 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/cax.html'>CAx</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/eda.html">EDA</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

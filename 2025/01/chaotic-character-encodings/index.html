@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>混乱的字符集编码 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/python.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">混乱的字符集编码</h1>
+    <p class="meta">
+<time datetime="2025-01-02T10:50:00+08:00" pubdate>Thu 02 January 2025</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>ASCII，Latin1，GBK，Utf8，...
+字符集编码，乍一听似乎是一个简单的东西，但它却隐藏着丰富的历史故事（乱）和复杂的技术细节（杂）...，
+不妨抛开细节和完整性，简单写写</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#python">从Python开始？</a><ul>
+<li><a href="#python_1">初识 Python 内置编码</a></li>
+<li><a href="#_1">获取编码名</a></li>
+</ul>
+</li>
+<li><a href="#_2">太多了，怎么看？</a><ul>
+<li><a href="#ebcdic-8bit1963">EBCDIC 编码（8bit），1963</a></li>
+<li><a href="#ascii-7bit1967">ASCII 标准诞生（7bit），1967</a></li>
+<li><a href="#ascii">ASCII 扩展：商业公司</a><ul>
+<li><a href="#ibmxxx">IBMxxx 扩展</a></li>
+<li><a href="#apple">Apple 扩展</a></li>
+</ul>
+</li>
+<li><a href="#ascii-iso-8859">ASCII 扩展：ISO 8859 系列标准</a></li>
+<li><a href="#iso-8859-1-windows-1252">ISO-8859-1 扩展：Windows-1252</a><ul>
+<li><a href="#html5-iso-8859-1-windows-1252">HTML5 的妥协：将 ISO-8859-1 视为 Windows-1252</a></li>
+<li><a href="#windows-125x">Windows-125x 字符集</a></li>
+</ul>
+</li>
+<li><a href="#gb2312gbkgb18030">中文编码：GB2312、GBK、GB18030</a><ul>
+<li><a href="#gb2312">GB2312：区位码</a></li>
+<li><a href="#gbk">GBK</a></li>
+<li><a href="#gb18030">GB18030</a></li>
+</ul>
+</li>
+<li><a href="#big5big5-hkscs">中文编码：Big5、Big5-HKSCS</a></li>
+<li><a href="#iso-2022-cn">ISO-2022-CN</a><ul>
+<li><a href="#eucextended-unix-code">EUC（Extended Unix Code）</a></li>
+</ul>
+</li>
+<li><a href="#unicode">Unicode</a><ul>
+<li><a href="#unicode-ucs">Unicode 与 UCS</a></li>
+<li><a href="#ucs-2ucs-4utf-8utf-16utf-32">UCS-2、UCS-4、UTF-8、UTF-16、UTF-32</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_3">附表</a><ul>
+<li><a href="#_4">标准</a></li>
+<li><a href="#iana">IANA 字符集注册表</a></li>
+<li><a href="#ansi">ANSI 编码</a></li>
+<li><a href="#python_2">Python内置编码的列表</a></li>
+<li><a href="#qt">Qt支持的编码</a></li>
+</ul>
+</li>
+<li><a href="#_5">参考</a></li>
+</ul>
+</div>
+<h2 id="python">从Python开始？</h2>
+<p>都2025年了，尽管 <a href="https://blog.debao.me/2024/01/exploring-cpp-character-types/">C++引入了一个又一个字符类型</a> ，但即便是在最简单的UTF-8编码上，<a href="https://blog.debao.me/2024/12/casual-talk-on-utf-8-support-in-c++-and-windows/">C++仍在苦苦挣扎</a>。</p>
+<p>所以我们还是从Python3开始吧，毕竟和C/C++，甚至是Python2相比，它非常简单，不是么？</p>
+<h3 id="python_1">初识 Python 内置编码</h3>
+<p>不考虑别名的话，Python也支持将近百种编码，可以列个表格（本文重点关注标红和标绿的部分）：</p>
+<p><img alt="codec" src="https://blog.debao.me/images/tools/codec_table.png"></p>
+<p>尽管看起来还是很杂，但上面表格已经做了很多简化。比如，表中ascii只列出2个别名，其实在Python下，单单一个ascii，有如下一堆别名：</p>
+<ul>
+<li><code>646</code></li>
+<li><code>ansi_x3.4_1968</code></li>
+<li><code>ansi_x3.4_1986</code></li>
+<li><code>ansi_x3_4_1968</code></li>
+<li><code>cp367</code></li>
+<li><code>csascii</code></li>
+<li><code>ibm367</code></li>
+<li><code>iso646_us</code></li>
+<li><code>iso_646.irv_1991</code></li>
+<li><code>iso_ir_6</code></li>
+<li><code>us</code></li>
+<li><code>us_ascii</code></li>
+</ul>
+<h3 id="_1">获取编码名</h3>
+<p>要获得python内置的完整的编码列表，可通过如下python代码输出：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">encodings</span>
+
+<span class="n">aliases</span> <span class="o">=</span> <span class="n">encodings</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">aliases</span>
+
+<span class="n">codec_map</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">alias</span><span class="p">,</span> <span class="n">main_name</span> <span class="ow">in</span> <span class="n">aliases</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">codec_map</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">main_name</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span>
+
+<span class="c1"># 按编码名字排序并输出</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;编码&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}{</span><span class="s1">&#39;别名&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">main_name</span><span class="p">,</span> <span class="n">alias_list</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">codec_map</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">aliases_str</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">alias_list</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">main_name</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}{</span><span class="n">aliases_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_2">太多了，怎么看？</h2>
+<p>按时间先后看看，挑几个关键节点看看？？</p>
+<h3 id="ebcdic-8bit1963">EBCDIC 编码（8bit），1963</h3>
+<p>在 ASCII 之前，已经存在 EBCDIC 编码，但是EBCDIC 是 IBM 的专有编码，不是开放标准。</p>
+<ul>
+<li>BCD：全称 Binary Coded Decimal（二进制编码十进制），起源于1940年代</li>
+<li>EBCDIC：全称 Extended Binary Coded Decimal Interchange Code（扩展二进制编码十进制交换码），1963年，IBM推出基于BCD的扩展，主要用于IBM大型机。</li>
+</ul>
+<p>EBCDIC 有超过186种变体（代码页）。前面表格中出现的，以下编码，属于 EBCDIC 的变种：</p>
+<ul>
+<li>CP037</li>
+<li>CP424</li>
+<li>CP500</li>
+<li>CP875</li>
+<li>CP1026</li>
+<li>CP1140</li>
+</ul>
+<h3 id="ascii-7bit1967">ASCII 标准诞生（7bit），1967</h3>
+<blockquote>
+<p>ASCII，发音 /ˈæskiː/</p>
+</blockquote>
+<p>随着个人计算机（PC）的普及，ASCII 成为跨平台的通用编码。而由于 ASCII 与 EBCDIC 不兼容，ASCII 的普及也推动了 EBCDIC 的边缘化。</p>
+<ul>
+<li>ASCII：全称 American Standard Code for Information Interchange，1967年，由 ANSI（美国国家标准协会），作为行业标准发布。</li>
+</ul>
+<p>不过 ASCII ，只有7bit，容量实在太小了，只能照顾到美国，连英国可能都不舒服（英镑符号 ￡ 在哪里？）</p>
+<h3 id="ascii">ASCII 扩展：商业公司</h3>
+<p>ASCII只使用7bit，把高位置一，还可以多存储128个字符。多出来的这部分，到底存法语字符呢，存葡萄牙语字符呢，还是阿拉伯语字符呢？</p>
+<p>分而治之，分别用不同的代码页(code page)不就得了。于是 </p>
+<h4 id="ibmxxx">IBMxxx 扩展</h4>
+<p>IBM 整出了下面一堆和ASCII兼容的东西：</p>
+<ul>
+<li>cp437 / IBM437</li>
+<li>cp850 / IBM850</li>
+<li>cp852 / IBM852</li>
+<li>cp855 / IBM855</li>
+<li>cp857 / IBM857</li>
+<li>cp858 / IBM858</li>
+<li>cp860 / IBM860</li>
+<li>cp861 / IBM861</li>
+<li>cp862 / IBM862</li>
+<li>cp863 / IBM863</li>
+<li>cp864 / IBM864</li>
+<li>cp865 / IBM865</li>
+<li>cp866 / IBM866</li>
+<li>cp869 / IBM869</li>
+<li>...</li>
+</ul>
+<h4 id="apple">Apple 扩展</h4>
+<p>苹果公司闲不住，有如下东西：</p>
+<ul>
+<li>mac_cyrillic</li>
+<li>mac_greek</li>
+<li>mac_iceland</li>
+<li>mac_latin2</li>
+<li>mac_roman</li>
+<li>mac_turkish</li>
+</ul>
+<h3 id="ascii-iso-8859">ASCII 扩展：ISO 8859 系列标准</h3>
+<p>在 1987 年，国际标准化组织（ISO）发布了一组针对 8 位 ASCII 扩展的标准，即 ISO 8859 系列。</p>
+<blockquote>
+<p>注意：与其他编码相比，ISO 8859 将 8016 到 9F16（十六进制）这 32 个字符位置保留为控制字符。</p>
+</blockquote>
+<p>该系列中，最流行的是</p>
+<ul>
+<li>ISO 8859-1（ISO Latin 1），它包含了大多数常见西欧语言字符。</li>
+<li>ISO 8859-15（ISO Latin 9），是 Latin1 的改进版，使用欧元符号 € 等取代了Latin 1中的一些不常用的字符。</li>
+</ul>
+<p>一共15个标准：</p>
+<ul>
+<li>ISO 8859-1 to 11</li>
+<li>ISO 8859-13 to 16</li>
+</ul>
+<p>其中：ISO 8859-12 从未被正式分配，直接被跳过了。</p>
+<h3 id="iso-8859-1-windows-1252">ISO-8859-1 扩展：Windows-1252</h3>
+<p>Windows-1252 也被称为 CP1252、Windows Latin 1 甚至是 ANSI。它支持大部分的 西欧语言，包括英语、法语、德语、西班牙语、意大利语、葡萄牙语、荷兰语、丹麦语、瑞典语、挪威语等。</p>
+<p>尽管和 Latin-1（ISO 8859-1）非常相似，但是并不相同，它在ISO 8859 的保留区里面，塞了很多其他字符，比如 欧元符号 €。</p>
+<p>曾经的辉煌：</p>
+<ul>
+<li>Windows-1252 是Windows默认的编码之一，特别是在早期的 Microsoft Office 文档（如 Word 和 Excel）中。</li>
+<li>在 HTML 和网页开发中，Windows-1252 曾被广泛使用，特别是在西欧语言网站中。</li>
+<li>在未指定编码的情况下，许多早期的浏览器（如 Internet Explorer）会默认使用 Windows-1252。</li>
+</ul>
+<h4 id="html5-iso-8859-1-windows-1252">HTML5 的妥协：将 ISO-8859-1 视为 Windows-1252</h4>
+<p>在 HTML5 标准中，如果在网页中声明了字符编码为 ISO-8859-1，浏览器会将其解释为 Windows-1252，而不是严格意义上的 ISO 8859-1。</p>
+<p>这种行为是为了保证向后兼容，因为早期大量网页实际使用的是 Windows-1252，而不是 ISO 8859-1。</p>
+<h4 id="windows-125x">Windows-125x 字符集</h4>
+<p>Microsoft 定义了一系列 Windows-125x 字符集，用于支持不同语言和地区的文本编码。这些字符集都是基于 单字节编码，每个字符占用 1 个字节，最多支持 256 个字符。</p>
+<p>这一系列可以和 ISO-8859 系列进行对应。二者的根本区别和 前面 ISO-8859-1 与 Windows 1252 的区别一样。</p>
+<table>
+<thead>
+<tr>
+<th><strong>特性</strong></th>
+<th><strong>Windows-125x</strong></th>
+<th><strong>ISO-8859 系列</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>范围</strong></td>
+<td>0x00-0xFF</td>
+<td>0x00-0xFF</td>
+</tr>
+<tr>
+<td><strong>差异</strong></td>
+<td>0x80-0x9F 区域是可打印字符</td>
+<td>0x80-0x9F 区域是控制字符</td>
+</tr>
+<tr>
+<td><strong>使用场景</strong></td>
+<td>Windows 系统</td>
+<td>早期的 UNIX 和网络协议</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gb2312gbkgb18030">中文编码：GB2312、GBK、GB18030</h3>
+<blockquote>
+<p>ISO-8859 基本解决了除了中国、日本、韩国之外，其他国家的编码问题。但是一个8位字节，铁定无法解决中日韩字符编码</p>
+</blockquote>
+<h4 id="gb2312">GB2312：区位码</h4>
+<p>GB2312 是中国国家标准化管理委员会于 1980 年发布的一种字符集标准，全称是 《信息交换用汉字编码字符集·基本集》。它是中国最早的用于计算机处理简体汉字的编码标准之一，主要用于简体中文的显示和处理。</p>
+<ul>
+<li>GB2312 将所有字符划分为 94 个区，每区包含 94 个字符。</li>
+<li>区号和位号的范围均为 01-94。</li>
+<li>每个字符的位置由 区号 和 位号 唯一确定。</li>
+</ul>
+<p>为了与 ASCII 兼容：用于计算机编码时，区位码会加上一个偏移量 0xA0 转化为<strong>机内码</strong>。</p>
+<h4 id="gbk">GBK</h4>
+<p>1993年，Unicode 1.1 标准发布。</p>
+<p>同年，GBK开始定义。</p>
+<p>GBK（汉字内码扩展规范）是对 GB2312 的扩展，兼容 GB2312 的所有字符，同时新增了 21003 个汉字（对应于Unicode 1.1 引入的汉字），包括繁体字、更多生僻字和少数民族语言字符。</p>
+<p>微软的代码页 CP936 基本可以认为对应 GBK。</p>
+<h4 id="gb18030">GB18030</h4>
+<p>GB18030 是中国国家标准，支持所有 Unicode 字符，是中文字符编码的最新标准。</p>
+<p>GB2312 和 GBK 都是 GB18030 的子集。</p>
+<h3 id="big5big5-hkscs">中文编码：Big5、Big5-HKSCS</h3>
+<p>Big5 是一种用于繁体中文字符的编码标准，最早由台湾的五家厂商（因此得名 Big5）在 1984 年共同制定。它是繁体中文计算机系统中最广泛使用的字符集之一，尤其在台湾和香港地区应用广泛。</p>
+<p>作为一种双字节编码方案，Big5 设计上与 GB2312 类似，但它专注于繁体中文的字符集。</p>
+<p>初版 Big5 的字符集有限，无法覆盖所有繁体中文字符以及其他扩展需求。后续版本增加了一些扩展字符集，例如：</p>
+<ul>
+<li>Big5+：新增字符以支持更多的生僻字和罕见字符。</li>
+<li>Big5-HKSCS（香港增补字符集）：为香港特别行政区设计的扩展版本，增加了约 5000 个字符，用于处理香港地区的独特用字。</li>
+</ul>
+<h3 id="iso-2022-cn">ISO-2022-CN</h3>
+<p>前述各个字符集之间缺乏统一性，导致跨语言和跨系统的文本交换变得困难。因此，ISO 2022 的诞生旨在提供一种灵活的机制，允许在同一数据流中动态切换字符集，以支持多语言环境。</p>
+<ul>
+<li>1971 年：首次发布 ISO 2022，成为早期字符编码标准的基础，用于多语言文本支持。</li>
+<li>1986 年：进行了修订，逐步完善了字符集切换的机制，支持更多的字符集。</li>
+<li>1994 年：被重新编号为 ISO/IEC 2022，并纳入国际电工委员会（IEC）的标准体系。</li>
+</ul>
+<p>下面这些东西，韩国和日本（曾经）用的比较多：</p>
+<ul>
+<li>ISO-2022-CN,</li>
+<li>ISO-2022-CN-EXT,</li>
+<li>ISO-2022-JP,</li>
+<li>ISO-2022-JP-1,</li>
+<li>ISO-2022-JP-2</li>
+<li>ISO-2022-KR</li>
+</ul>
+<p>基本被unicode取代了</p>
+<h4 id="eucextended-unix-code">EUC（Extended Unix Code）</h4>
+<p>EUC（Extended Unix Code，扩展 UNIX 编码） 是一种多字节字符编码，用于在 UNIX 和类 UNIX 系统中表示多种东亚语言字符集（如日文、韩文和中文）。EUC 是基于 ISO 2022 编码标准的扩展，能够在同一编码中支持多种字符集，并且保持对 ASCII 的兼容性。</p>
+<p>这个编码日本和韩国还在用，在前面python的表格中，可以看到下面4个：</p>
+<ul>
+<li><code>euc_jp</code></li>
+<li><code>euc_jis_2004</code></li>
+<li><code>euc_jisx0213</code></li>
+<li><code>euc_kr</code></li>
+</ul>
+<p>在中国，<code>euc_cn</code> 需要配合 GB2312 使用，但是 GB2312 已经被 GBK 和 GB18030 取代。</p>
+<h3 id="unicode">Unicode</h3>
+<p>小结一下：</p>
+<ul>
+<li>ASCII：用于英语和西方语言的 7 位编码。</li>
+<li>ISO 8859 系列：分为多个版本，用于不同的西方语言。</li>
+<li>GB2312：用于简体中文的字符集。</li>
+<li>Big5：用于繁体中文的字符集。</li>
+<li>ISO/IEC 2022：没能很好解决这个问题</li>
+</ul>
+<p>可以发现存在致命问题：</p>
+<ul>
+<li>不兼容性：不同编码系统之间无法互相解读。</li>
+<li>字符冲突：同一个字节值在不同编码中可能代表完全不同的字符。</li>
+<li>缺乏全球化支持：无法同时支持多种语言文字。</li>
+</ul>
+<p>如何解决？</p>
+<h4 id="unicode-ucs">Unicode 与 UCS</h4>
+<p>为了统一全球字符编码，早期出现了两个独立的组织：</p>
+<ul>
+<li>Unicode 联盟（Unicode Consortium） 于 1987 年成立。1991 年发布Unicode 1.0，支持固定长度的 16 位编码，能够容纳 65,536 个字符。</li>
+<li>UCS（通用字符集，Universal Character Set）由 ISO/IEC 10646 国际标准定义的。第一个版本（ISO 10646-1:1993）发布于 1993 年，定义了一个更大的编码空间（31 位），远远超过 Unicode 的初始设计范围。</li>
+</ul>
+<p>从 Unicode 2.0 起（1996 年），Unicode 和 ISO/IEC 10646 的编码点完全同步。Unicode 2.0 版本扩展到 21 位范围（0x000000–0x10FFFF），并引入了补充平面，覆盖了更多的字符。</p>
+<h4 id="ucs-2ucs-4utf-8utf-16utf-32">UCS-2、UCS-4、UTF-8、UTF-16、UTF-32</h4>
+<ul>
+<li><strong>UCS-2</strong>：早期 Unicode 编码方式，定长2字节，现已淘汰。【容易和UTF-16混淆】</li>
+<li><strong>UTF-8</strong>：最流行的 Unicode 编码方式1~4个字节，与 ASCII兼容，适用于网络和跨平台文本处理。</li>
+<li><strong>UTF-16</strong>：广泛用于操作系统和编程语言的内部表示，变长的编码方式，2个字节或4个字节。【既不和ASCII兼容，也不定长，集 UTF-8 和 UTF-32 缺点于一身？？】</li>
+<li><strong>UTF-32</strong>：定长，尽管和ASCII不兼容，但它编码简单</li>
+</ul>
+<p>放个表：</p>
+<table>
+<thead>
+<tr>
+<th><strong>年份</strong></th>
+<th><strong>事件</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1991</strong></td>
+<td><strong>UCS-2</strong> 发布：Unicode 1.0 中的编码方式，使用固定 2 字节表示字符，仅支持 BMP 范围（0x0000–0xFFFF）。</td>
+</tr>
+<tr>
+<td><strong>1992</strong></td>
+<td><strong>UTF-8</strong> 设计完成：由 Ken Thompson 和 Rob Pike 设计，作为一种变长编码方式，兼容 ASCII。</td>
+</tr>
+<tr>
+<td><strong>1993</strong></td>
+<td><strong>UTF-8</strong> 标准化：成为 Unicode 的正式编码方式（RFC 2279）。</td>
+</tr>
+<tr>
+<td><strong>1996</strong></td>
+<td><strong>UTF-16</strong> 发布：Unicode 2.0 推出，扩展编码范围至 0x0000–0x10FFFF，引入补充平面字符，支持代理对。</td>
+</tr>
+<tr>
+<td><strong>1996</strong></td>
+<td><strong>UCS-4</strong> 发布：ISO/IEC 10646 定义的 4 字节固定长度编码，支持完整 Unicode 范围。</td>
+</tr>
+<tr>
+<td><strong>1996</strong></td>
+<td><strong>UTF-7</strong> 标准化（RFC 1642）：一种为电子邮件和其他 7 位传输协议设计的 Unicode 编码方式，但逐渐被废弃。</td>
+</tr>
+<tr>
+<td><strong>1999</strong></td>
+<td><strong>UTF-8</strong> 更新（RFC 3629）：限制编码范围为 0x0000–0x10FFFF，与 Unicode 的定义保持一致。</td>
+</tr>
+<tr>
+<td><strong>2000s</strong></td>
+<td><strong>UTF-8 成为主流</strong>：随着互联网的发展，UTF-8 被广泛应用于网页、协议（如 HTML、JSON）和操作系统中。</td>
+</tr>
+<tr>
+<td><strong>2000s</strong></td>
+<td><strong>UTF-16</strong> 流行：Windows、Java、C# 等系统和语言内部采用 UTF-16 作为默认编码方式。</td>
+</tr>
+<tr>
+<td><strong>现代</strong></td>
+<td><strong>UCS-2 被淘汰</strong>：由于无法支持补充平面字符，UCS-2 被 UTF-16 完全取代。</td>
+</tr>
+<tr>
+<td><strong>现代</strong></td>
+<td><strong>UTF-32 用于内部处理</strong>：虽然内存占用高，但其编码简单，适用于数据库和编译器等场景。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">附表</h2>
+<h3 id="_4">标准</h3>
+<ul>
+<li>ISO/IEC 646</li>
+<li>ISO/IEC 8859</li>
+<li>ISO/IEC 2022</li>
+<li>ISO/IEC 10646</li>
+</ul>
+<h3 id="iana">IANA 字符集注册表</h3>
+<p>IANA 字符集注册表（IANA Character Sets Registry） 是由 IANA（Internet Assigned Numbers Authority） 维护的一个标准化列表，用于记录和规范互联网上使用的 字符集（Character Sets）。该注册表为各种网络协议（如 HTTP、SMTP、MIME 等）提供了标准化的字符集名称、编号和相关信息，以确保跨平台、跨语言环境下的互操作性。</p>
+<p>每个字符集分配一个唯一的 MIBenum 值，用于在 MIB（Management Information Base，管理信息库） 中标识字符集。范围划分：</p>
+<ul>
+<li>0-2：保留。</li>
+<li>3-999：由标准化组织分配的字符集。</li>
+<li>1000-1999：Unicode 和 ISO/IEC 10646 编码。</li>
+<li>2000 及以上：厂商特定字符集。</li>
+</ul>
+<h3 id="ansi">ANSI 编码</h3>
+<blockquote>
+<p>虽然名称中含有“ANSI”（American National Standards Institute，美国国家标准协会），但实际上它与 ANSI 标准没有直接关系，而是 Microsoft 自定义的字符集。</p>
+</blockquote>
+<p>在 Windows 系统中，<strong>ANSI 编码</strong>实际上是基于 <strong>代码页（Code Page）</strong> 的单字节或多字节字符编码方案。每种语言或语言组在 Windows 中对应一个特定的代码页，ANSI 编码依赖这些代码页来表示特定语言的字符集。</p>
+<p>一些常见的代码页：</p>
+<table>
+<thead>
+<tr>
+<th><strong>代码页（Code Page）</strong></th>
+<th><strong>描述</strong></th>
+<th><strong>语言/区域</strong></th>
+<th><strong>对应的字符集</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1250</td>
+<td>中欧字符集</td>
+<td>波兰语、捷克语、匈牙利语等</td>
+<td>Windows-1250</td>
+</tr>
+<tr>
+<td>1251</td>
+<td>西里尔字符集</td>
+<td>俄语、乌克兰语、保加利亚语等</td>
+<td>Windows-1251</td>
+</tr>
+<tr>
+<td>1252</td>
+<td>西欧字符集（ANSI 默认）</td>
+<td>英语、法语、德语、西班牙语等</td>
+<td>Windows-1252</td>
+</tr>
+<tr>
+<td>1253</td>
+<td>希腊字符集</td>
+<td>希腊语</td>
+<td>Windows-1253</td>
+</tr>
+<tr>
+<td>1254</td>
+<td>土耳其字符集</td>
+<td>土耳其语</td>
+<td>Windows-1254</td>
+</tr>
+<tr>
+<td>1255</td>
+<td>希伯来字符集</td>
+<td>希伯来语</td>
+<td>Windows-1255</td>
+</tr>
+<tr>
+<td>1256</td>
+<td>阿拉伯字符集</td>
+<td>阿拉伯语</td>
+<td>Windows-1256</td>
+</tr>
+<tr>
+<td>1257</td>
+<td>波罗的海字符集</td>
+<td>拉脱维亚语、立陶宛语等</td>
+<td>Windows-1257</td>
+</tr>
+<tr>
+<td>1258</td>
+<td>越南语字符集</td>
+<td>越南语</td>
+<td>Windows-1258</td>
+</tr>
+<tr>
+<td>936</td>
+<td>简体中文字符集</td>
+<td>简体中文</td>
+<td>GB2312（CP936）</td>
+</tr>
+<tr>
+<td>950</td>
+<td>繁体中文字符集</td>
+<td>繁体中文</td>
+<td>Big5（CP950）</td>
+</tr>
+<tr>
+<td>932</td>
+<td>日文字符集</td>
+<td>日语</td>
+<td>Shift_JIS（CP932）</td>
+</tr>
+<tr>
+<td>949</td>
+<td>韩文字符集</td>
+<td>韩语</td>
+<td>KS C 5601（CP949）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="python_2">Python内置编码的列表</h3>
+<p>作为参考，此处把Python手册中的编码表格列出来（注意，表格别名只列出部分名字）</p>
+<table>
+<thead>
+<tr>
+<th>编码名称</th>
+<th>别名</th>
+<th>语言</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ascii</strong> ★</td>
+<td>646, us-ascii</td>
+<td>英语</td>
+</tr>
+<tr>
+<td><strong>big5</strong></td>
+<td>big5-tw, csbig5</td>
+<td>繁体中文</td>
+</tr>
+<tr>
+<td><strong>big5hkscs</strong></td>
+<td>big5-hkscs, hkscs</td>
+<td>繁体中文</td>
+</tr>
+<tr>
+<td>cp037</td>
+<td>IBM037, IBM039</td>
+<td>英语</td>
+</tr>
+<tr>
+<td>cp273</td>
+<td>273, IBM273, csIBM273</td>
+<td>德语</td>
+</tr>
+<tr>
+<td>cp424</td>
+<td>EBCDIC-CP-HE, IBM424</td>
+<td>希伯来语</td>
+</tr>
+<tr>
+<td>cp437</td>
+<td>437, IBM437</td>
+<td>英语</td>
+</tr>
+<tr>
+<td>cp500</td>
+<td>EBCDIC-CP-BE, EBCDIC-CP-CH, IBM500</td>
+<td>西欧</td>
+</tr>
+<tr>
+<td>cp720</td>
+<td>-</td>
+<td>阿拉伯语</td>
+</tr>
+<tr>
+<td>cp737</td>
+<td>-</td>
+<td>希腊语</td>
+</tr>
+<tr>
+<td>cp775</td>
+<td>IBM775</td>
+<td>波罗的海语言</td>
+</tr>
+<tr>
+<td>cp850</td>
+<td>850, IBM850</td>
+<td>西欧</td>
+</tr>
+<tr>
+<td>cp852</td>
+<td>852, IBM852</td>
+<td>中欧和东欧</td>
+</tr>
+<tr>
+<td>cp855</td>
+<td>855, IBM855</td>
+<td>保加利亚语、白俄罗斯语、马其顿语、俄语、塞尔维亚语</td>
+</tr>
+<tr>
+<td>cp856</td>
+<td>-</td>
+<td>希伯来语</td>
+</tr>
+<tr>
+<td>cp857</td>
+<td>857, IBM857</td>
+<td>土耳其语</td>
+</tr>
+<tr>
+<td>cp858</td>
+<td>858, IBM858</td>
+<td>西欧</td>
+</tr>
+<tr>
+<td>cp860</td>
+<td>860, IBM860</td>
+<td>葡萄牙语</td>
+</tr>
+<tr>
+<td>cp861</td>
+<td>861, CP-IS, IBM861</td>
+<td>冰岛语</td>
+</tr>
+<tr>
+<td>cp862</td>
+<td>862, IBM862</td>
+<td>希伯来语</td>
+</tr>
+<tr>
+<td>cp863</td>
+<td>863, IBM863</td>
+<td>加拿大法语</td>
+</tr>
+<tr>
+<td>cp864</td>
+<td>IBM864</td>
+<td>阿拉伯语</td>
+</tr>
+<tr>
+<td>cp865</td>
+<td>865, IBM865</td>
+<td>丹麦语、挪威语</td>
+</tr>
+<tr>
+<td>cp866</td>
+<td>866, IBM866</td>
+<td>俄语</td>
+</tr>
+<tr>
+<td>cp869</td>
+<td>869, CP-GR, IBM869</td>
+<td>希腊语</td>
+</tr>
+<tr>
+<td>cp874</td>
+<td>-</td>
+<td>泰语</td>
+</tr>
+<tr>
+<td>cp875</td>
+<td>-</td>
+<td>希腊语</td>
+</tr>
+<tr>
+<td>cp932</td>
+<td>932, ms932, mskanji, ms-kanji, windows-31j</td>
+<td>日语</td>
+</tr>
+<tr>
+<td>cp949</td>
+<td>949, ms949, uhc</td>
+<td>韩语</td>
+</tr>
+<tr>
+<td>cp950</td>
+<td>950, ms950</td>
+<td>繁体中文</td>
+</tr>
+<tr>
+<td>cp1006</td>
+<td>-</td>
+<td>乌尔都语</td>
+</tr>
+<tr>
+<td>cp1026</td>
+<td>ibm1026</td>
+<td>土耳其语</td>
+</tr>
+<tr>
+<td>cp1125</td>
+<td>1125, ibm1125, cp866u, ruscii</td>
+<td>乌克兰语</td>
+</tr>
+<tr>
+<td>cp1140</td>
+<td>ibm1140</td>
+<td>西欧</td>
+</tr>
+<tr>
+<td>cp1250</td>
+<td>windows-1250</td>
+<td>中欧和东欧</td>
+</tr>
+<tr>
+<td>cp1251</td>
+<td>windows-1251</td>
+<td>保加利亚语、白俄罗斯语、马其顿语、俄语、塞尔维亚语</td>
+</tr>
+<tr>
+<td><strong>cp1252</strong></td>
+<td>windows-1252</td>
+<td>西欧</td>
+</tr>
+<tr>
+<td>cp1253</td>
+<td>windows-1253</td>
+<td>希腊语</td>
+</tr>
+<tr>
+<td>cp1254</td>
+<td>windows-1254</td>
+<td>土耳其语</td>
+</tr>
+<tr>
+<td>cp1255</td>
+<td>windows-1255</td>
+<td>希伯来语</td>
+</tr>
+<tr>
+<td>cp1256</td>
+<td>windows-1256</td>
+<td>阿拉伯语</td>
+</tr>
+<tr>
+<td>cp1257</td>
+<td>windows-1257</td>
+<td>波罗的海语言</td>
+</tr>
+<tr>
+<td>cp1258</td>
+<td>windows-1258</td>
+<td>越南语</td>
+</tr>
+<tr>
+<td>euc_jp</td>
+<td>eucjp, ujis, u-jis</td>
+<td>日语</td>
+</tr>
+<tr>
+<td>euc_jis_2004</td>
+<td>jisx0213, eucjis2004</td>
+<td>日语</td>
+</tr>
+<tr>
+<td>euc_jisx0213</td>
+<td>eucjisx0213</td>
+<td>日语</td>
+</tr>
+<tr>
+<td>euc_kr</td>
+<td>euckr, korean, ksc5601, ks_c-5601, ks_c-5601-1987, ksx1001, ks_x-1001</td>
+<td>韩语</td>
+</tr>
+<tr>
+<td><strong>gb2312</strong> ★</td>
+<td>chinese, csiso58gb231280, euc-cn, euccn, eucgb2312-cn, gb2312-1980, gb2312-80, iso-ir-58</td>
+<td>简体中文</td>
+</tr>
+<tr>
+<td><strong>gbk</strong> ★</td>
+<td>936, <strong>cp936</strong>, ms936</td>
+<td>统一中文（Unified Chinese）</td>
+</tr>
+<tr>
+<td><strong>gb18030</strong> ★</td>
+<td>gb18030-2000</td>
+<td>统一中文（Unified Chinese）</td>
+</tr>
+<tr>
+<td><strong>hz</strong></td>
+<td>hzgb, hz-gb, hz-gb-2312</td>
+<td>简体中文</td>
+</tr>
+<tr>
+<td>iso2022_jp</td>
+<td>csiso2022jp, iso2022jp, iso-2022-jp</td>
+<td>日语</td>
+</tr>
+<tr>
+<td>iso2022_jp_1</td>
+<td>iso2022jp-1, iso-2022-jp-1</td>
+<td>日语</td>
+</tr>
+<tr>
+<td>iso2022_jp_2</td>
+<td>iso2022jp-2, iso-2022-jp-2</td>
+<td>日语、韩语、简体中文、西欧、希腊语</td>
+</tr>
+<tr>
+<td>iso2022_jp_2004</td>
+<td>iso2022jp-2004, iso-2022-jp-2004</td>
+<td>日语</td>
+</tr>
+<tr>
+<td>iso2022_jp_3</td>
+<td>iso2022jp-3, iso-2022-jp-3</td>
+<td>日语</td>
+</tr>
+<tr>
+<td>iso2022_jp_ext</td>
+<td>iso2022jp-ext, iso-2022-jp-ext</td>
+<td>日语</td>
+</tr>
+<tr>
+<td>iso2022_kr</td>
+<td>csiso2022kr, iso2022kr, iso-2022-kr</td>
+<td>韩语</td>
+</tr>
+<tr>
+<td><strong>latin_1</strong> ★</td>
+<td>iso-8859-1, iso8859-1, 8859, <strong>cp819</strong>, latin, latin1, L1</td>
+<td>西欧</td>
+</tr>
+<tr>
+<td>iso8859_2</td>
+<td>iso-8859-2, latin2, L2</td>
+<td>中欧和东欧</td>
+</tr>
+<tr>
+<td>iso8859_3</td>
+<td>iso-8859-3, latin3, L3</td>
+<td>世界语、马耳他语</td>
+</tr>
+<tr>
+<td>iso8859_4</td>
+<td>iso-8859-4, latin4, L4</td>
+<td>波罗的海语言</td>
+</tr>
+<tr>
+<td>iso8859_5</td>
+<td>iso-8859-5, cyrillic</td>
+<td>保加利亚语、白俄罗斯语、马其顿语、俄语、塞尔维亚语</td>
+</tr>
+<tr>
+<td>iso8859_6</td>
+<td>iso-8859-6, arabic</td>
+<td>阿拉伯语</td>
+</tr>
+<tr>
+<td>iso8859_7</td>
+<td>iso-8859-7, greek, greek8</td>
+<td>希腊语</td>
+</tr>
+<tr>
+<td>iso8859_8</td>
+<td>iso-8859-8, hebrew</td>
+<td>希伯来语</td>
+</tr>
+<tr>
+<td>iso8859_9</td>
+<td>iso-8859-9, latin5, L5</td>
+<td>土耳其语</td>
+</tr>
+<tr>
+<td>iso8859_10</td>
+<td>iso-8859-10, latin6, L6</td>
+<td>北欧语言</td>
+</tr>
+<tr>
+<td>iso8859_11</td>
+<td>iso-8859-11, thai</td>
+<td>泰语</td>
+</tr>
+<tr>
+<td>iso8859_13</td>
+<td>iso-8859-13, latin7, L7</td>
+<td>波罗的海语言</td>
+</tr>
+<tr>
+<td>iso8859_14</td>
+<td>iso-8859-14, latin8, L8</td>
+<td>凯尔特语言</td>
+</tr>
+<tr>
+<td><strong>iso8859_15</strong></td>
+<td>iso-8859-15, <strong>latin9</strong>, L9</td>
+<td>西欧</td>
+</tr>
+<tr>
+<td>iso8859_16</td>
+<td>iso-8859-16, latin10, L10</td>
+<td>东南欧语言</td>
+</tr>
+<tr>
+<td>johab</td>
+<td>cp1361, ms1361</td>
+<td>韩语</td>
+</tr>
+<tr>
+<td>koi8_r</td>
+<td>-</td>
+<td>俄语</td>
+</tr>
+<tr>
+<td>koi8_t</td>
+<td>-</td>
+<td>塔吉克语</td>
+</tr>
+<tr>
+<td>koi8_u</td>
+<td>-</td>
+<td>乌克兰语</td>
+</tr>
+<tr>
+<td>kz1048</td>
+<td>kz_1048, strk1048_2002, rk1048</td>
+<td>哈萨克语</td>
+</tr>
+<tr>
+<td>mac_cyrillic</td>
+<td>maccyrillic</td>
+<td>保加利亚语、白俄罗斯语、马其顿语、俄语、塞尔维亚语</td>
+</tr>
+<tr>
+<td>mac_greek</td>
+<td>macgreek</td>
+<td>希腊语</td>
+</tr>
+<tr>
+<td>mac_iceland</td>
+<td>maciceland</td>
+<td>冰岛语</td>
+</tr>
+<tr>
+<td>mac_latin2</td>
+<td>maclatin2, maccentraleurope, mac_centeuro</td>
+<td>中欧和东欧</td>
+</tr>
+<tr>
+<td>mac_roman</td>
+<td>macroman, macintosh</td>
+<td>西欧</td>
+</tr>
+<tr>
+<td>mac_turkish</td>
+<td>macturkish</td>
+<td>土耳其语</td>
+</tr>
+<tr>
+<td>ptcp154</td>
+<td>csptcp154, pt154, cp154, cyrillic-asian</td>
+<td>哈萨克语</td>
+</tr>
+<tr>
+<td>shift_jis</td>
+<td>csshiftjis, shiftjis, sjis, s_jis</td>
+<td>日语</td>
+</tr>
+<tr>
+<td>shift_jis_2004</td>
+<td>shiftjis2004, sjis_2004, sjis2004</td>
+<td>日语</td>
+</tr>
+<tr>
+<td>shift_jisx0213</td>
+<td>shiftjisx0213, sjisx0213, s_jisx0213</td>
+<td>日语</td>
+</tr>
+<tr>
+<td><strong>utf_32</strong> ★</td>
+<td>U32, utf32</td>
+<td>所有语言</td>
+</tr>
+<tr>
+<td><strong>utf_32_be</strong></td>
+<td>UTF-32BE</td>
+<td>所有语言</td>
+</tr>
+<tr>
+<td><strong>utf_32_le</strong></td>
+<td>UTF-32LE</td>
+<td>所有语言</td>
+</tr>
+<tr>
+<td><strong>utf_16</strong> ★</td>
+<td>U16, utf16</td>
+<td>所有语言</td>
+</tr>
+<tr>
+<td><strong>utf_16_be</strong></td>
+<td>UTF-16BE</td>
+<td>所有语言</td>
+</tr>
+<tr>
+<td><strong>utf_16_le</strong></td>
+<td>UTF-16LE</td>
+<td>所有语言</td>
+</tr>
+<tr>
+<td>utf_7</td>
+<td>U7, unicode-1-1-utf-7</td>
+<td>所有语言</td>
+</tr>
+<tr>
+<td><strong>utf_8</strong> ★</td>
+<td>U8, UTF, utf8, cp65001</td>
+<td>所有语言</td>
+</tr>
+<tr>
+<td><strong>utf_8_sig</strong></td>
+<td>-</td>
+<td>所有语言</td>
+</tr>
+</tbody>
+</table>
+<h3 id="qt">Qt支持的编码</h3>
+<p>在Qt6，QStringConverter 支持如下编码：</p>
+<ul>
+<li>UTF-8</li>
+<li>UTF-16</li>
+<li>UTF-16BE</li>
+<li>UTF-16LE</li>
+<li>UTF-32</li>
+<li>UTF-32BE</li>
+<li>UTF-32LE</li>
+<li>ISO-8859-1 (Latin-1)</li>
+<li>The system encoding</li>
+</ul>
+<p>Qt 的 QTextCodec 支持如下的编码（注：Qt6中QTextCodec已经被边缘化了）：</p>
+<ul>
+<li>Big5</li>
+<li>Big5-HKSCS</li>
+<li>CP949</li>
+<li>EUC-JP</li>
+<li>EUC-KR</li>
+<li><strong>GB18030</strong></li>
+<li>HP-ROMAN8</li>
+<li>IBM 850</li>
+<li>IBM 866</li>
+<li>IBM 874</li>
+<li>ISO 2022-JP</li>
+<li>ISO 8859-1 to 10</li>
+<li>ISO 8859-13 to 16</li>
+<li>Iscii-Bng, Dev, Gjr, Knd, Mlm, Ori, Pnj, Tlg, and Tml</li>
+<li>KOI8-R</li>
+<li>KOI8-U</li>
+<li>Macintosh</li>
+<li>Shift-JIS</li>
+<li>TIS-620</li>
+<li>TSCII</li>
+<li><strong>UTF-8</strong></li>
+<li><strong>UTF-16</strong></li>
+<li>UTF-16BE</li>
+<li>UTF-16LE</li>
+<li><strong>UTF-32</strong></li>
+<li>UTF-32BE</li>
+<li>UTF-32LE</li>
+<li>Windows-1250 to 1258</li>
+</ul>
+<h2 id="_5">参考</h2>
+<ul>
+<li>https://docs.python.org/3/library/codecs.html#standard-encodings</li>
+<li>https://en.wikipedia.org/wiki/EBCDIC</li>
+<li>https://en.wikipedia.org/wiki/ASCII</li>
+<li>https://en.wikipedia.org/wiki/Extended_ASCII</li>
+<li>https://en.wikipedia.org/wiki/GBK_(character_encoding)</li>
+<li>https://en.wikipedia.org/wiki/GB_2312</li>
+<li>https://en.wikipedia.org/wiki/Big5</li>
+<li>https://en.wikipedia.org/wiki/Unicode</li>
+<li>https://en.wikipedia.org/wiki/ISO/IEC_646</li>
+<li>https://en.wikipedia.org/wiki/ISO/IEC_10646</li>
+<li>https://en.wikipedia.org/wiki/ISO/IEC_2022</li>
+<li>https://en.wikipedia.org/wiki/Extended_Unix_Code</li>
+<li>https://www.iana.org/assignments/character-sets/character-sets.xml</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2025-01-02T10:50:00+08:00" pubdate>Thu 02 January 2025</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/python.html'>Python</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/c.html">C++</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

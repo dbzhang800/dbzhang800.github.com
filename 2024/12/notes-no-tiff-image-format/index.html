@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>图像格式tiff小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">图像格式tiff小记</h1>
+    <p class="meta">
+<time datetime="2024-12-29T19:19:00+08:00" pubdate>Sun 29 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>一个很古老，很简单 的图像格式；同时又是存在各种扩展，又超级复杂的图像格式。</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#tiff-60">Tiff 6.0 规格书</a><ul>
+<li><a href="#tiffbaseline-tiff">基线TIFF（Baseline TIFF）</a></li>
+<li><a href="#tifftiff-extensions">TIFF扩展（TIFF Extensions）</a></li>
+<li><a href="#_1">压缩格式</a></li>
+</ul>
+</li>
+<li><a href="#tiffep">TIFF/EP</a><ul>
+<li><a href="#tiff60exif">与TIFF6.0、EXIF的关系</a></li>
+<li><a href="#_2">压缩格式</a></li>
+</ul>
+</li>
+<li><a href="#dngdigital-negative">DNG(Digital Negative)</a></li>
+<li><a href="#readerwriter">对Reader、Writer的要求</a><ul>
+<li><a href="#reader">Reader</a></li>
+<li><a href="#writer">Writer</a></li>
+</ul>
+</li>
+<li><a href="#tiff">TIFF格式</a><ul>
+<li><a href="#tiff_1">TIFF文件结构</a></li>
+<li><a href="#_3">文件头</a></li>
+<li><a href="#ifdimage-file-directory">IFD(Image File Directory)</a></li>
+<li><a href="#ifd-entrytag">IFD Entry（Tag）</a><ul>
+<li><a href="#_4">数据类型</a></li>
+<li><a href="#field">一些可选Field</a></li>
+</ul>
+</li>
+<li><a href="#_5">图像数据</a><ul>
+<li><a href="#_6">灰度图像</a></li>
+<li><a href="#_7">索引图像</a></li>
+<li><a href="#_8">真彩图像</a></li>
+<li><a href="#tile">平铺（Tile）</a></li>
+<li><a href="#thumbnail">缩微图（Thumbnail）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#libtiff">LibTiff 库</a><ul>
+<li><a href="#_9">文件打开</a></li>
+<li><a href="#ifd">IFD</a><ul>
+<li><a href="#ifd_1">读IFD</a></li>
+<li><a href="#ifd_2">写IFD</a></li>
+<li><a href="#ifd_3">切换IFD</a></li>
+<li><a href="#ifd_4">移除IFD</a></li>
+</ul>
+</li>
+<li><a href="#tag">Tag</a><ul>
+<li><a href="#_10">注意事项</a></li>
+<li><a href="#tifffield">TIFFField</a></li>
+<li><a href="#tag_1">非内置的Tag</a></li>
+</ul>
+</li>
+<li><a href="#_11">读写图像数据</a><ul>
+<li><a href="#tile_1">Tile接口</a></li>
+<li><a href="#_12">压缩格式</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#geotiff">GeoTiff</a></li>
+<li><a href="#bigtiff">BigTiff</a><ul>
+<li><a href="#_13">格式</a><ul>
+<li><a href="#_14">文件头</a></li>
+<li><a href="#ifd_5">IFD</a></li>
+<li><a href="#tag-field">TAG Field</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_15">软件</a><ul>
+<li><a href="#photoshop">Photoshop</a><ul>
+<li><a href="#pyramin">Pyramin</a></li>
+<li><a href="#_16">缩微图</a></li>
+</ul>
+</li>
+<li><a href="#imagemagick">ImageMagick</a></li>
+<li><a href="#qt">Qt 图像</a></li>
+</ul>
+</li>
+<li><a href="#_17">参考</a></li>
+</ul>
+</div>
+<p>TIFF(Tag Image File Format)是用于存储位图图像的计算机文件格式，在印刷行业和摄影界等很流行。它被扫描仪、传真机、文字处理、光学字符识别、桌面出版系统、图像处理、页面布局等程序广泛的支持。</p>
+<p>TIFF格式由Aldus公司创建，最新版本（Tiff 6.0）发布于1992年。1994年Adobe Systems收购Aldus。</p>
+<blockquote>
+<p>TIFF、PNG、JEPG是三种支持(deep-color)的图像格式。</p>
+</blockquote>
+<h2 id="tiff-60">Tiff 6.0 规格书</h2>
+<p>Tiff6.0 规格书包含下列部分：</p>
+<ul>
+<li>Part1: 基线TIFF （Baseline TIFF）</li>
+<li>Part2: TIFF扩展 （TIFF Extensions）</li>
+<li>Part3: 附件 （Appendices）</li>
+</ul>
+<h3 id="tiffbaseline-tiff">基线TIFF（Baseline TIFF）</h3>
+<ul>
+<li>多页面或子文件（Multiple subfiles）<ul>
+<li>每个TIFF文件可以包含多页图像（multi-page images）</li>
+<li>每一个图像需要一个IFD（Image File Directory）</li>
+<li>每个IFD定义一个子文件（subfile）。</li>
+</ul>
+</li>
+<li>带（Strips）<ul>
+<li>一个图像可以有多个带（Strip）构成。</li>
+<li>每一个带由一行或多行图像数据构成，每个带可以使用不同的压缩算法。</li>
+<li>如果没有Strip的标记，认为图像只有一个Strip构成。</li>
+</ul>
+</li>
+<li>压缩（Compression）<ul>
+<li>1 无压缩 （默认）</li>
+<li>2 CCITT Group 3 1（只用于二值图像）</li>
+<li>32773 PackBits Compression</li>
+</ul>
+</li>
+<li>图像类型<ul>
+<li>二值图像 bilevel</li>
+<li>灰度图像 grayscale</li>
+<li>调色板 pallette-color</li>
+<li>真彩图像 RGB full-color </li>
+</ul>
+</li>
+<li>字节序<ul>
+<li>"II"(Intel byte ordering)小端</li>
+<li>"MM"（Motoroia byte ordering）大端</li>
+</ul>
+</li>
+<li>其他字段（Other TIFF fields）<ul>
+<li>规范中没有的字段，Reader需要能处理并忽略</li>
+</ul>
+</li>
+</ul>
+<h3 id="tifftiff-extensions">TIFF扩展（TIFF Extensions）</h3>
+<p>引入更多的图像类型（CMYK、YCbCr、HalftoneHints、<strong>Tiled</strong>、CIELab）和压缩格式（CCITT T.4 bilevel、CCITT T.6 bilevel、LZW、JPEG）；引入SUBIFD标签支持图像树（Image Trees）；私有Tag。</p>
+<ul>
+<li>Image Trees<ul>
+<li>SUBIFD 用于标记子IFD</li>
+</ul>
+</li>
+<li>Tiled<ul>
+<li>一个TIFF图像可以有多个大小相同的图像平铺构成，类似于Strips。</li>
+<li><strong>Baseline Reader</strong>不要求读Tiled图像。</li>
+</ul>
+</li>
+<li>Private tags<ul>
+<li>32768~64999和65536及以上 的Tag 是私有的，仅对个人或组织有意义，但是需要向Adobe申请，由Adobe进行分配，以避免冲突。（TIFF/EP定义的一些新标签位于该段）</li>
+<li>65000~65535的Tag，可以复用，无需注册登记</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Private IFD<ul>
+<li>如果需要10个以上的私有Tag，考虑使用私有IFD</li>
+<li>定义一个类型为LONG或IFD类型的私有Tag，其值作为offset指向其他区域（该区域怎么用是完全自由的）。</li>
+</ul>
+</li>
+</ul>
+<h3 id="_1">压缩格式</h3>
+<p>关注 LZW JPEG ZIP</p>
+<ul>
+<li>LZW 之所以不再TIFF6.0 BaseLine里面，是因为当时有专利。（2003年过期）</li>
+<li>LZW 对16位深度的图像，压缩效果很不好，甚至比压缩前体积更大。</li>
+<li>JPEG: TIFF 6.0引入的 "6"(老的，libtiff对其支持也不好); <code>TIFF Technical Note#2</code> 引入的 “7”（新的，也在TIFF/EP中使用）</li>
+<li>ZIP(Deflate/Inflate) 放气充气，值为“8”：<code>TIFF Technical Note#2</code>引入</li>
+<li>ZIP(Deflate/Inflate)，值为32946：存在时间更早，“8”和它通用<ul>
+<li>Photoshop可以读，但写时使用"8"??(Fix me!!)</li>
+</ul>
+</li>
+</ul>
+<h2 id="tiffep">TIFF/EP</h2>
+<p>TIFF/EP（Tag Image File Format/Electronic Photography) 是数码图像文件的国际标准 ISO 12234-2 。文件后缀名也是 .tiff 或 .tif。该标准发布于2001年。</p>
+<p>Adobe 的 DNG 格式基于 TIFF/EP 标准（兼容）。</p>
+<blockquote>
+<p>当前数码相机保存图片的工业标准是 Exif/DCF。</p>
+</blockquote>
+<h3 id="tiff60exif">与TIFF6.0、EXIF的关系</h3>
+<ul>
+<li>TIFF/EP遵守 TIFF6.0 的标准，并使用和TIFF6.0同样的文件头。<ul>
+<li>但是它定义了一些放置到第一个IFD中的标签（TAG），并忽略了不少TIFF6.0中的标签。</li>
+<li>TIFF/EP不允许缺省值，所有的值必须显式设置。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>TIFF/EP和Exif标准有一些显著的区别。<ul>
+<li>Exif标准中位于 Exif Sub-IFD 的标签现在直接位于第一个 IFD中。</li>
+<li>Exif IFD Sub-IFD，互操作的 Sub-IFD以及MakerNode都被省略。</li>
+<li>TIFF/EP 定义了一个处理缩微图的方法。该方法不同于Exif标准中的方法。</li>
+<li>TIFF/EP 重新定义了一些 Exif标准中定义的标签。</li>
+</ul>
+</li>
+</ul>
+<h3 id="_2">压缩格式</h3>
+<p>TIFF/EP可以存储无压缩格式，或者JPEG基线DCT-Based有损压缩。TIFF/EP允许使用其他的格式，但不强制要求Reader能读。</p>
+<p>不同于TIFF6.0中，压缩格式默认是无压缩，可以省略Tag（259），TIFF/EP必须通过Tag来指定，不能省略。</p>
+<p>缩微图必须是无压缩的，即：IFD的Tag(259)值必须是1。（当主图像采用JPEG压缩或其他压缩格式时，必须存在缩微图，且需要在第一个IFD中，以便与TIFF6.0BaseLine Reader兼容）</p>
+<h2 id="dngdigital-negative">DNG(Digital  Negative)</h2>
+<p>文件后缀: <code>.dng</code></p>
+<p>DNG是TIFF 6.0格式的扩展，并且与TIFF/EP兼容。一个DNG文件同时遵守DNG规范和TIFF/EP标准是可行的（不强制要求）。</p>
+<ul>
+<li>DNG建议使用SubIFD树（见TIFF/EP中描述）。SubIFD链（chain）不被支持。</li>
+<li>DNG建议第一个IFD中包含一个低分辨率的缩微图（如TIFF/EP规范所描述），但不强制。</li>
+</ul>
+<h2 id="readerwriter">对Reader、Writer的要求</h2>
+<h3 id="reader">Reader</h3>
+<ul>
+<li>Reader<strong>必须</strong>能处理多页的TIFF文件，但不强制要求Baseline Reader读第一个IFD之后的任何一个IFD（换言之，大量的Baseline Reader可能只读第一个IFD）。</li>
+<li>Reader<strong>必须</strong>支持BaseLine中的三种压缩方式（无压缩、CCITT Group3 1、PackBits Compression）。注：TIFF/EP的Reader必须支持（无压缩、JPEG压缩）。</li>
+<li>Reader<strong>必须</strong>能读取大端和小端的TIFF图像</li>
+<li>Reader<strong>必须</strong>准备好处理并能忽略不认识（TIFF规范中未定义）的Tag</li>
+<li>Reader<strong>不能拒绝</strong>读取可选Field（比如Make、Model、DateTime等）不存在的TIFF文件。</li>
+<li>Reader<strong>必须</strong>能读取缺省Field存在和不存在的情况。</li>
+<li>Reader<strong>应当</strong>跳过不认识的字段类型（比如不排除以后会有新的类型）的Field</li>
+<li>TIFF可能包含新的Pixel类型，如果字段SampleFormat存在且其值不为1，BaseLine Reader需要结束读流程。</li>
+<li>TIFF中的单像素可能包含超出我们想象的通道，BaseLine Reader需要借助SmaplesPrePixel和BitsPreSample字段的值优雅地跳过它们。</li>
+</ul>
+<h3 id="writer">Writer</h3>
+<ul>
+<li>缺省的Field，可写可不写。</li>
+<li>TIFF6.0要求：如果TIFF中有多个页面，第一个必须是全分辨率图像，后续的图像（比如缩减分辨率图像）可以按任何顺序。对这些图像，Reader需要遍历相应的IFD来决定如何处理<ul>
+<li>但是TIFF/EP 以及DNG都建议在IFD0中放置缩微图。</li>
+</ul>
+</li>
+<li>TIFF6.0要求：任何引用都不能在多处出现。</li>
+</ul>
+<h2 id="tiff">TIFF格式</h2>
+<h3 id="tiff_1">TIFF文件结构</h3>
+<p>TIFF是图像文件格式，它以一个8字节的文件头开始的，文件头指向一个IFD（Image File Directory），IFD包含图像的信息，以及一个指向真实数据的指针。</p>
+<p><img alt="Tiff File Structure" src="https://blog.debao.me/images/tools/tiff.png"></p>
+<h3 id="_3">文件头</h3>
+<p>文件头固定占用8个字节。</p>
+<table>
+<thead>
+<tr>
+<th>偏移(offset)</th>
+<th>数据类型(DataType)</th>
+<th>值(Value)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Word</td>
+<td>字节序指示："II"代表小端，"MM"代表大端。影响所有的16位或32位整数</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Word</td>
+<td>版本号 (始终是 42)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Unsigned Long</td>
+<td>第一个 IFD 的偏移值，偏移值总是相对于TIFF文件的，本文件的第一个字节偏移值是0。</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>注：TIFF/EP标准建议判断版本时使用 VERSION &gt;= 42，而不是VERSION==42</p>
+</blockquote>
+<h3 id="ifdimage-file-directory">IFD(Image File Directory)</h3>
+<p>一个TIFF文件至少包含一个IFD。</p>
+<table>
+<thead>
+<tr>
+<th>偏移(offset)</th>
+<th>数据类型(DataType)</th>
+<th>值(Value)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Word</td>
+<td>本IFD中的Tag数</td>
+</tr>
+<tr>
+<td>2+x*12</td>
+<td>Tag structure</td>
+<td>Tag data</td>
+</tr>
+<tr>
+<td>2+(本IFD中Tag数)*12</td>
+<td>Unsigned Long</td>
+<td>下一个IFD在文件内的偏移值, 如果没有则为0。</td>
+</tr>
+</tbody>
+</table>
+<p>一个IFD中至少包含一个DE(Directory entry)，最多包含65535个？所有的Tag需要按<strong>升序</strong>排序。每一个Tag精确占12个字节。</p>
+<h3 id="ifd-entrytag">IFD Entry（Tag）</h3>
+<p>TIFF field：包含Tag和其值的逻辑实体（entry）。每一个Field都有一个关联的Count，也就是说所有的Field都是一个一维的数组，即使是大多数Field只包含一个值。</p>
+<table>
+<thead>
+<tr>
+<th>偏移(offset)</th>
+<th>数据类型(DataType)</th>
+<th>值(Value)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Word</td>
+<td>Tag标识</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Word</td>
+<td>Tag数据的数据类型</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Unsigned Long</td>
+<td>值的个数（注意，不是字节数，比如单个SHORT，是1不是2）</td>
+</tr>
+<tr>
+<td>8</td>
+<td>-</td>
+<td>Tag数据或数据在文件内的偏移值</td>
+</tr>
+</tbody>
+</table>
+<p>如果 数据大小*个数 &lt;=4，则可以直接存储（小于4，则左对齐，存在低位），反之则需要在其他地方存储，此处只存储偏移值。</p>
+<p>注意：
+* 偏移值不能认为是LONG类型
+* TIFF标准禁止在Tag数据中包含偏移值，标准中定义的(TileOffsets、StripOffsets、...)除外。</p>
+<h4 id="_4">数据类型</h4>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1=BYTE</td>
+<td>8位无符号数</td>
+</tr>
+<tr>
+<td>2=ASCII</td>
+<td>7位的ASCII码，最后一个字节需要是NUL。（可以包含多个字符串，每个都以NUL结束，COUNT是指所有字节数）</td>
+</tr>
+<tr>
+<td>3=SHORT</td>
+<td>16位无符号数</td>
+</tr>
+<tr>
+<td>4=LONG</td>
+<td>32位无符号数</td>
+</tr>
+<tr>
+<td>5=RATIONAL</td>
+<td>两个LONG，前者分子后者分母</td>
+</tr>
+<tr>
+<td>6=SBYTE</td>
+<td>8位有符号数</td>
+</tr>
+<tr>
+<td>7=UNDEFINED</td>
+<td>8位字节，可以存储任何东西</td>
+</tr>
+<tr>
+<td>8=SSHORT</td>
+<td>16位有符号数</td>
+</tr>
+<tr>
+<td>9=SLONG</td>
+<td>32位有符号数</td>
+</tr>
+<tr>
+<td>10=SRATIONAL</td>
+<td>两个SLONG，前者分子后者分母</td>
+</tr>
+<tr>
+<td>11=FLOAT</td>
+<td>单精度浮点（32位）</td>
+</tr>
+<tr>
+<td>12=DOUBLE</td>
+<td>双精度浮点（64位）</td>
+</tr>
+<tr>
+<td>13=IFD</td>
+<td>32位无符号数，是指向IFD的offset值（Adobe Thchnology Note）</td>
+</tr>
+<tr>
+<td>16=LONG8</td>
+<td>BigTIFF 64位无符号数</td>
+</tr>
+<tr>
+<td>17=SLONG8</td>
+<td>BigTIFF 64位有符号数</td>
+</tr>
+<tr>
+<td>18=IFD8</td>
+<td>BigTIFF 64位无符号数，是指向IFD的offset值</td>
+</tr>
+</tbody>
+</table>
+<p>如果Reader遇到不认识的TYPE，要跳过该Tag。</p>
+<h4 id="field">一些可选Field</h4>
+<p>描述性的：</p>
+<table>
+<thead>
+<tr>
+<th>Tag名称</th>
+<th>Dec</th>
+<th>Hex</th>
+<th>数据类型</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Artist</td>
+<td>315</td>
+<td>13B</td>
+<td>ASCII</td>
+<td>-</td>
+<td>图像创建者（某些老TIFF用于存放版权说明）。系统登录用户</td>
+</tr>
+<tr>
+<td>Copyright</td>
+<td>33432</td>
+<td>8298</td>
+<td>ASCII</td>
+<td>-</td>
+<td>版权说明</td>
+</tr>
+<tr>
+<td>DateTime</td>
+<td>306</td>
+<td>132</td>
+<td>ASCII</td>
+<td><code>YYYY:MM:DD HH:MM:SS</code></td>
+<td>包含NUL在内，共20字节，TIFF/EP下强制存在</td>
+</tr>
+<tr>
+<td>HostComputer</td>
+<td>316</td>
+<td>13C</td>
+<td>ASCII</td>
+<td>-</td>
+<td>图像创建时的计算机或操作系统</td>
+</tr>
+<tr>
+<td>ImageDescription</td>
+<td>270</td>
+<td>10E</td>
+<td>ASCII</td>
+<td>-</td>
+<td>图像的主题，比如"1988 company picnic"</td>
+</tr>
+<tr>
+<td>Make</td>
+<td>271</td>
+<td>10F</td>
+<td>ASCII</td>
+<td>-</td>
+<td>创建图像的工具（比如扫描仪）制造商。聚束SEM具体名字</td>
+</tr>
+<tr>
+<td>Model</td>
+<td>272</td>
+<td>110</td>
+<td>ASCII</td>
+<td>-</td>
+<td>工具（比如扫描仪）的Model名或数字。聚束SEM型号</td>
+</tr>
+<tr>
+<td>Software</td>
+<td>305</td>
+<td>131</td>
+<td>ASCII</td>
+<td>-</td>
+<td>创建图像的软件名字或版本号。聚束SEM控制软件名字</td>
+</tr>
+<tr>
+<td>TIFF扩展 DocumentName</td>
+<td>269</td>
+<td>10D</td>
+<td>ASCII</td>
+<td>-</td>
+<td>文档名，本TIFF通过扫描哪个文件得到的</td>
+</tr>
+<tr>
+<td>TIFF扩展 PageName</td>
+<td>285</td>
+<td>11D</td>
+<td>ASCII</td>
+<td>-</td>
+<td>页面名，通过扫描那个页面得到</td>
+</tr>
+<tr>
+<td>TIFF扩展 PageNumber</td>
+<td>297</td>
+<td>129</td>
+<td>SHORT</td>
+<td>页号，总页数</td>
+<td>两个数字</td>
+</tr>
+</tbody>
+</table>
+<p>有其他意义的：</p>
+<table>
+<thead>
+<tr>
+<th>Tag名称</th>
+<th>Dec</th>
+<th>Hex</th>
+<th>数据类型</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NewSubfileType</td>
+<td>254</td>
+<td>FE</td>
+<td>LONG</td>
+<td>-</td>
+<td>Bit0为1表示是分辨率缩减的图像，Bit1为1表示多页图像中单独1页，Bit2为1表示是另一个图像透明度掩码。默认值为0</td>
+</tr>
+<tr>
+<td>Orientation</td>
+<td>274</td>
+<td>112</td>
+<td>SHORT</td>
+<td>-</td>
+<td>Baseline Tiff下取值范围1~8，默认值为1</td>
+</tr>
+<tr>
+<td>PlanarConfiguration</td>
+<td>284</td>
+<td>11C</td>
+<td>SHORT</td>
+<td>1或2</td>
+<td>像素存储格式：块（Chunky）或面(Planar)，默认1</td>
+</tr>
+<tr>
+<td>TIFF/EP SubIFDs</td>
+<td>330</td>
+<td>14A</td>
+<td>LONG</td>
+<td>-</td>
+<td>指向各个子IFD的文件偏移量，由Adobe公司定义</td>
+</tr>
+<tr>
+<td>TIFF/EP TimeZoneOffset</td>
+<td>34858</td>
+<td>882A</td>
+<td>SSHORT</td>
+<td>-</td>
+<td>1~2个有符号short，第二个数表示是设置哪个DateTime的时区</td>
+</tr>
+<tr>
+<td>DNG DNGPrivateData</td>
+<td>50740</td>
+<td>C634</td>
+<td>BYTE</td>
+<td>-</td>
+<td>必须以一个NUL结尾的ASCII字符串（制造商名字）开头，之后的数据必须是自包含的，且需要与字节序无关。（自由写私有数据）</td>
+</tr>
+</tbody>
+</table>
+<p>不建议用：</p>
+<table>
+<thead>
+<tr>
+<th>Tag名称</th>
+<th>Dec</th>
+<th>Hex</th>
+<th>数据类型</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SubfileType</td>
+<td>255</td>
+<td>FF</td>
+<td>LONG</td>
+<td>-</td>
+<td>废弃，建议使用NewSubfileType</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_5">图像数据</h3>
+<h4 id="_6">灰度图像</h4>
+<p>对于灰度图像（Grayscale Image），以下Field是必须的</p>
+<table>
+<thead>
+<tr>
+<th>Tag名称</th>
+<th>Dec</th>
+<th>Hex</th>
+<th>数据类型</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ImageWidth</td>
+<td>256</td>
+<td>100</td>
+<td>SHORT or LONG</td>
+<td>-</td>
+<td>图像列数，单扫描线中的像素数</td>
+</tr>
+<tr>
+<td>ImageLength</td>
+<td>257</td>
+<td>101</td>
+<td>SHORT or LONG</td>
+<td>-</td>
+<td>图像行数，有时用扫描线数（scanlines）描述</td>
+</tr>
+<tr>
+<td>BitsPerSample</td>
+<td>258</td>
+<td>102</td>
+<td>SHORT</td>
+<td>4 or 8</td>
+<td>聚束只使用常规的8位</td>
+</tr>
+<tr>
+<td>Compression</td>
+<td>259</td>
+<td>103</td>
+<td>SHORT</td>
+<td>1 or 32773</td>
+<td>聚束只使用无压缩的1</td>
+</tr>
+<tr>
+<td>PhotometricInterpretation</td>
+<td>262</td>
+<td>106</td>
+<td>SHORT</td>
+<td>0 or 1</td>
+<td>0： 灰度最小值0表示白色；1：灰度最小值0表示黑色</td>
+</tr>
+<tr>
+<td>StripOffsets</td>
+<td>273</td>
+<td>111</td>
+<td>SHORT or LONG</td>
+<td>-</td>
+<td>每个带（strip）在的文件中的偏移值，各个带不一定是顺序存储，不能做顺序存储的假定！！！</td>
+</tr>
+<tr>
+<td>RowsPerStrip</td>
+<td>278</td>
+<td>116</td>
+<td>SHORT or LONG</td>
+<td>-</td>
+<td>每个带（strip）中的图像行数（最后一个带除外，最后一个带可能小于该数值）</td>
+</tr>
+<tr>
+<td>StripByteCounts</td>
+<td>279</td>
+<td>117</td>
+<td>LONG or SHORT</td>
+<td>-</td>
+<td>每个带（strip）！！压缩后！！的字节数，TIFF/EP要求每个Strip压缩<strong>前</strong>的大小不大于64k</td>
+</tr>
+<tr>
+<td>XResolution</td>
+<td>282</td>
+<td>11A</td>
+<td>RATIONAL</td>
+<td>-</td>
+<td>ImageWidth方向（一般水平方向），单位ResolutionUnit中的像素点数，这种值对布局排版等有意义，对图像编辑程序没多大意义。</td>
+</tr>
+<tr>
+<td>YResolution</td>
+<td>283</td>
+<td>11B</td>
+<td>RATIONAL</td>
+<td>-</td>
+<td>ImageLength方向（一般竖直方向），单位ResolutionUnit中的像素点数</td>
+</tr>
+<tr>
+<td>ResolutionUnit</td>
+<td>296</td>
+<td>128</td>
+<td>SHORT</td>
+<td>1 or 2 or 3</td>
+<td>分别：无绝对测量单位，英寸，厘米。</td>
+</tr>
+<tr>
+<td>TIFF/EP PlanarConfiguration</td>
+<td>284</td>
+<td>11C</td>
+<td>SHORT</td>
+<td>1或2</td>
+<td>像素存储格式：块（Chunky）或面(Planar)</td>
+</tr>
+<tr>
+<td>TIFF/EP NewSubfileType</td>
+<td>254</td>
+<td>FE</td>
+<td>LONG</td>
+<td>0或1</td>
+<td>1代表缩微图，否则是0</td>
+</tr>
+<tr>
+<td>TIFF/EP SamplesPerPixel</td>
+<td>277</td>
+<td>115</td>
+<td>SHORT</td>
+<td>1</td>
+<td>每个像素的通道数</td>
+</tr>
+<tr>
+<td>TIFF/EP StandardID</td>
+<td>37298</td>
+<td>9216</td>
+<td>BYTE</td>
+<td>1 0 0 0</td>
+<td>4个8位无符号数字</td>
+</tr>
+</tbody>
+</table>
+<p>TIFF/EP要求，IFD0中必须存在下列Field</p>
+<table>
+<thead>
+<tr>
+<th>Tag名称</th>
+<th>Dec</th>
+<th>Hex</th>
+<th>数据类型</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TIFF/EP DateTime</td>
+<td>306</td>
+<td>132</td>
+<td>ASCII</td>
+<td><code>YYYY:MM:DD HH:MM:SS</code></td>
+<td>包含NUL在内，共20字节，文件的上次修改值</td>
+</tr>
+<tr>
+<td>TIFF/EP DateTimeOriginal</td>
+<td>36867</td>
+<td>9003</td>
+<td>ASCII</td>
+<td><code>YYYY:MM:DD HH:MM:SS</code></td>
+<td>包含NUL在内，共20字节，文件创建后不能再修改该值</td>
+</tr>
+<tr>
+<td>TIFF/EP Make</td>
+<td>271</td>
+<td>10F</td>
+<td>ASCII</td>
+<td>-</td>
+<td>创建图像的工具（比如扫描仪）制造商。聚束SEM具体名字，可以为空“”</td>
+</tr>
+<tr>
+<td>TIFF/EP Model</td>
+<td>272</td>
+<td>110</td>
+<td>ASCII</td>
+<td>-</td>
+<td>工具（比如扫描仪）的Model名或数字。聚束SEM型号，可以为空“”</td>
+</tr>
+<tr>
+<td>TIFF/EP Software</td>
+<td>305</td>
+<td>131</td>
+<td>ASCII</td>
+<td>-</td>
+<td>创建图像的软件名字或版本号。聚束SEM控制软件名字，可以为空“”</td>
+</tr>
+<tr>
+<td>TIFF/EP ImageDescription</td>
+<td>270</td>
+<td>10E</td>
+<td>ASCII</td>
+<td>-</td>
+<td>图像的主题，比如"1988 company picnic"，可以为空“”</td>
+</tr>
+<tr>
+<td>TIFF/EP Copyright</td>
+<td>33432</td>
+<td>8298</td>
+<td>ASCII</td>
+<td>-</td>
+<td>版权说明，可以为空“”</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>【Tiff扩展】如果使用Tile而不是Strip方式的话，StripOffsets、RowsPreStrip和StripByteCount被相应的Tile字段取代，Strip不是必须的。</p>
+</blockquote>
+<h4 id="_7">索引图像</h4>
+<p>对于调色板索引图像，和灰度图像相比，PhotometricInterpretation和SamplesPerPixel取值不一样，并多一个ColorMap。</p>
+<table>
+<thead>
+<tr>
+<th>Tag名称</th>
+<th>Dec</th>
+<th>Hex</th>
+<th>数据类型</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PhotometricInterpretation</td>
+<td>262</td>
+<td>106</td>
+<td>SHORT</td>
+<td>3</td>
+<td>使用调色板颜色</td>
+</tr>
+<tr>
+<td>ColorMap</td>
+<td>320</td>
+<td>140</td>
+<td>SHORT</td>
+<td>-</td>
+<td>对于8为深度图像，这是一个<code>3*(2^8)</code>的数组，颜色按照R、G、B排列</td>
+</tr>
+<tr>
+<td>TIFF/EP SamplesPerPixel</td>
+<td>277</td>
+<td>115</td>
+<td>SHORT</td>
+<td>3</td>
+<td>每个像素的通道数</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_8">真彩图像</h4>
+<p>对于真彩色图像，和灰度图像相比，BitsPerSample、SamplesPrePixel和PhotometricInterpretation取值不一样。</p>
+<table>
+<thead>
+<tr>
+<th>Tag名称</th>
+<th>Dec</th>
+<th>Hex</th>
+<th>数据类型</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BitsPerSample</td>
+<td>258</td>
+<td>102</td>
+<td>SHORT</td>
+<td>8，8，8</td>
+<td>每一个通道都是8位深度（Baseline Tiff）</td>
+</tr>
+<tr>
+<td>PhotometricInterpretation</td>
+<td>262</td>
+<td>106</td>
+<td>SHORT</td>
+<td>2</td>
+<td>使用R G B 颜色</td>
+</tr>
+<tr>
+<td>SamplesPerPixel</td>
+<td>277</td>
+<td>115</td>
+<td>SHORT</td>
+<td>3 or more</td>
+<td>每个像素的通道数，没有额外的采样通道的话，正常是3。TIFF6.0要求</td>
+</tr>
+</tbody>
+</table>
+<h4 id="tile">平铺（Tile）</h4>
+<p>在Baseline Tiff 6.0中，图像数据使用Strip方式。如果支持Tiff 6.0扩展的话，图像数据可以使用Strip或Tile方式（在一个图像中，只能二选一）。</p>
+<table>
+<thead>
+<tr>
+<th>Tag名称</th>
+<th>Dec</th>
+<th>Hex</th>
+<th>数据类型</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TIFF扩展 TileWidth</td>
+<td>322</td>
+<td>142</td>
+<td>SHORT or LONG</td>
+<td>-</td>
+<td>Title块的宽度，如和ImageWidth不是整数倍关系，后面的数据需要填补(Padding)</td>
+</tr>
+<tr>
+<td>TIFF扩展 TileLengh</td>
+<td>323</td>
+<td>143</td>
+<td>SHORT or LONG</td>
+<td>-</td>
+<td>Tile块的长度，如和ImageLength不是整数倍关系，后面的数据需要填补(Padding)</td>
+</tr>
+<tr>
+<td>TIFF扩展 TileOffsets</td>
+<td>324</td>
+<td>144</td>
+<td>LONG</td>
+<td>-</td>
+<td>各个Tile数据在文件中的偏移值</td>
+</tr>
+<tr>
+<td>TIFF扩展 TileByteCounts</td>
+<td>325</td>
+<td>145</td>
+<td>SHORT or LONG</td>
+<td>-</td>
+<td>一个Tile中的字节数（压缩后）</td>
+</tr>
+</tbody>
+</table>
+<p>TIff6.0要求：TileWidth和TileLength <strong>必须是</strong>16的整数倍。Tile不一定的正方的，建议 的 TileWidth 与 TileLength 乘积位于 4K~32K。（也就是64x64,256x128,个人感觉有点小，所以不接受它的建议）</p>
+<blockquote>
+<p>Strips模式下，Tiff6.0建议每个strip的大小不超过8K。如果单行超过8K，那么rowsperstrip建议用1.</p>
+</blockquote>
+<p>了解术语：TilesAcross、TilesDown、TilesPerImage</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">TilesAcross</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">ImageWidth</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">TileWidth</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TileWidth</span>
+<span class="n">TilesDown</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">ImageLength</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">TileLength</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TileLength</span>
+<span class="n">TilesPerImage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TilesAcross</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">TilesDown</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="thumbnail">缩微图（Thumbnail）</h4>
+<p>TIFF/EP 引入缩微图支持。通过SubIFDs和NewSubFileType标签，IFD变成树型（tree）结构而不再是链式（chain）结构。</p>
+<p><img alt="TIFF IFD Tree" src="https://blog.debao.me/images/tools/tiff-ifd-tree.png"></p>
+<p>对缩微图IFD，TIFF/EP要求：
+* NewSubFileType 取值必须是1（DNG除了主缩微图外，允许使用替代的缩微图，取值 10001.H）。
+* PhotometricInterpretation 取值仅限于1,2,6
+* Compression 取值必须是1
+* 缩微图大小不超过宽度和高度(256x256)，必须使用Strip方式</p>
+<ul>
+<li>当主图像采用JPEG压缩或其他压缩格式时，TIFF/EP 要求：必须存在缩微图，且需要在IFD0中。（以便兼容Baseline Reader）</li>
+<li>当主图像数据比较大时，TIFF/EP建议：使用缩微图，且放置在IFD0中。（以便图像快速打开）</li>
+</ul>
+<h2 id="libtiff">LibTiff 库</h2>
+<p>官网：http://simplesystems.org/libtiff/</p>
+<ul>
+<li>老的官网： http://www.libtiff.org/ 【被劫持】</li>
+</ul>
+<p>包含非常老的信息，有些信息是错误的。</p>
+<ul>
+<li>老的官网：http://remotesensing.org/libtiff/ 【失去控制】</li>
+</ul>
+<p>从2003年起作为官网，但2016年维护者失去控制。</p>
+<h3 id="_9">文件打开</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">TIFFOpen</span><span class="p">()</span>
+<span class="n">TIFFOpenW</span><span class="p">()</span>
+<span class="n">TIFFdOpen</span><span class="p">()</span>
+<span class="n">TIFFClientOpen</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>前三个是第四个的马甲(注：Qt的Tiff插件，直接使用的第四个来对接QIODevice)。</p>
+</blockquote>
+<p>打开模式：</p>
+<ul>
+<li>r:读</li>
+<li>w：写</li>
+<li>a：追加</li>
+<li>4：配合w，写传统TIFF</li>
+<li>8：配合w，写BigTIFF</li>
+<li>M：只读时启用内存映射文件</li>
+<li>m：禁用内存映射文件</li>
+</ul>
+<p>其他选项，l、b、L、B、H、C、c 估计我们以后也不会使用的。</p>
+<blockquote>
+<p>有这么一个说法，默认写入文件时，先写传统的TIFF头，但是给BigTiff头留出空间，当后期发现文件大于4G时，将头重写为BigTiff头，其他IFD的字段根据状况也进行重写，但是数据位置不动（来自 bigtiff.ofg）。</p>
+</blockquote>
+<h3 id="ifd">IFD</h3>
+<h4 id="ifd_1">读IFD</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">TIFFReadDirectory</span><span class="p">(</span><span class="n">TIFF</span><span class="w"> </span><span class="o">*</span><span class="n">tif</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>读文件中的下一个IFD，并将其设为当前IFD</li>
+<li>对于多页的tiff文件，只调用这一个函数就够了。</li>
+<li>‘r’模式调用TIFFOpen()打开文件时，会自动调用该函数。</li>
+</ul>
+<h4 id="ifd_2">写IFD</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">TIFFWriteDirectory</span><span class="p">(</span><span class="n">TIFF</span><span class="w"> </span><span class="o">*</span><span class="n">tif</span><span class="p">)</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">TIFFRewriteDirectory</span><span class="p">(</span><span class="n">TIFF</span><span class="w"> </span><span class="o">*</span><span class="n">tif</span><span class="p">)</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">TIFFCheckpointDirectory</span><span class="p">(</span><span class="n">TIFF</span><span class="w"> </span><span class="o">*</span><span class="n">tif</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>TIFFWriteDirectory() <ul>
+<li>写入当前IFD的内容到文件中，同时为创建下一个IFD做好准备【内部调用了TIFFCreateDirectory()】。</li>
+<li>正常写入多页的tiff文件时，只调用这个函数就足够了。</li>
+<li>写模式下如IFD有修改，文件关闭【TIFFClose】或刷新【TIFFFlush】时，会自动调用该函数。</li>
+</ul>
+</li>
+<li>TIFFReWriteDirectory()<ul>
+<li>对于之前已经写入的IFD，将其从chain中断开。</li>
+<li>在文件尾部追加新的IFD，将其加入chian链中（效果上替换了老的IFD，但没有覆盖）。</li>
+</ul>
+</li>
+<li>TIFFCheckpointDirectory()<ul>
+<li>将当前IFD内容写入到文件中，但是不释放内存中的数据结构。这样可以持续追加Strip或Tile数据</li>
+<li>当文件完成时，调用TIFFWriteDirectory()完成写入。</li>
+<li>【尽量不要用这个东西】</li>
+</ul>
+</li>
+</ul>
+<h4 id="ifd_3">切换IFD</h4>
+<p>设置当前的IFD</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">TIFFSetDirectory</span><span class="p">(</span><span class="n">TIFF</span><span class="w"> </span><span class="o">*</span><span class="n">tif</span><span class="p">,</span><span class="w"> </span><span class="n">tdir_t</span><span class="w"> </span><span class="n">dirnum</span><span class="p">)</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">TIFFSetSubDirectory</span><span class="p">(</span><span class="n">TIFF</span><span class="w"> </span><span class="o">*</span><span class="n">tif</span><span class="p">,</span><span class="w"> </span><span class="n">uint64</span><span class="w"> </span><span class="n">diroff</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>前者使用dirnum【从0开始】，后者使用偏移值【这对subIFD很有用】。</p>
+<p>前者需要从头遍历，也就是后者效率更高。</p>
+<h4 id="ifd_4">移除IFD</h4>
+<p>将指定的IFD从chain链中移除</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="n">TIFFUnlinkDirectory</span><span class="p">(</span><span class="n">TIFF</span><span class="o">*</span><span class="w"> </span><span class="n">tif</span><span class="p">,</span><span class="w"> </span><span class="n">uint16</span><span class="w"> </span><span class="n">dirn</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="tag">Tag</h3>
+<p>获取或写入Field，通过如下2个函数。</p>
+<ul>
+<li>TIFFGetField()</li>
+<li>TIFFSetField()</li>
+</ul>
+<p>有些Field有默认值，通过如下成员获取</p>
+<ul>
+<li>TIFFGetFieldDefaulted()</li>
+</ul>
+<h4 id="_10">注意事项</h4>
+<p>对XResolution 和 YResolution，其类型为Rational，但是set时需要使用一个double，get时需要使用<code>float*</code></p>
+<p>需要传入指针类型时，可以传入空指针，这样get内部会分配内存，在文件close时释放。</p>
+<h4 id="tifffield">TIFFField</h4>
+<p>每一个内置的Tag/Field都有一个这样的结构体。有的Tag可以使用不同的数据类型，每一个数据类型都有这样的一个结构体。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">_TIFFField</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">uint32</span><span class="w"> </span><span class="n">field_tag</span><span class="p">;</span><span class="w">                       </span><span class="cm">/* field&#39;s tag */</span>
+<span class="w">    </span><span class="kt">short</span><span class="w"> </span><span class="n">field_readcount</span><span class="p">;</span><span class="w">                  </span><span class="cm">/* read count/TIFF_VARIABLE/TIFF_SPP */</span>
+<span class="w">    </span><span class="kt">short</span><span class="w"> </span><span class="n">field_writecount</span><span class="p">;</span><span class="w">                 </span><span class="cm">/* write count/TIFF_VARIABLE */</span>
+<span class="w">    </span><span class="n">TIFFDataType</span><span class="w"> </span><span class="n">field_type</span><span class="p">;</span><span class="w">                </span><span class="cm">/* type of associated data */</span>
+<span class="w">    </span><span class="n">uint32</span><span class="w"> </span><span class="n">reserved</span><span class="p">;</span><span class="w">                        </span><span class="cm">/* reserved for future extension */</span>
+<span class="w">    </span><span class="n">TIFFSetGetFieldType</span><span class="w"> </span><span class="n">set_field_type</span><span class="p">;</span><span class="w">     </span><span class="cm">/* type to be passed to TIFFSetField */</span>
+<span class="w">    </span><span class="n">TIFFSetGetFieldType</span><span class="w"> </span><span class="n">get_field_type</span><span class="p">;</span><span class="w">     </span><span class="cm">/* type to be passed to TIFFGetField */</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="w"> </span><span class="n">field_bit</span><span class="p">;</span><span class="w">               </span><span class="cm">/* bit in fieldsset bit vector */</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">field_oktochange</span><span class="p">;</span><span class="w">         </span><span class="cm">/* if true, can change while writing */</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">field_passcount</span><span class="p">;</span><span class="w">          </span><span class="cm">/* if true, pass dir count on set */</span>
+<span class="w">    </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">field_name</span><span class="p">;</span><span class="w">                       </span><span class="cm">/* ASCII name */</span>
+<span class="w">    </span><span class="n">TIFFFieldArray</span><span class="o">*</span><span class="w"> </span><span class="n">field_subfields</span><span class="p">;</span><span class="w">        </span><span class="cm">/* if field points to child ifds, child ifd field definition array */</span>
+<span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注：一些老的资料可能会介绍TIFFFieldInfo，这个Info已经废弃，不建议使用。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">ttag_t</span><span class="w">    </span><span class="n">field_tag</span><span class="p">;</span><span class="w">          </span><span class="cm">/* field&#39;s tag */</span>
+<span class="w">  </span><span class="kt">short</span><span class="w">     </span><span class="n">field_readcount</span><span class="p">;</span><span class="w">    </span><span class="cm">/* read count/TIFF_VARIABLE/TIFF_SPP */</span>
+<span class="w">  </span><span class="kt">short</span><span class="w">     </span><span class="n">field_writecount</span><span class="p">;</span><span class="w">   </span><span class="cm">/* write count/TIFF_VARIABLE */</span>
+<span class="w">  </span><span class="n">TIFFDataType</span><span class="w"> </span><span class="n">field_type</span><span class="p">;</span><span class="w">      </span><span class="cm">/* type of associated data */</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="w"> </span><span class="n">field_bit</span><span class="p">;</span><span class="w">     </span><span class="cm">/* bit in fieldsset bit vector */</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">field_oktochange</span><span class="p">;</span><span class="cm">/* if true, can change while writing */</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">field_passcount</span><span class="p">;</span><span class="cm">/* if true, pass dir count on set */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w">  </span><span class="o">*</span><span class="n">field_name</span><span class="p">;</span><span class="w">        </span><span class="cm">/* ASCII name */</span>
+<span class="p">}</span><span class="w"> </span><span class="n">TIFFFieldInfo</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="n">TIFFMergeFieldInfo</span><span class="p">(</span><span class="n">TIFF</span><span class="o">*</span><span class="w"> </span><span class="n">tif</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TIFFFieldInfo</span><span class="w"> </span><span class="n">info</span><span class="p">[],</span><span class="w"> </span><span class="n">uint32</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="err">；</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="tag_1">非内置的Tag</h4>
+<p>libTiff遇到位置的tag时，会自动注册这个Tag。可以通过下列函数来读取这些Tag</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">TIFFField</span><span class="o">*</span><span class="w"> </span><span class="n">TIFFFindField</span><span class="p">(</span><span class="n">TIFF</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">uint32</span><span class="p">,</span><span class="w"> </span><span class="n">TIFFDataType</span><span class="p">);</span>
+<span class="k">const</span><span class="w"> </span><span class="n">TIFFField</span><span class="o">*</span><span class="w"> </span><span class="n">TIFFFieldWithTag</span><span class="p">(</span><span class="n">TIFF</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">uint32</span><span class="p">);</span>
+<span class="k">const</span><span class="w"> </span><span class="n">TIFFField</span><span class="o">*</span><span class="w"> </span><span class="n">TIFFFieldWithName</span><span class="p">(</span><span class="n">TIFF</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="nb">char</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>但是，如果应用程序需要定义自己的Tag来存储TIFF标准之外的信息（读和写）...</p>
+<h3 id="_11">读写图像数据</h3>
+<ul>
+<li>高层接口：TIFFReadRGBAImage() 或 TIFFRGBAImageGet()</li>
+<li>简单接口：TIFF{Read/Write}Sanline()<ul>
+<li>不能用于tile模式</li>
+</ul>
+</li>
+<li>Strip接口：TIFF{Read/Write}{Encoded/Raw}Strip()</li>
+<li>Tile接口：TIFF{Read/Write}Tile()、TIFF{Read/Write}{Encoded/Raw}Tile()</li>
+</ul>
+<blockquote>
+<p>目前只考虑<code>PLANARCONFIG_CONTIG</code>，只考虑 索引、灰度 图像</p>
+</blockquote>
+<h4 id="tile_1">Tile接口</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>TIFFWriteTile(TIFF* tif, void* buf, uint32 x, uint32 y, uint32 z, uint16 s)
+</code></pre></div></td></tr></table></div>
+
+<p>内部调用</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>TIFFWriteEncodedTile(TIFF* tif, uint32 tile, void* data, tmsize_t cc)
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_12">压缩格式</h4>
+<p>我们关注 1、5、7、8</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#define TIFFTAG_COMPRESSION     259 </span><span class="cm">/* data compression technique */</span>
+<span class="cp">#define     COMPRESSION_NONE        1   </span><span class="cm">/* dump mode */</span>
+<span class="cp">#define     COMPRESSION_CCITTRLE    2   </span><span class="cm">/* CCITT modified Huffman RLE */</span>
+<span class="cp">#define     COMPRESSION_CCITTFAX3   3   </span><span class="cm">/* CCITT Group 3 fax encoding */</span>
+<span class="cp">#define     COMPRESSION_CCITT_T4        3       </span><span class="cm">/* CCITT T.4 (TIFF 6 name) */</span>
+<span class="cp">#define     COMPRESSION_CCITTFAX4   4   </span><span class="cm">/* CCITT Group 4 fax encoding */</span>
+<span class="cp">#define     COMPRESSION_CCITT_T6        4       </span><span class="cm">/* CCITT T.6 (TIFF 6 name) */</span>
+<span class="cp">#define     COMPRESSION_LZW     5       </span><span class="cm">/* Lempel-Ziv  &amp; Welch */</span>
+<span class="cp">#define     COMPRESSION_OJPEG       6   </span><span class="cm">/* !6.0 JPEG */</span>
+<span class="cp">#define     COMPRESSION_JPEG        7   </span><span class="cm">/* %JPEG DCT compression */</span>
+<span class="cp">#define     COMPRESSION_T85         9   </span><span class="cm">/* !TIFF/FX T.85 JBIG compression */</span>
+<span class="cp">#define     COMPRESSION_T43         10  </span><span class="cm">/* !TIFF/FX T.43 colour by layered JBIG compression */</span>
+<span class="cp">#define     COMPRESSION_NEXT        32766   </span><span class="cm">/* NeXT 2-bit RLE */</span>
+<span class="cp">#define     COMPRESSION_CCITTRLEW   32771   </span><span class="cm">/* #1 w/ word alignment */</span>
+<span class="cp">#define     COMPRESSION_PACKBITS    32773   </span><span class="cm">/* Macintosh RLE */</span>
+<span class="cp">#define     COMPRESSION_THUNDERSCAN 32809   </span><span class="cm">/* ThunderScan RLE */</span>
+<span class="cm">/* codes 32895-32898 are reserved for ANSI IT8 TIFF/IT &lt;dkelly@apago.com) */</span>
+<span class="cp">#define     COMPRESSION_IT8CTPAD    32895   </span><span class="cm">/* IT8 CT w/padding */</span>
+<span class="cp">#define     COMPRESSION_IT8LW       32896   </span><span class="cm">/* IT8 Linework RLE */</span>
+<span class="cp">#define     COMPRESSION_IT8MP       32897   </span><span class="cm">/* IT8 Monochrome picture */</span>
+<span class="cp">#define     COMPRESSION_IT8BL       32898   </span><span class="cm">/* IT8 Binary line art */</span>
+<span class="cm">/* compression codes 32908-32911 are reserved for Pixar */</span>
+<span class="cp">#define     COMPRESSION_PIXARFILM   32908   </span><span class="cm">/* Pixar companded 10bit LZW */</span>
+<span class="cp">#define     COMPRESSION_PIXARLOG    32909   </span><span class="cm">/* Pixar companded 11bit ZIP */</span>
+<span class="cp">#define     COMPRESSION_DEFLATE     32946   </span><span class="cm">/* Deflate compression */</span>
+<span class="cp">#define     COMPRESSION_ADOBE_DEFLATE   8       </span><span class="cm">/* Deflate compression,</span>
+<span class="cm">                           as recognized by Adobe */</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="geotiff">GeoTiff</h2>
+<p>GeoTiff文件是一个标准的TIFF6.0文件，它使用了一些私有的Tag，对Tag值的含义做了新的规定（格式）。</p>
+<table>
+<thead>
+<tr>
+<th>Tag名称</th>
+<th>Dec</th>
+<th>Hex</th>
+<th>数据类型</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ModelPixelScaleTag</td>
+<td>33550</td>
+<td>830E</td>
+<td>DOUBLE</td>
+<td>-</td>
+<td>3个</td>
+</tr>
+<tr>
+<td>INGR Packet Data Tag</td>
+<td>33918</td>
+<td>847E</td>
+<td>SHORT</td>
+<td>-</td>
+<td>多个</td>
+</tr>
+<tr>
+<td>ModelTiepointTag</td>
+<td>33922</td>
+<td>8482</td>
+<td>DOUBLE</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>GeoKeyDirectoryTag</td>
+<td>34735</td>
+<td>87AF</td>
+<td>SHORT</td>
+<td>-</td>
+<td>4个以上，别名ProjectionInfoTag,CoordSystemInfoTag</td>
+</tr>
+<tr>
+<td>GeoDoubleParamsTag</td>
+<td>34736</td>
+<td>87B1</td>
+<td>DOUBLE</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>GeoAsciiParamsTag</td>
+<td>34737</td>
+<td>87B2</td>
+<td>ASCII</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>其中：</p>
+<p>GeoAsciiParamsTag = <code>first_value|second_value|...|</code></p>
+<blockquote>
+<p>注：33918~33922 这5个私有Tag是“Intergraph's Private TIFF Tags”，是Aldus（现在的Adobe）授权给Intergraph使用的。但是TIFF任何正式的文档中没有提这个事情。</p>
+</blockquote>
+<h2 id="bigtiff">BigTiff</h2>
+<p>Tiff使用32位的偏移值，，文件最大支持到4G。BigTiff是TIFF的一个变体，它使用64位的偏移值。</p>
+<ul>
+<li>LibTiff4.0支持 BigTiff。</li>
+<li>Matlab支持 BigTiff。</li>
+</ul>
+<p>链接：</p>
+<ul>
+<li>https://www.awaresystems.be/imaging/tiff/bigtiff.html</li>
+<li>http://www.bigtiff.org/</li>
+</ul>
+<h3 id="_13">格式</h3>
+<p>如前所述，为了支持大偏移量，bigtiff引入三种新的tag类型</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>16=LONG8</td>
+<td>BigTIFF 64位无符号数</td>
+</tr>
+<tr>
+<td>17=SLONG8</td>
+<td>BigTIFF 64位有符号数</td>
+</tr>
+<tr>
+<td>18=IFD8</td>
+<td>BigTIFF 64位无符号数，是指向IFD的offset值</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_14">文件头</h4>
+<table>
+<thead>
+<tr>
+<th>偏移</th>
+<th>数据类型</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Word</td>
+<td>字节序指示符</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Word</td>
+<td>版本（始终是43），不同于TIFF6.0的42</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Word</td>
+<td>必须是8</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Word</td>
+<td>必须是0</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Unsigned 8Byte</td>
+<td>指向IFD0</td>
+</tr>
+</tbody>
+</table>
+<h4 id="ifd_5">IFD</h4>
+<table>
+<thead>
+<tr>
+<th>偏移</th>
+<th>数据类型</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Unsigned 8Byte</td>
+<td>Tag个数</td>
+</tr>
+<tr>
+<td>8+x*20</td>
+<td>Tag 结构</td>
+<td>Tag数据</td>
+</tr>
+<tr>
+<td>8+(IFD中Tag数)*20</td>
+<td>LONG8</td>
+<td>指向下一个Tag的偏移值，或者0</td>
+</tr>
+</tbody>
+</table>
+<h4 id="tag-field">TAG Field</h4>
+<table>
+<thead>
+<tr>
+<th>偏移</th>
+<th>数据类型</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Word</td>
+<td>Tag</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Word</td>
+<td>Tag数据类型</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Unsigned Long</td>
+<td>个数</td>
+</tr>
+<tr>
+<td>12</td>
+<td>-</td>
+<td>8字节，数据或偏移值</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_15">软件</h2>
+<h3 id="photoshop">Photoshop</h3>
+<h4 id="pyramin">Pyramin</h4>
+<p>Photoshop 保存Tiff图像时，有一个“存储图像金字塔（Save Image Pyramin）”选项。勾选该选项，保存出来的图像会包含SUBIFDS。</p>
+<blockquote>
+<p>Photoshop CS6 存储图像金字塔时，其指向的IFD格式和普通的IFD不一样，无法直接解析。是否是Bug??
+更老的Photoshop使用过其他的方式，非SUBIFD？？</p>
+</blockquote>
+<ul>
+<li>LIBTIFF邮件列表： https://www.asmail.be/msg0055058889.html</li>
+</ul>
+<p>Photoshop实现：IFD0 的SUBIFD中包含一个offset值，指向其第一个子IFD，第一个子IFD的offset指向第二个子IFD，依次类推。（而不是通过SUBIFD一次定义多个子IFD的offset值，libtiff中是这种实现）</p>
+<h4 id="_16">缩微图</h4>
+<p>存储在私有tag中：Photoshop（34377）</p>
+<p>https://www.awaresystems.be/imaging/tiff/tifftags/docs/photoshopthumbnail.html</p>
+<h3 id="imagemagick">ImageMagick</h3>
+<p>ImageMagick使用 .ptif 和 .ptiff 作为 Pyramid-encoded TIFF文件的后缀。其内容是普通chain风格的多个页面，每个页面的NewSubFileType都是2。</p>
+<h3 id="qt">Qt 图像</h3>
+<p>在Qt中， QPixmap 宽和高都不能超过32768，QImage的大小没有限制，字节数&lt;INT最大值即可。QImageReader可以设置setAllocationLimit。</p>
+<h2 id="_17">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/TIFF</li>
+<li>https://en.wikipedia.org/wiki/Libtiff</li>
+<li>https://en.wikipedia.org/wiki/TIFF/EP</li>
+<li>https://en.wikipedia.org/wiki/Digital_Negative</li>
+<li>https://www.awaresystems.be/imaging/tiff/tifftags.html</li>
+<li>https://stackoverflow.com/questions/11959617/in-a-tiff-create-a-sub-ifd-with-thumbnail-libtiff</li>
+<li>http://www.simplesystems.org/libtiff/libtiff.html</li>
+<li>http://www.simplesystems.org/libtiff/addingtags.html</li>
+<li>https://www.awaresystems.be/imaging/tiff/tifftags/docs/intergraph.html</li>
+<li>http://www.bigtiff.org/</li>
+<li>https://www.awaresystems.be/imaging/tiff/tifftags/docs/photoshopthumbnail.html</li>
+<li><a href="https://www.adobe.com/devnet-apps/photoshop/fileformatashtml">Adobe Photoshop File Formats Specification</a></li>
+<li><a href="https://www.asmail.be/msg0055060707.html">2012.06.06 05:05 "Custom and EXIF directory read/write", by Frank Warmerdam</a></li>
+<li>http://maptools-org.996276.n3.nabble.com/Creating-private-IFD-td13645.html</li>
+<li>http://maptools-org.996276.n3.nabble.com/Custom-and-EXIF-directory-read-write-td3290.html</li>
+<li>http://maptools-org.996276.n3.nabble.com/help-writing-thumbnails-to-TIFF-file-td3824.html</li>
+<li>https://gis.stackexchange.com/questions/206509/how-are-geotiff-pyramids-overviews-standardised</li>
+<li><a href="https://www.ques10.com/p/29824/explain-image-file-formats/">Explain Image File Formats (ques10.com)</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-12-29T19:19:00+08:00" pubdate>Sun 29 December 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

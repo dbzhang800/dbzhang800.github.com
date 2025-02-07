@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>电子光学仿真软件小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/cax.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">电子光学仿真软件小记</h1>
+    <p class="meta">
+<time datetime="2024-08-13T19:13:00+08:00" pubdate>Tue 13 August 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>简单记录一下电子光学仿真软件</p>
+<ul>
+<li>电磁场计算（FEM、DEM、BEM等）</li>
+<li>基于轨迹追踪的光学属性分析、优化</li>
+</ul>
+<h2 id="mebsmunros-electron-beam-software">MEBS（Munro's Electron Beam software）</h2>
+<blockquote>
+<p>Munro’s Electron Beam Software Ltd 是一家成立于1991年的英国公司，创始人是Eric Munro、John rouse和Xieqing zhu。</p>
+</blockquote>
+<p>上学期间，曾拜读过Munro先生在上世纪80年代用fortran 77编写的一阶有限元计算程序，一共有四个程序，其中E11用于静电透镜的电场分布计算，M11、M12、M13用于磁透镜的磁场计算：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">C</span>
+<span class="n">C</span><span class="w">        </span><span class="o">*****************************************</span>
+<span class="n">C</span><span class="w">        </span><span class="o">*</span><span class="w">                                       </span><span class="o">*</span>
+<span class="n">C</span><span class="w">        </span><span class="o">*</span><span class="w">  </span><span class="n">ERIC</span><span class="w"> </span><span class="n">MUNRO</span><span class="err">&#39;</span><span class="n">S</span><span class="w"> </span><span class="n">ELECTRON</span><span class="w"> </span><span class="n">LENS</span><span class="w"> </span><span class="n">PROGRAMS</span><span class="w">  </span><span class="o">*</span>
+<span class="n">C</span><span class="w">        </span><span class="o">*</span><span class="w">  </span><span class="n">IBM</span><span class="o">-</span><span class="n">PC</span><span class="w"> </span><span class="n">VERSION</span><span class="w"> </span><span class="mf">1.0</span><span class="w">                   </span><span class="o">*</span>
+<span class="n">C</span><span class="w">        </span><span class="o">*</span><span class="w">  </span><span class="n">COPYRIGHT</span><span class="w"> </span><span class="n">BY</span><span class="w"> </span><span class="n">ERIC</span><span class="w"> </span><span class="n">MUNRO</span><span class="p">,</span><span class="w"> </span><span class="n">SEPT</span><span class="w"> </span><span class="mi">1985</span><span class="w">   </span><span class="o">*</span>
+<span class="n">C</span><span class="w">        </span><span class="o">*</span><span class="w">                                       </span><span class="o">*</span>
+<span class="n">C</span><span class="w">        </span><span class="o">*****************************************</span>
+<span class="n">C</span>
+<span class="n">C</span>
+<span class="n">C</span><span class="w">        </span><span class="k">PROGRAM </span><span class="n">M13</span>
+<span class="n">C</span>
+<span class="n">C</span><span class="w">        </span><span class="n">FINITE</span><span class="w"> </span><span class="n">ELEMENT</span><span class="w"> </span><span class="k">PROGRAM </span><span class="n">FOR</span><span class="w"> </span><span class="n">COMPUTING</span><span class="w"> </span><span class="n">AXIAL</span><span class="w"> </span><span class="n">FLUX</span><span class="w"> </span><span class="n">DENSITY</span>
+<span class="n">C</span><span class="w">        </span><span class="n">DISTRIBUTIONS</span><span class="w"> </span><span class="nb">AND </span><span class="n">VECTOR</span><span class="w"> </span><span class="n">POTENTIAL</span><span class="w"> </span><span class="n">DISTRIBUTIONS</span><span class="w"> </span><span class="n">THROUGHOUT</span>
+<span class="n">C</span><span class="w">        </span><span class="n">THE</span><span class="w"> </span><span class="n">MAGNETIC</span><span class="w"> </span><span class="n">CIRCUITS</span><span class="w"> </span><span class="n">OF</span><span class="w"> </span><span class="n">SATURATED</span><span class="w"> </span><span class="n">MAGNETIC</span><span class="w"> </span><span class="n">LENSES</span>
+</code></pre></div></td></tr></table></div>
+
+<p>MEBS 包含众多的软件包，可以大致分成几个系列：</p>
+<h3 id="optics">OPTICS 系列</h3>
+<p>OPTICS 是核心软件包系列，用于由任意旋转对称透镜和偏转器构成的电子和离子光学镜筒的仿真和设计。</p>
+<ul>
+<li>OPTICS：用于镜筒的模拟仿真，包含旋转对称透镜与偏转器的一阶有限元计算程序，aber象差分析程序等。</li>
+<li>REFINE与REFINE5：用于镜筒的优化</li>
+<li>DYNAMIC与DYNAMIC5：用于消象散器和动态聚焦透镜</li>
+<li>TOLERANCE：用于误差分析，比如生产或合轴过程中微小机械缺陷对象差影响。</li>
+<li>ABER5：五阶象差分析</li>
+<li>RB3与RB5：用于束流摇摆(rock)或倾斜（tilt）的分析</li>
+</ul>
+<h3 id="sources">SOURCES 系列</h3>
+<p>SOURCES系列用于电子源或离子源的仿真与设计。</p>
+<ul>
+<li>SOURCES：只用于电子源和静电聚焦</li>
+<li>SOURCES-TOLERANCE：电子源误差分析</li>
+<li>SOURCE-MAGNETIC：用于包含磁聚焦的电子源设计</li>
+<li>SOURCE-CI：相较于SOURCES只考虑空间电荷效应，SOURCES-CI考虑带电粒子间的库伦相互作用（Coulomb Interactions）.</li>
+</ul>
+<h3 id="image">IMAGE 系列</h3>
+<p>IMAGE系列使用直接轨迹追踪方式计算离散库伦相互作用和象差的综合效果。</p>
+<ul>
+<li>IMAGE-LENS：用于旋转对称透镜系统的象差和离散库伦相互作用仿真。只支持旋转对称透镜。</li>
+<li>IMAGE：支持偏转器，多极透镜与韦恩过滤器。</li>
+<li>IMAGE-TOLERANCE：支持误差分析</li>
+<li>PARALLEL-IMAGE：支持并行计算以发挥多核CPU优势</li>
+<li>MIRROR-IMAGE：用于电子和离子镜(Mirror)的仿真。</li>
+</ul>
+<h3 id="sofem">SOFEM 系列</h3>
+<p>SOFEM系列使用2阶(Second Order)有限元进行电磁场的计算与轨迹追踪。</p>
+<ul>
+<li>SOFEM Field：用于静电场和磁场的仿真</li>
+<li>SOFEM Ray-Tracing：使用轨迹追踪计算电子轨迹并进行绘制</li>
+</ul>
+<h3 id="3d">3D 系列</h3>
+<p>3D系列用于三维电磁场的计算以及直接电子追踪和空间电荷计算分析。</p>
+<ul>
+<li>3D Field：使用有限差分法进行三维静电场和磁场仿真</li>
+<li>3D Ray-Tracing：使用三维有限差分法进行轨迹追踪</li>
+<li>3D Space Charge：考虑空间电荷效应</li>
+</ul>
+<h3 id="wien">WIEN 系列</h3>
+<p>WIEN 系列用于设计包含Wien过滤器的镜筒，可以处理旋转对称透镜、多极透镜以及Wien过滤器。</p>
+<ul>
+<li>WIEN：用于处理包含旋转对称透镜、多极透镜以及Wien过滤器的镜筒仿真。象差到3阶</li>
+<li>WIEN-REFINE：用于镜筒优化，象差到3阶</li>
+<li>WIEN-5：镜筒仿真，象差到5阶</li>
+<li>WIEN-REFINE-5：镜筒优化，象差到5阶</li>
+</ul>
+<h3 id="multipole">MULTIPOLE 系列</h3>
+<p>MULTIPOLE 系列用于仿真包含多极透镜和偏转器的镜筒。</p>
+<ul>
+<li>MULTIPOLE：用于处理包含旋转对称透镜、多极透镜和偏转器的镜筒仿真。象差到3阶</li>
+<li>MULTIPOLE-REFINE：镜筒优化</li>
+<li>MULTIPOLE-TOLERANCE：镜筒误差分析，比如生产或合轴过程中微小机械缺陷对象差影响。</li>
+</ul>
+<h3 id="curve">CURVE 系列</h3>
+<p>CURVE 系列用户曲光轴的光学系统的仿真。</p>
+<ul>
+<li>FILTER：用于磁能量过滤器</li>
+<li>PRISM：用于模拟磁棱镜系统，象差到3阶</li>
+<li>CURVED IMAGE：曲光轴光学系统中的象差与库伦相互作用仿真。是IMAGE的扩展。</li>
+</ul>
+<h3 id="_1">其他</h3>
+<ul>
+<li>MIRROR：用于电子镜的仿真</li>
+<li>PROJECTION：用于模拟电子束投影系统，包括动态校正和高达五阶象差的优化。</li>
+<li>WAVE：用于计算电子束中的电流密度分布，考虑衍射、球差、色差等影响</li>
+</ul>
+<h2 id="eodelectron-optical-design">EOD（Electron Optical Design）</h2>
+<blockquote>
+<p>EOD基于 Bohumila Lencova 编写的 SPOC 进行开发的。Bohumila Lencova当时就职于捷克科学院科学仪器研究所，并在代尔夫特理工大学做的访问科学家？</p>
+</blockquote>
+<p>EOD可用于：</p>
+<ul>
+<li>复杂形状的饱和此透镜计算？</li>
+<li>静电透镜计算（含电介质）</li>
+<li>磁透镜中鞍形或环形偏转器计算</li>
+<li>多极静电或磁场</li>
+<li>静电透镜与磁透镜的误差分析</li>
+<li>包括象差系数在内的高精度的光学属性分析</li>
+<li>精确的轨迹追踪，优化</li>
+</ul>
+<h2 id="simion">SIMION</h2>
+<p>SIMION® 是用于带电粒子光学仿真的软件。它主要计算二维/三维静电场和某些磁场，并计算带电粒子在这些场中的轨迹。还支持四极场中的低频（准静态）场。通过用户编程功能，可以模拟碰撞模型和其他特殊效果。</p>
+<p>SIMION 最初由 David Dahl 在现今的爱达荷国家实验室开发，它现在由 Adaptas Solutions, LLC开发。 该仿真程序采用的方法包括通过有限差分法（优化的超松弛和多网格方法）直接求解所需的偏微分方程特别是拉普拉斯方程，以及通过龙格-库塔法求解常微分方程。</p>
+<h2 id="cpocharged-particle-optics">CPO（Charged Particle Optics）</h2>
+<p>CPO软件提供精确的空间电荷和空间电荷限制阴极发射计算，通过边界元法 (BEM) 进行高精度场计算。</p>
+<ul>
+<li>CPO3D：2D、3D静电系统仿真</li>
+<li>CPO3DS：2D、3D静电系统仿真，包含阴极与空间电荷仿真</li>
+<li>CPO Complete：包含电解质、空间电荷等所有变体</li>
+</ul>
+<blockquote>
+<p>CPO 32bit的程序可以免费下载使用。</p>
+</blockquote>
+<h2 id="field-precision-llc">Field Precision LLC</h2>
+<p>Field Precision LLC 是一家专注于电磁场仿真和相关技术的软件开发公司。该公司成立于1989年，总部位于美国新墨西哥州阿尔伯克基。</p>
+<p>它提供3D仿真套件</p>
+<ul>
+<li>HiPhi：静电场网格生成与数值分析</li>
+<li>Magnum：磁场网格生成与数值分析</li>
+<li>Aeter：频域与时域电磁场仿真</li>
+<li>OmniTrac：包含静电场、磁场数值分析与轨迹追踪等。</li>
+</ul>
+<p>以及2D仿真套件</p>
+<ul>
+<li>静电场套件</li>
+<li>磁场套件</li>
+<li>轨迹追踪套件</li>
+</ul>
+<h2 id="e-gunspace-charge-particle-optics">E-GUN（Space Charge Particle Optics）</h2>
+<p>EGUN 是一种世界著名的模拟工具，由斯坦福线性加速器中心（SLAC）的 Bill Herrmannsfeldt 开发，用于电子枪的数值模拟。</p>
+<p>它的主要产品包括：</p>
+<ul>
+<li>EGUN（EGN2w）：电子枪和电子光学仿真</li>
+<li>IGUN：离子源和离子光学仿真</li>
+<li>INTMAG：磁透镜仿真</li>
+</ul>
+<p><img alt="egun family" src="https://blog.debao.me/images/sem/egun-igun-family.jpg"></p>
+<h2 id="inp">INP</h2>
+<blockquote>
+<p>INP 系列软件工具官网地址暂时不清楚，似乎与德国的 GSI Helmholtz Centre for Heavy Ion Research<a href="https://www.gsi.de">（GSI 重离子研究中心）</a>有关系，。</p>
+</blockquote>
+<p>INP 是一组模拟工具，专注于离子源提取、粒子束传输、温度和磁场计算，包含以下模块：</p>
+<ul>
+<li>AXCEL-INP：二维模拟粒子源和粒子束传输（轴对称或二维几何粒子行为分析），支持 ECR 离子源、激光离子源、电子枪。</li>
+<li>KOBRA3-INP：三维粒子源和粒子束模拟。支持等离子体模型和二次粒子计算，无对称性限制。</li>
+<li>MAGNET-INP：二维磁场计算，基于毕奥-萨伐尔法。输出磁场数据可用于前述 AXCEL-INP 和 KOBRA3-INP。</li>
+<li>DOT-INP：二维温度场计算，支持静态与瞬态解。可模拟热传导和热源影响下的温度分布。</li>
+</ul>
+<h2 id="ibsimu">IBSimu</h2>
+<p>IBSimu 是一个<strong>开源</strong>的离子束仿真软件（C++库），用于模拟电场和磁场中带电粒子的运动。该软件特别适用于离子源、加速器和其他涉及带电粒子束传输的应用。IBSimu 是由芬兰 于韦斯屈莱大学（University of Jyväskylä） 物理系开发的。</p>
+<p>见：<a href="https://indico.cern.ch/event/129870/contributions/117701/attachments/89886/128681/pres.pdf">Ion Beam Simulator</a></p>
+<blockquote>
+<p>这个一个C++库。直接提供C++源代码，门槛有点高。另外界面部分使用Gtk+，对Windows也不友好...</p>
+</blockquote>
+<h2 id="comsol-multiphysics">COMSOL Multiphysics</h2>
+<p>COMSOL 也可以用电子光学的仿真，官方有不少blog和例程，比如</p>
+<ul>
+<li>https://www.comsol.com/blogs/modeling-a-pierce-electron-gun-in-comsol-multiphysics</li>
+<li>https://www.comsol.com/paper/electron-trajectories-in-scanning-field-emission-microscopy-52501</li>
+<li>https://www.comsol.com/model/magnetic-lens-10185</li>
+<li>...</li>
+</ul>
+<h2 id="cst-particle-studio-cst-ps">CST Particle Studio (CST PS)</h2>
+<p>CST Studio Suite 由 Computer Simulation Technology (CST) 开发的高性能电磁场仿真软件。2016年被法国达索（Dassault Systèmes）收购，现在在达索的SIMULIA 品牌旗下。它包含多个模块，其中：</p>
+<p>CST PS专门用于带电粒子在电磁场中的运动仿真。非常适合用于粒子加速器、电子枪、X 射线管和其他涉及带电粒子束设备的设计与研究。</p>
+<h2 id="opera">Opera</h2>
+<p>OPERA 的起源可以追溯到 1970 年代，由英国公司 Vector Fields 开发。Vector Fields 专注于开发用于静磁场和低频电磁场仿真的软件工具，目标是在那些需要高精度电磁场分析的领域提供有效的解决方案。</p>
+<ul>
+<li>2005年，Vector Fields 被 Cobham 收购，成为其技术服务部门的一部分。</li>
+<li>2017 年，Dassault Systèmes收购了 Cobham 的一些业务，其中包括 OPERA 软件。</li>
+</ul>
+<p>Opera 是 Dassault Systèmes 的产品,用于电磁场和粒子轨迹的模拟和分析。</p>
+<h2 id="gptgeneral-particle-tracer">GPT（General Particle Tracer）</h2>
+<p>GPT 是Pulsar Physics的主要产品，该公司专注于charged particle accelerator与beam line设计。</p>
+<p>GPT 基于完整的三维粒子追踪技术，为研究电磁场中带电粒子动力学的三维和非线性效应提供了坚实基础。</p>
+<h2 id="_2">参考</h2>
+<ul>
+<li>https://mebs.co.uk/</li>
+<li>https://www.lencova.com/</li>
+<li>https://simion.com/</li>
+<li>https://www.electronoptics.com/</li>
+<li>http://egun-igun.com/</li>
+<li>https://www.mswil.com/suppliers/adaptas/</li>
+<li>http://www.fieldp.com</li>
+<li>https://www.comsol.com/comsol-multiphysics</li>
+<li>https://www.3ds.com/products/simulia/opera</li>
+<li>https://www.pulsar.nl/gpt/</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-08-13T19:13:00+08:00" pubdate>Tue 13 August 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/cax.html'>CAx</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

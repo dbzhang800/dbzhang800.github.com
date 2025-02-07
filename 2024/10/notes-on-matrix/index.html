@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>矩阵知识小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/science.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">矩阵知识小记</h1>
+    <p class="meta">
+<time datetime="2024-10-14T15:49:00+08:00" pubdate>Mon 14 October 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>理一理矩阵的知识。<a href="https://github.com/kenjihiranabe/The-Art-of-Linear-Algebra">The Art of Linear Algebra</a> 对线性代数的知识做了很多很直观的图表，本文中图片全部基于它们（有修改）。</p>
+</blockquote>
+<p><img alt="matrix world" src="https://blog.debao.me/images/science/matrix_world.png"></p>
+<h2 id="_1">矩阵类型</h2>
+<p>矩阵有很多类别：对称矩阵、正交矩阵、奇异矩阵、可逆矩阵、方形矩阵、可对角矩阵等等。</p>
+<table>
+<thead>
+<tr>
+<th><strong>类别</strong></th>
+<th><strong>描述</strong></th>
+<th><strong>英文注解</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>矩阵 (Matrix)</td>
+<td>所有矩阵<span class="math inline">A \in \mathbb{R}^{m \times n}</span> 均可进行 QR 分解或 SVD 分解。</td>
+<td>Matrices<span class="math inline">A \in \mathbb{R}^{m \times n}</span> can be decomposed using QR or SVD.</td>
+</tr>
+<tr>
+<td>方阵 (Square Matrix)</td>
+<td>方阵<span class="math inline">A \in \mathbb{R}^{n \times n}</span> 包括可逆矩阵或奇异矩阵。</td>
+<td>Square matrices<span class="math inline">A \in \mathbb{R}^{n \times n}</span> can be invertible or singular.</td>
+</tr>
+<tr>
+<td>可逆矩阵 (Invertible Matrix)</td>
+<td>可逆矩阵<span class="math inline">A^{-1}</span> 存在，当且仅当 <span class="math inline">\det(A) \neq 0</span>。</td>
+<td>An invertible matrix<span class="math inline">A^{-1}</span> exists if and only if <span class="math inline">\det(A) \neq 0</span>.</td>
+</tr>
+<tr>
+<td>奇异矩阵 (Singular Matrix)</td>
+<td>奇异矩阵<span class="math inline">A^{-1}</span> 不存在，且 <span class="math inline">\det(A) = 0</span>。</td>
+<td>A singular matrix<span class="math inline">A^{-1}</span> does not exist, and <span class="math inline">\det(A) = 0</span>.</td>
+</tr>
+<tr>
+<td>可对角化矩阵 (Diagonalizable Matrix)</td>
+<td>如果方阵<span class="math inline">A</span> 有 <span class="math inline">n</span> 个线性无关的特征向量，则它是可对角化的，可以表示为 <span class="math inline">A = X \Lambda X^{-1}</span>。</td>
+<td>If a square matrix<span class="math inline">A</span> has <span class="math inline">n</span> linearly independent eigenvectors, it is diagonalizable and can be written as <span class="math inline">A = X \Lambda X^{-1}</span>.</td>
+</tr>
+<tr>
+<td><strong>正规</strong>矩阵 (Normal Matrix)</td>
+<td>满足<span class="math inline">A^T A = A A^T</span>，可以通过正交矩阵对角化为 <span class="math inline">A = Q \Lambda Q^{-1}</span>。</td>
+<td>Satisfies<span class="math inline">A^T A = A A^T</span>, and can be diagonalized by an orthogonal matrix as <span class="math inline">A = Q \Lambda Q^{-1}</span>.</td>
+</tr>
+<tr>
+<td>对称矩阵 (Symmetric Matrix)</td>
+<td>对称矩阵<span class="math inline">A = A^T</span> 是正规矩阵的子集，特征值为实数。</td>
+<td>A symmetric matrix<span class="math inline">A = A^T</span> is a subset of normal matrices, with real eigenvalues.</td>
+</tr>
+<tr>
+<td><strong>正定</strong>矩阵 (Positive Definite Matrix)</td>
+<td>正定矩阵的所有特征值<span class="math inline">\lambda &gt; 0</span>。</td>
+<td>The eigenvalues of a positive definite matrix satisfy<span class="math inline">\lambda &gt; 0</span>.</td>
+</tr>
+<tr>
+<td>正半定矩阵 (Positive Semi-Definite Matrix)</td>
+<td>正半定矩阵的所有特征值<span class="math inline">\lambda \geq 0</span>。</td>
+<td>The eigenvalues of a positive semi-definite matrix satisfy<span class="math inline">\lambda \geq 0</span>.</td>
+</tr>
+<tr>
+<td>投影矩阵 (Projection Matrix)</td>
+<td>投影矩阵<span class="math inline">P</span> 满足 <span class="math inline">P^2 = P = P^T</span>，特征值为 0 或 1。</td>
+<td>A projection matrix<span class="math inline">P</span> satisfies <span class="math inline">P^2 = P = P^T</span>, and its eigenvalues are 0 or 1.</td>
+</tr>
+<tr>
+<td><strong>正交</strong>矩阵 (Orthogonal Matrix)</td>
+<td>正交矩阵<span class="math inline">A^{-1} = A^T</span>，特征值的模长为 1。</td>
+<td>An orthogonal matrix satisfies<span class="math inline">A^{-1} = A^T</span>, with eigenvalues of modulus 1.</td>
+</tr>
+<tr>
+<td>置换矩阵 (Permutation Matrix)</td>
+<td>置换矩阵<span class="math inline">P</span>是正交矩阵的子集，是通过重新排列单位矩阵的行或列生成的，且满足 <span class="math inline">P^{-1} = P^T</span>。</td>
+<td>A permutation matrix<span class="math inline">P</span> is generated by rearranging the rows or columns of the identity matrix, and satisfies <span class="math inline">P^{-1} = P^T</span>.</td>
+</tr>
+<tr>
+<td>反射矩阵 (Reflection Matrix)</td>
+<td>反射矩阵是正交矩阵的一个子集，特征值为<span class="math inline">1</span> 或 <span class="math inline">-1</span>。</td>
+<td>A reflection matrix is a subset of orthogonal matrices, with eigenvalues of<span class="math inline">1</span> or <span class="math inline">-1</span>.</td>
+</tr>
+<tr>
+<td>伪逆矩阵 (Pseudo-Inverse Matrix)</td>
+<td>伪逆矩阵<span class="math inline">A^+</span> 可以通过奇异值分解表示为 <span class="math inline">A^+ = V \Sigma^+ U^T</span>，即使 <span class="math inline">A</span> 不是可逆矩阵。</td>
+<td>The pseudo-inverse<span class="math inline">A^+</span> can be represented via singular value decomposition as <span class="math inline">A^+ = V \Sigma^+ U^T</span>, even if <span class="math inline">A</span> is not invertible.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_2">复数域</h3>
+<table>
+<thead>
+<tr>
+<th><strong>矩阵类型</strong></th>
+<th><strong>复数域上的矩阵</strong></th>
+<th><strong>实数域上的对应矩阵</strong></th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>厄米矩阵</strong> (<em>Hermitian Matrix</em>)</td>
+<td>厄米矩阵 <span class="math inline">A = A^\dagger</span></td>
+<td>对称矩阵 <span class="math inline">A = A^T</span></td>
+<td>复数域中，矩阵的共轭转置等于自身；实数域中，转置等于自身。</td>
+</tr>
+<tr>
+<td><strong>酉矩阵</strong> (<em>Unitary Matrix</em>)</td>
+<td>酉矩阵 <span class="math inline">U^\dagger U = U U^\dagger = I</span></td>
+<td>正交矩阵 <span class="math inline">O^T O = O O^T = I</span></td>
+<td>复数域中保持内积，实数域中保持正交性。</td>
+</tr>
+<tr>
+<td><strong>正定矩阵</strong> (<em>Positive Definite Matrix</em>)</td>
+<td>正定厄米矩阵 <span class="math inline">z^* A z &gt; 0</span></td>
+<td>正定对称矩阵 <span class="math inline">x^T A x &gt; 0</span></td>
+<td>复数域对复向量的二次型为正，实数域对实向量的二次型为正。</td>
+</tr>
+<tr>
+<td><strong>反厄米矩阵</strong> (<em>Skew-Hermitian Matrix</em>)</td>
+<td>反厄米矩阵 <span class="math inline">A^\dagger = -A</span></td>
+<td>反对称矩阵 <span class="math inline">A^T = -A</span></td>
+<td>复数域中，矩阵的共轭转置为负；实数域中，转置为负。</td>
+</tr>
+<tr>
+<td><strong>幺模矩阵</strong> (<em>Unimodular Matrix</em>)</td>
+<td>幺模矩阵 <span class="math inline">det(A) = 1</span></td>
+<td>幺模矩阵 <span class="math inline">det(A) = 1</span></td>
+<td>行列式绝对值为 1，复数域允许复数行列式，实数域行列式为 1 或 -1。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">特征值</h2>
+<p><strong>特征值</strong>（Eigenvalue）是一个与线性变换密切相关的重要概念。给定一个方阵 <span class="math inline">A \in \mathbb{R}^{n \times n}</span>，特征值描述了矩阵作用在某些特殊向量（即特征向量）上时，仅改变这些向量长度而不改变方向的情况。</p>
+<p><img alt="eigenvalues" src="https://blog.debao.me/images/science/matrix_eigenvalues.png"></p>
+<h4 id="_4">特征值的定义</h4>
+<p>对于一个方阵 <span class="math inline">A</span>，如果存在一个非零向量 <span class="math inline">v \in \mathbb{R}^n</span> 和一个标量 <span class="math inline">\lambda</span>，使得：</p>
+<div class="math display">
+A v = \lambda v
+</div>
+
+<p>那么 <span class="math inline">\lambda</span> 就被称为矩阵 <span class="math inline">A</span> 的<strong>特征值</strong>，而 <span class="math inline">v</span> 被称为与特征值 <span class="math inline">\lambda</span> 对应的<strong>特征向量</strong>。</p>
+<h4 id="_5">几何意义</h4>
+<p>特征值在矩阵的几何变换中的物理意义。</p>
+<p>考虑一个矩阵 <span class="math inline">A</span> 作用在空间中的向量 <span class="math inline">v</span> 上：</p>
+<ul>
+<li>如果 <span class="math inline">\lambda &gt; 1</span>，说明矩阵 <span class="math inline">A</span> 对向量 <span class="math inline">v</span> 进行了拉伸。</li>
+<li>如果 <span class="math inline">0 &lt; \lambda &lt; 1</span>，则矩阵 <span class="math inline">A</span> 对向量 <span class="math inline">v</span> 进行了压缩。</li>
+<li>如果 <span class="math inline">\lambda = 1</span>，向量 <span class="math inline">v</span> 在矩阵 <span class="math inline">A</span> 作用下保持不变。</li>
+<li>如果 <span class="math inline">\lambda = -1</span>，则矩阵 <span class="math inline">A</span> 将向量 <span class="math inline">v</span> 的方向反转。</li>
+<li>如果 <span class="math inline">\lambda = 0</span>，则矩阵 <span class="math inline">A</span> 将向量 <span class="math inline">v</span> 压缩为零向量。</li>
+</ul>
+<h4 id="_6">特征值性质</h4>
+<ul>
+<li><strong>数量</strong>：一个 <span class="math inline">n \times n</span> 的方阵 <span class="math inline">A</span> 通常有 <span class="math inline">n</span> 个特征值（包括复数特征值和重数）。</li>
+<li><strong>重数</strong>：<ul>
+<li><strong>代数重数</strong>：特征值在特征多项式中作为根的重数。</li>
+<li><strong>几何重数</strong>：与特征值对应的线性无关特征向量的数量，即特征空间的维数。</li>
+</ul>
+</li>
+<li><strong>迹和行列式</strong>：<ul>
+<li>一个矩阵的<strong>迹</strong>是其所有特征值之和，即 <span class="math inline">\text{tr}(A) = \sum_{i=1}^{n} \lambda_i</span>。</li>
+<li>一个矩阵的<strong>行列式</strong>是其所有特征值的乘积，即 <span class="math inline">\det(A) = \prod_{i=1}^{n} \lambda_i</span>。</li>
+</ul>
+</li>
+</ul>
+<h2 id="_7">矩阵分解</h2>
+<p><img alt="factorization" src="https://blog.debao.me/images/science/matrix_factorization.png"></p>
+<p>好端端的矩阵为什么要分解？？</p>
+<h3 id="_8">求解线性方程组</h3>
+<blockquote>
+<p>对于线性方程组 <span class="math inline">Ax = b</span>，直接使用矩阵 <span class="math inline">A</span> 的逆矩阵 <span class="math inline">A^{-1}</span> 来求解，即 <span class="math inline">x = A^{-1}b</span>，就可以了。但为什么在实际应用中，直接用矩阵的逆来解方程并不常见？？</p>
+</blockquote>
+<p>原因：</p>
+<ol>
+<li><strong>计算复杂度高</strong>：直接求逆矩阵的计算复杂度较高，尤其对于大规模矩阵，求逆操作的计算开销可能非常大。</li>
+<li><strong>数值不稳定性</strong>：求逆操作容易引入数值误差，尤其是当矩阵接近奇异时，逆矩阵的数值误差会非常明显。</li>
+<li><strong>效率低</strong>：相比于 LU 分解、QR 分解或 Cholesky 分解，直接求逆非常低效。通过分解矩阵，可利用三角矩阵的快速求解方法。</li>
+</ol>
+<h4 id="lu">LU分解</h4>
+<p>LU 分解将矩阵 <span class="math inline">A</span> 分解为<strong>下三角矩阵</strong> <span class="math inline">L</span> 和<strong>上三角矩阵</strong> <span class="math inline">U</span>，即 <span class="math inline">A = LU</span>。这样可以将原方程 <span class="math inline">Ax = b</span> 转化为两个更容易求解的三角方程：</p>
+<div class="math display">
+A x = b \quad \Rightarrow \quad LU x = b
+</div>
+
+<p>优点：</p>
+<ul>
+<li>下三角和上三角矩阵的方程组可以通过<strong>前代</strong>和<strong>回代</strong>方法快速求解</li>
+<li>如果需要针对不同的右边向量 <span class="math inline">b</span> 求解多个方程组 <span class="math inline">Ax = b</span>，只需要对矩阵 <span class="math inline">A</span> 做一次 LU 分解</li>
+</ul>
+<h4 id="qr">QR分解</h4>
+<p>QR 分解将矩阵 <span class="math inline">A</span> 分解为<strong>正交矩阵</strong> <span class="math inline">Q</span> 和<strong>上三角矩阵</strong> <span class="math inline">R</span>，即 <span class="math inline">A = QR</span>。这样可以将原方程 <span class="math inline">Ax = b</span> 转化为：</p>
+<div class="math display">
+Ax = b \quad \Rightarrow \quad QRx = b
+</div>
+
+<p>通过乘以 <span class="math inline">Q^T</span>，将方程变为 <span class="math inline">Rx = Q^T b</span>，即：</p>
+<div class="math display">
+QR x = b \quad \Rightarrow \quad R x = Q^T b
+</div>
+
+<p>由于 <span class="math inline">R</span> 是上三角矩阵，使用<strong>回代</strong>法可以快速求解 <span class="math inline">x</span>。</p>
+<p>优点：</p>
+<ul>
+<li><strong>稳定性高</strong>：QR 分解在数值计算中比 LU 分解更稳定，尤其在处理<strong>病态矩阵</strong>（即条件数很大的矩阵）时，它能够更好地避免误差的积累。</li>
+<li><strong>最小二乘法</strong>：QR 分解特别适合用于求解<strong>过定方程组</strong>（即方程的数量多于未知数的情况），这种情况下可以通过最小二乘法来求解，而 QR 分解是最常用的最小二乘法工具之一。</li>
+</ul>
+<h3 id="_9">降维与压缩</h3>
+<p>在数据降维和压缩领域。通过矩阵分解技术，可以有效地减少数据的维度或存储空间，同时保留大部分信息。</p>
+<h4 id="svd">奇异值分解 (SVD)：</h4>
+<p>SVD 将矩阵 <span class="math inline">A \in \mathbb{R}^{m \times n}</span> 分解为三个矩阵的乘积：</p>
+<div class="math display">
+A = U \Sigma V^T
+</div>
+
+<p>其中：</p>
+<ul>
+<li><span class="math inline">U</span> 是 <span class="math inline">m \times m</span> 的正交矩阵，表示<strong>左奇异向量</strong>。</li>
+<li><span class="math inline">\Sigma</span> 是 <span class="math inline">m \times n</span> 的<strong>对角矩阵</strong>，包含矩阵的<strong>奇异值</strong>（按大小排序）。</li>
+<li><span class="math inline">V^T</span> 是 <span class="math inline">n \times n</span> 的正交矩阵，表示<strong>右奇异向量</strong>。</li>
+</ul>
+<blockquote>
+<p>通过 SVD 分解矩阵，奇异值矩阵 <span class="math inline">\Sigma</span> 的对角元素（奇异值）按大小递减排列。较大的奇异值对应了数据中的重要信息，而较小的奇异值对应了噪声或冗余信息。通过<strong>截断较小的奇异值</strong>，可以减少矩阵的维度，但保留大部分原始数据的结构。</p>
+</blockquote>
+<p>如果只保留前 <span class="math inline">k</span> 个最大的奇异值和对应的奇异向量，得到的矩阵 <span class="math inline">A_k</span> 是原矩阵的低秩近似（降维）：</p>
+<div class="math display">
+A_k = U_k \Sigma_k V_k^T
+</div>
+
+<p>其中 <span class="math inline">U_k</span> 和 <span class="math inline">V_k</span> 只保留前 <span class="math inline">k</span> 列，<span class="math inline">\Sigma_k</span> 是前 <span class="math inline">k</span> 个奇异值构成的对角矩阵。</p>
+<h2 id="_10">矩阵</h2>
+<p>Matrix 中文翻译成矩阵，日文翻译为行列（ぎょうれつ，gyōretsu），而 Determinant 在中文和日文中都是行列式。</p>
+<p>Vector 在中文中翻译比较乱：</p>
+<ul>
+<li>数学：向量。向 表示方向；量 表示大小和数量</li>
+<li>物理：矢量。矢 表示箭头，暗示方向；量 表示大小和数量。</li>
+<li>C++：动态数组</li>
+</ul>
+<h3 id="_11">矩阵定义</h3>
+<p>一个 <span class="math inline">m \times n</span> 的矩阵 <span class="math inline">A</span> 是一个包含 <span class="math inline">m</span> 行 <span class="math inline">n</span> 列的二维数组，可以表示为：</p>
+<div class="math display">
+A = \begin{bmatrix}
+a_{11} & a_{12} & \cdots & a_{1n} \\
+a_{21} & a_{22} & \cdots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{m1} & a_{m2} & \cdots & a_{mn}
+\end{bmatrix}
+</div>
+
+<p>其中，<span class="math inline">a_{ij}</span> 表示矩阵 <span class="math inline">A</span> 的第 <span class="math inline">i</span> 行、第 <span class="math inline">j</span> 列的元素。<span class="math inline">A</span> 的<strong>维度</strong>或<strong>大小</strong>为 <span class="math inline">m \times n</span>。</p>
+<h3 id="_12">向量定义</h3>
+<p>向量可用<strong>列向量</strong>或<strong>行向量</strong>。但是 <strong>列向量</strong>更为常见：</p>
+<div class="math display">
+  \mathbf{v} = \begin{bmatrix}
+  v_1 \\
+  v_2 \\
+  \vdots \\
+  v_n
+  \end{bmatrix}
+</div>
+
+<p>列向量相对于行向量的好处：</p>
+<ul>
+<li><strong>线性代数的标准惯例</strong>：列向量是线性代数中的标准表示法，符合大多数教材和学术文献的习惯。</li>
+<li><strong>矩阵运算的兼容性</strong>：在矩阵乘法中，矩阵通常是左乘列向量的，这使得矩阵运算更方便和直观。</li>
+<li><strong>线性变换的表示</strong>：线性变换通常用矩阵作用在列向量上，列向量更符合这种变换的顺序。</li>
+<li><strong>向量空间的表示</strong>：向量空间的基向量通常按列排列，列向量有助于更清晰地表达向量的线性组合。</li>
+</ul>
+<h3 id="_13">视角！！</h3>
+<blockquote>
+<p><a href="https://github.com/kenjihiranabe/The-Art-of-Linear-Algebra">The Art of Linear Algebra</a> 很大篇幅在以不同视角可视化矩阵的运算。</p>
+</blockquote>
+<p>1个 (mxn) 的矩阵，可以视为：</p>
+<ul>
+<li>1个矩阵</li>
+<li>mn个数</li>
+<li>n个列</li>
+<li>m个行</li>
+</ul>
+<p>1个向量通常用列向量表示，行向量可以用列向量的转置表示。</p>
+<p>对于乘法，可以结合多视角看待：</p>
+<p><img alt="matrix_multiplication" src="https://blog.debao.me/images/science/matrix_multiplication.png"></p>
+<h3 id="_14">基本运算</h3>
+<ul>
+<li><strong>矩阵加法 (Matrix Addition)</strong>：两个相同大小矩阵的元素对应相加。</li>
+<li><strong>矩阵乘法 (Matrix Multiplication)</strong>：两个矩阵相乘，按行列对应的内积计算。</li>
+<li><strong>标量乘法 (Scalar Multiplication)</strong>：矩阵的每个元素乘以一个标量。</li>
+<li><strong>矩阵转置 (Matrix Transposition)</strong>：将矩阵的行和列互换。</li>
+<li><strong>矩阵的逆 (Matrix Inversion)</strong>：对于可逆矩阵 <span class="math inline">A</span>，找到 <span class="math inline">A^{-1}</span>，使得 <span class="math inline">A \times A^{-1} = I</span>。</li>
+<li><strong>迹 (Trace)</strong>：方阵主对角线元素的和。</li>
+<li><strong>行列式 (Determinant)</strong>：方阵的一个标量值，用于判断矩阵是否可逆。【行列式是一个值】</li>
+</ul>
+<h2 id="_15">复数域矩阵</h2>
+<p>在复数域，矩阵有如下运算：</p>
+<ul>
+<li><strong>共轭操作</strong>（Conjugation）:将每个元素替换为其复共轭。</li>
+<li><strong>共轭转置</strong>（Conjugate Transpose / Hermitian Transpose）：先对矩阵进行转置，然后对每个元素取复共轭</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>操作</strong></th>
+<th><strong>复数域</strong></th>
+<th><strong>实数域</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>复共轭</strong> (<em>Conjugation</em>)</td>
+<td>对矩阵元素取复数共轭 <span class="math inline">\overline{A}</span></td>
+<td>无此操作</td>
+</tr>
+<tr>
+<td><strong>共轭转置</strong> (<em>Conjugate Transpose</em>)</td>
+<td>共轭转置 <span class="math inline">A^\dagger = (\overline{A})^T</span></td>
+<td>退化为普通转置 <span class="math inline">A^T</span></td>
+</tr>
+<tr>
+<td><strong>特征值和特征向量</strong> (<em>Eigenvalues and Eigenvectors</em>)</td>
+<td>允许复数特征值和复数特征向量</td>
+<td>特征值可能是复数，但特征向量是实数的线性组合</td>
+</tr>
+<tr>
+<td><strong>对角化</strong> (<em>Diagonalization</em>)</td>
+<td>所有矩阵都可以在复数域上对角化或化成约当标准形</td>
+<td>不是所有矩阵都可对角化</td>
+</tr>
+<tr>
+<td><strong>旋转和相位</strong> (<em>Rotation and Phase</em>)</td>
+<td>支持复数相位旋转 <span class="math inline">e^{i\theta}</span></td>
+<td>仅支持实数旋转</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_16">参考</h2>
+<ul>
+<li>https://github.com/kenjihiranabe/The-Art-of-Linear-Algebra</li>
+<li>https://en.wikipedia.org/wiki/Matrix_(mathematics)</li>
+<li>https://github.com/Visualize-ML/Book4_Power-of-Matrix</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-10-14T15:49:00+08:00" pubdate>Mon 14 October 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/science.html'>Science</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>GitHub Pages 随手小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">GitHub Pages 随手小记</h1>
+    <p class="meta">
+<time datetime="2023-11-12T16:11:00+08:00" pubdate>Sun 12 November 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>点开之前用GitHub Pages搭建的项目页面qtlsx.debao.me，看到上次更新还是在9年前。长时间没写博客，有点不清楚从哪儿开始了。或许先把GH Pages捡起来看看，毕竟10年来发生了很多变化。</p>
+</blockquote>
+<p>GitHub Pages 是 GitHub 提供的一项免费服务，它允许用户创建和托管个人博客、项目文档、演示页面等静态网站。无需外部服务器或复杂的配置，就快速创建并发布自己的博客。</p>
+<p>GitHub Pages的官网地址： https://pages.github.com/</p>
+<h2 id="_1">站点类别</h2>
+<p>GH Pages站点有两种(三种)：</p>
+<ul>
+<li>用户级，每个用户一个：仓库名必须为 <code>&lt;username&gt;.github.io</code></li>
+<li>组织级，每个组织一个：仓库名必须为 <code>&lt;orgname&gt;.github.io</code></li>
+<li>项目级，每个项目一个：仓库名不限制，访问地址为 <code>&lt;userororgname&gt;.github.io/&lt;projectname&gt;</code></li>
+</ul>
+<blockquote>
+<p>用户级和组织级其实是一样的，属于一类，都需要放置到一个特定名字的仓库中；而项目级不同，它名字随意，
+但是它必须属于一个用户或一个组织。一个用户可以有数量不限的项目级站点。</p>
+</blockquote>
+<h2 id="_2">注意点</h2>
+<h3 id="_3">私有与免费</h3>
+<p>对于GitHub的免费用户，只能在公有仓库中开启 GitHub Pages。</p>
+<p>如果要在私有仓库中开启 GitHub Pages，需要升级到收费用户。</p>
+<h3 id="gh-pages">gh-pages分支不是必须</h3>
+<p>在2016年之前，项目站点内容需要推送到gh-pages分支才能生效。这个限制早已不存在。</p>
+<p>现在可以在master或其他分支的根目录或docs目录下，只需要在仓库的settings中做一下配置即可。</p>
+<p>参考：</p>
+<ul>
+<li>https://github.blog/2016-08-17-simpler-github-pages-publishing/</li>
+<li>https://stackoverflow.com/questions/35978862/github-pages-why-do-i-need-a-gh-pages</li>
+</ul>
+<h3 id="https">https 支持</h3>
+<p>对于使用自定义域名的公有仓库，只需要在Settings中勾选Enforce HTTPS即可。</p>
+<h2 id="_4">自定义域名</h2>
+<p>如果自己有域名的话，配置子域名来指向GH Pages站点比较简单</p>
+<ul>
+<li>仓库中添加一个名为CNAME文件（必须这个名字），里面包含自定义的域名（只能包含一个域名，且占据一行）</li>
+<li>配置DNS，使其指向 <code>&lt;userororgname&gt;.github.io</code>（不管是项目级别站点还是用户级站点）</li>
+</ul>
+<p>参考：</p>
+<ul>
+<li>https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages</li>
+</ul>
+<h2 id="jekyll">Jekyll</h2>
+<p>Github Pages内置了Jekyll（音标 <code>/'dʒiːk əl/</code>）这一静态站点生成器的支持。通过<code>_config.yml</code>可以对Jekyll进行配置。</p>
+<p>Jekyll是采用Ruby编写的，博客形态的静态站点生成器。它有一个模版目录，其中包含原始文本格式的文档，
+通过一个转换器（如 Markdown）和的 Liquid 渲染器转化成一个完整的可发布的静态网站，以便发布在任何服务器上。</p>
+<blockquote>
+<p>如何要禁用Jekyll，可以在根目录下创建一个名为<code>.nojekyll</code>的空文件。</p>
+</blockquote>
+<p>参考：</p>
+<ul>
+<li>https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/about-github-pages-and-jekyll</li>
+<li>https://jekyllrb.com/docs/github-pages/</li>
+</ul>
+<h3 id="jekyllgh-pages">最简的支持Jekyll的GH Pages站点</h3>
+<p>本地不安装 Jekyll 这套Ruby的东西，做一个最简单的支持Jekyll的GitHub Pages站点。</p>
+<p>创建一个代码仓库，按如下设置，并放置一个index.md文件。站点完成！</p>
+<h4 id="_5">仓库设置</h4>
+<p>Settings =&gt; Pages =&gt; Buid and deployment</p>
+<p>Source: 选择 Depoly from a branch</p>
+<p>Branch：选择 main root</p>
+<h4 id="_6">仓库文件</h4>
+<ul>
+<li>需要存在一个 index.md 文件，文件头部需要有三个中横线构成的头部</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>---
+title: Home
+---
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>很多人说如果没有index.md的话，会使用README.md文件，个人试过不行，不知道是否姿势不对造成的。</p>
+</blockquote>
+<ul>
+<li>https://github.com/dbzhang800/jekyll-test</li>
+</ul>
+<h2 id="github-actions">GitHub Actions</h2>
+<p>GH Pages除了支持传统的 Depoly from a branch 方式，还支持GitHub Actions方式。</p>
+<p>借助 Github Actions，不仅可以使用Jekyll，还可以使用其他站点生成器。如果不想使用GitHub pages，也可以使用Actions将生成的站点推送到其他免费主机，比如 Kinsta或 azure 等。</p></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-11-12T16:11:00+08:00" pubdate>Sun 12 November 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/github.html">github</a>,    <a class="category" href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a class="category" href="https://blog.debao.me/tags/git.html">Git</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

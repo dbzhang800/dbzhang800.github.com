@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>电磁波频谱小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/science.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">电磁波频谱小记</h1>
+    <p class="meta">
+<time datetime="2024-09-24T23:34:00+08:00" pubdate>Tue 24 September 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>电磁频谱是根据频率或波长排列的电磁辐射的完整范围。频谱被划分为多个波段，每个波段中的电磁波都有特定的名称。从低频到高频依次为：</p>
+<ul>
+<li>无线电波（Radio waves）</li>
+<li>微波（Microwaves）</li>
+<li>红外线（Infrared）</li>
+<li>可见光（Visible light）</li>
+<li>紫外线（Ultraviolet）</li>
+<li>X射线（X-rays）</li>
+<li>伽马射线（Gamma rays）</li>
+</ul>
+<p><img alt="em_spectrum_properties" src="https://blog.debao.me/images/ee/em_spectrum_properties_zh_cn.svg"></p>
+<h3 id="_1">分类及相关参数</h3>
+<blockquote>
+<p>电磁频谱的各个波段之间没有明确的边界，它们像彩虹中的颜色一样逐渐过渡。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>缩写</th>
+<th>波长范围（λ）</th>
+<th>频率范围（f）</th>
+<th>每光子能量（E）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>伽马射线</strong>（Gamma rays）</td>
+<td>γ</td>
+<td>10 pm – 100 pm</td>
+<td>30 EHz – 3 EHz</td>
+<td>124 keV – 12.4 keV</td>
+</tr>
+<tr>
+<td><strong>硬X射线</strong>（Hard X-rays）</td>
+<td>HX</td>
+<td>100 pm – 10 nm</td>
+<td>3 EHz – 30 PHz</td>
+<td>12.4 keV – 124 eV</td>
+</tr>
+<tr>
+<td><strong>软X射线</strong>（Soft X-rays）</td>
+<td>SX</td>
+<td>10 nm – 121 nm</td>
+<td>30 PHz – 3 PHz</td>
+<td>124 eV – 10.2 eV</td>
+</tr>
+<tr>
+<td><strong>极紫外线</strong>（Extreme ultraviolet）</td>
+<td>EUV</td>
+<td>121 nm</td>
+<td>3 PHz</td>
+<td>10.2 eV</td>
+</tr>
+<tr>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>近紫外线</strong>（Near ultraviolet）</td>
+<td>NUV</td>
+<td>400 nm</td>
+<td>750 THz</td>
+<td>—</td>
+</tr>
+<tr>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>可见光谱</strong>（Visible spectrum）</td>
+<td>—</td>
+<td>400 nm – 700 nm</td>
+<td>750 THz – 480 THz</td>
+<td>—</td>
+</tr>
+<tr>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>近红外线</strong>（Near infrared）</td>
+<td>NIR</td>
+<td>700 nm – 1 μm</td>
+<td>480 THz – 300 THz</td>
+<td>1.24 eV</td>
+</tr>
+<tr>
+<td><strong>中红外线</strong>（Mid infrared）</td>
+<td>MIR</td>
+<td>1 μm – 10 μm</td>
+<td>300 THz – 30 THz</td>
+<td>1.24 eV – 124 meV</td>
+</tr>
+<tr>
+<td><strong>远红外线</strong>（Far infrared）</td>
+<td>FIR</td>
+<td>10 μm – 1 mm</td>
+<td>30 THz – 300 GHz</td>
+<td>124 meV – 1.24 meV</td>
+</tr>
+<tr>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>极高频微波</strong>（Extremely high frequency）</td>
+<td>EHF</td>
+<td>1 cm</td>
+<td>30 GHz</td>
+<td>124 μeV</td>
+</tr>
+<tr>
+<td><strong>超高频微波</strong>（Super high frequency）</td>
+<td>SHF</td>
+<td>1 dm</td>
+<td>3 GHz</td>
+<td>12.4 μeV</td>
+</tr>
+<tr>
+<td><strong>超高频</strong>（Ultra high frequency）</td>
+<td>UHF</td>
+<td>1 m</td>
+<td>300 MHz</td>
+<td>1.24 μeV</td>
+</tr>
+<tr>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>甚高频</strong>（Very high frequency）</td>
+<td>VHF</td>
+<td>10 m</td>
+<td>30 MHz</td>
+<td>124 neV</td>
+</tr>
+<tr>
+<td><strong>高频</strong>（High frequency）</td>
+<td>HF</td>
+<td>100 m</td>
+<td>3 MHz</td>
+<td>12.4 neV</td>
+</tr>
+<tr>
+<td><strong>中频</strong>（Medium frequency）</td>
+<td>MF</td>
+<td>1 km</td>
+<td>300 kHz</td>
+<td>1.24 neV</td>
+</tr>
+<tr>
+<td><strong>低频</strong>（Low frequency）</td>
+<td>LF</td>
+<td>10 km</td>
+<td>30 kHz</td>
+<td>124 peV</td>
+</tr>
+<tr>
+<td><strong>甚低频</strong>（Very low frequency）</td>
+<td>VLF</td>
+<td>100 km</td>
+<td>3 kHz</td>
+<td>12.4 peV</td>
+</tr>
+<tr>
+<td><strong>超低频</strong>（Ultra low frequency）</td>
+<td>ULF</td>
+<td>1 Mm</td>
+<td>300 Hz</td>
+<td>1.24 peV</td>
+</tr>
+<tr>
+<td><strong>极低频</strong>（Super low frequency）</td>
+<td>SLF</td>
+<td>10 Mm</td>
+<td>30 Hz</td>
+<td>124 feV</td>
+</tr>
+<tr>
+<td><strong>极低频</strong>（Extremely low frequency）</td>
+<td>ELF</td>
+<td>100 Mm</td>
+<td>3 Hz</td>
+<td>12.4 feV</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>X射线与伽马射线的区别部分基于其来源：由核衰变或其他核和次核/粒子过程产生的光子总是被称为伽马射线，而由高能内层原子电子的电子跃迁产生的光子则称为X射线。</p>
+</blockquote>
+<h2 id="_2">各波段发现历史</h2>
+<table>
+<thead>
+<tr>
+<th>波段</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>可见光</strong>（Visible light）</td>
+<td><strong>1666年</strong>，艾萨克·牛顿（Isaac Newton）：通过棱镜分解白光，首次提出光是由不同颜色组成的频谱。</td>
+</tr>
+<tr>
+<td><strong>红外线</strong>（Infrared radiation）</td>
+<td><strong>1800年</strong>，威廉·赫歇尔（William Herschel）：通过棱镜实验发现红外线，测量不同颜色光的温度，发现红光之外的区域温度最高。</td>
+</tr>
+<tr>
+<td><strong>紫外线</strong>（Ultraviolet radiation）</td>
+<td><strong>1801年</strong>，约翰·里特（Johann Ritter）：发现紫光之外的“化学射线”，即紫外线。</td>
+</tr>
+<tr>
+<td><strong>无线电波</strong>（Radio waves）</td>
+<td><strong>1886年</strong>，海因里希·赫兹（Heinrich Hertz）：通过实验生成并探测到无线电波，验证了麦克斯韦的电磁波理论。</td>
+</tr>
+<tr>
+<td><strong>微波</strong>（Microwaves）</td>
+<td><strong>1888年</strong>，海因里希·赫兹（Heinrich Hertz）：通过实验产生并测量了微波的反射和折射特性。<br/>1930-1940年代，雷达技术发展推动微波技术实用化。<br/>1945年，斯宾塞发明微波炉，用于加热食物</td>
+</tr>
+<tr>
+<td><strong>X射线</strong>（X-rays）</td>
+<td><strong>1895年</strong>，威廉·伦琴（Wilhelm Röntgen）：在实验中偶然发现X射线，X射线能够穿透软组织但被骨骼阻挡。</td>
+</tr>
+<tr>
+<td><strong>伽马射线</strong>（Gamma rays）</td>
+<td><strong>1900年</strong>，保罗·维拉德（Paul Villard）：在研究镭的放射性时发现伽马射线。 <br/><strong>1910年</strong>，威廉·亨利·布拉格（William Henry Bragg）：证明伽马射线是电磁辐射。<br/> <strong>1914年</strong>，欧内斯特·卢瑟福（Ernest Rutherford）和爱德华·安德拉德（Edward Andrade）：测量了伽马射线的波长，发现它们比X射线波长更短，具有更高的能量。</td>
+</tr>
+</tbody>
+</table>
+<p>不同段的频谱被赋予了不同的名称，是因为历史上发现的频谱的不同区域与物质的相互作用方式各不相同，使得它们仿佛是不同类型的辐射。</p>
+<table>
+<thead>
+<tr>
+<th>波段</th>
+<th>与物质的相互作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>无线电波</strong>（Radio）</td>
+<td>集体振荡的电荷载流子（如天线中的电子振荡传播），等离子体振荡（Plasma oscillation）。</td>
+</tr>
+<tr>
+<td><strong>微波至远红外</strong>（Microwave through far infrared）</td>
+<td>等离子体振荡，分子旋转（Molecular rotation）。</td>
+</tr>
+<tr>
+<td><strong>近红外</strong>（Near infrared）</td>
+<td>分子振动（Molecular vibration），等离子体振荡（仅在金属中）。</td>
+</tr>
+<tr>
+<td><strong>可见光</strong>（Visible）</td>
+<td>分子电子激发（Molecular electron excitation，包含人类视网膜中的色素分子），等离子体振荡（仅在金属中）。</td>
+</tr>
+<tr>
+<td><strong>紫外线</strong>（Ultraviolet）</td>
+<td>分子和原子价电子的激发，包含电子逸出（光电效应，Photoelectric effect）。</td>
+</tr>
+<tr>
+<td><strong>X射线</strong>（X-rays）</td>
+<td>核心原子电子的激发与逸出，康普顿散射（Compton scattering，适用于低原子序数物质）。</td>
+</tr>
+<tr>
+<td><strong>伽马射线</strong>（Gamma rays）</td>
+<td>高能核心电子的逸出（重元素），康普顿散射（适用于所有原子序数），原子核激发，包含原子核解离（Nuclear dissociation）。</td>
+</tr>
+<tr>
+<td><strong>高能伽马射线</strong>（High-energy gamma rays）</td>
+<td>粒子-反粒子对的生成；在非常高的能量下，单个光子可通过与物质相互作用产生高能粒子与反粒子簇射。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="alphabetagamma">alpha、beta、gamma</h2>
+<p>不同于γ射线是电磁辐射，α射线和β射线是粒子辐射，但不妨碍一块看看：</p>
+<ul>
+<li>α射线：1899年，卢瑟福 发现并命名；1908年，通过实验确认其本质是 氦原子核（He²⁺）。</li>
+<li>β射线：1896年，贝克勒尔 首次发现放射性；1899年，卢瑟福 命名 β射线；1900年，让·佩兰 和 卢瑟福 确认其本质是 电子（β⁻）或 正电子（β⁺）。</li>
+<li>γ射线：1900年，保罗·维拉德 发现；1903年，卢瑟福 命名为 γ射线；1914年，卢瑟福与安德拉德 通过实验确认其是 高能电磁波。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th><strong>α射线（Alpha Rays）</strong></th>
+<th><strong>β射线（Beta Rays）</strong></th>
+<th><strong>γ射线（Gamma Rays）</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>组成</strong></td>
+<td>2个质子 + 2个中子（氦原子核）</td>
+<td>高速电子（β⁻）或正电子（β⁺）</td>
+<td>高能电磁波（光子）</td>
+</tr>
+<tr>
+<td><strong>电荷</strong></td>
+<td>带正电荷</td>
+<td>带负电荷（电子）或正电荷（正电子）</td>
+<td>不带电荷</td>
+</tr>
+<tr>
+<td><strong>质量</strong></td>
+<td>较大，约4个原子质量单位</td>
+<td>较小，电子或正电子的质量</td>
+<td>没有静止质量</td>
+</tr>
+<tr>
+<td><strong>穿透力</strong></td>
+<td>弱，能被纸张或皮肤表层挡住</td>
+<td>中等，能被几毫米厚的铝板或塑料挡住</td>
+<td>强，需厚重的铅板或混凝土才能有效阻挡</td>
+</tr>
+<tr>
+<td><strong>来源</strong></td>
+<td>重原子核的放射性衰变（如铀、镭）</td>
+<td>放射性同位素的β衰变</td>
+<td>伴随α或β衰变的核跃迁产生</td>
+</tr>
+<tr>
+<td><strong>危害</strong></td>
+<td>对外部危害小，但若进入体内危害极大</td>
+<td>对皮肤和浅层组织有较大危害，体内损害DNA</td>
+<td>穿透力强，能深度损害体内器官</td>
+</tr>
+<tr>
+<td><strong>屏蔽材料</strong></td>
+<td>纸张、皮肤、几厘米空气</td>
+<td>铝板、塑料、较厚的金属</td>
+<td>厚重的铅板或混凝土</td>
+</tr>
+<tr>
+<td><strong>应用</strong></td>
+<td>烟雾探测器、核能</td>
+<td>医学成像、辐射治疗、放射性示踪</td>
+<td>医疗成像（如CT扫描）、食品消毒、工业无损检测</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/Electromagnetic_spectrum</li>
+<li>https://physics.info/em-spectrum/</li>
+<li>https://en.wikipedia.org/wiki/Gamma_ray</li>
+<li>https://en.wikipedia.org/wiki/Radiation</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-09-24T23:34:00+08:00" pubdate>Tue 24 September 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/science.html'>Science</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

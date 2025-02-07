@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>QJSEngine未文档化的哪些事 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">QJSEngine未文档化的哪些事</h1>
+    <p class="meta">
+<time datetime="2024-01-21T10:24:00+08:00" pubdate>Sun 21 January 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>接前面</p>
+<ul>
+<li><a href="https://blog.debao.me/2024/01/notes-on-the-javascript-engine-in-qt/">Qt中的JavaScript引擎小记</a>：Qt 对 Javascript 支持的历史 以及 JavaScript标准化简要历史</li>
+<li><a href="https://blog.debao.me/2024/01/notes-on-using-qjsengine-in-qtwidgets/">QJSEngine在QtWidgets下使用小记</a>：QtWidget中使用QJSEngine的几个简单例子</li>
+<li><a href="https://blog.debao.me/2024/01/using-qjsengine-and-quiloader-to-implement-dynamic-expansion-of-qt-programs/">使用QJSEngine与QUiLoader实现Qt程序动态扩展</a>：JavaScript在QtWidgets中不是玩具</li>
+<li>QJSEngine未文档化的哪些项/坑：QJSEngine 对 QtWidgets 衔接不够好</li>
+</ul>
+<p>继续看看QJSEngine（只关注QJSEngine，不关注QQmlEngine）文档中没有提及的一些内容。我只是走马观花似的看了看手册，可能很多东西手册中有，只是我没看到。</p>
+<blockquote>
+<p>本文内容在Qt6.5下验证。</p>
+</blockquote>
+<h2 id="_1">纠结</h2>
+<p>真想将QJSEngine用起来，雷还是很多，看来一时半会是趟不完了...</p>
+<ul>
+<li>QSize，QPoint，QRect 在js下不能直接用，如何设置它们的值？</li>
+<li>Qt命名空间中有大量的枚举量，在js下如何才能使用？</li>
+<li>有多少种方式定义自己的枚举量，并引入到js环境下？</li>
+<li>如何把QByteArray传到js中，如何在js下使用？</li>
+<li>Int8Array在Qt手册没有却可以用。那么QJSEngine支持的内置对象，到底有哪些？</li>
+<li>浏览器和Nodejs中都有setTimeout和setInterval，怎么给QJSEngine加上？</li>
+<li>...</li>
+</ul>
+<h2 id="400x300">字符串值("400x300")？</h2>
+<blockquote>
+<p>一个小问题：在JS下，我想修改一个Widget的大小和位置，怎么办？</p>
+</blockquote>
+<h3 id="_2">手册中提了，但又没提</h3>
+<p><a href="https://doc.qt.io/qt-6/qtqml-cppintegration-data.html">Qt手册</a>中提了这么一句：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>For example, the Image::sourceSize property is of type size (which automatically translates to the QSize type) and can be specified by a string value formatted as &quot;widthxheight&quot;, or by the Qt.size() function
+</code></pre></div></td></tr></table></div>
+
+<p>而且，在qml各个类型中，确实也有详细说明：</p>
+<ul>
+<li>https://doc.qt.io/qt-6/qml-size.html</li>
+<li>https://doc.qt.io/qt-6/qml-point.html</li>
+<li>https://doc.qt.io/qt-6/qml-rect.html</li>
+<li>https://doc.qt.io/qt-6/qml-date.html</li>
+<li>https://doc.qt.io/qt-6/qml-color.html</li>
+<li>https://doc.qt.io/qt-6/qml-font.html</li>
+</ul>
+<p>但是这些说法都是针对QQmlEngine的，而不是QJSEngine。</p>
+<h3 id="_3">源码</h3>
+<p>要在js中使用QSize的话，Qt.size()这个写法，需要依赖QQmlEngine，不过"widthxheight"这个写法在QJSEgnine可以工作：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">label</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;400x300&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>到底还有多少类型可以这么用，具体格式什么样子。手册靠不住，只能上源码：</p>
+<ul>
+<li>QSize, QSizeF："widthxheight"</li>
+<li>QPoint, QPointF："x,y"</li>
+<li>QRect, QRectF：”x,y,widthxheight“</li>
+<li>QDate, QTime, QDateTime：符合 Qt::ISODate 要求的字符串，比如：”yyyy-MM-ddTHH:mm:ss“</li>
+</ul>
+<blockquote>
+<p>注：具体请参照源码 qtdeclarative/src/qml/qml/qqmlstringconverters.cpp</p>
+</blockquote>
+<h2 id="qtstaticmetaobject">Qt::staticMetaObject 用途？</h2>
+<p>我们知道，Qt命令空间中有大量的枚举量，比如</p>
+<ul>
+<li>Qt::Checked</li>
+<li>Qt::QueuedConnection</li>
+<li>Qt::white</li>
+<li>...</li>
+</ul>
+<p>但是，在js中无法直接使用。怎么办？</p>
+<h3 id="js">引入到js</h3>
+<blockquote>
+<p>这是Qt6引入的一个东西，在Qt5中，有一个类似的东西叫<code>QObject::staticQtMetaObject</code>或<code>QObject::qt_getQtMetaObject()</code></p>
+</blockquote>
+<p>使用如下语句可以将其引入到js引擎：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;Db&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQMetaObject</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Qt</span><span class="o">::</span><span class="n">staticMetaObject</span><span class="p">));</span>
+</code></pre></div></td></tr></table></div>
+
+<p>而后可以在一定程度放飞自我，比如，在js中可以使用（不用Qt是我怕以后会冲突）：</p>
+<ul>
+<li>Db.Checked</li>
+<li>Db.QuquedConnectionn</li>
+<li>Db.white</li>
+<li>...</li>
+</ul>
+<p>这部分内容和 <code>Q_NAMESPACE</code> 以及 <code>Q_ENUM_NS</code> 相关。</p>
+<h3 id="_4">自定义枚举量</h3>
+<p>js引擎使用Qt的staticMetaObject实现反射功能。那么需要思考，哪些方法可以实现元对象：</p>
+<ul>
+<li>QObject派生类与<code>Q_OBJECT</code>宏</li>
+<li>非QObject派生类与<code>Q_GADGET</code>宏</li>
+<li>不创建类 用<code>Q_NAMESPACE</code>宏</li>
+<li>直接动态创建（需要借助Qt中private的API，详见<code>corelib/kernel/qmetaobjectbuilder_p.h</code>）</li>
+</ul>
+<p>前面三个，官方有文档，构建系统都会自动调用moc来自动生成元对象。此处简单关注一下最后一个。</p>
+<p>一个完整的例子如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="err">#</span><span class="nx">include</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">QCoreApplication</span><span class="o">&gt;</span>
+<span class="err">#</span><span class="nx">include</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">QJSEngine</span><span class="o">&gt;</span>
+<span class="err">#</span><span class="nx">include</span><span class="w"> </span><span class="o">&lt;</span><span class="kr">private</span><span class="o">/</span><span class="nx">qmetaobjectbuilder_p</span><span class="p">.</span><span class="nx">h</span><span class="o">&gt;</span>
+<span class="err">#</span><span class="nx">include</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">QMetaEnum</span><span class="o">&gt;</span>
+
+
+<span class="kd">const</span><span class="w"> </span><span class="kr">char</span><span class="w"> </span><span class="o">*</span><span class="nx">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">R</span><span class="s2">&quot;js(</span>
+<span class="s2">console.log(test.second) // 1</span>
+<span class="s2">console.log(test.third) // 2</span>
+<span class="s2">)js&quot;</span><span class="p">;</span>
+
+<span class="kr">int</span><span class="w"> </span><span class="nx">main</span><span class="p">(</span><span class="kr">int</span><span class="w"> </span><span class="nx">argc</span><span class="p">,</span><span class="w"> </span><span class="kr">char</span><span class="w"> </span><span class="o">*</span><span class="nx">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="nx">QCoreApplication</span><span class="w"> </span><span class="nx">app</span><span class="p">(</span><span class="nx">argc</span><span class="p">,</span><span class="w"> </span><span class="nx">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="nx">QMetaObjectBuilder</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">b</span><span class="p">.</span><span class="nx">setClassName</span><span class="p">(</span><span class="s2">&quot;Test&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">b</span><span class="p">.</span><span class="nx">setSuperClass</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">QObject</span><span class="o">::</span><span class="nx">staticMetaObject</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">auto</span><span class="w"> </span><span class="nx">eb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">addEnumerator</span><span class="p">(</span><span class="s2">&quot;DEBAO&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">eb</span><span class="p">.</span><span class="nx">addKey</span><span class="p">(</span><span class="s2">&quot;first&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">eb</span><span class="p">.</span><span class="nx">addKey</span><span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">eb</span><span class="p">.</span><span class="nx">addKey</span><span class="p">(</span><span class="s2">&quot;third&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">);</span>
+
+<span class="w">    </span><span class="nx">auto</span><span class="w"> </span><span class="nx">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">toMetaObject</span><span class="p">();</span>
+
+<span class="w">    </span><span class="nx">QJSEngine</span><span class="w"> </span><span class="nx">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">engine</span><span class="p">.</span><span class="nx">installExtensions</span><span class="p">(</span><span class="nx">QJSEngine</span><span class="o">::</span><span class="nx">ConsoleExtension</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">engine</span><span class="p">.</span><span class="nx">globalObject</span><span class="p">().</span><span class="nx">setProperty</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">engine</span><span class="p">.</span><span class="nx">newQMetaObject</span><span class="p">(</span><span class="nx">test</span><span class="p">));</span>
+
+<span class="w">    </span><span class="nx">auto</span><span class="w"> </span><span class="nx">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">engine</span><span class="p">.</span><span class="nx">evaluate</span><span class="p">(</span><span class="nx">js</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">ret</span><span class="p">.</span><span class="nx">isError</span><span class="p">())</span>
+<span class="w">        </span><span class="nx">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="nx">ret</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>输出结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="mi">2</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意，因为用到私有API。qmake下需要<code>QT+=core-private</code>，cmake下需要在链接target中加入<code>CorePrivate</code>。</p>
+</blockquote>
+<h2 id="arraybuffer">ArrayBuffer怎么用？</h2>
+<p><a href="https://doc.qt.io/qt-6/qtqml-javascript-functionlist.html">Qt手册函数列表</a>中提到了ArrayBuffer和DataView，但是QJSEngine手册中没有<code>newArrayBuffer()</code>的API，也没有说如何从Qt中传进来一个ArrayBuffer。</p>
+<p><a href="https://doc.qt.io/qt-6/qtqml-cppintegration-data.html">这页手册</a>提到一句 ：QByteArray和JavsScript中的 <code>ArrayBuffer</code> 可以互相转换。但没有例子。</p>
+<p>不妨写个小例子试试看：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QCoreApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">console.log(typeof data);</span>
+<span class="s">console.log(data instanceof ArrayBuffer);</span>
+<span class="s">console.log(&quot;data: &quot; + data);</span>
+
+<span class="s">let dataView = new DataView(data);</span>
+<span class="s">for (let i = 0; i &lt; dataView.byteLength; i++) {</span>
+<span class="s">    console.log(&quot;dataView[&quot; + i + &quot;]: &quot; + dataView.getUint8(i));</span>
+<span class="s">}</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">app</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">installExtensions</span><span class="p">(</span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">ConsoleExtension</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QByteArray</span><span class="w"> </span><span class="n">data</span><span class="p">(</span><span class="s">&quot;1+1=10&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;data&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">toScriptValue</span><span class="p">(</span><span class="n">data</span><span class="p">));</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>使用QJSEngine::toScriptValue() 将QByteArray传入到js中</li>
+<li>在JS中使用DataView来处理数据</li>
+</ul>
+<p>程序结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="n">object</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="n">data</span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="o">=</span><span class="mi">10</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="n">dataView</span><span class="o">[</span><span class="mi">0</span><span class="o">]:</span><span class="w"> </span><span class="mi">49</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="n">dataView</span><span class="o">[</span><span class="mi">1</span><span class="o">]:</span><span class="w"> </span><span class="mi">43</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="n">dataView</span><span class="o">[</span><span class="mi">2</span><span class="o">]:</span><span class="w"> </span><span class="mi">49</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="n">dataView</span><span class="o">[</span><span class="mi">3</span><span class="o">]:</span><span class="w"> </span><span class="mi">61</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="n">dataView</span><span class="o">[</span><span class="mi">4</span><span class="o">]:</span><span class="w"> </span><span class="mi">49</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="n">dataView</span><span class="o">[</span><span class="mi">5</span><span class="o">]:</span><span class="w"> </span><span class="mi">48</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_5">秘密</h3>
+<p>为什么QByteArray使用QJSEngine::toScriptValue()传进来以后，能作为ArrayBuffer使用。秘密在<code>qtdeclarative/src/qml/jsruntime/qv4engine.cpp</code>的QV4::ReturnedValue ExecutionEngine::fromData()中：</p>
+<ul>
+<li>遇到QByteArray会使用<code>newArrayBuffer()</code></li>
+<li>遇到QString、QChar、Char16会使用<code>newString()</code></li>
+<li>遇到QRegularExpression：会使用<code>newRegExpObj()</code></li>
+<li>遇到QDateTime、QDate、QTime会使用<code>newDateObject()</code>，</li>
+<li>遇到QStringList、QVariantList、QJsonArray会直接或间接使用 <code>newArrayObject()</code></li>
+<li>遇到QVariantMap、QJsonObject会直接或间接使用<code>newObject()</code></li>
+<li>遇到QPIxmap、QImage，它创建了VariantObject（Object派生类）对象？？</li>
+<li>遇到QVariant会解包，再处理</li>
+<li>...</li>
+</ul>
+<h3 id="_6">其他</h3>
+<p>注意，例子中js中DataView部分也可以用Int8Array，不同于DataView，这个标准类型在Qt手册中完全没有出现:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">let</span><span class="w"> </span><span class="nx">dataView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Int8Array</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">dataView</span><span class="p">.</span><span class="nx">byteLength</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;dataView[&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;]: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">dataView</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>既然和手册对不上，那么需要思考：QJSEngine中到底实现了哪些内置对象？</p>
+<h2 id="_7">内置对象有哪些？</h2>
+<p><a href="https://doc.qt.io/qt-6/qtqml-javascript-functionlist.html">Qt手册</a>中给出了内置对象的列表，但是不全，比如Int8Array等，手册中完全没有：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QCoreApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSValueIterator&gt;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">let myGlobal = this;</span>
+<span class="s">console.log(myGlobal.Math === Math)</span>
+<span class="s">for (let k in myGlobal) {</span>
+<span class="s">    console.log(k);</span>
+<span class="s">}</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">app</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">QJSValueIterator</span><span class="w"> </span><span class="n">it</span><span class="p">(</span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">());</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">hasNext</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">it</span><span class="p">.</span><span class="n">next</span><span class="p">();</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">it</span><span class="p">.</span><span class="n">name</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>输出结果</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code>true
+&quot;Object&quot;
+&quot;String&quot;
+&quot;Symbol&quot;
+&quot;Number&quot;
+&quot;Boolean&quot;
+&quot;Array&quot;
+&quot;Function&quot;
+&quot;Date&quot;
+&quot;RegExp&quot;
+&quot;Error&quot;
+&quot;EvalError&quot;
+&quot;RangeError&quot;
+&quot;ReferenceError&quot;
+&quot;SyntaxError&quot;
+&quot;TypeError&quot;
+&quot;URIError&quot;
+&quot;Promise&quot;
+&quot;URL&quot;
+&quot;URLSearchParams&quot;
+&quot;SharedArrayBuffer&quot;
+&quot;ArrayBuffer&quot;
+&quot;DataView&quot;
+&quot;WeakSet&quot;
+&quot;Set&quot;
+&quot;WeakMap&quot;
+&quot;Map&quot;
+&quot;Int8Array&quot;
+&quot;Uint8Array&quot;
+&quot;Int16Array&quot;
+&quot;Uint16Array&quot;
+&quot;Int32Array&quot;
+&quot;Uint32Array&quot;
+&quot;Uint8ClampedArray&quot;
+&quot;Float32Array&quot;
+&quot;Float64Array&quot;
+&quot;Atomics&quot;
+&quot;Math&quot;
+&quot;JSON&quot;
+&quot;Reflect&quot;
+&quot;Proxy&quot;
+&quot;undefined&quot;
+&quot;NaN&quot;
+&quot;Infinity&quot;
+&quot;eval&quot;
+&quot;parseInt&quot;
+&quot;parseFloat&quot;
+&quot;isNaN&quot;
+&quot;isFinite&quot;
+&quot;decodeURI&quot;
+&quot;decodeURIComponent&quot;
+&quot;encodeURI&quot;
+&quot;encodeURIComponent&quot;
+&quot;escape&quot;
+&quot;unescape&quot;
+</code></pre></div></td></tr></table></div>
+
+<h2 id="settimeout">缺失的 setTimeout() ?</h2>
+<p>我有这么一个javascript程序：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Hello 1+1=2!&quot;</span><span class="p">);</span>
+<span class="p">},</span><span class="w"> </span><span class="mf">2000</span><span class="p">);</span>
+
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">name</span><span class="p">);</span>
+<span class="p">},</span><span class="w"> </span><span class="mf">1000</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;1+1=10!&quot;</span><span class="p">);</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="nx">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Hello, you cannot see me!&quot;</span><span class="p">);</span>
+<span class="p">},</span><span class="w"> </span><span class="mf">1000</span><span class="p">);</span>
+<span class="nx">clearTimeout</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Hello Debao!&quot;</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在Node.js下和在浏览器下都能常常运行，但是QJSEngine下，无法运行。怎么办？？</p>
+<h3 id="_8">直接原因</h3>
+<p>尽管，无论是浏览器Web API还是Node.js，都提供了以下几个全局函数：</p>
+<ul>
+<li>setTimeout()</li>
+<li>clearTimeout()</li>
+<li>setInterval()</li>
+<li>clearInterval()</li>
+</ul>
+<p>但是这几个函数不属于ECMAScript规范，QJSEngine并也没有提供它们，也完全没问题。</p>
+<blockquote>
+<p>QJSEngine对 控制台输出console、国际化qsTr等提供了内置的扩展，但没有为setTimeout()提供对应扩展。</p>
+</blockquote>
+<h3 id="extension">能不能手动扩展 Extension</h3>
+<p>早期的QScriptEngine提供有自定义globalObject的接口，但是 QJSEngine 似乎并没有为用户提供 扩展接口的机制。</p>
+<p>可以看看代码，位于<code>qtdeclarative/src/qml/qml/qqmlbuiltinfunctions.cpp</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">QV4::GlobalExtensions::init</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="o">*</span><span class="n">globalObject</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">Extensions</span><span class="w"> </span><span class="n">extensions</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">ExecutionEngine</span><span class="w"> </span><span class="o">*</span><span class="n">v4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">globalObject</span><span class="o">-&gt;</span><span class="n">engine</span><span class="p">();</span>
+<span class="w">    </span><span class="n">Scope</span><span class="w"> </span><span class="n">scope</span><span class="p">(</span><span class="n">v4</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">extensions</span><span class="p">.</span><span class="n">testFlag</span><span class="p">(</span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">TranslationExtension</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">//...</span>
+<span class="w">        </span><span class="n">globalObject</span><span class="o">-&gt;</span><span class="n">defineDefaultProperty</span><span class="p">(</span><span class="n">QStringLiteral</span><span class="p">(</span><span class="s">&quot;qsTranslate&quot;</span><span class="p">),</span><span class="w"> </span>
+<span class="w">       </span><span class="c1">//...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">extensions</span><span class="p">.</span><span class="n">testFlag</span><span class="p">(</span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">ConsoleExtension</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">globalObject</span><span class="o">-&gt;</span><span class="n">defineDefaultProperty</span><span class="p">(</span><span class="n">QStringLiteral</span><span class="p">(</span><span class="s">&quot;print&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">QV4</span><span class="o">::</span><span class="n">ConsoleObject</span><span class="o">::</span><span class="n">method_log</span><span class="p">);</span>
+<span class="w">        </span><span class="n">QV4</span><span class="o">::</span><span class="n">ScopedObject</span><span class="w"> </span><span class="n">console</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span><span class="w"> </span><span class="n">globalObject</span><span class="o">-&gt;</span><span class="n">engine</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">memoryManager</span><span class="o">-&gt;</span><span class="n">allocate</span><span class="o">&lt;</span><span class="n">QV4</span><span class="o">::</span><span class="n">ConsoleObject</span><span class="o">&gt;</span><span class="p">());</span>
+<span class="w">        </span><span class="n">globalObject</span><span class="o">-&gt;</span><span class="n">defineDefaultProperty</span><span class="p">(</span><span class="n">QStringLiteral</span><span class="p">(</span><span class="s">&quot;console&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">console</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">extensions</span><span class="p">.</span><span class="n">testFlag</span><span class="p">(</span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">GarbageCollectionExtension</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">globalObject</span><span class="o">-&gt;</span><span class="n">defineDefaultProperty</span><span class="p">(</span><span class="n">QStringLiteral</span><span class="p">(</span><span class="s">&quot;gc&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">QV4</span><span class="o">::</span><span class="n">GlobalExtensions</span><span class="o">::</span><span class="n">method_gc</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="qtimer">用 QTimer 封装一下</h4>
+<blockquote>
+<p>尽管 Qt中的QTimer拥有上面四个函数的功能——单次触发设置/解除、多次触发设置/接触，但是QTimer在js也不能直接使用。</p>
+</blockquote>
+<p>把QTimer封装一下，然后再暴露给QJSEngine，不难实现：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Utils</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QObject</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Q_OBJECT</span>
+
+<span class="w">    </span><span class="n">QMap</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">QTimer</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="n">m_timers</span><span class="p">;</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">Q_INVOKABLE</span><span class="w"> </span><span class="n">QTimer</span><span class="w"> </span><span class="o">*</span><span class="n">newQTimer</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">msecs</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">isSingleShot</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QTimer</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="w">        </span><span class="n">t</span><span class="o">-&gt;</span><span class="n">setInterval</span><span class="p">(</span><span class="n">msecs</span><span class="p">);</span>
+<span class="w">        </span><span class="n">t</span><span class="o">-&gt;</span><span class="n">setSingleShot</span><span class="p">(</span><span class="n">isSingleShot</span><span class="p">);</span>
+<span class="w">        </span><span class="n">t</span><span class="o">-&gt;</span><span class="n">start</span><span class="p">();</span>
+<span class="w">        </span><span class="n">m_timers</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">t</span><span class="o">-&gt;</span><span class="n">timerId</span><span class="p">(),</span><span class="w"> </span><span class="n">t</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">Q_INVOKABLE</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">killQTimer</span><span class="p">(</span><span class="n">QTimer</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">t</span><span class="o">-&gt;</span><span class="n">stop</span><span class="p">();</span>
+<span class="w">            </span><span class="n">t</span><span class="o">-&gt;</span><span class="n">deleteLater</span><span class="p">();</span>
+<span class="w">            </span><span class="n">m_timers</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">t</span><span class="o">-&gt;</span><span class="n">timerId</span><span class="p">());</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">Q_INVOKABLE</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">getQTimerId</span><span class="p">(</span><span class="n">QTimer</span><span class="w"> </span><span class="o">*</span><span class="n">timer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">timer</span><span class="o">-&gt;</span><span class="n">timerId</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">Q_INVOKABLE</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">killQTimerById</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m_timers</span><span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">killQTimer</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+
+<p>而后，我们可以用javascript定义我们想要的函数setTimeout()和clearTimeout()：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">initJs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">function setTimeout(func, delay, ...args) {</span>
+<span class="s">    var t = utils.newQTimer(delay, true);</span>
+<span class="s">    t.timeout.connect(function() {</span>
+<span class="s">        func.apply(this, args);</span>
+<span class="s">        utils.killQTimer(t);</span>
+<span class="s">    });</span>
+<span class="s">    return utils.getQTimerId(t);</span>
+<span class="s">}</span>
+
+<span class="s">function clearTimeout(id) {</span>
+<span class="s">    utils.killQTimerById(id);</span>
+<span class="s">}</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>有了这两个东西，我们就可以直接用Qt来跑本节开头提到的Javascript程序了：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QCoreApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QJSEngine&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QTimer&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QMap&gt;</span>
+
+<span class="c1">// ...</span>
+<span class="c1">// ...</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">js</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">js(</span>
+<span class="s">setTimeout(function() {</span>
+<span class="s">    console.log(&quot;Hello 1+1=2!&quot;);</span>
+<span class="s">}, 2000);</span>
+
+<span class="s">setTimeout(function(name) {</span>
+<span class="s">    console.log(&quot;Hello&quot;, name);</span>
+<span class="s">}, 1000, &quot;1+1=10!&quot;);</span>
+
+<span class="s">let id = setTimeout(function() {</span>
+<span class="s">    console.log(&quot;Hello, you cannot see me!&quot;);</span>
+<span class="s">}, 1000);</span>
+<span class="s">clearTimeout(id);</span>
+
+<span class="s">console.log(&quot;Hello Debao!&quot;);</span>
+<span class="dl">)js</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QCoreApplication</span><span class="w"> </span><span class="n">app</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">QJSEngine</span><span class="w"> </span><span class="n">engine</span><span class="p">;</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">installExtensions</span><span class="p">(</span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">ConsoleExtension</span><span class="p">);</span>
+<span class="w">    </span><span class="n">engine</span><span class="p">.</span><span class="n">globalObject</span><span class="p">().</span><span class="n">setProperty</span><span class="p">(</span><span class="s">&quot;utils&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">newQObject</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Utils</span><span class="p">));</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">initJs</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">engine</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">js</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ret</span><span class="p">.</span><span class="n">isError</span><span class="p">())</span>
+<span class="w">        </span><span class="n">qDebug</span><span class="p">()</span><span class="o">&lt;&lt;</span><span class="n">ret</span><span class="p">.</span><span class="n">toString</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">QTimer</span><span class="o">::</span><span class="n">singleShot</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">app</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">QCoreApplication</span><span class="o">::</span><span class="n">quit</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">app</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;main.moc&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="n">Hello</span><span class="w"> </span><span class="n">Debao</span><span class="o">!</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="n">Hello</span><span class="w"> </span><span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="o">=</span><span class="mi">10</span><span class="o">!</span>
+<span class="n">js</span><span class="o">:</span><span class="w"> </span><span class="n">Hello</span><span class="w"> </span><span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="o">=</span><span class="mi">2</span><span class="o">!</span>
+</code></pre></div></td></tr></table></div>
+
+<ol>
+<li>setInterval() 与 clearInterval()的实现方式和这个完全一样，demo中不再重复。</li>
+<li>可以从QJSEngine派生一下，将这部分内容放到派生类中。</li>
+<li>借助事件循环，我们也可以给utils添加一个不卡死线程的sleep()函数</li>
+</ol>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Q_INVOKABLE</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">sleep</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">msecs</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">QEventLoop</span><span class="w"> </span><span class="n">evtLoop</span><span class="p">;</span>
+<span class="w">    </span><span class="n">QTimer</span><span class="o">::</span><span class="n">singleShot</span><span class="p">(</span><span class="n">ms</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">evtLoop</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">QEventLoop</span><span class="o">::</span><span class="n">quit</span><span class="p">);</span>
+<span class="w">    </span><span class="n">evtLoop</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="setobjectownership">setObjectOwnership()？</h2>
+<blockquote>
+<p>挺关键的一个函数，即使对10行左右的demo程序，一个QObject对象如果在栈上，不设置合适的的Ownership程序退出时会崩溃的。</p>
+</blockquote>
+<p>这个，在Qt6中，其实是有文档的：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">setObjectOwnership</span><span class="p">(</span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="n">QJSEngine</span><span class="o">::</span><span class="n">ObjectOwnership</span><span class="w"> </span><span class="n">ownership</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>但是，我想说的时，<strong>在Qt5.x中</strong>，它却位于QQmlEnine的静态函数：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="n">QQmlEngine</span><span class="o">::</span><span class="n">setObjectOwnership</span><span class="p">(</span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="n">QQmlEngine</span><span class="o">::</span><span class="n">ObjectOwnership</span><span class="w"> </span><span class="n">ownership</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>尽管有些古怪，在Qt5下使用QJSEngine时，是可以直接使用QQmlEngine的setObjectOwnership()成员的。</p>
+<ul>
+<li>https://stackoverflow.com/questions/26177693/qjsengine-deletes-my-qobject-how-to-change-ownership-after-qjsenginenewqobjec</li>
+</ul>
+<h2 id="_9">参考</h2>
+<ul>
+<li>https://doc.qt.io/qt-6/qjsengine.html</li>
+<li>https://doc.qt.io/qt-6/qtqml-cppintegration-data.html</li>
+<li>https://doc.qt.io/qt-6/qml-qtqml-qt.html</li>
+<li>https://codebrowser.dev/qt6/qtdeclarative/src/qml/jsruntime/qv4engine.cpp.html</li>
+<li>https://www.kdab.com/diy-moc-dynamic-meta-objects/</li>
+<li>https://stackoverflow.com/questions/11236970/what-is-the-equivalent-of-javascripts-settimeout-on-qtscript</li>
+<li>https://developer.mozilla.org/en-US/docs/Web/API/setTimeout</li>
+<li>https://nodejs.org/en/learn/asynchronous-work/discover-javascript-timers</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-01-21T10:24:00+08:00" pubdate>Sun 21 January 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/javascript.html">javascript</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

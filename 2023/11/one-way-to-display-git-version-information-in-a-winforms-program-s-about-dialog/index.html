@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>在WinForm程序中显示Git版本信息的一种方式 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">在WinForm程序中显示Git版本信息的一种方式</h1>
+    <p class="meta">
+<time datetime="2023-11-21T19:43:00+08:00" pubdate>Tue 21 November 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>对于一个开发桌面程序的小团队来说，如果 一没有专门人员负责软件打包发布，二没有CI/CD系统进行自动发布，且需要频繁迭代的话，开发工程师最好保证每次代码提交后，生成的产物自动生成附带不同的版本号。不然在迭代过程中，和测试人员或用户交流会有一定困难。</p>
+</blockquote>
+<p>对于使用qmake或cmake等构建工具的工程，可以直接：</p>
+<ul>
+<li>在工程文件中通过git获取仓库信息，而后通过宏定义传递到源码；</li>
+<li>或者构建过程中生成一个临时文件，作为源码一部分使用。</li>
+</ul>
+<p>那么对于一个C#的WinForm程序，如何在Visual Studio下每次构建时自动调用git来获取仓库信息呢？</p>
+<p>其实也简单，只需要一个.tt文件进行了。接下来，我们使用Visual Studio 2019自带 T4 功能，一步一步实现如下效果：</p>
+<p><img alt="c-sharp-about-dialog" src="https://blog.debao.me/images/c-sharp-about-dialog.png"></p>
+<p>即：在C#程序 <strong>About对话框</strong> 以及在程序 <strong>属性对话框</strong> 中显示版本信息。那么：</p>
+<h2 id="_1">如何确定版本号？</h2>
+<blockquote>
+<p>其实，版本号定义本身比较随意的，比如大佬 高德纳 使用圆周率 <code>π</code>和自然底数<code>e</code>作为他软件作品的版本号。截至目前Tex的版本号是3.141592653。</p>
+</blockquote>
+<p>语义化版本（<strong>SemVer</strong>）在开源社区用的比较广，文档中<a href="https://semver.org/lang/zh-CN/">各字段定义</a>也很详细。简单说，版本号一般由三部分构成：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>MAJOR.MINOR.PATCH
+</code></pre></div></td></tr></table></div>
+
+<p>而微软的定义是这样的（一直不清楚它的Build number是怎么用的）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Major.Minor.Build.Revision
+</code></pre></div></td></tr></table></div>
+
+<p>在本文中，我们使用4个数字来表示版本号，比如 1.0.0.2。</p>
+<p>其中，前三位是代码中或配置文件中写死的(有重大改动时可手动升版)，最后一位是自动生成的，只需要保证最后一位单调增加就行（当然，不同人在不同时间编译同一个版本，最后一位也要保持一致）。</p>
+<p>老的SVN干这个事情很简单，反而Git作为分布式源码控制系统，做这个事情还真不擅长，它只保证每次提交生成一个长长的SHA1值，但是这个值又对用户没什么用。简单起见，我们可以使用git仓库的提交数或者距离上一个tag的提交数作为版本号的最后一位。</p>
+<blockquote>
+<p>尽管代码每次提交生成的长长的SHA1值对客户没有用，但是对偷懒的程序员来说，实在太有用了，依靠它，随时可以找到这个版本对应的源码。所以这个东西我们此次也显示出来了，不过SHA1也不用全显示，一般显示开头的几个数字就够了。如果仓库中有tag，使用describe获取描述信息也是不错选择。</p>
+</blockquote>
+<h2 id="_2">信息放什么地方？</h2>
+<p>在C#中，版本信息一般都存放在一个名为 AssemblyInfo.cs的文件中。文件内容大致如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code>using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyTitle(&quot;Debao&#39;s C# Demo&quot;)]
+[assembly: AssemblyDescription(&quot;All right reserved.&quot;)]
+[assembly: AssemblyConfiguration(&quot;&quot;)]
+[assembly: AssemblyCompany(&quot;&quot;)]
+[assembly: AssemblyProduct(&quot;Demo&quot;)]
+[assembly: AssemblyCopyright(&quot;Copyright © 2023&quot;)]
+[assembly: AssemblyTrademark(&quot;&quot;)]
+[assembly: AssemblyCulture(&quot;&quot;)]
+[assembly: AssemblyInformationalVersion(&quot;&quot;)]
+[assembly: AssemblyVersion(&quot;1.0.0.2&quot;)]
+[assembly: AssemblyFileVersion(&quot;1.0.0.2&quot;)]
+[assembly: AssemblyMetadata(&quot;BuildDate&quot;, &quot;11/21/2023 12:50:42&quot;)]
+[assembly: AssemblyMetadata(&quot;GitSHA1&quot;, &quot;4f3935e&quot;)]
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>如果只想在About对话框显示版本信息，用不用 AssemblyInfo.cs 是无所谓的，随便创建一个文件，写入需要的信息，让About对话框调用就可以了。</p>
+</blockquote>
+<p>但使用这个文件可以同时解决版本显示的两个问题：</p>
+<ul>
+<li>在属性对话框中显示（在程序图标上点击右键）</li>
+<li>在About 对话框中显示</li>
+</ul>
+<p>代码每次变化，都需要这个文件信息发生变化，该怎么办...</p>
+<h2 id="assemblyinfocs">如何自动更新AssemblyInfo.cs？</h2>
+<blockquote>
+<p>既然需要自动更新，那么这个文件就不适合放进代码仓库。</p>
+</blockquote>
+<p>创建一个 AssemblyInfo.tt 文件，在构建过程中，使用T4 自动将其转成对应的 .cs文件。</p>
+<h3 id="_3">准备</h3>
+<p>首先，删除AsemblyInfo.cs这个文件</p>
+<p>其次，保证 git 不管控这个文件，在 <code>.gitignore</code>中添加：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Properties/AssemblyInfo.cs
+</code></pre></div></td></tr></table></div>
+
+<h3 id="t4">主角 T4</h3>
+<blockquote>
+<p>T4（Text Template Transformation Toolkit）文本模板转换工具，是一个开源的基于模板的文本生成框架。T4 源文件的后缀通常使用 .tt。</p>
+<p>T4 文本模板是可生成文本文件的文字块和控制逻辑的混合。控制逻辑可以用Visual C# 或 Visual Basic的程序代码段书写。生成的文件可以是文本，资源文件，或程序源文件。</p>
+</blockquote>
+<p>.tt文件 本身和 .cs 很像，如下所示，只有最后几行不同。在这几行中，我们调用自定义的函数，用来获取源码仓库信息：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code>using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+// General Information about an assembly is controlled through the following
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+[assembly: AssemblyTitle(&quot;Debao&#39;s Demo&quot;)]
+[assembly: AssemblyDescription(&quot;All right reserved.&quot;)]
+[assembly: AssemblyConfiguration(&quot;&quot;)]
+[assembly: AssemblyCompany(&quot;&quot;)]
+[assembly: AssemblyProduct(&quot;Demo&quot;)]
+[assembly: AssemblyCopyright(&quot;Copyright © 2023&quot;)]
+[assembly: AssemblyTrademark(&quot;&quot;)]
+[assembly: AssemblyCulture(&quot;&quot;)]
+[assembly: AssemblyInformationalVersion(&quot;&quot;)]
+[assembly: AssemblyVersion(&quot;1.0.0.&lt;#= GetCommitsCount() #&gt;&quot;)]
+[assembly: AssemblyFileVersion(&quot;1.0.0.&lt;#= GetCommitsCount() #&gt;&quot;)]
+[assembly: AssemblyMetadata(&quot;BuildDate&quot;, &quot;&lt;#= DateTime.Now #&gt;&quot;)]
+[assembly: AssemblyMetadata(&quot;GitSHA1&quot;, &quot;&lt;#= GetSha1().Substring(0,7) #&gt;&quot;)]
+</code></pre></div></td></tr></table></div>
+
+<p>这两个函数的意图很明显，只需要将其也定义在这个文件中就行了</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">&lt;</span>#<span class="o">+</span>
+<span class="w">        </span><span class="nv">public</span><span class="w"> </span><span class="nv">int</span><span class="w"> </span><span class="nv">GetCommitsCount</span><span class="ss">()</span>
+<span class="w">        </span>{
+<span class="w">            </span><span class="nv">int</span><span class="w"> </span><span class="nv">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="c1">;</span>
+<span class="w">            </span><span class="nv">using</span><span class="w"> </span><span class="ss">(</span><span class="nv">Process</span><span class="w"> </span><span class="nv">process</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">new</span><span class="w"> </span><span class="nv">Process</span><span class="ss">())</span>
+<span class="w">            </span>{
+<span class="w">                </span><span class="nv">process</span>.<span class="nv">StartInfo</span>.<span class="nv">FileName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;git&quot;</span><span class="c1">;</span>
+<span class="w">                </span><span class="nv">process</span>.<span class="nv">StartInfo</span>.<span class="nv">Arguments</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rev-list --count HEAD&quot;</span><span class="c1">;</span>
+<span class="w">                </span><span class="nv">process</span>.<span class="nv">StartInfo</span>.<span class="nv">UseShellExecute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">false</span><span class="c1">;</span>
+<span class="w">                </span><span class="nv">process</span>.<span class="nv">StartInfo</span>.<span class="nv">WorkingDirectory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Path</span>.<span class="nv">GetDirectoryName</span><span class="ss">(</span><span class="nv">this</span>.<span class="nv">Host</span>.<span class="nv">TemplateFile</span><span class="ss">)</span><span class="c1">;</span>
+<span class="w">                </span><span class="nv">process</span>.<span class="nv">StartInfo</span>.<span class="nv">RedirectStandardOutput</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">true</span><span class="c1">;</span>
+<span class="w">                </span><span class="nv">try</span>
+<span class="w">                </span>{
+<span class="w">                    </span><span class="nv">process</span>.<span class="nv">Start</span><span class="ss">()</span><span class="c1">;</span>
+<span class="w">                    </span><span class="nv">StreamReader</span><span class="w"> </span><span class="nv">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">process</span>.<span class="nv">StandardOutput</span><span class="c1">;</span>
+<span class="w">                    </span><span class="nv">string</span><span class="w"> </span><span class="nv">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">reader</span>.<span class="nv">ReadToEnd</span><span class="ss">()</span><span class="c1">;</span>
+<span class="w">                    </span><span class="nv">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">int</span>.<span class="nv">Parse</span><span class="ss">(</span><span class="nv">output</span><span class="ss">)</span><span class="c1">;</span>
+<span class="w">                </span>}
+<span class="w">                </span><span class="nv">catch</span><span class="ss">(</span><span class="nv">Exception</span><span class="w"> </span><span class="nv">ex</span><span class="ss">)</span>
+<span class="w">                </span>{
+<span class="w">                    </span><span class="o">//</span><span class="w"> </span><span class="nv">fail</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">run</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">git</span><span class="w"> </span><span class="nv">command</span>.
+<span class="w">                </span>}
+<span class="w">            </span>}
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nv">count</span><span class="c1">;</span>
+<span class="w">        </span>}
+
+
+<span class="w">        </span><span class="nv">public</span><span class="w"> </span><span class="nv">string</span><span class="w"> </span><span class="nv">GetSha1</span><span class="ss">()</span>
+<span class="w">        </span>{
+<span class="w">            </span><span class="nv">string</span><span class="w"> </span><span class="nv">sha1</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="c1">;</span>
+<span class="w">            </span><span class="nv">using</span><span class="w"> </span><span class="ss">(</span><span class="nv">Process</span><span class="w"> </span><span class="nv">process</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">new</span><span class="w"> </span><span class="nv">Process</span><span class="ss">())</span>
+<span class="w">            </span>{
+<span class="w">                </span><span class="nv">process</span>.<span class="nv">StartInfo</span>.<span class="nv">FileName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;git&quot;</span><span class="c1">;</span>
+<span class="w">                </span><span class="nv">process</span>.<span class="nv">StartInfo</span>.<span class="nv">Arguments</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rev-parse HEAD&quot;</span><span class="c1">;</span>
+<span class="w">                </span><span class="nv">process</span>.<span class="nv">StartInfo</span>.<span class="nv">UseShellExecute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">false</span><span class="c1">;</span>
+<span class="w">                </span><span class="nv">process</span>.<span class="nv">StartInfo</span>.<span class="nv">WorkingDirectory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Path</span>.<span class="nv">GetDirectoryName</span><span class="ss">(</span><span class="nv">this</span>.<span class="nv">Host</span>.<span class="nv">TemplateFile</span><span class="ss">)</span><span class="c1">;</span>
+<span class="w">                </span><span class="nv">process</span>.<span class="nv">StartInfo</span>.<span class="nv">RedirectStandardOutput</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">true</span><span class="c1">;</span>
+<span class="w">                </span><span class="nv">try</span>
+<span class="w">                </span>{
+<span class="w">                    </span><span class="nv">process</span>.<span class="nv">Start</span><span class="ss">()</span><span class="c1">;</span>
+<span class="w">                    </span><span class="nv">StreamReader</span><span class="w"> </span><span class="nv">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">process</span>.<span class="nv">StandardOutput</span><span class="c1">;</span>
+<span class="w">                    </span><span class="nv">sha1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">reader</span>.<span class="nv">ReadToEnd</span><span class="ss">()</span><span class="c1">;</span>
+<span class="w">                </span>}
+<span class="w">                </span><span class="nv">catch</span><span class="ss">(</span><span class="nv">Exception</span><span class="w"> </span><span class="nv">ex</span><span class="ss">)</span>
+<span class="w">                </span>{
+<span class="w">                    </span><span class="o">//</span><span class="w"> </span><span class="nv">fail</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">run</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">git</span><span class="w"> </span><span class="nv">command</span>.
+<span class="w">                </span>}
+<span class="w">            </span>}
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nv">sha1</span><span class="c1">;</span>
+<span class="w">        </span>}
+#<span class="o">&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>通过直接调用git获取所需的信息，代码有些简单粗暴，就不解释了。</p>
+<p>只不过，这几个函数，使用了.net一些标准库，所以使用之前需要通过 import 引入进来，如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">&lt;</span><span class="c1">#@ template debug=&quot;false&quot; hostspecific=&quot;true&quot; language=&quot;C#&quot; #&gt;</span>
+<span class="o">&lt;</span><span class="c1">#@ assembly name=&quot;System.Core&quot; #&gt;</span>
+<span class="o">&lt;</span><span class="c1">#@ import namespace=&quot;System.Linq&quot; #&gt;</span>
+<span class="o">&lt;</span><span class="c1">#@ import namespace=&quot;System.Text&quot; #&gt;</span>
+<span class="o">&lt;</span><span class="c1">#@ import namespace=&quot;System.IO&quot; #&gt;</span>
+<span class="o">&lt;</span><span class="c1">#@ import namespace=&quot;System.Diagnostics&quot; #&gt;</span>
+<span class="o">&lt;</span><span class="c1">#@ import namespace=&quot;System.Collections.Generic&quot; #&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这三部分合起来，就是完整的所需要的文件...</p>
+<h3 id="assemblytt">Assembly.tt 文件</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">&lt;</span><span class="c1">#@ template debug=&quot;false&quot; hostspecific=&quot;true&quot; language=&quot;C#&quot; #&gt;</span>
+<span class="o">&lt;</span><span class="c1">#@ assembly name=&quot;System.Core&quot; #&gt;</span>
+<span class="o">&lt;</span><span class="c1">#@ import namespace=&quot;System.Linq&quot; #&gt;</span>
+<span class="o">&lt;</span><span class="c1">#@ import namespace=&quot;System.Text&quot; #&gt;</span>
+<span class="o">&lt;</span><span class="c1">#@ import namespace=&quot;System.IO&quot; #&gt;</span>
+<span class="o">&lt;</span><span class="c1">#@ import namespace=&quot;System.Diagnostics&quot; #&gt;</span>
+<span class="o">&lt;</span><span class="c1">#@ import namespace=&quot;System.Collections.Generic&quot; #&gt;</span>
+<span class="o">//---------------------------------------------------------------------------</span>
+<span class="o">//</span><span class="w">  </span><span class="n">This</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="n">auto</span><span class="o">-</span><span class="n">generated</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">T4</span><span class="w"> </span><span class="kn">from</span><span class="w"> </span><span class="nn">AssemblyInfo.tt</span>
+<span class="o">//</span>
+<span class="o">//</span><span class="w">  </span><span class="n">Changes</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="n">may</span><span class="w"> </span><span class="n">cause</span><span class="w"> </span><span class="n">incorrect</span><span class="w"> </span><span class="n">behavior</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">lost</span><span class="w"> </span><span class="k">if</span>
+<span class="o">//</span><span class="w">  </span><span class="n">the</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="n">regenerated</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//---------------------------------------------------------------------------</span>
+
+<span class="n">using</span><span class="w"> </span><span class="n">System</span><span class="o">.</span><span class="n">Reflection</span><span class="p">;</span>
+<span class="n">using</span><span class="w"> </span><span class="n">System</span><span class="o">.</span><span class="n">Runtime</span><span class="o">.</span><span class="n">CompilerServices</span><span class="p">;</span>
+<span class="n">using</span><span class="w"> </span><span class="n">System</span><span class="o">.</span><span class="n">Runtime</span><span class="o">.</span><span class="n">InteropServices</span><span class="p">;</span>
+
+<span class="o">//</span><span class="w"> </span><span class="n">General</span><span class="w"> </span><span class="n">Information</span><span class="w"> </span><span class="n">about</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="n">assembly</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="n">controlled</span><span class="w"> </span><span class="n">through</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">following</span>
+<span class="o">//</span><span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">attributes</span><span class="o">.</span><span class="w"> </span><span class="n">Change</span><span class="w"> </span><span class="n">these</span><span class="w"> </span><span class="n">attribute</span><span class="w"> </span><span class="n">values</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">modify</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">information</span>
+<span class="o">//</span><span class="w"> </span><span class="n">associated</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="n">assembly</span><span class="o">.</span>
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">AssemblyTitle</span><span class="p">(</span><span class="s2">&quot;Debao&#39;s Demo&quot;</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">AssemblyDescription</span><span class="p">(</span><span class="s2">&quot;All right reserved.&quot;</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">AssemblyConfiguration</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">AssemblyCompany</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">AssemblyProduct</span><span class="p">(</span><span class="s2">&quot;Demo&quot;</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">AssemblyCopyright</span><span class="p">(</span><span class="s2">&quot;Copyright © 2023&quot;</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">AssemblyTrademark</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">AssemblyCulture</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">AssemblyInformationalVersion</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">AssemblyVersion</span><span class="p">(</span><span class="s2">&quot;1.0.0.&lt;#= GetCommitsCount() #&gt;&quot;</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">AssemblyFileVersion</span><span class="p">(</span><span class="s2">&quot;1.0.0.&lt;#= GetCommitsCount() #&gt;&quot;</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">AssemblyMetadata</span><span class="p">(</span><span class="s2">&quot;BuildDate&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;&lt;#= DateTime.Now #&gt;&quot;</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">AssemblyMetadata</span><span class="p">(</span><span class="s2">&quot;GitSHA1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;&lt;#= GetSha1().Substring(0,7) #&gt;&quot;</span><span class="p">)]</span>
+
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">ComVisible</span><span class="p">(</span><span class="n">false</span><span class="p">)]</span>
+
+<span class="o">//</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">following</span><span class="w"> </span><span class="n">GUID</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">ID</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">typelib</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">project</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="n">exposed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">COM</span>
+<span class="p">[</span><span class="n">assembly</span><span class="p">:</span><span class="w"> </span><span class="n">Guid</span><span class="p">(</span><span class="s2">&quot;14b8063a-65bf-4794-84d0-e6b61ee99ebb&quot;</span><span class="p">)]</span>
+
+
+<span class="o">&lt;</span><span class="c1">#+</span>
+<span class="w">        </span><span class="n">public</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="n">GetCommitsCount</span><span class="p">()</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nb">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">            </span><span class="n">using</span><span class="w"> </span><span class="p">(</span><span class="n">Process</span><span class="w"> </span><span class="n">process</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new</span><span class="w"> </span><span class="n">Process</span><span class="p">())</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="n">process</span><span class="o">.</span><span class="n">StartInfo</span><span class="o">.</span><span class="n">FileName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;git&quot;</span><span class="p">;</span>
+<span class="w">                </span><span class="n">process</span><span class="o">.</span><span class="n">StartInfo</span><span class="o">.</span><span class="n">Arguments</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rev-list --count HEAD&quot;</span><span class="p">;</span>
+<span class="w">                </span><span class="n">process</span><span class="o">.</span><span class="n">StartInfo</span><span class="o">.</span><span class="n">UseShellExecute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">false</span><span class="p">;</span>
+<span class="w">                </span><span class="n">process</span><span class="o">.</span><span class="n">StartInfo</span><span class="o">.</span><span class="n">WorkingDirectory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Path</span><span class="o">.</span><span class="n">GetDirectoryName</span><span class="p">(</span><span class="n">this</span><span class="o">.</span><span class="n">Host</span><span class="o">.</span><span class="n">TemplateFile</span><span class="p">);</span>
+<span class="w">                </span><span class="n">process</span><span class="o">.</span><span class="n">StartInfo</span><span class="o">.</span><span class="n">RedirectStandardOutput</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">true</span><span class="p">;</span>
+<span class="w">                </span><span class="k">try</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="n">process</span><span class="o">.</span><span class="n">Start</span><span class="p">();</span>
+<span class="w">                    </span><span class="n">StreamReader</span><span class="w"> </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">process</span><span class="o">.</span><span class="n">StandardOutput</span><span class="p">;</span>
+<span class="w">                    </span><span class="n">string</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reader</span><span class="o">.</span><span class="n">ReadToEnd</span><span class="p">();</span>
+<span class="w">                    </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">int</span><span class="o">.</span><span class="n">Parse</span><span class="p">(</span><span class="n">output</span><span class="p">);</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">                </span><span class="n">catch</span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="o">//</span><span class="w"> </span><span class="n">fail</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="n">command</span><span class="o">.</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">count</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+
+<span class="w">        </span><span class="n">public</span><span class="w"> </span><span class="n">string</span><span class="w"> </span><span class="n">GetSha1</span><span class="p">()</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">string</span><span class="w"> </span><span class="n">sha1</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">;</span>
+<span class="w">            </span><span class="n">using</span><span class="w"> </span><span class="p">(</span><span class="n">Process</span><span class="w"> </span><span class="n">process</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new</span><span class="w"> </span><span class="n">Process</span><span class="p">())</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="n">process</span><span class="o">.</span><span class="n">StartInfo</span><span class="o">.</span><span class="n">FileName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;git&quot;</span><span class="p">;</span>
+<span class="w">                </span><span class="n">process</span><span class="o">.</span><span class="n">StartInfo</span><span class="o">.</span><span class="n">Arguments</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rev-parse HEAD&quot;</span><span class="p">;</span>
+<span class="w">                </span><span class="n">process</span><span class="o">.</span><span class="n">StartInfo</span><span class="o">.</span><span class="n">UseShellExecute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">false</span><span class="p">;</span>
+<span class="w">                </span><span class="n">process</span><span class="o">.</span><span class="n">StartInfo</span><span class="o">.</span><span class="n">WorkingDirectory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Path</span><span class="o">.</span><span class="n">GetDirectoryName</span><span class="p">(</span><span class="n">this</span><span class="o">.</span><span class="n">Host</span><span class="o">.</span><span class="n">TemplateFile</span><span class="p">);</span>
+<span class="w">                </span><span class="n">process</span><span class="o">.</span><span class="n">StartInfo</span><span class="o">.</span><span class="n">RedirectStandardOutput</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">true</span><span class="p">;</span>
+<span class="w">                </span><span class="k">try</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="n">process</span><span class="o">.</span><span class="n">Start</span><span class="p">();</span>
+<span class="w">                    </span><span class="n">StreamReader</span><span class="w"> </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">process</span><span class="o">.</span><span class="n">StandardOutput</span><span class="p">;</span>
+<span class="w">                    </span><span class="n">sha1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reader</span><span class="o">.</span><span class="n">ReadToEnd</span><span class="p">();</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">                </span><span class="n">catch</span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="o">//</span><span class="w"> </span><span class="n">fail</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="n">command</span><span class="o">.</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">sha1</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="c1">#&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>确保文件属性中，Custom Tool 选择：TextTemplatingFileGenerator
+<img alt="c-sharp-assembly-tt-property" src="https://blog.debao.me/images/c-sharp-assembly-tt-property.png"></p>
+<p>至此，任务完成。每次重新构建项目时，AssemblyInfo.cs 都会自动生成出来，如果不重新构建项目，也可以在AssemblyInfo.tt上点击右键，选择"Run Custom Tool"。</p>
+<h2 id="_4">题外</h2>
+<p>如果要在没有git的机器上进行构建，或者不想直接调用git。可以搜索到 .git 文件夹，直接解析它。比如，上面用到的GetSha1()函数，也可以像下面这样写：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">        </span><span class="n">public</span><span class="w">  </span><span class="n">string</span><span class="w"> </span><span class="n">GetHeadSha1</span><span class="p">(</span><span class="n">DirectoryInfo</span><span class="w"> </span><span class="n">gitDirectory</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">gitDirectory</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb nb-Type">null</span><span class="p">)</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="k">var</span><span class="w"> </span><span class="n">head</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">File</span><span class="o">.</span><span class="n">ReadAllText</span><span class="p">(</span><span class="n">gitDirectory</span><span class="o">.</span><span class="n">GetFiles</span><span class="p">(</span><span class="s2">&quot;HEAD&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">First</span><span class="p">()</span><span class="o">.</span><span class="n">FullName</span><span class="p">);</span>
+<span class="w">                </span><span class="n">head</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">head</span><span class="o">.</span><span class="n">Substring</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">Trim</span><span class="p">();</span>
+<span class="w">                </span><span class="k">var</span><span class="w"> </span><span class="n">headRef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="o">.</span><span class="n">IO</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">Combine</span><span class="p">(</span><span class="n">gitDirectory</span><span class="o">.</span><span class="n">FullName</span><span class="p">,</span><span class="w"> </span><span class="n">head</span><span class="p">);</span>
+<span class="w">                </span><span class="k">return</span><span class="w">  </span><span class="n">File</span><span class="o">.</span><span class="n">ReadAllText</span><span class="p">(</span><span class="n">headRef</span><span class="p">)</span><span class="o">.</span><span class="n">Trim</span><span class="p">();</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nb nb-Type">null</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="n">public</span><span class="w">  </span><span class="n">DirectoryInfo</span><span class="w"> </span><span class="n">SearchForGitDirectory</span><span class="p">(</span><span class="n">string</span><span class="w"> </span><span class="n">path</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">DirectoryInfo</span><span class="w"> </span><span class="n">di</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new</span><span class="w"> </span><span class="n">DirectoryInfo</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="w">            </span><span class="k">var</span><span class="w"> </span><span class="n">directories</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">di</span><span class="o">.</span><span class="n">GetDirectories</span><span class="p">(</span><span class="s2">&quot;.git&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="k">var</span><span class="w"> </span><span class="n">gitDirectory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">directories</span><span class="o">.</span><span class="n">FirstOrDefault</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">Name</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;.git&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">gitDirectory</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb nb-Type">null</span><span class="p">)</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">di</span><span class="o">.</span><span class="n">Parent</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb nb-Type">null</span><span class="p">)</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="n">SearchForGitDirectory</span><span class="p">(</span><span class="n">di</span><span class="o">.</span><span class="n">Parent</span><span class="o">.</span><span class="n">FullName</span><span class="p">);</span>
+<span class="w">                </span><span class="p">}</span>
+
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="nb nb-Type">null</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">gitDirectory</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="n">public</span><span class="w"> </span><span class="n">string</span><span class="w"> </span><span class="n">GetSha1</span><span class="p">()</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="k">var</span><span class="w"> </span><span class="n">gitDirectory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SearchForGitDirectory</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">GetDirectoryName</span><span class="p">(</span><span class="n">this</span><span class="o">.</span><span class="n">Host</span><span class="o">.</span><span class="n">TemplateFile</span><span class="p">));</span>
+<span class="w">            </span><span class="k">var</span><span class="w"> </span><span class="n">headSha1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetHeadSha1</span><span class="p">(</span><span class="n">gitDirectory</span><span class="p">);</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">headSha1</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>当然，如果真要在没有安装git的机器上使用git仓库，就真有点自虐了...</p>
+</blockquote>
+<h2 id="_5">参考</h2>
+<ul>
+<li>https://semver.org/</li>
+<li><a href="https://en.wikipedia.org/wiki/Software_versioning">Software versioning - Wikipedia</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Text_Template_Transformation_Toolkit">Text Template Transformation Toolkit - Wikipedia</a></li>
+<li><a href="https://docs.microsoft.com/en-us/visualstudio/modeling/code-generation-and-t4-text-templates?view=vs-2022">Code Generation and T4 Text Templates - Visual Studio (Windows) | Microsoft Docs</a></li>
+<li><a href="https://docs.microsoft.com/en-us/visualstudio/modeling/code-generation-in-a-build-process?view=vs-2022">Code Generation in a Build Process - Visual Studio (Windows) | Microsoft Docs</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-11-21T19:43:00+08:00" pubdate>Tue 21 November 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/git.html">Git</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

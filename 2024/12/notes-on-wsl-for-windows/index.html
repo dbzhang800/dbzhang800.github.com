@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Windows下WSL小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Windows下WSL小记</h1>
+    <p class="meta">
+<time datetime="2024-12-27T20:01:00+08:00" pubdate>Fri 27 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>稍微梳理一下</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#wsl">WSL 是什么</a><ul>
+<li><a href="#wsl1">WSL1</a></li>
+<li><a href="#wsl2">WSL2</a></li>
+</ul>
+</li>
+<li><a href="#_1">文件系统</a><ul>
+<li><a href="#linux">Linux的文件系统</a></li>
+<li><a href="#linuxwindows">Linux下访问Windows文件系统</a><ul>
+<li><a href="#_2">挂载？</a></li>
+</ul>
+</li>
+<li><a href="#windowslinux">Windows访问Linux文件系统</a></li>
+</ul>
+</li>
+<li><a href="#wslexe">wsl.exe</a><ul>
+<li><a href="#wsl_1">启动和运行 WSL 实例</a></li>
+<li><a href="#wsl_2">管理 WSL 发行版</a></li>
+<li><a href="#_3">帮助及其他</a></li>
+</ul>
+</li>
+<li><a href="#wslconf">wsl.conf</a></li>
+<li><a href="#vscode-wsl">VSCode 与 WSL</a><ul>
+<li><a href="#_4">如何工作的？</a></li>
+</ul>
+</li>
+<li><a href="#wslg">WSLg</a></li>
+<li><a href="#_5">参考</a></li>
+</ul>
+</div>
+<h2 id="wsl">WSL 是什么</h2>
+<p>WSL，全称为Windows Subsystem for Linux，是微软在Windows操作系统中引入的一项功能，旨在使用户能够在Windows上原生运行Linux的命令行工具和应用程序。</p>
+<h3 id="wsl1">WSL1</h3>
+<p>2016年，WSL的第一个版本在 Windows 10 周年更新中推出。它允许用户在 Windows 上运行 Linux 程序，而无需使用虚拟机或双系统。</p>
+<p>WSL1 通过一个抽象层翻译 Linux 的系统调用（syscall），将其映射到 Windows 系统调用。本质上是一个兼容层，而非完整的 Linux 内核。</p>
+<p>只支持Ubuntu，也叫过 “Bash on Ubuntu on Windows” 或 “Bash on Windows”。</p>
+<blockquote>
+<p>由于没有原生 Linux 内核支持，某些复杂的系统调用和应用程序（例如 Docker）无法运行。</p>
+</blockquote>
+<h3 id="wsl2">WSL2</h3>
+<ul>
+<li>2019年，微软在Build 开发者大会上正式宣布 WSL2。WSL2 引入了完整的 Linux 内核，运行在 Hyper-V 虚拟机中。</li>
+<li>2020年，Docker Desktop 开始支持 WSL2。</li>
+<li>2021年，微软为 WSL 引入了 WSLg，使用户可以运行 Linux 桌面应用和 GUI 程序。同时，提供 GPU 支持（GPU Compute），专注于硬件加速。</li>
+<li>2022年，WSL 从 Windows 功能中独立出来，通过 Microsoft Store 提供更快的更新频率。</li>
+</ul>
+<h2 id="_1">文件系统</h2>
+<blockquote>
+<p>2024马上要结束了。只考虑 WSL2 下面的 Ubuntu24.04 情况</p>
+</blockquote>
+<p>而Windows和Linux的目录结构则通过挂载机制和特定路径关系实现互通。</p>
+<h3 id="linux">Linux的文件系统</h3>
+<p>WSL2的Linux文件系统是运行在虚拟化的Linux内核上的，与Windows的文件系统是分开的。这个文件系统通常存储在Windows文件系统中的一个虚拟磁盘文件（VHDX格式）。</p>
+<p>每个WSL2发行版的文件系统存储在Windows文件系统中的一个特定位置，通常路径类似：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>C:\Users\&lt;Username&gt;\AppData\Local\Packages\&lt;LinuxDistro&gt;\LocalState\ext4.vhdx
+</code></pre></div></td></tr></table></div>
+
+<p>注意，其中 <code>&lt;LinuxDistro&gt;</code> 长这个样子：<code>CanonicalGroupLimited.Ubuntu_79rhkp1fndgab</code></p>
+<blockquote>
+<p>借助后面的 wsl.exe，可以将Linux文件系统移动到其他盘符下面。</p>
+</blockquote>
+<h3 id="linuxwindows">Linux下访问Windows文件系统</h3>
+<p>WSL2允许通过挂载访问Windows文件系统中的文件。可以在Linux环境下访问Windows的目录，Windows系统的文件会通过挂载点提供给WSL2。具体路径如下：</p>
+<ul>
+<li>Windows的C盘通常被挂载到WSL2的 /mnt/c/ 目录下。<ul>
+<li>例如，Windows中的 <code>C:\Users\&lt;Username&gt;</code> 在WSL2中对应 <code>/mnt/c/Users/&lt;Username&gt;</code>。</li>
+</ul>
+</li>
+<li>其他Windows盘符（如D盘、E盘等）通过 <code>/mnt/d/</code>、<code>/mnt/e/</code> 等方式提供访问。</li>
+</ul>
+<h4 id="_2">挂载？</h4>
+<p>在Linux下，WSL2的文件系统（如 /mnt/c）是通过Windows的虚拟化层挂载的。
+WSL2本身没有一个传统的“挂载配置文件”</p>
+<p>可以通过 <code>mount</code> 命令查看：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>mount<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>/mnt/c
+C:<span class="se">\ </span>on<span class="w"> </span>/mnt/c<span class="w"> </span><span class="nb">type</span><span class="w"> </span>9p<span class="w"> </span><span class="o">(</span>rw,noatime,dirsync,aname<span class="o">=</span>drvfs<span class="p">;</span><span class="nv">path</span><span class="o">=</span>C:<span class="se">\;</span><span class="nv">uid</span><span class="o">=</span><span class="m">1000</span><span class="p">;</span><span class="nv">gid</span><span class="o">=</span><span class="m">1000</span><span class="p">;</span><span class="nv">symlinkroot</span><span class="o">=</span>/mnt/,mmap,access<span class="o">=</span>client,msize<span class="o">=</span><span class="m">65536</span>,trans<span class="o">=</span>fd,rfd<span class="o">=</span><span class="m">5</span>,wfd<span class="o">=</span><span class="m">5</span><span class="o">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>通过 <code>/etc/fstab</code> 看不出东西：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>cat<span class="w"> </span>/etc/fstab
+<span class="c1"># UNCONFIGURED FSTAB FOR BASE SYSTEM</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>如果要修改加载行为，需要使用 <code>/etc/wsl.conf</code> 文件。</p>
+</blockquote>
+<h3 id="windowslinux">Windows访问Linux文件系统</h3>
+<p>你可以通过Windows资源管理器访问WSL2中的文件。路径是：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>\\wsl$\&lt;DistroName&gt;\
+</code></pre></div></td></tr></table></div>
+
+<p>例如对于Ubuntu来说，路径是：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>\\wsl$\Ubuntu\
+</code></pre></div></td></tr></table></div>
+
+<h2 id="wslexe">wsl.exe</h2>
+<p>wsl.exe 是 Windows Subsystem for Linux (WSL) 的命令行工具，用于在
+Windows 上管理和与 WSL 实例交互。</p>
+<p>一些常见功能：</p>
+<h3 id="wsl_1">启动和运行 WSL 实例</h3>
+<ul>
+<li>启动默认 WSL 实例：<code>wsl</code></li>
+<li>启动指定的发行版：<code>wsl -d &lt;DistroName&gt;</code></li>
+<li>停止所有 WSL 实例：<code>wsl --shutdown</code></li>
+<li>停止指定实例：<code>wsl --terminate &lt;DistroName&gt;</code></li>
+</ul>
+<h3 id="wsl_2">管理 WSL 发行版</h3>
+<ul>
+<li>安装发行版：<code>wsl --install -d &lt;DistroName&gt;</code></li>
+<li>列出已安装的发行版：<code>wsl --list --verbose</code></li>
+<li>设置默认发行版：<code>wsl --setdefault &lt;DistroName&gt;</code></li>
+<li>切换 WSL 版本：<code>wsl --set-version &lt;DistroName&gt; &lt;Version&gt;</code></li>
+<li>导出发行版：<code>wsl --export &lt;DistroName&gt; &lt;FilePath&gt;</code></li>
+<li>导入发行版：<code>wsl --import &lt;DistroName&gt; &lt;InstallLocation&gt; &lt;FilePath&gt;</code></li>
+</ul>
+<h3 id="_3">帮助及其他</h3>
+<ul>
+<li>运行Linux下的命令：<code>wsl &lt;command&gt;</code></li>
+<li>查看命令帮助：<code>wsl --help</code></li>
+</ul>
+<h2 id="wslconf">wsl.conf</h2>
+<p>配置文件 wsl.conf 位于每个Linux的 /etc/ 目录下，路径为 <code>/etc/wsl.conf</code>。</p>
+<p>wsl.conf 文件使用 INI 文件格式（键值对和段落格式），例如，默认情况下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[boot]</span>
+<span class="na">systemd</span><span class="o">=</span><span class="s">true</span>
+</code></pre></div></td></tr></table></div>
+
+<p>通过它可以控制自动挂载、网络设置、默认用户等关键功能。配置后：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Automatically mount Windows drive when the distribution is launched</span>
+<span class="k">[automount]</span>
+
+<span class="c1"># Set to true will automount fixed drives (C:/ or D:/) with DrvFs under the root directory set above. Set to false means drives won&#39;t be mounted automatically, but need to be mounted manually or with fstab.</span>
+<span class="na">enabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+
+<span class="c1"># Sets the directory where fixed drives will be automatically mounted. This example changes the mount location, so your C-drive would be /c, rather than the default /mnt/c. </span>
+<span class="na">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/</span>
+
+<span class="c1"># DrvFs-specific options can be specified.  </span>
+<span class="na">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;metadata,uid=1003,gid=1003,umask=077,fmask=11,case=off&quot;</span>
+
+<span class="c1"># Sets the `/etc/fstab` file to be processed when a WSL distribution is launched.</span>
+<span class="na">mountFsTab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+
+<span class="c1"># Network host settings that enable the DNS server used by WSL 2. This example changes the hostname, sets generateHosts to false, preventing WSL from the default behavior of auto-generating /etc/hosts, and sets generateResolvConf to false, preventing WSL from auto-generating /etc/resolv.conf, so that you can create your own (ie. nameserver 1.1.1.1).</span>
+<span class="k">[network]</span>
+<span class="na">hostname</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">DemoHost</span>
+<span class="na">generateHosts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+<span class="na">generateResolvConf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+
+<span class="c1"># Set whether WSL supports interop processes like launching Windows apps and adding path variables. Setting these to false will block the launch of Windows processes and block adding $PATH environment variables.</span>
+<span class="k">[interop]</span>
+<span class="na">enabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+<span class="na">appendWindowsPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+
+<span class="c1"># Set the user when launching a distribution with WSL.</span>
+<span class="k">[user]</span>
+<span class="na">default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">DemoUser</span>
+
+<span class="c1"># Set a command to run when a new WSL instance launches. This example starts the Docker container service.</span>
+<span class="k">[boot]</span>
+<span class="na">command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">service docker start</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="vscode-wsl">VSCode 与 WSL</h2>
+<p>VSCode下面由WSL扩展，安装后，可以：</p>
+<ul>
+<li>在Linux下，直接输入 code</li>
+<li>或，在Windows下，直接输入 wsl code</li>
+<li>或，在打开的VSCode中，Ctrl+Shift+P，中，<code>WSL: Connect to WSL in New Window</code></li>
+</ul>
+<p>然后就可以使用Linux下的g++ 或 Python 等工具链了。</p>
+<h3 id="_4">如何工作的？</h3>
+<p>当在 WSL 下的Linux中运行 code 时，实际执行的是 Windows 上的 code.exe，验证一下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>which<span class="w"> </span>code
+/mnt/c/Users/dbzha/AppData/Local/Programs/Microsoft<span class="w"> </span>VS<span class="w"> </span>Code/bin/code
+</code></pre></div></td></tr></table></div>
+
+<p>这是一个bash的脚本文件，它里面会调用真正的 code.exe 程序。</p>
+<p>是的，WSL下的Linux中可以启动exe，比如notepad.exe 或 calc.exe。这是通过 Windows 提供的 Interop（互操作性） 功能实现的。</p>
+<h2 id="wslg">WSLg</h2>
+<p>WSLg（Windows Subsystem for Linux GUI）是 Windows Subsystem for Linux (WSL) 的一个扩展功能，允许你在 Windows 10 或 Windows 11 上运行 Linux 图形用户界面（GUI）应用程序，并且与 Windows 上的应用程序无缝集成。</p>
+<p>WSLg 使得我们能够在 Windows 中直接运行 Linux 图形应用程序，比如 GIMP、Firefox、KDE、X11 应用等，而不需要额外的虚拟机或复杂的配置。</p>
+<p><img alt="gvim" src="https://blog.debao.me/images/tools/wsl_gvim.png"></p>
+<p>WSLg 目前主要优化的是 运行单一应用程序 的图形界面，而不是提供完整的桌面环境。</p>
+<h2 id="_5">参考</h2>
+<ul>
+<li>https://learn.microsoft.com/en-us/windows/wsl/</li>
+<li>https://ubuntu.com/desktop/wsl</li>
+<li>https://learn.microsoft.com/en-us/windows/wsl/wsl-config</li>
+<li>https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux</li>
+<li></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-12-27T20:01:00+08:00" pubdate>Fri 27 December 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Python Import机制乱谈（一） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/python.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Python Import机制乱谈（一）</h1>
+    <p class="meta">
+<time datetime="2024-12-04T13:06:00+08:00" pubdate>Wed 04 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>在 Python 的发展历程中，import 机制经历了多次重要的变更和演进。各种细节复杂无比，让人倍感头疼...</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#_1">例子</a><ul>
+<li><a href="#1">例子1：先认识一下关键词</a></li>
+<li><a href="#2">例子2：简单模组导入</a></li>
+<li><a href="#3">例子3：简单的包导入</a></li>
+<li><a href="#4">例子4：简单的命名空间包导入</a></li>
+<li><a href="#5">例子5：包内相对导入</a></li>
+<li><a href="#6">例子6：模组作为脚本执行</a></li>
+</ul>
+</li>
+<li><a href="#module-package">模块（module）与 package（包）概念</a><ul>
+<li><a href="#module">模块（module）</a></li>
+<li><a href="#package">包（package）</a></li>
+</ul>
+</li>
+<li><a href="#pycpydso">模块文件名称.pyc、.pyd(.so)</a><ul>
+<li><a href="#pyc">.pyc 缓存</a></li>
+<li><a href="#pydso">.pyd/.so 文件</a><ul>
+<li><a href="#abi3">abi3</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_2">参考</a></li>
+</ul>
+</div>
+<h2 id="_1">例子</h2>
+<p>通过一些小例子梳理一下？</p>
+<blockquote>
+<p>注意，本文所用环境：Windows 下 Python3.12。</p>
+</blockquote>
+<h3 id="1">例子1：先认识一下关键词</h3>
+<ul>
+<li>import</li>
+<li>from</li>
+<li>as</li>
+<li><code>*</code></li>
+</ul>
+<p>随便导入一个标准库：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op1</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span> <span class="k">as</span> <span class="n">op2</span>
+<span class="c1"># from os import *</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">op1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">op2</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>文件保存在 a1.py，四种方式均导入同一个Module，直接执行</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>python<span class="w"> </span>a1.py
+</code></pre></div></td></tr></table></div>
+
+<p>结果如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>&lt;module &#39;ntpath&#39; (frozen)&gt;
+&lt;module &#39;ntpath&#39; (frozen)&gt;
+&lt;module &#39;ntpath&#39; (frozen)&gt;
+&lt;module &#39;ntpath&#39; (frozen)&gt;
+</code></pre></div></td></tr></table></div>
+
+<p>除了 <code>from xxx import *</code> 一般不建议使用之外，其他可以灵活使用。</p>
+<p>每个模块都有 <code>__file__</code> 和 <code>__package__</code> 两个属性，可以输出：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">__package__</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果类似下面：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>C:\Python312\Lib\ntpath.py
+</code></pre></div></td></tr></table></div>
+
+<p>嗯，<code>__package__</code> 可以为空。</p>
+<h3 id="2">例子2：简单模组导入</h3>
+<p>文件系统结构：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>a2.py
+m1.py
+</code></pre></div></td></tr></table></div>
+
+<p>定义一个 Module <code>m1.py</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</code></pre></div></td></tr></table></div>
+
+<p>同目录下的应用程序 <code>a2.py</code> 中导入并使用它：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">m1</span>
+<span class="kn">import</span> <span class="nn">m1</span> <span class="k">as</span> <span class="nn">M1</span>
+<span class="kn">from</span> <span class="nn">m1</span> <span class="kn">import</span> <span class="n">add</span>
+<span class="kn">from</span> <span class="nn">m1</span> <span class="kn">import</span> <span class="n">add</span> <span class="k">as</span> <span class="n">add2</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">M1</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">add2</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意：<strong>不是相对路径</strong>导入！！之所以能找到 <code>m1.py</code>，是因为 <code>a2.py</code> 执行时其所在路径被加入到了 <code>sys.path</code> 路径中，可以输出看看：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">sys</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>结果类似下面这样：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">[</span><span class="err">&#39;</span><span class="nx">E</span><span class="p">:</span><span class="err">\\</span><span class="nx">tt</span><span class="err">\\</span><span class="nx">mypythontests</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">python312</span><span class="p">.</span><span class="nx">zip</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">DLLs</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">Lib</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">C</span><span class="p">:</span><span class="err">\\</span><span class="nx">Python312</span><span class="err">\\</span><span class="nx">Lib</span><span class="err">\\</span><span class="nx">site</span><span class="o">-</span><span class="nx">packages</span><span class="err">&#39;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+<p>当然，如果愿意，也可以把m1.py丢到上面列出的其他文件夹中，或者直接放到哪个zip文件里面。</p>
+<h3 id="3">例子3：简单的包导入</h3>
+<p>文件系统结构：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>a3.py
+p1/__init__.py
+</code></pre></div></td></tr></table></div>
+
+<p>创建文件夹<code>p1</code>并定义一个包文件 <code>p1/__init__.py</code>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在p1的同级目录下的应用程序 <code>a3.py</code> 中导入并使用它：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">p1</span>
+<span class="kn">from</span> <span class="nn">p1</span> <span class="kn">import</span> <span class="n">add</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">__path__</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>和前面的使用没有差异，只不过它 <strong>多</strong> 了一个属性<code>__path__</code>，用于定位包内的子包或模块。</p>
+<h3 id="4">例子4：简单的命名空间包导入</h3>
+<p>文件系统结构：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>a4.py
+d1_1/p2/addition.py
+d1_2/p2/subtraction.py
+</code></pre></div></td></tr></table></div>
+
+<p>在两个不同的位置下的p2文件夹中，分别创建</p>
+<ul>
+<li>p2/addition.py</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>p2/subtraction.py</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">def</span><span class="w"> </span><span class="nv">subtract</span><span class="ss">(</span><span class="nv">a</span>:<span class="w"> </span><span class="nv">int</span>,<span class="w"> </span><span class="nv">b</span>:<span class="w"> </span><span class="nv">int</span><span class="ss">)</span>:
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">b</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在d1、d2的同级目录下的应用程序 <code>a4.py</code> 中导入并使用它：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;d1_1&#39;</span><span class="p">))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;d1_2&#39;</span><span class="p">))</span>
+
+<span class="kn">import</span> <span class="nn">p2.addition</span>
+<span class="kn">import</span> <span class="nn">p2.subtraction</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">p2</span><span class="o">.</span><span class="n">__path__</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">p2</span><span class="o">.</span><span class="n">addition</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">p2</span><span class="o">.</span><span class="n">subtraction</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+
+<p>注意，p2包的所有路径都需要添加的sys.path中。</p>
+<p>输出结果（注意看这种情况下的其<code>__path__</code>属性）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>_NamespacePath([&#39;E:\\tt\\mypythontests\\d1_1\\p2&#39;, &#39;E:\\tt\\mypythontests\\d1_2\\p2&#39;])
+2
+1
+</code></pre></div></td></tr></table></div>
+
+<h3 id="5">例子5：包内相对导入</h3>
+<p>文件系统结构：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>a5.py
+p3/addition.py
+p3/do_addition.py
+</code></pre></div></td></tr></table></div>
+
+<p>在 <code>p3/do_addition.py</code> 中实现加法：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">do_add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在 <code>p3/addition.py</code> 中调用它来实现加法接口：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">.do_addition</span> <span class="kn">import</span> <span class="n">do_add</span>
+
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">do_add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>或者</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">do_addition</span>
+
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">do_addition</span><span class="o">.</span><span class="n">do_add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在包外的应用程序<code>a5.py</code>中，正常使用它：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">p3.addition</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">p3</span><span class="o">.</span><span class="n">addition</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+
+<p>相对导入只能使用<code>from .xxx import yyy</code> 这种带有from的形式（根据层级可以有2个或3个点），而不能用 <code>import .xxx</code>。特别的，它不能在执行脚本中使用，比如在<code>a5.py</code>中不能使用相对导入，因为执行时其 <code>__name__</code> 不是一个路径。</p>
+<blockquote>
+<p>相对导入的背景，见 <a href="https://peps.python.org/pep-0328/">PEP328</a>。这个变化在将python代码从python2移植到到python3还真的头疼。</p>
+</blockquote>
+<h3 id="6">例子6：模组作为脚本执行</h3>
+<p>文件系统结构：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>p4/m2.py
+p4/m3.py
+</code></pre></div></td></tr></table></div>
+
+<p>其中，<code>p4/m2.py</code>定义一个函数：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在<code>p4/m3.py</code>中使用它：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span> <span class="nn">.m2</span> <span class="kn">import</span> <span class="n">add</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>此时，由于存在相对导入，如果试图直接运行它：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>python p4/m3.py
+</code></pre></div></td></tr></table></div>
+
+<p>将直接遇到异常</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Traceback</span><span class="w"> </span><span class="p">(</span><span class="n">most</span><span class="w"> </span><span class="n">recent</span><span class="w"> </span><span class="n">call</span><span class="w"> </span><span class="n">last</span><span class="p">):</span>
+<span class="w">  </span><span class="n">File</span><span class="w"> </span><span class="s2">&quot;E:</span><span class="se">\t</span><span class="s2">t\mypythontests\p4\m3.py&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">line</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="kn">from</span><span class="w"> </span><span class="nn">.m2</span><span class="w"> </span><span class="kn">import</span><span class="w"> </span><span class="n">add</span>
+<span class="n">ImportError</span><span class="p">:</span><span class="w"> </span><span class="n">attempted</span><span class="w"> </span><span class="n">relative</span><span class="w"> </span><span class="kn">import</span><span class="w"> </span><span class="nn">with</span><span class="w"> </span><span class="n">no</span><span class="w"> </span><span class="n">known</span><span class="w"> </span><span class="n">parent</span><span class="w"> </span><span class="n">package</span>
+</code></pre></div></td></tr></table></div>
+
+<p>要正常运行它，需要作为模块运行：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>python -m p4.m3
+</code></pre></div></td></tr></table></div>
+
+<p>当然，此时，其<code>__name__</code>也不再是 <code>__main__</code>，输出结果：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="mf">2</span>
+<span class="n">__main__</span>
+</code></pre></div></td></tr></table></div>
+
+<p>如果将 <code>p4/m3.py</code> 重命名为 <code>p4/__main__.py</code>，执行会更简单：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>python -m p4
+</code></pre></div></td></tr></table></div>
+
+<h2 id="module-package">模块（module）与 package（包）概念</h2>
+<p>import 用于导入一个 module，多个 module 组织成 package。</p>
+<h3 id="module">模块（module）</h3>
+<p>关于 Module，手册中<a href="https://docs.python.org/3/glossary.html#term-module">如是说</a>：</p>
+<blockquote>
+<p>An object that serves as an organizational unit of Python code. Modules have a namespace containing arbitrary Python objects. Modules are loaded into Python by the process of importing.</p>
+</blockquote>
+<ul>
+<li>是Pyton代码的组织单元</li>
+<li>有一个可包含任何Python对象的命名空间</li>
+<li>通过import机制导入</li>
+</ul>
+<p>Module的常见形式：</p>
+<ul>
+<li>debao.py</li>
+<li>debao.pyc</li>
+<li>debao.pyd【Windows only】</li>
+<li>debao.so 【unix/linux/MacOS】</li>
+<li><code>debao/__init__.py</code></li>
+<li>debao.zip</li>
+</ul>
+<blockquote>
+<p>曾经有过 debao.pyo 这种带优化的pyc文件，现在已经统一到 .pyc文件中。</p>
+</blockquote>
+<p>按位置，大致可以分为：</p>
+<ul>
+<li>内置库（Builtin Libraries）：编译进解释器</li>
+<li>标准库（Standard Libraries）：位于Lib</li>
+<li>Site库（Site-specific Libraries）：位于Lib/site-packages</li>
+<li>其他：PYTHONPATH 或 sys.path 路径下</li>
+<li>用户自定义模块</li>
+</ul>
+<h3 id="package">包（package）</h3>
+<p>关于 Package，手册中<a href="https://docs.python.org/3/glossary.html#term-package">如是说</a>：</p>
+<blockquote>
+<p>A Python module which can contain submodules or recursively, subpackages. Technically, a package is a Python module with a <strong>path</strong> attribute.</p>
+</blockquote>
+<ul>
+<li>是一个Module（一个包含 <code>__path__</code> 属性的Module）</li>
+<li>包含其他子Module和子Package</li>
+</ul>
+<p>Package 又分为：</p>
+<ul>
+<li>常规包（regular package）：也叫<a href="https://docs.python.org/3/glossary.html#term-regular-package">传统包（traditional package）</a>，比如，包含<code>__init__.py</code>文件的文件夹就是一个常规包。【Python1.5 正式引入Pakcage】</li>
+<li>命名空间包（namespace package）：作为子package的容器存在，不包含<code>__init__.py</code>文件。详见PEP420。【Python3.3 正式引入命名空间Package】</li>
+</ul>
+<h2 id="pycpydso">模块文件名称.pyc、.pyd(.so)</h2>
+<h3 id="pyc">.pyc 缓存</h3>
+<p>.pyc 文件是 Python 编译后的字节码文件，它包含了 Python 解释器可以直接执行的字节码。在 Python 程序首次导入一个模块时，Python 会自动将该模块编译成 .pyc 文件，并将其存储在一个特定的目录下（如 <code>__pycache__</code> 目录）</p>
+<p>比如：在前面的例子中，会生成如下缓存文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>__pycache__/m2.cpython-312.pyc
+__pycache__/m2.cpython-312.pyc
+</code></pre></div></td></tr></table></div>
+
+<p>而在python早期时，.pyc 都是都是和 .py 文件肩并肩的，且没有<code>.cpython-312</code>这样的东西存在。</p>
+<p>在 <a href="https://peps.python.org/pep-3147/">PEP3147： PYC Repository Directories</a>中，详细描述了.pyc 文件为什么放置到__历史。</p>
+<p>格式</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>&lt;模块名&gt;.&lt;版本信息&gt;.pyc
+</code></pre></div></td></tr></table></div>
+
+<p>有助于不同版本python的缓存信息可以共存。</p>
+<h3 id="pydso">.pyd/.so 文件</h3>
+<p>在Windows下，一个pyd模块，完整的文件名到底怎么命名？</p>
+<ul>
+<li><code>debao.pyd</code></li>
+<li><code>debao.abi3.pyd</code></li>
+<li><code>debao.cp312-win_amd64.pyd</code></li>
+</ul>
+<p>后缀到底应该是什么？参考<a href="https://peps.python.org/pep-0720/">PEP0720</a>通过<code>EXTENSION_SUFFIXES</code>可以看出端倪：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">importlib</span><span class="o">.</span><span class="n">machinery</span><span class="o">.</span><span class="n">EXTENSION_SUFFIXES</span>
+<span class="p">[</span><span class="s1">&#39;.cp312-win_amd64.pyd&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;.pyd&#39;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>Linux下结果：<code>['.cpython-312-x86_64-linux-gnu.so', '.abi3.so', '.so']</code></p>
+</blockquote>
+<p>更完整的一些列表？</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>&gt;&gt;&gt; importlib.machinery.all_suffixes()
+[&#39;.py&#39;, &#39;.pyw&#39;, &#39;.pyc&#39;, &#39;.cp312-win_amd64.pyd&#39;, &#39;.pyd&#39;]
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>Linux下结果：<code>['.py', '.pyc', '.cpython-312-x86_64-linux-gnu.so', '.abi3.so', '.so']</code></p>
+</blockquote>
+<h4 id="abi3">abi3</h4>
+<p>比较奇怪，Linux下面出现 abi3 字样，而Windows下面却没有。这个和Python<a href="https://docs.python.org/3/c-api/stable.html#stable-abi">C API 稳定性</a> 相关：</p>
+<ul>
+<li>Stable API</li>
+<li>UnStable API：从Python3.12到Python3.12可能会变化</li>
+</ul>
+<p>对稳定API，在Windows下使用时，需要连接到 Python3.dll 而不是 Python312.dll。</p>
+<h2 id="_2">参考</h2>
+<ul>
+<li><a href="https://docs.python.org/3/reference/import.html">https://docs.python.org/3/reference/import.html</a></li>
+<li><a href="https://docs.python.org/3/library/importlib.html">https://docs.python.org/3/library/importlib.html</a></li>
+<li><a href="https://docs.python.org/3/tutorial/modules.html">https://docs.python.org/3/tutorial/modules.html</a></li>
+<li><a href="https://docs.python.org/3/library/zipimport.html">https://docs.python.org/3/library/zipimport.html</a></li>
+<li><a href="https://peps.python.org/pep-0328/">https://peps.python.org/pep-0328/</a></li>
+<li><a href="https://peps.python.org/pep-0420/">https://peps.python.org/pep-0420/</a></li>
+<li><a href="https://peps.python.org/pep-0402/">https://peps.python.org/pep-0402/</a></li>
+<li><a href="https://docs.python.org/3/using/windows.html#windows-finding-modules">https://docs.python.org/3/using/windows.html#windows-finding-modules</a></li>
+<li><a href="https://ref.readthedocs.io/en/latest/understanding_python/imports/">https://ref.readthedocs.io/en/latest/understanding_python/imports/</a></li>
+<li><a href="https://realpython.com/python-import/">https://realpython.com/python-import/</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-12-04T13:06:00+08:00" pubdate>Wed 04 December 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/python.html'>Python</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>OpenSSL小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">OpenSSL小记</h1>
+    <p class="meta">
+<time datetime="2023-11-25T14:28:00+08:00" pubdate>Sat 25 November 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><h2 id="_1">简介</h2>
+<ul>
+<li>1995年，Eric Andrew Young 和 Tim J. Hudson 开发了 SSLeay。这是一个开源的SSL实现，它支持X.509v3证书、PKCS#10证书请求、SSL2和SSL3。（注：eay是Eric Andrew Young的首字母）</li>
+<li>1998年，OpenSSL项目启动，它基于SSLeay的代码进行开发。</li>
+</ul>
+<p>OpenSSL可以分成三个主要部分：</p>
+<ul>
+<li>密码算法库：实现了目前大部分主流的密码算法和标准。主要包括对称算法、非对称算法、散列算法、数字签名和认证、X509数字证书标准、PKCS12、PKCS7等标准。</li>
+<li>SSL协议库：完全实现SSL协议和TLS协议。</li>
+<li>命令行工具：基于密码算法库和SSL协议库实现的命令。包括各种算法的加密程序和各种类型密钥的产生程序、证书签发和验证程序、SSL连接测试程序等。</li>
+</ul>
+<h3 id="_2">版本</h3>
+<p>在Qt中碰到的几个版本（注：3.0开始版本规则又发生改变，版本号不再用字母后缀）：</p>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>初始发布日期</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.0.2</td>
+<td>2015年1月22日</td>
+<td>1.0.2u（2019年12月20日）</td>
+</tr>
+<tr>
+<td>1.1.1</td>
+<td>2018年9月11日</td>
+<td>1.1.1w（2023年9月11日）</td>
+</tr>
+<tr>
+<td>3.0</td>
+<td>2021年9月7日</td>
+<td>（2026年9月7日）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>注：OpenSSL1.1和OpenSSL1.0二进制和源码都不兼容</p>
+</blockquote>
+<h3 id="_3">动态库名称</h3>
+<p>OpenSSL库包含两个动态库（共享库）文件：</p>
+<ul>
+<li>libssl</li>
+<li>libcrypto</li>
+</ul>
+<p>前者实现ssl的基本功能，后者是各种加密算法。</p>
+<blockquote>
+<p>OpenSSL1.1之前的版本，在Windows下用MSVC编译的产物，名字比较怪异，是：</p>
+<ul>
+<li>ssleay32 （等价于 libssl32）</li>
+<li>libeay32</li>
+</ul>
+<p>初次见到它是在Windows下，有些懵</p>
+<p>好消息是，从OpenSSL1.1开始，在Windows下的命名也规范统一了</p>
+<ul>
+<li><code>libssl-1_1(-x64).dll</code></li>
+<li><code>libcrypto-1_1(-x64).dll</code></li>
+</ul>
+</blockquote>
+<h3 id="_4">命令行工具</h3>
+<p>OpenSSL支持的命令列表，可以通过<code>openssl help</code> 查看</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl help
+</code></pre></div></td></tr></table></div>
+
+<p>它会返回内容很长，包括：</p>
+<p>标准命令列表</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>Standard commands
+asn1parse         ca                ciphers           cms               
+crl               crl2pkcs7         dgst              dhparam           
+dsa               dsaparam          ec                ecparam  
+...
+</code></pre></div></td></tr></table></div>
+
+<p>摘要命令</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">Message</span><span class="w"> </span><span class="nv">Digest</span><span class="w"> </span><span class="nv">commands</span><span class="w"> </span><span class="ss">(</span><span class="nv">see</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span>`<span class="nv">dgst</span><span class="err">&#39; command for more details)</span>
+<span class="err">blake2b512        blake2s256        gost              md4               </span>
+<span class="err">md5               rmd160            sha1              sha224   </span>
+<span class="err">...</span>
+</code></pre></div></td></tr></table></div>
+
+<p>以及</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">Cipher</span><span class="w"> </span><span class="nv">commands</span><span class="w"> </span><span class="ss">(</span><span class="nv">see</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span>`<span class="nv">enc</span><span class="err">&#39; command for more details)</span>
+<span class="err">aes-128-cbc       aes-128-ecb       aes-192-cbc       aes-192-ecb       </span>
+<span class="err">aes-256-cbc       aes-256-ecb       aria-128-cbc      aria-128-cfb</span>
+<span class="err">...</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_5">算法</h2>
+<h3 id="cipher">对称加密算法(Cipher)</h3>
+<blockquote>
+<p>特点是文件加密和解密使用相同的密钥，即加密密钥也用作解密密钥。特点：加解密速度很快，但密钥丢失，会造成安全隐患。</p>
+</blockquote>
+<ul>
+<li>https://www.openssl.org/docs/man1.1.1/man1/enc.html</li>
+</ul>
+<p>通过<code>openssl enc -list</code>命令可以获取算法列表</p>
+<ul>
+<li>AES</li>
+<li>Blowfish</li>
+<li>Camelia</li>
+<li>Poly1305</li>
+<li>SEED</li>
+<li>CAST-128</li>
+<li>DES</li>
+<li>IDEA</li>
+<li>RC2</li>
+<li>RC4</li>
+<li>RC5</li>
+<li>Triple DES</li>
+<li>GOST 28147-89</li>
+<li>SM4</li>
+</ul>
+<h4 id="_6">加解密使用</h4>
+<p>使用AES加密：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl enc -aes-256-cbc -salt -in input.txt -out encrypted.enc
+</code></pre></div></td></tr></table></div>
+
+<p>解密</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl enc -aes-256-cbc -d -in encrypted.enc -out decrypted.txt
+</code></pre></div></td></tr></table></div>
+
+<p>加解密过程中会提示输入密码，类似下面这样：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>enter AES-256-CBC decryption password:
+</code></pre></div></td></tr></table></div>
+
+<h3 id="public-key-cryptography">非对称加密算法(Public-key cryptography)</h3>
+<blockquote>
+<p>非对称加密算法需要两个密钥：公开密钥（public-key）和私有密钥 （private-key）。公开密钥与私有密钥是一对，如果用公开密钥对数据进行加密，只有用对应的私有密钥才能解密；如果用私有密钥对数据进行加密，那么只有用对应的公开密钥才能解密（公私钥互为加解密关系）。</p>
+<p>相对于对称加密算法来说，非对称加密算法速度很慢。</p>
+</blockquote>
+<ul>
+<li>RSA</li>
+<li>DSA</li>
+<li>Diffie-Heliman key exchange(迪菲-赫尔曼密钥交换)</li>
+<li>Elliptic curve(椭圆曲线)</li>
+<li>X25519</li>
+<li>Ed25519</li>
+<li>X448</li>
+<li>Ed448</li>
+<li>GOST R34.10-2001</li>
+<li>SM2</li>
+</ul>
+<p>对非对称加密算法，一些知识点：</p>
+<ul>
+<li>使用公钥操作数据（公钥加密，私钥解密） -&gt; 加密</li>
+<li>使用私钥对原文的摘要操作（私钥加密，公钥解密） -&gt; 签名</li>
+<li>公钥和私钥可以互相加密解密（对应上两条）</li>
+<li>公钥对外公开，但私钥一定不能泄露。</li>
+</ul>
+<h4 id="_7">密钥操作</h4>
+<p>OpenSSL3 默认生成密钥格式(PKCS#8)和之前(PKCS#1)不同。</p>
+<p>直观差异体现在密钥文件的开头：</p>
+<p>PKCS#1（只用于RSA）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">-----</span><span class="kr">BEGIN</span> <span class="n">RSA</span> <span class="n">PRIVATE</span> <span class="n">KEY</span><span class="o">-----</span>
+</code></pre></div></td></tr></table></div>
+
+<p>和PKCS#8（也适用于其他算法的私钥，使用OID进行区分）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">-----</span><span class="kr">BEGIN</span> <span class="n">PRIVATE</span> <span class="n">KEY</span><span class="o">-----</span>
+</code></pre></div></td></tr></table></div>
+
+<p>在OpenSSL3中，可以使用<code>-traditional</code>选项来生成老的格式。</p>
+<p>两个格式具体差异，详见：<a href="https://blog.debao.me/2023/12/notes-on-der-encoding-rules/">DER格式小结</a></p>
+<h5 id="openssl-11">OpenSSL 1.1下</h5>
+<p>生成密钥（PKCS#1格式）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl<span class="w"> </span>genrsa<span class="w"> </span>-out<span class="w"> </span>rsa.key<span class="w"> </span><span class="m">1024</span>
+-----BEGIN<span class="w"> </span>RSA<span class="w"> </span>PRIVATE<span class="w"> </span>KEY-----
+MIICXAIBAAKBgQDBqdNEz15gMCAH6FQTsqxFFExolLg2VUAdBxks7pl7aIIi4qE
+....
+/Wo83kTObo8lOMq7MPwFlCWoXNxYZpVdb3WU6eNNLYY<span class="o">=</span>
+-----END<span class="w"> </span>RSA<span class="w"> </span>PRIVATE<span class="w"> </span>KEY-----
+</code></pre></div></td></tr></table></div>
+
+<p>查看私钥内容</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl<span class="w"> </span>rsa<span class="w"> </span>-in<span class="w"> </span>rsa.key<span class="w"> </span>-text
+RSA<span class="w"> </span>Private-Key:<span class="w"> </span><span class="o">(</span><span class="m">1024</span><span class="w"> </span>bit,<span class="w"> </span><span class="m">2</span><span class="w"> </span>primes<span class="o">)</span>
+modulus:
+<span class="w">    </span><span class="m">00</span>:c1:a9:d3:44:cf:5e:60:30:20:07:e8:54:13:b2:
+<span class="w">    </span>ac:45:14:4c:68:94:b8:36:55:40:1d:07:19:2c:ee:
+<span class="w">    </span><span class="m">99</span>:7b:68:82:22:e2:a1:33:b0:db:92:94:be:f0:13:
+<span class="w">    </span>2b:03:ee:37:09:82:f1:3b:3d:cd:2b:2f:df:5e:8a:
+....
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>https://www.openssl.org/docs/man1.1.1/man1/openssl-pkcs8.html</li>
+</ul>
+<p>PKCS#1到PKCS#8转换（-nocrypt生成不带密码的私钥)</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl.exe<span class="w"> </span>pkcs8<span class="w"> </span>-in<span class="w"> </span><span class="m">1</span>.pem<span class="w"> </span>-topk8<span class="w"> </span>-out<span class="w"> </span><span class="m">2</span>.pem<span class="w"> </span>-nocrypt
+</code></pre></div></td></tr></table></div>
+
+<p>PKCS#8 到PKCS#1转换</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl.exe<span class="w"> </span>rsa<span class="w"> </span>-in<span class="w"> </span><span class="m">2</span>.pem<span class="w">  </span>-out<span class="w"> </span><span class="m">3</span>.pem
+</code></pre></div></td></tr></table></div>
+
+<h5 id="openssl-30">OpenSSL 3.0下</h5>
+<p>生成密钥（PKCS8格式）:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl<span class="w"> </span>genrsa<span class="w"> </span>-out<span class="w"> </span>rsa.key<span class="w">  </span><span class="m">1024</span>
+-----BEGIN<span class="w"> </span>PRIVATE<span class="w"> </span>KEY-----
+MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMXQYsn+DeflrheT
+...
+<span class="nv">Lm9g7JNkTzCgiwQ</span><span class="o">=</span>
+-----END<span class="w"> </span>PRIVATE<span class="w"> </span>KEY-----
+</code></pre></div></td></tr></table></div>
+
+<p>查看密钥：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl<span class="w"> </span>rsa<span class="w"> </span>-in<span class="w"> </span>rsa.key<span class="w"> </span>-text
+Private-Key:<span class="w"> </span><span class="o">(</span><span class="m">1024</span><span class="w"> </span>bit,<span class="w"> </span><span class="m">2</span><span class="w"> </span>primes<span class="o">)</span>
+modulus:
+<span class="w">    </span><span class="m">00</span>:c4:3d:a2:07:14:01:d2:68:20:f5:8b:72:89:4f:
+<span class="w">    </span><span class="m">42</span>:58:a9:70:0f:94:1e:76:47:d0:ea:be:93:c5:ae:
+...
+</code></pre></div></td></tr></table></div>
+
+<p>导出公钥：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl<span class="w"> </span>rsa<span class="w"> </span>-in<span class="w"> </span>rsa.key<span class="w"> </span>-pubout<span class="w"> </span>-out<span class="w"> </span>rsa.pub
+$<span class="w"> </span>openssl<span class="w"> </span>rsa<span class="w"> </span>-in<span class="w"> </span>rsa.key<span class="w"> </span>-pubout
+-----BEGIN<span class="w"> </span>PUBLIC<span class="w"> </span>KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBqdNEz15gMCAH6FQTsqxFFEx
+...
+aW+wLBQ5O4mCIQyALQIDAQAB
+-----END<span class="w"> </span>PUBLIC<span class="w"> </span>KEY-----
+writing<span class="w"> </span>RSA<span class="w"> </span>key
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注：-in -out 默认都是私钥，通过-pubout指定输出公钥；同样通过-pubin指定输入公钥。</p>
+</blockquote>
+<h5 id="pem-der">PEM 与 DER转换</h5>
+<p>输出格式默认都是pem格式，如果要使用der格式，可以使用 <code>-outform DER</code>指定：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl<span class="w"> </span>rsa<span class="w"> </span>-in<span class="w"> </span>rsa.pem<span class="w"> </span>-outform<span class="w"> </span>DER<span class="w"> </span>-out<span class="w"> </span>rsa.der
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_8">加解密操作</h4>
+<p>使用公钥加密文件（openssl命令行只能使用公钥加密，其C API支持私钥加解密）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl<span class="w"> </span>pkeyutl<span class="w"> </span>-encrypt<span class="w"> </span>-in<span class="w"> </span>a.txt<span class="w"> </span>-pubin<span class="w"> </span>-inkey<span class="w"> </span>rsa.pub<span class="w"> </span>-out<span class="w"> </span>rsa_chiper.enc
+</code></pre></div></td></tr></table></div>
+
+<p>即使是如下这样写，还是用的私钥文件中的公钥进行的加密：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl pkeyutl -encrypt -in a.txt -inkey rsa.key -out rsa_chiper.enc
+</code></pre></div></td></tr></table></div>
+
+<p>使用私钥解密文件：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl<span class="w"> </span>pkeyutl<span class="w"> </span>-decrypt<span class="w"> </span>-in<span class="w"> </span>rsa_chiper.enc<span class="w"> </span>-inkey<span class="w"> </span>rsa.key<span class="w"> </span>-out<span class="w"> </span>a.txt.2
+</code></pre></div></td></tr></table></div>
+
+<p>注意：</p>
+<ul>
+<li>填充方式可通过选项指定：<code>-pkeyopt rsa_padding_mode:oaep</code></li>
+</ul>
+<h4 id="_9">签名与验证</h4>
+<p>签名（输入必须是哈希值，该命令不会对输入内容执行哈希操作）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl pkeyutl -sign -in sha384.txt -inkey rsa.key  -out sha384.sig
+</code></pre></div></td></tr></table></div>
+
+<p>验证</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl pkeyutl -verify -in sha384.txt -pubin -inkey rsa.pub -sigfile sha384.sig
+</code></pre></div></td></tr></table></div>
+
+<h4 id="openssh">OpenSSH</h4>
+<p>注意，OpenSSH生成公钥私钥格式与OpenSSL不同！！不要混淆</p>
+<p>它的私钥头部如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">-----</span><span class="kr">BEGIN</span> <span class="n">OPENSSH</span> <span class="n">PRIVATE</span> <span class="n">KEY</span><span class="o">-----</span>
+</code></pre></div></td></tr></table></div>
+
+<p>它生成私钥的命令</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>ssh-keygen -t rsa -b 4096
+</code></pre></div></td></tr></table></div>
+
+<h3 id="cryptographic-hash-functions">散列函数(Cryptographic hash Functions)</h3>
+<p>散列函数 又称 哈希函数、摘要算法。它是一种单向算法，用户可以通过散列函数对目标信息生成一段特定长度的唯一的Hash值，却不能通过这个Hash值逆向获得目标信息。</p>
+<blockquote>
+<p>特点：不可逆，加密后值很小（128位，256位，512位等）。</p>
+</blockquote>
+<p>散列函数有两大家族：</p>
+<ul>
+<li>MD：Message Digest Algorithm </li>
+</ul>
+<ul>
+<li>MD4：1990年发布。早已被攻破。</li>
+</ul>
+<ul>
+<li>MD5：Message Digest 5，1992年发布。早已被攻破，不适用于安全认证或数字签名。</li>
+</ul>
+<ul>
+<li>SHA：安全散列算法（Secure Hash Algorithm），由美国国家安全局（NSA）设计，美国国家标准与技术研究所发布。</li>
+</ul>
+<ul>
+<li>SHA-0：1993年发布后，但很快被撤回。</li>
+<li>SHA-1：1995年发布，使用很广泛（用于 TLS, GnuPG, SSH, IPsec等）。2017年已经被荷兰CWI和Google攻破。</li>
+<li>SHA-2：2001年发布，包括SHA-224, SHA-256, SHA-384, SHA-512, SHA512/224, SHA512/256。</li>
+<li>SHA-3：2015年发布。</li>
+</ul>
+<h4 id="_10">算法列表</h4>
+<ul>
+<li>https://www.openssl.org/docs/manmaster/man1/openssl-dgst.html</li>
+</ul>
+<p>OpenSSL支持的算法列表，可以通过<code>openssl dgst -list</code>命令获得：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl<span class="w"> </span>dgst<span class="w"> </span>-list
+Supported<span class="w"> </span>digests:
+-blake2b512<span class="w">                </span>-blake2s256<span class="w">                </span>-md4
+-md5<span class="w">                       </span>-md5-sha1<span class="w">                  </span>-mdc2
+-ripemd<span class="w">                    </span>-ripemd160<span class="w">                 </span>-rmd160
+-sha1<span class="w">                      </span>-sha224<span class="w">                    </span>-sha256
+-sha3-224<span class="w">                  </span>-sha3-256<span class="w">                  </span>-sha3-384
+-sha3-512<span class="w">                  </span>-sha384<span class="w">                    </span>-sha512
+-sha512-224<span class="w">                </span>-sha512-256<span class="w">                </span>-shake128
+-shake256<span class="w">                  </span>-sm3<span class="w">                       </span>-ssl3-md5
+-ssl3-sha1<span class="w">                 </span>-whirlpool
+</code></pre></div></td></tr></table></div>
+
+<p>也可以通过<code>openssl list -digest-algorithms</code>命令（这个返回的列表比较长，多出来的别名？）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl<span class="w"> </span>list<span class="w"> </span>-digest-algorithmsRSA-MD4<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>MD4
+RSA-MD5<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>MD5
+RSA-MDC2<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>MDC2
+RSA-RIPEMD160<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>RIPEMD160
+RSA-SHA1<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA1
+RSA-SHA1-2<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>RSA-SHA1
+RSA-SHA224<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA224
+RSA-SHA256<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA256
+RSA-SHA3-224<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA3-224
+RSA-SHA3-256<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA3-256
+RSA-SHA3-384<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA3-384
+RSA-SHA3-512<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA3-512
+RSA-SHA384<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA384
+RSA-SHA512<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA512
+RSA-SHA512/224<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA512-224
+RSA-SHA512/256<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA512-256
+RSA-SM3<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SM3
+BLAKE2b512
+BLAKE2s256
+id-rsassa-pkcs1-v1_5-with-sha3-224<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA3-224
+id-rsassa-pkcs1-v1_5-with-sha3-256<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA3-256
+id-rsassa-pkcs1-v1_5-with-sha3-384<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA3-384
+id-rsassa-pkcs1-v1_5-with-sha3-512<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>SHA3-512
+MD4
+<span class="nv">md4WithRSAEncryption</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>MD4
+MD5
+MD5-SHA1
+<span class="nv">md5WithRSAEncryption</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>MD5
+...
+</code></pre></div></td></tr></table></div>
+
+<h4 id="_11">生成摘要</h4>
+<p>要获得一个文件的md5值，可以使用dgst命令:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>$openssl dgst -md5 dbzhang800.txt
+MD5(dbzhang800.txt)= 520e37bcab36e7f6c63a9fe8571fef5c
+</code></pre></div></td></tr></table></div>
+
+<p>或者直接用md5命令</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$openssl md5 dbzhang800.txt
+</code></pre></div></td></tr></table></div>
+
+<p>将结果以二进制输出到文件</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$openssl dgst -md5 -binary -out dgst.out dbzhang800.txt
+</code></pre></div></td></tr></table></div>
+
+<p>使用16进制编辑器查看dgst.out结果</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="mi">00000000</span><span class="o">:</span><span class="w"> </span><span class="mi">520</span><span class="n">e</span><span class="w"> </span><span class="mi">373</span><span class="n">f</span><span class="w"> </span><span class="mi">3</span><span class="n">f36</span><span class="w"> </span><span class="mi">3</span><span class="n">f3f</span><span class="w"> </span><span class="mi">3</span><span class="n">f3a</span><span class="w"> </span><span class="mi">3</span><span class="n">f3f</span><span class="w"> </span><span class="mi">571</span><span class="n">f</span><span class="w"> </span><span class="mi">3</span><span class="n">f5c</span>
+<span class="mi">00000010</span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="n">a</span>
+</code></pre></div></td></tr></table></div>
+
+<p>默认的dgst是SHA256：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl<span class="w"> </span>dgst<span class="w"> </span>dbzhang800.txt
+SHA256<span class="o">(</span>dbzhang800.txt<span class="o">)=</span><span class="w"> </span>a327231c982850cb61eecfb3da89aa6831d09d2c9e209acb58658faa78ccfeeb
+</code></pre></div></td></tr></table></div>
+
+<p>加密后的值被称为hash值，hash值用于确保数据的完整性，但是不能保证数据传输存在身份认证机制。</p>
+<h4 id="_12">数字签名</h4>
+<blockquote>
+<p>数字签名它是基于非对称密钥加密技术与数字摘要算法技术的应用，只有私钥拥有者才能产生别人无法伪造的一段数字串。</p>
+</blockquote>
+<p>发送方通过私钥加密后数字签名发送给接收方，接收方使用公钥解密，<strong>通过对比解密后的摘要和使用Hash函数对数据电文进行计算的摘要 判定其是否被篡改。</strong></p>
+<p>生成签名</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl<span class="w"> </span>dgst<span class="w"> </span>-sha256<span class="w"> </span>-sign<span class="w"> </span>rsa.key<span class="w"> </span>-out<span class="w"> </span>signature.sign<span class="w"> </span>a.txt
+</code></pre></div></td></tr></table></div>
+
+<p>验证签名</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>openssl<span class="w"> </span>dgst<span class="w"> </span>-sha256<span class="w"> </span>-verify<span class="w"> </span>rsa.pub<span class="w"> </span>-signature<span class="w"> </span>signature.sign<span class="w"> </span>a.txt
+Verified<span class="w"> </span>OK
+</code></pre></div></td></tr></table></div>
+
+<p>结果为 Verification failure 或 Verified OK</p>
+<h2 id="openssl-ca">OpenSSL 作为CA</h2>
+<h4 id="_13">配置文件</h4>
+<p>在Ubuntu下，配置文件在 /etc/ssl/openssh.cnf</p>
+<p>在Windows下安装OpenSSL-Win32，安装目录下有一个配置文件openssh.cnf</p>
+<blockquote>
+<p>如果报错，可通过环境变量来指定它。</p>
+<p><code>set OPENSSL_CONF=[path-to-OpenSSL-install-dir]\openssl.cnf</code></p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[ ca ]</span>
+<span class="na">default_ca</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">CA_default</span><span class="w">        </span><span class="c1"># The default ca section</span>
+
+<span class="c1">####################################################################</span>
+<span class="k">[ CA_default ]</span>
+
+<span class="na">dir</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">./demoCA</span><span class="w">      </span><span class="c1"># Where everything is kept</span>
+<span class="na">certs</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s">$dir/certs</span><span class="w">        </span><span class="c1"># Where the issued certs are kept</span>
+<span class="na">crl_dir</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">$dir/crl</span><span class="w">      </span><span class="c1"># Where the issued crl are kept</span>
+<span class="na">database</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">$dir/index.txt</span><span class="w">    </span><span class="c1"># database index file.</span>
+<span class="c1">#unique_subject = no            # Set to &#39;no&#39; to allow creation of</span>
+<span class="w">                    </span><span class="c1"># several certs with same subject.</span>
+<span class="na">new_certs_dir</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">$dir/newcerts</span><span class="w">     </span><span class="c1"># default place for new certs.</span>
+
+<span class="na">certificate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">$dir/cacert.pem</span><span class="w">   </span><span class="c1"># The CA certificate</span>
+<span class="na">serial</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s">$dir/serial</span><span class="w">       </span><span class="c1"># The current serial number</span>
+<span class="na">crlnumber</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">$dir/crlnumber</span><span class="w">    </span><span class="c1"># the current crl number</span>
+<span class="w">                    </span><span class="c1"># must be commented out to leave a V1 CRL</span>
+<span class="na">crl</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">$dir/crl.pem</span><span class="w">      </span><span class="c1"># The current CRL</span>
+<span class="na">private_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">$dir/private/cakey.pem</span><span class="c1"># The private key</span>
+<span class="na">...</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="ca">建立CA目录</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>.
+`-- myCA/
+    |-- index.txt
+    |-- newcerts/
+    |-- private/
+    `-- serial
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>private/ 存放证书私钥</li>
+<li>serial 里面写入序列号，比如可以写入“8101”或其他数字，后期递增
+      echo 8101 &gt; serial</li>
+</ul>
+<h4 id="ca_1">CA自签名证书</h4>
+<p>生成私钥，并放入我们在配置文件中指定的位置</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl genrsa -des3 -out myCA\private\cakey.pem 2048
+</code></pre></div></td></tr></table></div>
+
+<p>生成CA证书请求</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl.exe req -new -days 7300 -key myCA\private\cakey.pem -out myCA\careq.pem
+</code></pre></div></td></tr></table></div>
+
+<p>签名证书，将其放置到配置文件期望的位置</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl.exe ca -selfsign -in myCA\careq.pem -out myCA\cacert.pem
+</code></pre></div></td></tr></table></div>
+
+<p>在该步骤中，配置文件开始起作用了，当前目录结构：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code>.
+`-- myCA
+    |-- cacert.pem
+    |-- careq.pem
+    |-- index.txt
+    |-- index.txt.attr
+    |-- index.txt.old
+    |-- newcerts
+    |   `-- 8101.pem
+    |-- private
+    |   `-- cakey.pem
+    |-- serial
+    `-- serial.old
+</code></pre></div></td></tr></table></div>
+
+<p>接下来，该CA就可以为其他csr生成证书了。</p>
+<h2 id="openssl">OpenSSL命令行参数备忘</h2>
+<ul>
+<li>非对称算法：-in -out 默认都是私钥，通过-pubout指定输出公钥；同样通过-pubin指定输入公钥。</li>
+</ul>
+<ul>
+<li>
+<p>通过s client可以读取网站的证书</p>
+<p><code>$ openssl s_client -connect blog.debao.me:443</code></p>
+</li>
+</ul>
+<ul>
+<li>
+<p>x509和pkcs12这两个命令可用于操作证书，比如证书格式之间的转换：</p>
+<p><code>openssl pkcs12 -export -out certificate.pfx -inkey privatekey.key -in cert.crt</code></p>
+</li>
+</ul>
+<ul>
+<li>生成 证书请求文件 (回答它的提问，完成过程)，而后用csr去找CA机构申请正式的证书。</li>
+</ul>
+<p><code>openssl req -new -key x.key -out x.csr</code></p>
+<h2 id="qt-openssl">Qt 与 OpenSSL</h2>
+<blockquote>
+<p>Qt官方提供的Windows下的安装包，默认不打包OpenSSL。在Qt5.13之前，如果需要QSslScocket功能，需要手动安装OpenSSL。安装时需要注意版本！！！</p>
+</blockquote>
+<p>这块有点乱，先简单记录。要验证的话，可能需要结合Qt源码，以及Qt的bug来看才行</p>
+<ul>
+<li>Qt 从 5.2.0 起，不再官方支持 OpenSSL 低于 1.0.0 的版本。</li>
+<li>Qt 从 5.10起，官方二进制包开始使用OpenSSL 1.1</li>
+<li>Qt 从 5.12.4起，官方二进制包开始使用 OpenSSL1.1.1 的。</li>
+<li>Qt 从 6.2.0 起，开始支持 OpenSSL3.0（自己编译Qt）</li>
+<li>Qt 从 6.5.0 起，官方二进制包开始使用 OpenSSL 3.0。</li>
+</ul>
+<p>简单说：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>OpenSSL 3.0(Qt &gt;= 6.5.0)
+OpenSSL 1.1.x(Qt &gt;= 5.10 Qt &lt; 6.5.0)
+OpenSSL 1.0.2(Qt &lt; 5.10)
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注： Qt 5.13起，在Windows下开始增加schannel作为ssl后端，可作为 openssl 的替代。Qt6.3起，编译Qt时，schannel插件已默认启用。如果不需要OpenSSL的扩展功能的话，新版本的Qt程序可以不用纠结OpenSSL的问题，使用Schannel就行。</p>
+</blockquote>
+<h2 id="_14">其他</h2>
+<h3 id="git">Git</h3>
+<p>Windows下安装的Git，会自带 openssl，这个东西功能不全，要避免使用。</p>
+<h3 id="yao-yue">钥yào yuè</h3>
+<p>密钥中的“钥”，读音争议很大 。</p>
+<p>《现代汉语词典（第7版）》：【密钥】mìyuè （口语中多读mìyào）。</p>
+<h2 id="_15">参考</h2>
+<ul>
+<li>https://www.openssl.org/docs/man3.0/</li>
+<li>https://en.wikipedia.org/wiki/OpenSSL</li>
+<li>https://www.feistyduck.com/library/openssl-cookbook/online/</li>
+<li>https://blog.csdn.net/zhihao_li/article/details/131068038</li>
+<li>https://unix.stackexchange.com/questions/296697/how-to-encrypt-a-file-with-private-key</li>
+<li></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-11-25T14:28:00+08:00" pubdate>Sat 25 November 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a class="category" href="https://blog.debao.me/tags/crypto.html">crypto</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

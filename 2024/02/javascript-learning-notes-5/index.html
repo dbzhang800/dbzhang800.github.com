@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>JavaScript学习笔记（五） &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/javascript.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">JavaScript学习笔记（五）</h1>
+    <p class="meta">
+<time datetime="2024-02-17T22:24:00+08:00" pubdate>Sat 17 February 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>接前面的：</p>
+<ul>
+<li><a href="https://blog.debao.me/2024/01/notes-on-javascript-engines-and-runtimes/">JavaScript引擎与运行时入门小记</a>：在哪些环境下可以运行JavaScript</li>
+<li><a href="https://blog.debao.me/2024/01/javascript-learning-notes-1/">JavaScript学习笔记（一）</a>：理解概念，一等函数、编程范式、原型、单线程</li>
+<li><a href="https://blog.debao.me/2024/01/javascript-learning-notes-2/">JavaScript学习笔记（二）</a>：全局对象globalThis，this用法，全局对象们</li>
+<li><a href="https://blog.debao.me/2024/01/javascript-learning-notes-3/">JavaScript学习笔记（三）</a>：7种原始数据类型，对象类型（引用类型），typeof，原始类型包装器</li>
+<li><a href="https://blog.debao.me/2024/01/javascript-learning-notes-4/">JavaScript学习笔记（四）</a>：ES6模块ESM，ES6之前CJS，Nodejs如何区分传统脚本与ESM模块文件</li>
+<li>JavaScript学习笔记（五）：Event loop简简单单一个东西，术语太乱了</li>
+</ul>
+<p>继续学习JavaScript。</p>
+<h2 id="event-loop">Event Loop ？</h2>
+<blockquote>
+<p>概念似乎不复杂，但是，术语很乱！</p>
+</blockquote>
+<p><strong>ECMA-262 标准中既没有Event Loop，也没有MicroTask、MacroTask。ECMA-262 中只提到了 Job 的概念，没提及任何Task术语。</strong> </p>
+<p>JavaScript在异步的进化和支持上，是不是可以分成如下阶段？</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>ECMAScript</th>
+<th>JavaScript</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单线程执行模型</td>
+<td>?</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>引入事件循环</td>
+<td>-</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>回调函数模型</td>
+<td>-</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Promises的引入</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Async/Await的出现</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>ECMAScript 没有事件循环，但是JavaScript在WEB 中一直在使用。</li>
+<li>ECMAScript 引入了Promises，与事件循环没什么关系。</li>
+</ul>
+<h2 id="javascript-webevent-loop">JavaScript Web运行时与Event loop</h2>
+<blockquote>
+<p>尽管 ECMA-262 中也没有出现 Event Loop 这个名字。但是在MDN中的WEB API部分，whatwg中的HTML DOM标准部分，以及Nodejs中都有 event loop的身影。所以需要从特定的运行时看起...</p>
+</blockquote>
+<h3 id="_1">概念</h3>
+<p>JavaScript Web运行时的几个概念：</p>
+<ul>
+<li>Stack：函数调用形成frame的stack</li>
+<li>Heap：对象分配在Heap中，指代内容中一大块区域。</li>
+<li>Queue：包含待处理的message的列表，每一个message有一个关联的处理函数</li>
+</ul>
+<p><img alt="javascript_runtime_environment_example" src="https://blog.debao.me/images/javascript_runtime_environment_example.png"></p>
+<h3 id="_2">事件循环</h3>
+<p>事件循环的概念简单，和Qt一样：</p>
+<p>在事件循环的某个时刻，运行时开始处理事件循环中的消息，消息被从队列中移除，并调用与之对应的函数，将消息作为输入参数传递给该函数。调用函数会为该函数的使用创建一个新的堆栈帧。函数的处理会持续进行，直到堆栈再次为空为止。然后，事件循环将处理队列中的下一消息（如果有的话）。</p>
+<p>但是，术语上似乎有些精神分裂。仅从MDN的资料看，也很乱：它一边叫事件循环，一边又叫消息队列，有时又称呼任务队列。Event、Message、Task，到底用哪一个？</p>
+<p>比如说，setTimeout() 到底是往队列中添加了一个message，还是一个task？？</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth">MDN的Microtask guide</a>中说：</p>
+<blockquote>
+<p>A <strong>task</strong> is any JavaScript scheduled to be run by the  standard mechanisms such as initially starting to execute a program, an  event triggering a callback, and so forth. Other than by using <code>events</code>,  you can enqueue a task by using <code>setTimeout()</code>or <code>setInterval()</code>.</p>
+</blockquote>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop">MDN的Event loop</a>中说：</p>
+<blockquote>
+<p>The first two arguments to the function <code>setTimeout()</code> are a <code>message</code> to add to the queue and a time value (optional; defaults to <code>0</code>). </p>
+</blockquote>
+<h3 id="event">Event</h3>
+<p>Event 是一个术语，也是JavaScript中的一种对象。</p>
+<p>Web API中大量使用Event。</p>
+<ul>
+<li>Event 可以通过用户动作触发。比如，键盘、鼠标、或者其他API</li>
+<li>Event 可以通过程序触发，比如调用元素的方法 HTMLElement.click()</li>
+<li>也可以定义Event，而后通过EventTarget.dispatchEvent()发送到指定目标</li>
+</ul>
+<p>Event需要和处理函数绑定，可以用：</p>
+<ul>
+<li>EventTarget 的 addEventListener()。 Element等都是EventTarget派生类</li>
+<li>event handler属性，比如onclick、onchange、onclose、...</li>
+</ul>
+<blockquote>
+<p>两者之间，前者有多种优势：1）可以添加多个处理函数；2）在listener被激活时有更精细控制，比如capturing 与 bubbling传播方式；3）适用于任何event target。</p>
+</blockquote>
+<h3 id="settimeout">SetTimeout</h3>
+<p><code>setTimeout()</code>用于创建一个计划在一段时间后执行的任务，这个任务在计时器到期时会被添加到消息队列中，然后通过事件循环被处理。</p>
+<p><code>setTimeout()</code> 是 Web API 的一部分，涉及到事件循环（Event Loop）的概念，但 <code>setTimeout</code> 本身并不直接创建一个Event对象。</p>
+<h3 id="jobtaskmicrotaskmacrotask">Job、Task、MicroTask、MacroTask</h3>
+<p>这个概念让人晕乎：</p>
+<ul>
+<li>ECMA-262 中只提到了 Job 的概念，没提及任何Task术语。</li>
+</ul>
+<ul>
+<li>MDN 中提到 Task 和 MicroTask。</li>
+<li>社区中 MacroTask 和 MicroTask 用的很普遍，据说最早是V8先这么叫的？</li>
+</ul>
+<p>是不是可以这么认为？</p>
+<ul>
+<li>ECMAScript 没有事件循环，但是JavaScript在WEB 中一直在使用。和前面事件循环相关的是 Task（或者叫MacroTask）。</li>
+<li>ECMAScript 引入了Promises。相关内容，为了区分事件循环中的Task，称为 MicroTask</li>
+</ul>
+<h2 id="microtask">Microtask</h2>
+<p>MDN如此介绍Microtask：</p>
+<p>A <strong>microtask</strong> is a short function which is executed after the function or program which created it exits <em>and</em> only if the JavaScript execution stack is empty, but before returning control to the event loop being used by the user agent to drive the script's execution environment.</p>
+<p>Microtask是一个函数，它在创建它的函数或程序结束且stack为空时被执行，它在控制转交给事件循环之前被执行。换言之，这个东西和事件循环没有关系，尽管它有一个队列。</p>
+<p>Microtask：
+* Promise 回调函数（.then，.catch，.finally）
+* MutationObserver 接口【web api】
+* process.nextTick() 【Node js】
+* queueMicrotask() 函数 【web api】
+* async函数中的 await 表达式</p>
+<h3 id="promise">Promise</h3>
+<p>不同于Event Loop，Promise是ECMAScript中正经存在的东西。</p>
+<blockquote>
+<p>初次接触Qt中的QJSEngine时，发现这东西满足ECMA-262标准，支持Promise，但是并没有任何EventLoop的身影，感觉还是挺神奇。</p>
+</blockquote>
+<h2 id="_3">参考</h2>
+<ul>
+<li>https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop</li>
+<li>https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth</li>
+<li>https://developer.mozilla.org/en-US/docs/Web/API/Event</li>
+<li>https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide</li>
+<li>https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver/MutationObserver</li>
+<li>https://html.spec.whatwg.org/multipage/webappapis.html#event-loops</li>
+<li>https://tc39.es/ecma262/2023/#job</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-02-17T22:24:00+08:00" pubdate>Sat 17 February 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/javascript.html'>JavaScript</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a class="category" href="https://blog.debao.me/tags/nodejs.html">nodejs</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

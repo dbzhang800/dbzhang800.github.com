@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>证书相关的 X.509、PEM、DER、CER、KEY 等都是什么鬼？ &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">证书相关的 X.509、PEM、DER、CER、KEY 等都是什么鬼？</h1>
+    <p class="meta">
+<time datetime="2023-11-25T23:38:00+08:00" pubdate>Sat 25 November 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>这堆东西在互联网上无处不在，但是每次遇到它们总还是觉得陌生，每次都需要搜索、搜素、...，还是挺没成就感的。</p>
+<p>先梳理梳理，做个记录</p>
+</blockquote>
+<h2 id="_1">术语</h2>
+<ul>
+<li>ASN.1：Abstract Syntax Notation One.  一种接口描述语言（IDL），它是一种描述数据的表示、编码、传输、解码的灵活的记法。</li>
+</ul>
+<ul>
+<li>X.509：<strong>X.509</strong>是密码学里公钥证书的格式标准，X.509证书包含公钥、身份信息和签名信息。证书采用ASN.1进行描述。</li>
+</ul>
+<ul>
+<li>PKCS：Public Key Cryptography Standards。公钥加密标准，此一标准的设计与发布皆由 RSA 资讯安全公司（英语：RSA Security）所制定。PKCS #8 是存储私钥信息的标准语法；PKCS#10定义证书申请标准；PKCS#12定义个人讯息交换标准（定义包含私钥与公钥证书的文件格式，私钥采用密码保护）。</li>
+</ul>
+<ul>
+<li>PKI：Public Key Infrastructure，公钥基础设施。它是一种用于创建、存储和分发数字证书的系统，用于验证特定的公钥属于某个实体。</li>
+</ul>
+<ul>
+<li>CA：Certificate Authority，数字证书颁发机构。负责存储、发布和签署数字证书</li>
+</ul>
+<ul>
+<li>数字证书：digital certificate，public key certificate，或者 identiry certificate。是一个经证书颁发机构（CA）数字签名的文件，包含拥有者的公钥及相关身份信息。</li>
+<li>DER：Distinguished Encoding Rules，是ASN.1的一种编码规则。注意，BER，CER 都是ASN.1定义的编码规则。</li>
+</ul>
+<ul>
+<li>PEM：Privacy-Enhanced Main，一种存放key、证书的文件格式的事实标准。</li>
+</ul>
+<p>术语太多，且不同上下文下偏重不同，试图捋一捋：</p>
+<h3 id="asn1-x509-der-pem">ASN.1→ X.509 →  数字证书 → DER→  PEM</h3>
+<p>个人觉得，可以借用C++来类比一下</p>
+<table>
+<thead>
+<tr>
+<th>术语</th>
+<th>类比C++</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ASN.1</td>
+<td>C++ 语言</td>
+<td>ASN.1 一门语言，规定了基本数据类型，扩展机制</td>
+</tr>
+<tr>
+<td>X.509</td>
+<td>C++ 类</td>
+<td>X.509使用ASN.1语言，定义一个类（证书类），明确了类有哪些成员，类型是什么</td>
+</tr>
+<tr>
+<td>数字证书</td>
+<td>类对象</td>
+<td>数字证书时X.509这个类的实例化对象，各个成员都有了具体的值</td>
+</tr>
+<tr>
+<td>DER</td>
+<td>.obj</td>
+<td>ASN.1定义各序列化或编译规则，类对象存放在硬盘上的形态。数字证书存在的形式之一</td>
+</tr>
+<tr>
+<td>PEM</td>
+<td></td>
+<td>这个和ASN.1似乎没有半毛钱关系。它可以把任何二进制数据用base64进行编码。数字证书存在的形式之一(把DER产物用 base64编码）。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pki-ca-ra">PKI → CA → RA → 数字证书</h3>
+<blockquote>
+<p>在非对称加密中，公钥是公开的，但如何保证我拿到的证书（公钥）是可信的，而不是中间人的？</p>
+</blockquote>
+<p><img alt="publickey-privatekey" src="https://blog.debao.me/images/publickey-privatekey.png"></p>
+<p>PKI（Public Key Infrastructure）是解决证书（公钥）信任问题的基础和框架。PKI创建数字证书，将公钥与实体进行映射，将这些证书安全地存储在中央存储库中，并在需要时撤销它们。</p>
+<p>PKI由以下几部分构成：</p>
+<ul>
+<li>证书颁发机构（CA，Certificate Authority）：存储、发布和签署数字证书；</li>
+<li>注册机构（RA，Registration Authority）：验证请求其数字证书存储在CA中的实体的身份；</li>
+<li>证书库（LDAP协议列表）</li>
+<li>证书撤销列表（CRL）</li>
+</ul>
+<p><img alt="pki-ra-ca-ldap" src="https://blog.debao.me/images/pki-ra-ca-ldap.png"></p>
+<h3 id="csrkeycrt">.CSR、.key、CRT等</h3>
+<ul>
+<li>CSR：证书请求文件 Certificate Signing Request。</li>
+</ul>
+<ul>
+<li>KEY：私钥，与证书配对使用</li>
+</ul>
+<ul>
+<li>CRT：可以是二进制DER，可以是文本格式PEM。只包含证书，不存在私钥。Linux一般用CRT后缀，还有其他后缀格式。</li>
+</ul>
+<p>使用openssl的话：</p>
+<p>生成私钥 </p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl genrsa -out x.key 2048
+</code></pre></div></td></tr></table></div>
+
+<p>生成 证书请求文件 (回答它的提问，完成过程)</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl req -new -key x.key -out x.csr
+</code></pre></div></td></tr></table></div>
+
+<p>而后用csr去找CA机构申请正式的证书。</p>
+<p>如果用openssl作为CA来生成证书的话（ca的选项可通过openssl的配置文件配置），可以</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl ca -req -in x.csr -out x.crt
+</code></pre></div></td></tr></table></div>
+
+<p>如果有老的证书文件，但是对应的 .csr文件丢失，也可以使用openssl工具，从证书文件中提取出来（注意使用命令行参数<code>-x509toreq</code>）。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl x509 -in x.crt -signkey x.key -x509toreq -out x.csr
+</code></pre></div></td></tr></table></div>
+
+<h3 id="cercrtderpemp12pfx">.CER、.CRT、.DER、.PEM、.P12、.pfx 等</h3>
+<blockquote>
+<p>这些都是证书的后缀名。但后缀名和和文件内容并不一一对应。</p>
+</blockquote>
+<p>从文件编码来说，X.509的证书格式有两大类：</p>
+<ol>
+<li>DER：以二进制格式保存证书，不包含私钥。常用的后缀有：.DER、.CER和.CRT。</li>
+<li>PEM：以ASCII码格式保存证书，可以包含私钥，也可以不包含私钥。常用的后缀有：.PEM、.CER和.CRT。对PEM格式的证书，RFC7468建议的后缀名是 .CRT。</li>
+</ol>
+<blockquote>
+<p>对于证书后缀为.CER或.CRT，可以用记事本打开证书，查看证书内容来区分证书格式。</p>
+<ul>
+<li>如果有类似＂-----BEGIN xxxxx-----＂和＂-----END xxxxx-----＂的头尾标记，则证书格式为PEM。</li>
+<li>如果是乱码，则证书格式为DER</li>
+</ul>
+</blockquote>
+<p>Apache和*nix服务器偏向于PEM格式，而Java和Windows服务器偏向于DER格式。</p>
+<p>另外，还有一个：</p>
+<p>PKCS#12：以二进制格式保存证书，可以包含私钥，也可以不包含私钥。常用的后缀有：.P12和.PFX。主要用于Windows平台</p>
+<p>注意：尽管PEM能存各种东西，但一般不存储PKCS#12的证书。</p>
+<blockquote>
+<p>不同格式证书之间可以互相转换。</p>
+</blockquote>
+<p>OpenSSL中，</p>
+<ul>
+<li><code>openssl x509</code> 可用于 DER 和 PEM的互转</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl x509 -in x.cer -inform der -out x.crt -outform pem
+openssl x509 -in x.crt -inform pem -out x.cer -outform der
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li><code>openssl pkcs12</code> 可用于PFX和PEM的互转</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">openssl</span><span class="w"> </span><span class="n">pkcs12</span><span class="w"> </span><span class="o">-</span><span class="ow">in</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">pfx</span><span class="w"> </span><span class="o">-</span><span class="n">out</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">pem</span><span class="w"> </span><span class="o">-</span><span class="n">nodes</span>
+<span class="n">openssl</span><span class="w"> </span><span class="n">pkcs12</span><span class="w"> </span><span class="o">-</span><span class="k">export</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">crt</span><span class="w"> </span><span class="o">-</span><span class="n">inkey</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">key</span><span class="w"> </span><span class="o">-</span><span class="n">out</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">pfx</span><span class="w"> </span><span class="o">-</span><span class="n">certfile</span><span class="w"> </span><span class="n">ca</span><span class="o">.</span><span class="n">crt</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="digital-certificate">数字证书（digital certificate）</h2>
+<blockquote>
+<p>数字证书解决了"公钥持有者到底是谁"的问题。数字签名技术中无法确定公钥是拥有者的身份。</p>
+</blockquote>
+<p>数字证书，是一个经证书颁发机构（CA）数字签名的文件，包含拥有者的公钥及相关身份信息。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code>    证书
+        版本号
+        序列号
+        签名算法
+        颁发者
+        证书有效期
+            此日期前无效
+            此日期后无效
+        主题
+        主题公钥信息
+            公钥算法
+            主题公钥
+        颁发者唯一身份信息（可选项）
+        主题唯一身份信息（可选项）
+        扩展信息（可选项）
+            ...
+    证书签名算法
+    数字签名
+</code></pre></div></td></tr></table></div>
+
+<h3 id="x509">证书标准 X.509</h3>
+<p>X.509是一个和数字证书有关的国际标准。一个X.509证书需要提供下列信息：</p>
+<ul>
+<li>Version：X.509标准的版本</li>
+<li>Serial Number：赋给每个证书的序列号</li>
+<li>Signature Algorithm：发布者用于签名的算法</li>
+<li>Issuer：发布者名字</li>
+<li>Validity：证书有效期</li>
+<li>Subject：公钥所有者的名字</li>
+<li>Subject Public Key Info：公钥及其相关信息</li>
+</ul>
+<p>证书内容可以通过openssl工具查看：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl x509 -in x.crt -text -noout
+openssl x509 -in x.crt -inform der -text -noout
+</code></pre></div></td></tr></table></div>
+
+<h3 id="1">分类1</h3>
+<ul>
+<li><strong>DV类型证书：</strong>域名验证型证书（Domain Validated），证书审核方式为通过验证域名所有权即可签发证书。此类型证书适合个人和小微企业申请，价格较低，申请快捷。</li>
+</ul>
+<ul>
+<li><strong>OV类型证书：</strong>企业验证型证书（Organization Validated ），证书审核方式为通过验证域名所有权和申请企业的真实身份信息才能签发证书。目前运用最广，兼容性最好的证书类型。</li>
+</ul>
+<ul>
+<li><strong>EV类型证书：</strong>增强验证型证书（Extended Validation），证书审核级别为所有类型最严格验证方式，在OV类型的验证基础上额外验证其他企业的相关信息，比如银行开户许可证书。EV类型证书多使用于银行,金融,证券,支付等高安全标准行业。</li>
+</ul>
+<p>DV证书有很多途径可以免费申请，比如 Let's Encrypt。</p>
+<p>不过DV证书的有效期越来越短，目前单个证书有效期一般3个月（2012年之前有效期10年，2012年有效期3年，2018年有效期2年，2020年有效期1年，2023年有效期3个月，...）。</p>
+<h3 id="2">分类2</h3>
+<ul>
+<li><strong>单域名SSL：</strong>这类证书只保护一个域名，这些域名形如example.com；ww.example.com, b.example.com等；如果您为www前缀的域名申请证书时，默认是可以保护不带www的主域名，但是当其他前缀的子域名申请证书时，则只能保护当前子域名，不能保护不带前缀的主域名。</li>
+</ul>
+<ul>
+<li><strong>多域名SSL：</strong>这种类型的证书可以同时保护多个域名，例如：同时保护ww.example.com, b.example.com、c.example.com等，但是不同品牌的多域名证书默认保护的域名数量不一样。</li>
+</ul>
+<ul>
+<li><strong>通配符SSL：</strong>通配符证书可以保护一个域名下的同级子域名，并且不限制该子域名的数量。例如：这类证书可以保护b.example.com，也可以保护c.example.com，也就是说他可以保护example.com这个域名下的所有同级子域名。</li>
+</ul>
+<h2 id="_2">其他</h2>
+<h3 id="pem">PEM</h3>
+<p>PEM格式将二进制数据使用base64进行编码，并定义了头和尾。格式如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="gh">-----BEGIN xxxxx-----</span>
+
+<span class="gh">-----END xxxxx-----</span>
+</code></pre></div></td></tr></table></div>
+
+<p>xxxxx的常见值见 <a href="https://www.rfc-editor.org/rfc/rfc7468">RFC7468</a>：</p>
+<ul>
+<li><strong>CERTIFICATE</strong>：X.509数字证书，它编码的内容必须是BER/DER格式。 [<a href="https://www.rfc-editor.org/rfc/rfc5280">RFC5280]</a></li>
+<li><strong>X509 CRL</strong> ：证书撤销列表（Certificate Revocation Lists）,要求BER/DER  [<a href="https://www.rfc-editor.org/rfc/rfc5280">RFC5280]</a></li>
+<li><strong>CERTIFICATE REQUEST</strong>：证书请求（对应<code>PKCS#10</code>) ,要求BER/DER [<a href="https://www.rfc-editor.org/rfc/rfc2986">RFC2986]</a></li>
+<li><strong>PKCS7</strong> ：签名密文格式 [<a href="https://www.rfc-editor.org/rfc/rfc2315">RFC2315]</a></li>
+<li><strong>CMS</strong> [<a href="https://www.rfc-editor.org/rfc/rfc5652">RFC5652]</a></li>
+<li><strong>PRIVATE KEY</strong>：非加密的<code>PKCS#8</code>，要求BER/DER [<a href="https://www.rfc-editor.org/rfc/rfc5208">RFC5208]</a> [<a href="https://www.rfc-editor.org/rfc/rfc5958">RFC5958]</a></li>
+<li><strong>ENCRYPTED PRIVATE KEY</strong>：<code>加密的PKCS8</code>，要求BER/DER [<a href="https://www.rfc-editor.org/rfc/rfc5958">RFC5958]</a></li>
+<li><strong>ATTRIBUTE CERTIFICATE</strong> [<a href="https://www.rfc-editor.org/rfc/rfc5755">RFC5755]</a></li>
+<li><strong>PUBLIC KEY</strong>：X.509公钥 [<a href="https://www.rfc-editor.org/rfc/rfc5280">RFC5280]</a></li>
+</ul>
+<p>在OpenSSL中，xxxxx的定义值有（定义在crypto/pem/pem.h）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code># define PEM_STRING_X509_OLD     &quot;X509 CERTIFICATE&quot;
+# define PEM_STRING_X509         &quot;CERTIFICATE&quot;
+# define PEM_STRING_X509_TRUSTED &quot;TRUSTED CERTIFICATE&quot;
+# define PEM_STRING_X509_REQ_OLD &quot;NEW CERTIFICATE REQUEST&quot;
+# define PEM_STRING_X509_REQ     &quot;CERTIFICATE REQUEST&quot;
+# define PEM_STRING_X509_CRL     &quot;X509 CRL&quot;
+# define PEM_STRING_EVP_PKEY     &quot;ANY PRIVATE KEY&quot;
+# define PEM_STRING_PUBLIC       &quot;PUBLIC KEY&quot;
+# define PEM_STRING_RSA          &quot;RSA PRIVATE KEY&quot;
+# define PEM_STRING_RSA_PUBLIC   &quot;RSA PUBLIC KEY&quot;
+# define PEM_STRING_DSA          &quot;DSA PRIVATE KEY&quot;
+# define PEM_STRING_DSA_PUBLIC   &quot;DSA PUBLIC KEY&quot;
+# define PEM_STRING_PKCS7        &quot;PKCS7&quot;
+# define PEM_STRING_PKCS7_SIGNED &quot;PKCS #7 SIGNED DATA&quot;
+# define PEM_STRING_PKCS8        &quot;ENCRYPTED PRIVATE KEY&quot;
+# define PEM_STRING_PKCS8INF     &quot;PRIVATE KEY&quot;
+# define PEM_STRING_DHPARAMS     &quot;DH PARAMETERS&quot;
+# define PEM_STRING_DHXPARAMS    &quot;X9.42 DH PARAMETERS&quot;
+# define PEM_STRING_SSL_SESSION  &quot;SSL SESSION PARAMETERS&quot;
+# define PEM_STRING_DSAPARAMS    &quot;DSA PARAMETERS&quot;
+# define PEM_STRING_ECDSA_PUBLIC &quot;ECDSA PUBLIC KEY&quot;
+# define PEM_STRING_ECPARAMETERS &quot;EC PARAMETERS&quot;
+# define PEM_STRING_ECPRIVATEKEY &quot;EC PRIVATE KEY&quot;
+# define PEM_STRING_PARAMETERS   &quot;PARAMETERS&quot;
+# define PEM_STRING_CMS          &quot;CMS&quot;
+</code></pre></div></td></tr></table></div>
+
+<p>文件后缀常见的有 .pem，.cer, .crt, .key 等，后缀意义不大，可辨识性不高，远没有文件内的这些标签有用。</p>
+<blockquote>
+<p>注意：OpenSSH的私钥PEM格式与此处不同，它的私钥以<code>-----BEGIN OPENSSH PRIVATE KEY-----</code>开头。这应该不是问题，只要ssh客户端认可即可。详见<a href="https://superuser.com/questions/1720991/differences-between-begin-rsa-private-key-and-begin-openssh-private-key">这里</a></p>
+</blockquote>
+<h4 id="pem_1">查看PEM文件内容</h4>
+<p>确定文件类别后，可以通过openssl的对应命令来查看pem文件内容，比如</p>
+<ul>
+<li>查看CSR</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl req -text -noout -in blog.debao.me.csr
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>查看crt</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl x509 -text -noout -in blog.debao.me.crt
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>查看私钥</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl rsa -text -noout -in blog.debao.me.key
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_3">提取公钥</h3>
+<p>可以从RSA 私钥文件、CSR文件、X.509证书中提取公钥</p>
+<ul>
+<li>从RSA私钥提取公钥</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl rsa -in x.key -pubout
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>从.CSR文件提取公钥</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl req -in x.csr -pubkey -noout
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>从X.509数字证书提取公钥</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>openssl x509 -in x.crt -pubkey -noout
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_4">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/X.509</li>
+<li>https://www.openssl.org/docs/man3.2/man1/openssl-x509.html</li>
+<li>http://www.herongyang.com/crypto/Certificate_Formats_X509_DER_PEM.html</li>
+<li>http://serverfault.com/questions/9708/what-is-a-pem-file-and-how-does-it-differ-from-other-openssl-generated-key-file</li>
+<li>https://support.ssl.com/Knowledgebase/Article/View/19/0/der-vs-crt-vs-cer-vs-pem-certificates-and-how-to-convert-them</li>
+<li>http://www.cnblogs.com/guogangj/p/4118605.html</li>
+<li><a href="https://linux.cn/article-11810-1.html">OpenSSL 入门：密码学基础知识 </a></li>
+<li>https://blog.51cto.com/u_15316394/5004231</li>
+<li><a href="https://segmentfault.com/a/1190000019008423">[X.509、PKCS文件格式介绍](https://segmentfault.com/a/1190000019008423)</a></li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-11-25T23:38:00+08:00" pubdate>Sat 25 November 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/openssl.html">openssl</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

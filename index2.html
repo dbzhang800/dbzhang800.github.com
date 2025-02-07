@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div class="blog-index">
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2025/01/an-exploration-of-python-s-import-mechanism-part-2/">Python Import机制乱谈（二）</a>
+      </h1>
+    <p class="meta">
+<time datetime="2025-01-01T20:14:00+08:00" pubdate>Wed 01 January 2025</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>接前面<a href="https://blog.debao.me/2024/12/an-exploration-of-python-s-import-mechanism-part-1/">Python Import机制乱谈（一）</a>，继续看看</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#syspath">sys.path</a><ul>
+<li><a href="#_1">初始化值受什么影响？</a></li>
+<li><a href="#_2">例子</a><ul>
+<li><a href="#site-1">执行 site 模块（1）</a></li>
+<li><a href="#site-2-p">执行 site 模块（2） 使用 -P</a></li>
+<li><a href="#site-3">执行 site 模块（3）</a></li>
+<li><a href="#site-4venv">执行 site 模块（4 …</a></li></ul></li></ul></li></ul></div></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2025/01/an-exploration-of-python-s-import-mechanism-part-2/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2025/01/notes-on-cmd-powershell-pwsh-and-terminal-in-windows/">Windows下CMD、Powershell、pwsh与Terminal小记</a>
+      </h1>
+    <p class="meta">
+<time datetime="2025-01-01T00:03:00+08:00" pubdate>Wed 01 January 2025</time>    </p>
+</header>
+
+  <div class="entry-content"><p><img alt="terminal" src="https://blog.debao.me/images/tools/windows_terminal.png"></p>
+<blockquote>
+<p>从传统的 <code>cmd.exe</code> 到 <code>Windows Powershell</code>，再到跨平台的 <code>PowerShell Core</code>，随着 Windows 系统的不断发展，命令行工具上的选择也越来越多（乱），稍作记录</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#windows">Windows 下的黑 …</a></li></ul></div></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2025/01/notes-on-cmd-powershell-pwsh-and-terminal-in-windows/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2024/12/notes-on-the-history-of-nvidia-gpus/">Nvidia GPU历史小记</a>
+      </h1>
+    <p class="meta">
+<time datetime="2024-12-31T00:11:00+08:00" pubdate>Tue 31 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><p>据说，Nvidia开头的大写字母“N”代表着“新”（new）、“下一代”（next-generation）和“数字”（number），而“vidia”则来源于拉丁语单词“videre”，意为“看见”。合起来整个名称可以理解为“新视野”（new vision …</p></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2024/12/notes-on-the-history-of-nvidia-gpus/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2024/12/notes-no-tiff-image-format/">图像格式tiff小记</a>
+      </h1>
+    <p class="meta">
+<time datetime="2024-12-29T19:19:00+08:00" pubdate>Sun 29 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>一个很古老，很简单 的图像格式；同时又是存在各种扩展，又超级复杂的图像格式。</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#tiff-60">Tiff 6.0 规格书</a><ul>
+<li><a href="#tiffbaseline-tiff">基线TIFF（Baseline TIFF）</a></li>
+<li><a href="#tifftiff-extensions">TIFF扩展（TIFF Extensions）</a></li>
+<li><a href="#_1">压缩格 …</a></li></ul></li></ul></div></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2024/12/notes-no-tiff-image-format/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2024/12/notes-on-pelican-s-theme/">Pelican的theme小记</a>
+      </h1>
+    <p class="meta">
+<time datetime="2024-12-28T22:45:00+08:00" pubdate>Sat 28 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>接前面 <a href="https://blog.debao.me/2023/11/hello-pelican-again/">Hello Pelican Again</a> 与 <a href="https://blog.debao.me/2024/10/a-deeper-dive-into-pelican/">Pelican继续了解</a>，当前blog系统已经改的有点面目全非。再简单了解一下 Pelican 的 theme，Pelican模板使用的Jinja2。</p>
+</blockquote>
+<h2 id="_1">模板结构</h2>
+<ul>
+<li><code>static</code> 部分用于存放主题的静态资源文件，包括 CSS、图片、JavaScript 等。Pelican …</li></ul></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2024/12/notes-on-pelican-s-theme/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2024/12/notes-on-wsl-for-windows/">Windows下WSL小记</a>
+      </h1>
+    <p class="meta">
+<time datetime="2024-12-27T20:01:00+08:00" pubdate>Fri 27 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>稍微梳理一下</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#wsl">WSL 是什么</a><ul>
+<li><a href="#wsl1">WSL1</a></li>
+<li><a href="#wsl2">WSL2</a></li>
+</ul>
+</li>
+<li><a href="#_1">文件系统</a><ul>
+<li><a href="#linux">Linux的文件系统</a></li>
+<li><a href="#linuxwindows">Linux下访问Windows文件系统</a><ul>
+<li><a href="#_2">挂载？</a></li>
+</ul>
+</li>
+<li><a href="#windowslinux">Windows访问Linux文件系统</a></li>
+</ul>
+</li>
+<li><a href="#wslexe">wsl.exe</a><ul>
+<li><a href="#wsl_1">启动和运行 WSL 实例</a></li>
+<li><a href="#wsl_2">管理 WSL 发行版</a></li>
+<li><a href="#_3">帮助及其他</a></li>
+</ul>
+</li>
+<li><a href="#wslconf">wsl.conf</a></li>
+<li><a href="#vscode-wsl">VSCode 与 WSL</a><ul>
+<li><a href="#_4">如何工 …</a></li></ul></li></ul></div></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2024/12/notes-on-wsl-for-windows/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2024/12/notes-on-the-open-source-finite-element-software-fenics/">开源有限元软件FEniCS小记</a>
+      </h1>
+    <p class="meta">
+<time datetime="2024-12-27T01:17:00+08:00" pubdate>Fri 27 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><div class="toc">
+<ul>
+<li><a href="#fenics">FEniCS</a></li>
+<li><a href="#_1">组成部分</a><ul>
+<li><a href="#fenicsx">FEniCSx</a></li>
+<li><a href="#fenics_1">FEniCS</a></li>
+</ul>
+</li>
+<li><a href="#_2">安装</a></li>
+<li><a href="#_3">如何使用？</a><ul>
+<li><a href="#_4">基本步骤</a></li>
+<li><a href="#_5">泊松方程求解问题</a></li>
+<li><a href="#_6">具体例子</a></li>
+<li><a href="#_7">分段看看代码</a><ul>
+<li><a href="#_8">创建网格和定义有限元空间</a></li>
+<li><a href="#_9">设置边 …</a></li></ul></li></ul></li></ul></div></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2024/12/notes-on-the-open-source-finite-element-software-fenics/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2024/12/notes-on-the-open-source-finite-element-software-elmer/">开源有限元软件Elmer小记</a>
+      </h1>
+    <p class="meta">
+<time datetime="2024-12-26T22:48:00+08:00" pubdate>Thu 26 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><div class="toc">
+<ul>
+<li><a href="#elmer">Elmer 是什么？</a><ul>
+<li><a href="#_1">历史</a></li>
+<li><a href="#_2">开发环境</a></li>
+<li><a href="#_3">授权协议</a></li>
+</ul>
+</li>
+<li><a href="#elmer_1">Elmer架构</a><ul>
+<li><a href="#elmergui">ElmerGUI</a></li>
+<li><a href="#elmersolver">ElmerSolver</a></li>
+<li><a href="#elmergrid">ElmerGrid</a></li>
+<li><a href="#paraview">ParaView</a></li>
+<li><a href="#_4">其他</a></li>
+</ul>
+</li>
+<li><a href="#_5">源码结构</a></li>
+<li><a href="#_6">参考</a></li>
+</ul>
+</div>
+<h2 id="elmer">Elmer 是什么？</h2>
+<p>官网是如下介绍Elmer的：</p>
+<p>Elmer是一个开源的多物理场仿真软件，主要由CSC - IT科学中心（CSC）开发。Elmer的开发最初作为芬兰大学、研 …</p></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2024/12/notes-on-the-open-source-finite-element-software-elmer/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2024/12/casual-talk-on-english-learning-in-mainland-china/">国内英文学习乱谈</a>
+      </h1>
+    <p class="meta">
+<time datetime="2024-12-25T16:09:00+08:00" pubdate>Wed 25 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>这几年一直想胡乱写写东西，不知从何处下手。前两天，注意到孩子字母 <strong>C</strong> 的读音，说数学老师就是这么读的，我说这个不能 …</p></blockquote></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2024/12/casual-talk-on-english-learning-in-mainland-china/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2024/12/casual-talk-on-utf-8-support-in-c++-and-windows/">C++与Windows下的UTF-8支持杂谈</a>
+      </h1>
+    <p class="meta">
+<time datetime="2024-12-22T00:10:00+08:00" pubdate>Sun 22 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>随着C++23开始涉足UTF-8源码字符集，以及Windows开始转向UTF-8。C++总算有解决编码问题的苗头了...</p>
+</blockquote>
+<h2 id="_1">问题，由来已久</h2>
+<p>我喜欢用这个例子，因为代码中的中文的存在，要想代码 …</p></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2024/12/casual-talk-on-utf-8-support-in-c++-and-windows/">Read On &crarr;</a>
+  </footer>
+  		</article>
+<div class="pagination">
+    <a class="prev" href="https://blog.debao.me/index3.html">&larr; Older</a>
+
+    <a class="next" href="https://blog.debao.me/index.html">Newer &rarr;</a>
+  <br />
+</div></div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

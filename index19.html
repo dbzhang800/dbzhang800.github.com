@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div class="blog-index">
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/zh/2015/06/notes-on-joomla/">Jooomla!笔记</a>
+      </h1>
+    <p class="meta">
+<time datetime="2015-06-04T13:50:00+08:00" pubdate>Thu 04 June 2015</time>    </p>
+</header>
+
+  <div class="entry-content"><h2 id="_1">问题</h2>
+<h3 id="googleapiscom">googleapis.com 加载问题</h3>
+<p>不少扩展都使用了 googleapis.com 中的 fonts 和 jQuery ，而google的服务在国内无法访问。需要换成360提供的镜像 http://libs.useso.com/  </p>
+<p>NoNumber ReReplacer 比较好的解决这个问题。</p>
+<p>创建两条 …</p></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/zh/2015/06/notes-on-joomla/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2015/04/notes-on-mysql/">Notes on MySQL</a>
+      </h1>
+    <p class="meta">
+<time datetime="2015-04-25T13:33:00+08:00" pubdate>Sat 25 April 2015</time>    </p>
+</header>
+
+  <div class="entry-content"><h2 id="mysql-vs-mysql">MySQL vs mysql</h2>
+<ul>
+<li>MySQL ==&gt; the entire MySQL package<ul>
+<li>The MySQL server (mysqld)</li>
+<li>MySQL client programs</li>
+<li>MySQL client library</li>
+</ul>
+</li>
+<li>mysql ==&gt; a client program of the MySQL package<ul>
+<li>The MySQL Command-Line Tool</li>
+</ul>
+</li>
+</ul>
+<h2 id="connecting-to-server">Connecting to server</h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>shell&gt; mysql -h host -u user -p
+</code></pre></div></td></tr></table></div>
+
+<p>If mysqld is running on the same machine:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1 …</span></pre></div></td></tr></table></div></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2015/04/notes-on-mysql/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2015/04/install-mediawiki-on-windows/">Install MediaWiki on Windows</a>
+      </h1>
+    <p class="meta">
+<time datetime="2015-04-24T10:33:00+08:00" pubdate>Fri 24 April 2015</time>    </p>
+</header>
+
+  <div class="entry-content"><p>MediaWiki + Apache + php + MySQL</p>
+<h2 id="mysql">MySQL</h2>
+<p>Download and install the msi installer of MySQL 5.6 from http://dev.mysql.com/downloads/installer/</p>
+<h2 id="apache">Apache</h2>
+<p>Download and install Apache 2.4 from http://www.apachelounge.com/download/</p>
+<h2 id="php">PHP</h2>
+<p>Download and install php 5.8.6 from http://windows.php.net/download/</p>
+<p>Rename …</p></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2015/04/install-mediawiki-on-windows/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2015/04/install-bugzilla-on-windows/">Install Bugzilla on Windows</a>
+      </h1>
+    <p class="meta">
+<time datetime="2015-04-23T10:11:00+08:00" pubdate>Thu 23 April 2015</time>    </p>
+</header>
+
+  <div class="entry-content"><p>According to the <a href="http://bugzilla.readthedocs.org/en/5.0/installing/windows.html">documentation</a> of Bugzilla 5.0, the following applications should be installed first:</p>
+<ul>
+<li>ActiveState Perl 5.18.2 (5.12.4 or higher)</li>
+<li>Apache 2.4 (2.2.x or higher)</li>
+<li>MySql 5.6 (5.0.15 or higher)</li>
+</ul>
+<h2 id="download-bugzilla">Download Bugzilla</h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>git clone --branch 5.0 https …</code></pre></div></td></tr></table></div></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2015/04/install-bugzilla-on-windows/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/zh/2015/04/obligations-of-the-lgpl/">使用LGPL授权的Qt开发商用程序的注意事项</a>
+      </h1>
+    <p class="meta">
+<time datetime="2015-04-22T22:09:00+08:00" pubdate>Wed 22 April 2015</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>注意：我不是律师，本文内容也只是我个人的理解，故内容仅供参考。如对LGPL如有任何疑问，请咨询你的律师。</p>
+</blockquote>
+<p>从Qt5.4开始，一些新增加的模块开始 …</p></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/zh/2015/04/obligations-of-the-lgpl/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2015/04/hello-pelican/">Hello Pelican</a>
+      </h1>
+    <p class="meta">
+<time datetime="2015-04-22T14:18:00+08:00" pubdate>Wed 22 April 2015</time>    </p>
+</header>
+
+  <div class="entry-content"><p>Octopress is a great blog system, but it's not easy to maintain for users who don't familiar with ruby. So I switch to Pelican, which is written in Python.</p>
+<blockquote>
+<p>“Pelican” is an anagram for <em>calepin</em>, which means “notebook” in French. ;)</p>
+</blockquote>
+<h2 id="links">Links</h2>
+<ul>
+<li><a href="http://jakevdp.github.io/blog/2013/05/07/migrating-from-octopress-to-pelican/">Migrating from Octopress to Pelican</a></li>
+</ul></div>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2013/12/openssl-and-qt/">Notes on OpenSSL and Qt</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-12-06T16:55:00+08:00" pubdate>Fri 06 December 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><p>In Qt, working with SSL can be frustrating because of the inconsistent naming of the corresponding binary dynamic libraries, and Qt defaults to dynamically loading them, without providing any indication if they are missing.</p>
+<h2 id="libraries-name-of-openssl">Libraries name of openssl?</h2>
+<p>The "library" portion of OpenSSL consists of two libraries.</p>
+<p>On posix system …</p></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2013/12/openssl-and-qt/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-2/">How to use QThread in the right way (Part 2)</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-08-06T18:29:00+08:00" pubdate>Tue 06 August 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><p>There are two way to use QThread:</p>
+<ul>
+<li><strong>Subclass QThread and reimplement its run() function</strong></li>
+<li><strong>Use worker objects by moving them to the thread</strong></li>
+</ul>
+<p>As the QThread::run() is the entry point of worker thread, so the former usage is rather easy to understand.</p>
+<p>In this article, we will try to …</p></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-2/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-1/">How to use QThread in the right way (Part 1)</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-08-05T17:34:00+08:00" pubdate>Mon 05 August 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><h2 id="a-short-history">A short history</h2>
+<p>Long long ago, <strong>subclass QThread and reimplement its run() function</strong> is the only recommended way of using QThread. This is rather intuitive and easy to used. But when SLOTS and Qt event loop are used in the worker thread, some users <a href="http://blog.qt.digia.com/blog/2010/06/17/youre-doing-it-wrong/">do it wrong</a>. So Bradley T …</p></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2013/08/how-to-use-qthread-in-the-right-way-part-1/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
+        <a href="https://blog.debao.me/2013/07/left-shift-operator-overloading-for-qdebug/">left shift operator overloading for QDebug()</a>
+      </h1>
+    <p class="meta">
+<time datetime="2013-07-16T10:04:00+08:00" pubdate>Tue 16 July 2013</time>    </p>
+</header>
+
+  <div class="entry-content"><p>Consider that we have create a custom type:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Point</span>
+<span class="p">{</span>
+<span class="n">Point</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="o">:</span><span class="n">x</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">y</span><span class="p">(</span><span class="n">y</span><span class="p">){}</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+
+<p>If we want to make it work with qDebug(), we need to implement a streaming operator:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">QDebug</span><span class="w"> </span><span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">QDebug</span><span class="w"> </span><span class="n">dbg …</span></code></pre></div></td></tr></table></div></div>
+  <footer>
+    <a rel="full-article" href="https://blog.debao.me/2013/07/left-shift-operator-overloading-for-qdebug/">Read On &crarr;</a>
+  </footer>
+  		</article>
+<div class="pagination">
+    <a class="prev" href="https://blog.debao.me/index20.html">&larr; Older</a>
+
+    <a class="next" href="https://blog.debao.me/index18.html">Newer &rarr;</a>
+  <br />
+</div></div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

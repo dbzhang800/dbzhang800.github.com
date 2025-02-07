@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>获取Windows下的硬件信息 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/tools.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">获取Windows下的硬件信息</h1>
+    <p class="meta">
+<time datetime="2023-12-03T00:53:00+08:00" pubdate>Sun 03 December 2023</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>在Windows下获取硬件(比如CPU、主板、硬盘、显卡、网卡...)的信息，主要是通过WMI实现。</p>
+</blockquote>
+<p>本文涉及</p>
+<ul>
+<li>WMIC 工具使用【废弃】</li>
+<li>Get-WmiObject 使用 【废弃】</li>
+<li>Get-CimInstance 使用</li>
+<li>python下wmi 使用</li>
+<li>C++下 wmi 使用</li>
+<li>Qt下通过ActiveQt使用wmi 【本文重点】</li>
+<li><code>__cpuid</code> 使用</li>
+</ul>
+<h2 id="_1">术语</h2>
+<ul>
+<li>WMI：WIndows管理规范（Windows Management Instrumentation）。WMI是Windows操作系统提供的一种管理接口，从Windows 2000系统开始出现，它允许开发人员通过编程语言或脚本来访问和管理Windows系统的各种资源和服务。WMI通过提供COM/DCOM接口，使得开发人员可以从应用程序或脚本中直接调用WMI提供的功能来获取系统信息。WMI基于WBEM和CIM实现。</li>
+<li>WBEM：基于Web的企业管理（Web Based Enterprise Management）。1996年由BMC、Cisco、Compaq、Intel和Microsoft发起。</li>
+<li>CIM：公共信息模型（Common Information Model），是一个可扩展并面向对象的数据模型,含有与企业各个部门有关的信息。CIM也是由分布式管理任务组 (DMTF) 维护的跨平台标准。</li>
+</ul>
+<h3 id="wmi">WMI</h3>
+<p>WMI提供COM/DCOM接口，可以通过C/C++客户端、VBScript或JScript脚本、Powershell 等.NET客户端 访问。</p>
+<p>早期，WMI架构中是没有.Net的：</p>
+<p><img alt="wmi-architecture-from-msdn-0" src="https://blog.debao.me/images/wmi-architecture-from-msdn-0.png"></p>
+<p>后来，.Net占据重要位置（感觉COM和.Net混杂挺乱)：</p>
+<p><img alt="wmi-architecture-from-msdn" src="https://blog.debao.me/images/wmi-architecture-from-msdn.png"></p>
+<blockquote>
+<p>注：可关注wbemtest 这个测试工具。</p>
+</blockquote>
+<h2 id="wmic">wmic</h2>
+<ul>
+<li>https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/wmic</li>
+</ul>
+<p>这个东西出镜率挺高，但是它已经 <strong>被废弃了</strong>。因为功能太强，容易被黑客利用。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>The WMI command-line (WMIC) utility is deprecated as of Windows 10, version 21H1, and as of the 21H1 semi-annual channel release of Windows Server. 
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>只是wmic这个命令行工具被废弃了，不是WMI功能被废弃了。</p>
+</blockquote>
+<p>常用命令</p>
+<ul>
+<li>查看cpu: <code>wmic cpu list brief</code></li>
+<li>查看物理内存: <code>wmic memphysical list brief</code></li>
+<li>查看逻辑内存: <code>wmic memlogical list brief</code></li>
+<li>查看缓存内存: <code>wmic memcache list brief</code> </li>
+<li>查看虚拟内存: <code>wmic pagefile list brief</code></li>
+<li>查看网卡: <code>wmic nic list brief</code></li>
+</ul>
+<p>具体一点的：</p>
+<ul>
+<li>获取cpu名称：<code>wmic cpu get Name</code></li>
+<li>获取cpu核心数：<code>wmic cpu get NumberOfCores</code></li>
+<li>获取cpu线程数：<code>wmic cpu get NumberOfLogicalProcessors</code></li>
+<li>获取cpu序列号：<code>wmic cpu get processorid</code></li>
+<li>获取主板序列号：<code>wmic baseboard get serialnumber</code></li>
+<li>获取BIOS序列号：<code>wmic bios get serialnumber</code></li>
+<li>获取硬盘序列号：<code>wmic diskdrive where index=0 get serialnumber</code></li>
+</ul>
+<h2 id="get-wmiobject">Get-WmiObject</h2>
+<ul>
+<li>https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-wmiobject?view=powershell-5.1</li>
+</ul>
+<p>这是Windows Powershell中的 cmdlet，在Windows Powershell 3.0中，已经<strong>被废弃</strong>，建议使用<code>Get-CimInstance</code>。而到了Powershell 6.0 （pwsh）中，它更是直接<strong>被移除了</strong>，比wmic还彻底。</p>
+<p>一些命令：</p>
+<ul>
+<li>获取cpu信息：<code>Get-WmiObject Win32_Processor</code></li>
+<li>获取BIOS信息：<code>Win32_Bios</code></li>
+</ul>
+<h3 id="pwsh-powershell">关于pwsh 与 powershell</h3>
+<p>https://github.com/powershell/powershell</p>
+<p>从PowerShell  6开始，可执行程序的名字改为<strong>pwsh</strong>， 它使用 .NET Core，可以运行在Windows、Linux和macOS系统。</p>
+<p>之前版本的PowerShell 只运行在Windows平台，叫做Window PowerShell，可执行程序的名字却为 <strong>powershell.exe</strong>。</p>
+<h2 id="get-ciminstance">Get-CimInstance</h2>
+<ul>
+<li>https://learn.microsoft.com/en-us/powershell/scripting/learn/ps101/07-working-with-wmi?view=powershell-7.4</li>
+<li>https://learn.microsoft.com/en-us/powershell/scripting/samples/getting-wmi-objects--get-ciminstance-?view=powershell-7.4</li>
+</ul>
+<blockquote>
+<p>CIM是Powershell 3.0 引入的。至少目前没过时</p>
+</blockquote>
+<ul>
+<li>获取主板信息：</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Get-CimInstance Win32_BaseBoard
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>获取内存信息</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Get-CimInstance Win32_PhysicalMemory
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>获取CPU信息</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Get-CimInstance Win32_Processor
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>获取操作系统信息</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Get-CimInstance Win32_OperatingSystem
+</code></pre></div></td></tr></table></div>
+
+<p>注意：要查看具体有什么class可用，使用</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Get-CIMClass
+</code></pre></div></td></tr></table></div>
+
+<p>这个表很长，可以使用通配符过滤，比如：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code> Get-CIMClass Win32*Processor
+</code></pre></div></td></tr></table></div>
+
+<p>另外，微软官方上有列表：
+* <a href="https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/computer-system-hardware-classes">Computer System Hardware Classes</a></p>
+<h2 id="python">Python</h2>
+<p>python有 wmi 的第三方包，它依赖于 pywin32包。用起来挺简单：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">wmi</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">wmi</span><span class="o">.</span><span class="n">WMI</span><span class="p">()</span>
+
+<span class="c1"># information about the cpu</span>
+<span class="k">for</span> <span class="n">cpu</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">Win32_Processor</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Processor ID: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">cpu</span><span class="o">.</span><span class="n">ProcessorId</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Process Name: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">cpu</span><span class="o">.</span><span class="n">Name</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+<span class="c1"># information about the baseboard</span>
+<span class="k">for</span> <span class="n">board_id</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">Win32_BaseBoard</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Board ID: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">board_id</span><span class="o">.</span><span class="n">SerialNumber</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+<span class="c1"># information about the BIOS</span>
+<span class="k">for</span> <span class="n">bios_id</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">Win32_BIOS</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;BIOS Serial Number: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">bios_id</span><span class="o">.</span><span class="n">SerialNumber</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+<span class="c1"># get disk information</span>
+<span class="k">for</span> <span class="n">disk</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">Win32_DiskDrive</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Disk Serial Number: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">disk</span><span class="o">.</span><span class="n">SerialNumber</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Disk Drive Caption: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">disk</span><span class="o">.</span><span class="n">Caption</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Disk Drive Size: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">disk</span><span class="o">.</span><span class="n">Size</span><span class="p">)</span>
+
+<span class="c1"># get physical memory information</span>
+<span class="k">for</span> <span class="n">memModule</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">Win32_PhysicalMemory</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Memory Capacity: %.fMB&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">memModule</span><span class="o">.</span><span class="n">Capacity</span><span class="p">)))</span>
+
+<span class="c1"># get information about the OS</span>
+<span class="k">for</span> <span class="n">os</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">Win32_OperatingSystem</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Windows Directory: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">WindowsDirectory</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Operating System: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">Caption</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OS Manufacturer: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">Manufacturer</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OS Configuration: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">BuildNumber</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OS Serial Number: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">SerialNumber</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OS Version: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">Version</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="c">C++</h2>
+<blockquote>
+<p>如何在C、C++中通过WMI获取硬件信息？</p>
+</blockquote>
+<p>要使用 C++ 创建 WMI 应用程序：必须初始化 COM、访问和设置 WMI 协议以及执行手动清理。 MSDN上有说明和举例。</p>
+<ul>
+<li>https://learn.microsoft.com/en-us/windows/win32/wmisdk/example--getting-wmi-data-from-the-local-computer</li>
+</ul>
+<blockquote>
+<p>官方例子有中有点小问题，去掉using namespace或者将其起到最后。不然byte类型（C++17引入）会有二义性。</p>
+</blockquote>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#define _WIN32_DCOM</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="p">;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;comdef.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Wbemidl.h&gt;</span>
+
+<span class="cp">#pragma comment(lib, &quot;wbemuuid.lib&quot;)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>主要步骤：</p>
+<ul>
+<li>通过 CoInitializeEx 初始化COM参数</li>
+<li>通过CoInitializeSecurity初始化COM进程安全性</li>
+<li>通过CoCreateInstance获取WMI初始定位符</li>
+<li>通过IWbemLocator::ConnectServer获取本地<code>root\cimv2</code>命名空间的IWebemServices指针</li>
+<li>使用IWbemServices指针向WMI发出请求。这个请求是真正需要的东西</li>
+<li>获取并显式查询数据</li>
+<li>清理等其他操作</li>
+</ul>
+<p>Github上有不少C++的对wmi的封装</p>
+<ul>
+<li>https://github.com/sondernextdoor/WindowsHardwareInfo</li>
+<li>https://github.com/bozali/wmi</li>
+<li>https://github.com/Thomas-Sparber/wmi</li>
+<li>https://github.com/sonodima/wmipp</li>
+</ul>
+<h2 id="qt">Qt</h2>
+<blockquote>
+<p>Qt是C++的库，所以前面的C++中的东西都可以直接用。只是需要注意Qt中使用COM的一些坑...</p>
+</blockquote>
+<p>Qt官方的qtsystems模块仓库中有具体封装wmi的例子（没有用ActiveQt）：</p>
+<ul>
+<li>https://github.com/qt/qtsystems/blob/dev/src/systeminfo/windows/qwmihelper_win.cpp</li>
+</ul>
+<h3 id="qt-com">Qt 与 COM初始化</h3>
+<blockquote>
+<p>注意：Qt在Windows下为了支持剪切板，所以QGuiApplication初始化时已经为主线程调用了 OleInitialize() 函数，一旦再次调用CoInitializeEx() 且<strong>使用不用的并发标志</strong>，会造成崩溃等问题。</p>
+<p>由于 OLE 技术不是线程安全的， 因此 OleInitialize 函数使用 COINIT_APARTMENTTHREADED 标志调用 <strong>CoInitializeEx</strong> 。</p>
+</blockquote>
+<p>MSDN中的<a href="https://learn.microsoft.com/en-us/windows/win32/learnwin32/initializing-the-com-library">Initializing the COM Library</a>中，</p>
+<ul>
+<li>提及CoInitializeEx时，说<strong>每个用到COM的线程</strong>都要调用它：</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Each thread that uses a COM interface must make a separate call to this function.
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>提及主线程时，说到<strong>主线程用COINIT_APARTMENTTHREADED</strong>：</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Generally, a thread that creates a window should use the COINIT_APARTMENTTHREADED flag, and other threads should use COINIT_MULTITHREADED. 
+</code></pre></div></td></tr></table></div>
+
+<p>MSDN中的 <a href="https://learn.microsoft.com/zh-cn/windows/win32/api/combaseapi/nf-combaseapi-coinitializeex">CoInitializeEx 函数 (combaseapi.h) </a> 中，</p>
+<ul>
+<li>提及 CoInitializeEx 可以多次调用，只要并发标志相同即可。</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>对于使用 COM 库的每个线程，CoInitializeEx 必须至少调用一次，并且通常只调用一次。 只要同一线程传递相同的并发标志，就允许同一线程多次调用 CoInitializeEx ，但后续的有效调用将返回S_FALSE。 若要在线程上正常关闭 COM 库，每次成功调用 CoInitialize 或 CoInitializeEx（包括返回S_FALSE的任何调用）都必须通过对 CoUninitialize 的相应调用进行平衡。
+</code></pre></div></td></tr></table></div>
+
+<h3 id="qaxobject">QAxObject</h3>
+<p>Qt中有ActiveQt模块，所以可以减少一些工作。</p>
+<p>注：执行Qt自带的dumpdoc可以生成一个帮助文档。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>dumpdoc WbemScripting.SWbemLocator -o help.html
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>对于这个例子，由于涉及好多个QAxObject，我们可以需要对每个对象，都生成一个文档，这个最好在代码中进行，具体示例见下一节。</p>
+</blockquote>
+<p>使用ActiveQt模组，我们可以写一个 WmiHelper 类：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// demo file by dbzhang800 2023</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QApplication&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QDebug&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QUuid&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QThread&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QFile&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;QAxObject&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Windows.h&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WmiHelper</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">QObject</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">WmiHelper</span><span class="p">(</span><span class="n">QObject</span><span class="w"> </span><span class="o">*</span><span class="n">parent</span><span class="o">=</span><span class="k">nullptr</span><span class="p">)</span>
+<span class="w">        </span><span class="o">:</span><span class="n">QObject</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// try to make Qt&#39;s GUI Thread happy.</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">CoInitializeEx</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">COINIT_MULTITHREADED</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">RPC_E_CHANGED_MODE</span><span class="p">)</span>
+<span class="w">            </span><span class="n">CoInitializeEx</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">COINIT_APARTMENTTHREADED</span><span class="p">);</span>
+<span class="w">        </span><span class="n">wbemLocator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QAxObject</span><span class="p">(</span><span class="s">&quot;WbemScripting.SWbemLocator&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">wmiService</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wbemLocator</span><span class="o">-&gt;</span><span class="n">querySubObject</span><span class="p">(</span>
+<span class="w">            </span><span class="s">&quot;ConnectServer(QString&amp;,QString&amp;)&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;.&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ROOT</span><span class="se">\\</span><span class="s">CIMV2&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="o">~</span><span class="n">WmiHelper</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">delete</span><span class="w"> </span><span class="n">wbemLocator</span><span class="p">;</span>
+<span class="w">        </span><span class="n">CoUninitialize</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">QString</span><span class="w"> </span><span class="n">queryInfo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">className</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">name</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">QString</span><span class="w"> </span><span class="n">info</span><span class="p">;</span>
+
+<span class="w">        </span><span class="n">QAxObject</span><span class="w"> </span><span class="o">*</span><span class="n">resultList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wmiService</span><span class="o">-&gt;</span><span class="n">querySubObject</span><span class="p">(</span><span class="s">&quot;ExecQuery(QString&amp;))&quot;</span><span class="p">,</span>
+<span class="w">                                   </span><span class="n">QString</span><span class="p">(</span><span class="s">&quot;SELECT %1 FROM %2&quot;</span><span class="p">).</span><span class="n">arg</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">className</span><span class="p">));</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resultList</span><span class="o">-&gt;</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;Count&quot;</span><span class="p">).</span><span class="n">toInt</span><span class="p">();</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">count</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">QAxObject</span><span class="w"> </span><span class="o">*</span><span class="n">item</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resultList</span><span class="o">-&gt;</span><span class="n">querySubObject</span><span class="p">(</span><span class="s">&quot;ItemIndex(int)&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span>
+<span class="w">            </span><span class="k">auto</span><span class="w"> </span><span class="n">latin1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">toLatin1</span><span class="p">();</span>
+<span class="w">            </span><span class="n">info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">item</span><span class="o">-&gt;</span><span class="n">dynamicCall</span><span class="p">(</span><span class="n">latin1</span><span class="p">.</span><span class="n">data</span><span class="p">()).</span><span class="n">toString</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">resultList</span><span class="o">-&gt;</span><span class="n">clear</span><span class="p">();</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">info</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="n">QAxObject</span><span class="w"> </span><span class="o">*</span><span class="n">wbemLocator</span><span class="w"> </span><span class="p">{</span><span class="k">nullptr</span><span class="p">};</span>
+<span class="w">    </span><span class="n">QAxObject</span><span class="w"> </span><span class="o">*</span><span class="n">wmiService</span><span class="w"> </span><span class="p">{</span><span class="k">nullptr</span><span class="p">};</span>
+<span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+
+<p>然后我们可以在Qt的各处直接使用了（Gui线程，QCoreApplication线程，其他次线程）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">QGuiApplication</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">WmiHelper</span><span class="w"> </span><span class="n">wmiHelper</span><span class="p">;</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;cpu: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">wmiHelper</span><span class="p">.</span><span class="n">queryInfo</span><span class="p">(</span><span class="s">&quot;Win32_Processor&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ProcessorId&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;bios: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">wmiHelper</span><span class="p">.</span><span class="n">queryInfo</span><span class="p">(</span><span class="s">&quot;Win32_BIOS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;SerialNumber&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;baseboard: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">wmiHelper</span><span class="p">.</span><span class="n">queryInfo</span><span class="p">(</span><span class="s">&quot;Win32_BaseBoard&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;SerialNumber&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;disk: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">wmiHelper</span><span class="p">.</span><span class="n">queryInfo</span><span class="p">(</span><span class="s">&quot;Win32_DiskDrive&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;SerialNumber&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;nic: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">wmiHelper</span><span class="p">.</span><span class="n">queryInfo</span><span class="p">(</span><span class="s">&quot;Win32_NetworkAdapter&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;MACAddress&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;os: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">wmiHelper</span><span class="p">.</span><span class="n">queryInfo</span><span class="p">(</span><span class="s">&quot;Win32_OperatingSystem&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;SerialNumber&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;cpu name: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">wmiHelper</span><span class="p">.</span><span class="n">queryInfo</span><span class="p">(</span><span class="s">&quot;Win32_Processor&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Name&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">qDebug</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;os name: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">wmiHelper</span><span class="p">.</span><span class="n">queryInfo</span><span class="p">(</span><span class="s">&quot;Win32_OperatingSystem&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Caption&quot;</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">exec</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<h4 id="generatedocumentation">generateDocumentation</h4>
+<p>适当使用 QString QAxBase::generateDocumentation() 生成帮助文档，对我们使用ActiveQt有帮助，比如前面的代码，可以加上：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">writeDoc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="n">QString</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fileName</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">QByteArray</span><span class="w"> </span><span class="o">&amp;</span><span class="n">content</span><span class="p">){</span>
+<span class="w">      </span><span class="n">QFile</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">fileName</span><span class="p">);</span>
+<span class="w">      </span><span class="n">f</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">QFile</span><span class="o">::</span><span class="n">WriteOnly</span><span class="p">);</span>
+<span class="w">      </span><span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">);</span>
+<span class="w">      </span><span class="n">f</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="n">wbemLocator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">QAxObject</span><span class="p">(</span><span class="s">&quot;WbemScripting.SWbemLocator&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">writeDoc</span><span class="p">(</span><span class="s">&quot;1.html&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">wbemLocator</span><span class="o">-&gt;</span><span class="n">generateDocumentation</span><span class="p">().</span><span class="n">toUtf8</span><span class="p">());</span>
+<span class="w">  </span><span class="n">wmiService</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wbemLocator</span><span class="o">-&gt;</span><span class="n">querySubObject</span><span class="p">(</span>
+<span class="w">      </span><span class="s">&quot;ConnectServer(QString&amp;,QString&amp;)&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;.&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ROOT</span><span class="se">\\</span><span class="s">CIMV2&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">writeDoc</span><span class="p">(</span><span class="s">&quot;2.html&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">wmiService</span><span class="o">-&gt;</span><span class="n">generateDocumentation</span><span class="p">().</span><span class="n">toUtf8</span><span class="p">());</span>
+</code></pre></div></td></tr></table></div>
+
+<p>得到：</p>
+<p><img alt="activeqt-iswbemlocator" src="https://blog.debao.me/images/activeqt-iswbemlocator-1.png"></p>
+<p>以及</p>
+<p><img alt="activeqt-iswbemservicesex" src="https://blog.debao.me/images/activeqt-iswbemservicesex-1.png"></p>
+<p><img alt="activeqt-iswbemobjectset" src="https://blog.debao.me/images/activeqt-iswbemobjectset-1.png"></p>
+<h2 id="__cpuid-__cpuidex">__cpuid, __cpuidex</h2>
+<p>除了WMI，CPU的ID可以通过 <code>__cpuid</code> 和 <code>__cpuidex</code> 来获取。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;intrin.h&gt;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sstream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iomanip&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cpuInfo</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Calling __cpuid with 0x0 as the function_id argument</span>
+<span class="w">    </span><span class="c1">// gets the number of the highest valid function ID.</span>
+<span class="w">    </span><span class="n">__cpuid</span><span class="p">(</span><span class="n">cpuInfo</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="mh">0x0</span><span class="p">);</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">nIds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cpuInfo</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">cpuInfos</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">nIds</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">__cpuidex</span><span class="p">(</span><span class="n">cpuInfo</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">        </span><span class="n">cpuInfos</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">cpuInfo</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// vender name in data[0]: 1, 3, 2</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">vendor</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="o">*</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">vendor</span><span class="p">.</span><span class="n">data</span><span class="p">())</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cpuInfos</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">    </span><span class="o">*</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">vendor</span><span class="p">.</span><span class="n">data</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cpuInfos</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">];</span>
+<span class="w">    </span><span class="o">*</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">vendor</span><span class="p">.</span><span class="n">data</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cpuInfos</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;CPU Vendor is : &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">vendor</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// serial number in data[1]: 3, 0</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">stringstream</span><span class="w"> </span><span class="n">stream</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">-=</span><span class="mi">3</span><span class="p">)</span>
+<span class="w">        </span><span class="n">stream</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">setfill</span><span class="p">(</span><span class="sc">&#39;0&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">setw</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">uppercase</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">hex</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cpuInfos</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;ProcessorId is : &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">stream</span><span class="p">.</span><span class="n">str</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+
+<p>运行结果</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>CPU Vendor is : GenuineIntel
+ProcessorId is : BFEBFBFF806C1
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_2">参考</h2>
+<ul>
+<li>https://devblogs.microsoft.com/scripting/powertip-list-all-available-cim-classes-by-using-powershell/</li>
+<li>http://timgolden.me.uk/python/wmi/index.html</li>
+<li>https://pypi.org/project/WMI/</li>
+<li>https://www.codeproject.com/Articles/10539/Making-WMI-Queries-In-C</li>
+<li>https://github.com/qt/qtsystems/tree/dev/src/systeminfo</li>
+<li>https://github.com/jiangzhw/MachineCodeCal</li>
+<li>https://learn.microsoft.com/en-us/cpp/intrinsics/cpuid-cpuidex?view=msvc-170</li>
+<li>https://en.wikipedia.org/wiki/CPUID</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2023-12-03T00:53:00+08:00" pubdate>Sun 03 December 2023</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/tools.html'>Tools</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/qt.html">Qt</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>模拟电路仿真SPICE小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/cax.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">模拟电路仿真SPICE小记</h1>
+    <p class="meta">
+<time datetime="2024-08-19T20:26:00+08:00" pubdate>Mon 19 August 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>接前面<a href="https://blog.debao.me/2024/04/notes-on-eda-softwares/">EDA小记</a>，查查SPICE内容，胡乱整理一下。</p>
+</blockquote>
+<p>SPICE，取自<strong>Simulation Program with Integrated Circuit Emphasis</strong>（集成电路通用模拟程序）首字母缩写 ，是一种用于电路描述与仿真的语言和仿真器软件，用于检测电路的连接和功能的完整性，以及用于预测电路的行为。</p>
+<h2 id="spice">SPICE 历史</h2>
+<p>SPICE，1975年由加利福尼亚大学伯克莱分校的Donald Pederson在电子研究实验室首先建立的。第一版和第二版都是用Fortran语言编写的，从第三版开始用<a href="https://zh.wikipedia.org/wiki/C" title="C">C</a>语言编写。</p>
+<ul>
+<li>1973：SPICE1</li>
+<li>1975：SPICE2，最后一个版本 SPICE2G.6(1983)，当今很多商业仿真器基于这个版本</li>
+<li>1989：SPICE3，最后一个版本 SPICE3f.5(1993)</li>
+</ul>
+<h3 id="_1">商业软件</h3>
+<ul>
+<li>HSPICE：1970年代末，由Meta-Software开发，1980年代成为集成电路行业的标准工具，1994年被收入Synopsys旗下。</li>
+<li>PSPICE：第一个用于PC机的SPICE，1980年代初由MicroSim开发，1998年被OrCAD收购，1999年OrCAD被Cadence收购。</li>
+<li>NI Multisim：1990年代由Interactive Image Technologies开发，最初叫做Electronics Workbench，后称为Multisim。2005被 National Instruments收购。提供直观的图形化设计环境，易于使用。</li>
+<li>IsSPICE：1985年由Intusoft推出，用于研究或中小型项目</li>
+<li>MICROCAP：1980年代末，由Spectrum Software开发，2019年停止开发。版本停留在 Micro-Cap 12，商业软件变为免费提供</li>
+<li>ProSPICE：Proteus中使用的SPICE仿真器。Proteus 由 Labcenter Electronics 于1988开发。Proteus支持MCU模拟。</li>
+<li>LTspice：1990年代末由Linear Technology发布，2017年被Analog Devices收购。免费提供。包含Analog Devices元件库。</li>
+<li>TINA：Toolkit for Interactive Network Analysis是基于SPICE的仿真软件，由DesignSoft于1990年发布。支持模拟、数字、射频以及MCU。</li>
+<li>TINA-TI：DesignSoft的TINA的受限版本。2004年起由Texas Instruments免费提供。包含 TI 提供的丰富元件库，便于使用 TI 产品进行设计。注意，它比TINA学生版相比，功能都受限。（另外，它和PSpice for TI无关）</li>
+<li>PSPICE for TI：由 Texas Instruments (TI) 提供的电路仿真工具，基于 Cadence 设计系统的 PSpice 技术。此工具专为设计涉及 TI 元件的电子电路的工程师而开发。免费提供</li>
+<li>QSPICE：qorvo公司免费提供。它是由原LTspice的作者开发的。支持C++/Verilog编译器。包含Qorvo器件库。</li>
+<li>AIM-SPICE：1990年代由 俄罗斯科学院 开发，含义 Automatic Integrated Circuit Modeling Spice，旨在为学术研究和教育提供免费的电路仿真工具。免费，但是社区不大</li>
+<li>...</li>
+</ul>
+<p>还有很多</p>
+<ul>
+<li>SmartSpice</li>
+<li>HSIM</li>
+<li>NANOSIM</li>
+<li>ADiT</li>
+<li>ULTRASIM</li>
+</ul>
+<blockquote>
+<p>追求免费的话，LTspice似乎是社区比较大的。另外QSPICE由于是LTspice的原作者新开发的，似乎也有点意思。</p>
+</blockquote>
+<h3 id="_2">开源软件</h3>
+<ul>
+<li>ngspice：开源软件，融合了XSPICE和CIDER等变体。它本身是一个基于命令行的电路仿真器，但是它可以与其他图形界面工具集成。比如KiCad, Qucs-S 等，另外EasyEDA、Autodesk fusion、Altium Designer等也支持ngspice。</li>
+<li>XYCE：由美国桑迪亚国家实验室开发的，支持并行计算，适合大规模电路模型。它没有基于SPICE的代码，是重新开发的兼容SPICE的程序。</li>
+<li>WRspice：WrSpice是JSPICE3的继任者，它使用C++进行了重写，在一些行为上（SPICE和HSPICE不一致时），向HSPICE靠拢。WRspice由 Whiteley Research Inc. (WRI) 开发和维护，2017年起已经停止维护。</li>
+</ul>
+<blockquote>
+<p>XSPICE由Georgia Tech开发，添加数模混合仿真功能；CIDER（CODECS）是由U.C. Berkeley和Oregon State University合作开发，支持半导体器件的数值仿真，并利用数值仿真结果进行电路分析。</p>
+</blockquote>
+<h4 id="ngspice-gui">配合ngspice 的 GUI 程序</h4>
+<p>以下是一些可以与 ngspice 集成，提供图形界面的工具：</p>
+<ul>
+<li>KiCad  (使用 wxwidgets 这一跨平台 C++的 UI库)</li>
+<li>Qucs-S （使用 Qt 这一跨平台 C++的 UI库）: 网址 https://ra3xdh.github.io/，派生自Qucs，但是使用Spice。</li>
+<li>gEDA （使用GTK+ 这一个gnome的UI库）</li>
+<li>XSchem：在Unix下使用X11和Tcl-Tk库。</li>
+<li>EasyEDA（Web端）</li>
+<li>...</li>
+</ul>
+<p>另外，多个商业软件可以支持/使用 ngspice：</p>
+<ul>
+<li>Eagle 8.4</li>
+<li>Altium Designer 20</li>
+<li>Autodesk fusion</li>
+<li>...</li>
+</ul>
+<h2 id="_3">网表文件语法</h2>
+<p>尽管现代多数仿真工具可以通过电路图输入，还是有必要先了解一下SPICE基础的语法。</p>
+<p>SPICE语法主要涉及电路描述文件（通常为.cir或.sp文件），该文件包含了定义和分析电路所需的所有指令和元件描述。</p>
+<h3 id="_4">基本组成</h3>
+<p>SPICE的输入文件主要由以下几部分组成：</p>
+<ul>
+<li>标题行（Title Card/Title Line）：文件的第一行，用于描述电路或仿真的简要信息。</li>
+<li>元件说明（Element Cards）：描述电路中的具体元件，如电阻、电容、电感、晶体管等。</li>
+<li>控制语句（Control Statements）：指定仿真类型（如直流分析、交流分析、瞬态分析等）和输出要求。</li>
+<li>模型描述（Model Descriptions）：定义特定元件的详细物理特性</li>
+<li>结束行（.END）：标记文件结束。</li>
+</ul>
+<p>另外，</p>
+<ul>
+<li>注释行（Comment)：</li>
+<li>子电路(Subcircuit)：</li>
+<li>文件包含(.INCLUDE)：</li>
+</ul>
+<blockquote>
+<p>SPICE在1970年代被开发时，打孔卡还是主要的数据输入手段之一，每个电路元件或控制语句通常对应一行输入，这被视为一个“card”。</p>
+</blockquote>
+<h3 id="_5">数字？</h3>
+<p>SPICE大小写不敏感，数字数量级的单位：</p>
+<ul>
+<li>T = 10^12</li>
+<li>G = 10^9</li>
+<li>Meg = 10^6</li>
+<li>K = 10^3</li>
+<li>mil = 25.4x10^-6</li>
+<li>m = 10^-3</li>
+<li>u = 10^-6</li>
+<li>n = 10^-9</li>
+<li>p = 10^-12</li>
+<li>f = 10^-15</li>
+</ul>
+<p>不加数量级的数字，可以表示为：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="mf">5</span>
+<span class="mf">5.0</span>
+<span class="mf">5</span><span class="n">E3</span>
+<span class="mf">5.0E3</span>
+</code></pre></div></td></tr></table></div>
+
+<p>单位：V、A、HZ、OHM、H、F、DEG</p>
+<blockquote>
+<p>注意，最好不要加单位。</p>
+</blockquote>
+<h3 id="_6">标题行</h3>
+<p>标题行必须是输入文件的第一行</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>My first circuit
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_7">结束行</h3>
+<p>结束行，注意前面的 <code>.</code>。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">.</span><span class="nx">END</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_8">注释行</h3>
+<p>与C语言中使用 <code>//</code>或 <code>/* */</code>进行注释不同，SPICE中使用星号（<code>*</code>）来注释行，例如：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">*</span><span class="w"> </span><span class="nx">这是一个注释</span>
+</code></pre></div></td></tr></table></div>
+
+<p>行内注释，使用分号 <code>;</code>，有的用SPICE支持 <code>$</code>。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>V1 1 0 DC 10V ; 这是电源定义，电压为10V
+R1 1 2 1k ; 这是一个电阻，阻值为1千欧姆
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_9">续行</h3>
+<p>在不同的 SPICE 版本中，续行符的使用有细微的差异。在多数 SPICE 方言中，使用加号（+）作为续行符。加号放在新行的行首。</p>
+<h3 id="_10">元件说明</h3>
+<p>每个元件在SPICE中都用一行文本描述，格式通常为：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>&lt;类型&gt;&lt;名称&gt; &lt;连接节点&gt; &lt;参数&gt;
+</code></pre></div></td></tr></table></div>
+
+<p>例如，电阻类型用R标识，一个电阻可以描述为：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>R1 1 2 100k
+</code></pre></div></td></tr></table></div>
+
+<p>这表示一个名为R1的电阻，连接在节点1和节点2之间，阻值为100千欧姆。</p>
+<p>注意，名字和节点，不一定用数字（节点地必须是0）。所以下面也可以</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>Rabc myin1 myin2 100000
+</code></pre></div></td></tr></table></div>
+
+<p>常用元件的类型：</p>
+<ul>
+<li><strong>R</strong>：电阻 (Resistor)</li>
+<li><strong>C</strong>：电容 (Capacitor)</li>
+<li><strong>L</strong>：电感 (Inductor)</li>
+<li><strong>V</strong>：独立电压源 (Independent Voltage Source)</li>
+<li><strong>I</strong>：独立电流源 (Independent Current Source)</li>
+<li><strong>E</strong>：电压控制电压源 (Voltage-Controlled Voltage Source)</li>
+<li><strong>G</strong>：电压控制电流源 (Voltage-Controlled Current Source)</li>
+<li><strong>H</strong>：电流控制电压源 (Current-Controlled Voltage Source)</li>
+<li><strong>F</strong>：电流控制电流源 (Current-Controlled Current Source)</li>
+<li><strong>D</strong>：二极管 (Diode)</li>
+<li><strong>Q</strong>：双极型晶体管 (Bipolar Junction Transistor)</li>
+<li><strong>M</strong>：MOSFET (Metal-Oxide-Semiconductor Field-Effect Transistor)</li>
+<li><strong>J</strong>：JFET (Junction Field-Effect Transistor)</li>
+</ul>
+<h3 id="_11">控制语句</h3>
+<p>控制语句以点（.）开始，用于定义仿真的设置和进行的分析类型。常见的控制语句包括：</p>
+<ul>
+<li>.DC：直流扫描分析</li>
+<li>.AC：交流扫描分析</li>
+<li>.TRAN：瞬态分析</li>
+<li>.OP：工作点分析(Operation Point Analysis)</li>
+<li>.PRINT：定义输出变量</li>
+<li>.PLOT：定义绘图输出</li>
+</ul>
+<p>还有</p>
+<ul>
+<li>.NODESET：为电路节点提供初始电压<strong>估计</strong>，有助于加速仿真收敛</li>
+<li>.IC：Initial Condition，为某些节点设置仿真开始时的确切电压或初始条件。常用于瞬态分析。</li>
+<li>.OPTION：设置仿真的各种参数，比如迭代步长、容差、输出格式等。</li>
+</ul>
+<p>例如，进行一个瞬态分析的控制语句可能如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">.TRAN</span><span class="w"> </span><span class="mi">1</span><span class="no">us</span><span class="w"> </span><span class="mi">100</span><span class="no">ms</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这表示进行瞬态分析，步长为1微秒，总时长为100毫秒。</p>
+<p>在ngspice中，支持.control 块功能。块中可以包含任何有效的 ngspice 命令，比如设定仿真选项、执行仿真和后处理数据等。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">.control</span>
+<span class="w">    </span><span class="err">[</span><span class="nf">ngspice</span><span class="w"> </span><span class="err">命令</span><span class="p">]</span>
+<span class="na">.endc</span>
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_12">模型描述</h3>
+<blockquote>
+<p>设备模型对于准确模拟电子元件在各种条件下的行为至关重要。SPICE定义了多种模型类型，每种模型在 SPICE 中都有特定的参数集，这些参数可以根据实际器件的数据手册进行调整以匹配实际行为。</p>
+</blockquote>
+<p>SPICE中的.MODEL语句允许用户定义诸如二极管、晶体管等半导体器件的特性。这些模型有助于预测器件在电路中的运行情况。</p>
+<p>.MODEL语句在SPICE中的通用格式如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">.MODEL</span><span class="w"> </span><span class="no">MNAME</span><span class="w"> </span><span class="no">TYPE</span><span class="p">(</span><span class="no">PNAME1</span><span class="err">=</span><span class="no">PVAL1</span><span class="w"> </span><span class="no">PNAME2</span><span class="err">=</span><span class="no">PVAL2</span><span class="w"> </span><span class="no">...</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>MNAME：这是模型名称，用于在仿真的其他部分中唯一标识此模型。</li>
+<li>TYPE：指定设备的类型。常见类型包括MOSFET的NMOS和PMOS，双极结型晶体管的NPN和PNP，二极管的D等。</li>
+<li>PNAME1, PNAME2, ...：这些是针对所建模设备类型的参数名称。</li>
+<li>PVAL1, PVAL2, ...：每个参数的对应值。</li>
+</ul>
+<p>例如：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">.</span><span class="nx">MODEL</span><span class="w"> </span><span class="nx">MYMNAME</span><span class="w"> </span><span class="nx">NMOS</span><span class="w"> </span><span class="p">(</span><span class="nx">LEVEL</span><span class="p">=</span><span class="mi">1</span><span class="w"> </span><span class="nx">VTO</span><span class="p">=</span><span class="m m-Double">2.0</span><span class="w"> </span><span class="nx">KP</span><span class="p">=</span><span class="mi">10</span><span class="nx">U</span><span class="w"> </span><span class="nx">W</span><span class="p">=</span><span class="mi">10</span><span class="nx">U</span><span class="w"> </span><span class="nx">L</span><span class="p">=</span><span class="mi">1</span><span class="nx">U</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这定义了一个NMOS型号为M1的模型，指定了多个物理参数。</p>
+<p>定义好之后，可以通过原件类型M使用它。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nx">M1</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="nx">MYMNAME</span>
+</code></pre></div></td></tr></table></div>
+
+<p>这里，M1 是NMOS晶体管的实例，1、2、3、4是连接节点（分别是栅极、漏极、源极和衬底），MNMOS是之前定义的模型。</p>
+<blockquote>
+<p>注意：区分SPICE模型于IBIS模型。不同于 SPICE模型是一种基于文本的行为模型，SPICE仿真器使用这种模型通过数学运算预测器件在不同条件下的行为。IBIS是Input/Output Buffer Information Specification（输入/输出缓冲器信息规范）的首字母缩写。它是一种行为模型，描述器件的数字输入和输出缓冲器的模拟行为。它由表格数据组成，描述数字缓冲器内元器件的电流-电压(I-V)关系，以及输出或I/O缓冲器的电压随时间变化的(V-t)开关特性。它用于在制造之前对系统板进行信号完整性分析，并以纯ASCII文本格式的数据呈现。它不披露任何专有信息，因为IBIS模型就像一个黑盒模型，不包含可逆向工程的内部信息。</p>
+</blockquote>
+<h3 id="_13">子电路</h3>
+<p>子电路在 SPICE 中是通过 .SUBCKT 语句定义的，其结构允许将一组电路元件封装成单一的实体。定义子电路的基本语法如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">.SUBCKT</span><span class="w"> </span><span class="err">子电路名</span><span class="w"> </span><span class="err">输入端口节点</span><span class="w"> </span><span class="err">输出端口节点</span><span class="w"> </span><span class="p">[</span><span class="err">其他端口节点</span><span class="no">...</span><span class="p">]</span>
+<span class="na">...</span><span class="err">（电路元件描述）</span>
+<span class="na">.ENDS</span><span class="w"> </span><span class="err">&lt;子电路名&gt;</span>
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>.ENDS 后面的子电路名可以省略。</p>
+</blockquote>
+<p>子电路的调用就像使用任何其他内置元件一样。调用子电路的语法通常如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>X&lt;名称&gt; &lt;连接节点列表&gt; &lt;子电路名&gt;
+</code></pre></div></td></tr></table></div>
+
+<p>例子：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">*</span><span class="w"> </span><span class="nx">定义子电路OPAMP</span><span class="err">，</span><span class="nx">端口分配</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">输入</span><span class="o">+</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">输入</span><span class="o">-</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">输出</span>
+<span class="p">.</span><span class="nx">SUBCKT</span><span class="w"> </span><span class="nx">OPAMP</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span>
+<span class="nx">Rin</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">10</span><span class="nx">k</span>
+<span class="nx">G1</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">100</span><span class="nx">k</span>
+<span class="nx">Rout</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="nx">k</span>
+<span class="p">.</span><span class="nx">ENDS</span><span class="w"> </span><span class="nx">OPAMP</span>
+
+<span class="o">*</span><span class="w"> </span><span class="nx">调用子电路OPAMP</span>
+<span class="nx">XU1</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="nx">OPAMP</span>
+<span class="nx">V1</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="nx">DC</span><span class="w"> </span><span class="mi">1</span>
+<span class="nx">Rload</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">10</span><span class="nx">k</span>
+</code></pre></div></td></tr></table></div>
+
+<ul>
+<li>OPAMP 是子电路的名称，1, 2, 3 是端口节点。内部包含了输入电阻 Rin，一个控制源 G1 和输出电阻 Rout。</li>
+<li>XU1 表示一个子电路实例，连接到节点 1, 0, 和 2。OPAMP 是调用的子电路名称。</li>
+</ul>
+<h3 id="_14">文件包含</h3>
+<p>.INCLUDE 语句的基本语法如下：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">.INCLUDE</span><span class="w"> </span><span class="err">&#39;文件路径</span><span class="mi">1</span><span class="err">&#39;</span>
+<span class="na">.INCLUDE</span><span class="w"> </span><span class="s">&quot;文件路径2&quot;</span>
+</code></pre></div></td></tr></table></div>
+
+<p>文件路径是要引入文件的完整或相对路径。使用双引号（"）或单引号（'）均可用来包围文件路径。</p>
+<p>非标准的 .LIB，在一些SPICE中，用于导入第三方库。比如ngspice中：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>LIB filename libname
+</code></pre></div></td></tr></table></div>
+
+<h3 id="_15">函数</h3>
+<blockquote>
+<p>SPICE 提供了多种内置函数，函数可以在 SPICE 仿真中用于不同的目的，包括定义复杂的源特性、控制电路行为，以及分析和优化电路性能。</p>
+</blockquote>
+<p>数学函数</p>
+<ul>
+<li><strong>abs(x)</strong> - 返回 x 的绝对值。</li>
+<li><strong>sqrt(x)</strong> - 返回 x 的平方根。</li>
+<li><strong>exp(x)</strong> - 计算 e 的 x 次方。</li>
+<li><strong>log(x)</strong> - 计算 x 的自然对数。</li>
+<li><strong>sin(x)</strong> - 计算 x 的正弦值。</li>
+<li><strong>cos(x)</strong> - 计算 x 的余弦值。</li>
+<li><strong>tan(x)</strong> - 计算 x 的正切值。</li>
+<li><strong>asin(x)</strong> - 计算 x 的反正弦值。</li>
+<li><strong>acos(x)</strong> - 计算 x 的反余弦值。</li>
+<li><strong>atan(x)</strong> - 计算 x 的反正切值。</li>
+<li><strong>sinh(x)</strong> - 计算 x 的双曲正弦值。</li>
+<li><strong>cosh(x)</strong> - 计算 x 的双曲余弦值。</li>
+<li><strong>tanh(x)</strong> - 计算 x 的双曲正切值。</li>
+</ul>
+<p>逻辑和条件函数</p>
+<ul>
+<li><strong>if(cond, then_expr, else_expr)</strong> - 根据条件 <code>cond</code> 返回 <code>then_expr</code> 或 <code>else_expr</code>。</li>
+<li><strong>sgn(x)</strong> - 返回 x 的符号，正数为1，负数为-1，零为0。</li>
+<li><strong>u(x)</strong> - 单位阶跃函数，x 大于0时返回1，否则返回0。</li>
+</ul>
+<p>特殊电路分析函数</p>
+<ul>
+<li><strong>limit(x, min, max)</strong> - 将 x 限制在 min 和 max 之间。</li>
+<li><strong>pow(x, y)</strong> - 计算 x 的 y 次幂。</li>
+<li><strong>min(x, y)</strong> - 返回 x 和 y 中的最小值。</li>
+<li><strong>max(x, y)</strong> - 返回 x 和 y 中的最大值。</li>
+</ul>
+<p>在 SPICE 及其许多变体中，.func 指令用于定义用户自定义的数学函数，这些函数可以在电路描述中被重用。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="o">.</span><span class="k">func</span><span class="w"> </span><span class="err">函数名</span><span class="p">(</span><span class="err">参数</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="err">参数</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="o">...</span><span class="p">,</span><span class="w"> </span><span class="err">参数</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">表达式</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="spice_1">SPICE 解算器?</h2>
+<p>SPICE使用数值积分方法来求解由网表定义的电路方程。这些方程通常是非线性微分方程。</p>
+<ol>
+<li><strong>节点分析</strong></li>
+</ol>
+<ul>
+<li>基于节点电压法，将电路转化为节点电压方程。利用基尔霍夫电流定律（KCL）构建方程。
+2. <strong>稀疏矩阵技术</strong></li>
+</ul>
+<ul>
+<li>由于电路方程组通常是稀疏的，SPICE 使用稀疏矩阵存储和操作数据，以节省内存和提高计算速度。
+3. <strong>牛顿-拉夫森迭代法</strong></li>
+</ul>
+<ul>
+<li>用于求解非线性电路方程。通过线性化非线性方程并反复迭代逼近求解。</li>
+<li>每次迭代计算雅可比矩阵，并求解线性方程组。
+4. <strong>瞬态分析</strong></li>
+</ul>
+<ul>
+<li>使用梯形积分法和向后欧拉法进行时间步进，模拟电路的动态行为。</li>
+<li>梯形法稳定性高，适合大多数电路仿真。
+5. <strong>直流分析</strong></li>
+</ul>
+<ul>
+<li>计算电路在直流稳态下的行为。通过迭代求解节点电压，确定稳态电流和电压。
+6. <strong>交流分析</strong></li>
+</ul>
+<ul>
+<li>通过线性化电路，使用小信号模型进行频域分析。</li>
+<li>计算电路的增益、相位等频率响应特性。
+7. ...</li>
+</ul>
+<h2 id="_16">杂项</h2>
+<h3 id="_17">命令行</h3>
+<p>SPICE有交互式模式、批处理模式以及server模式。不过直接手动编辑spice文件的场景应该挺少了，都是通过GUI界面绘制电路图。</p>
+<blockquote>
+<p>对于ngspice来说，其他软件还可以直接使用其动态库，比如KiCAD。</p>
+</blockquote>
+<h3 id="ngspice">ngspice 行为</h3>
+<p>ngspice源自spice3f5，远远不像其他商业版本进化那么快。通过 ngbehavior 来模拟一些兼容行为</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>set ngbehavior=ltpsa
+</code></pre></div></td></tr></table></div>
+
+<blockquote>
+<p>注意写法，这些都是Flag！可以多个同时使用的。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Short Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a</code></td>
+<td>A complete netlist transformed</td>
+</tr>
+<tr>
+<td><code>ps</code></td>
+<td>PSPICE compatibility</td>
+</tr>
+<tr>
+<td><code>hs</code></td>
+<td>HSPICE compatibility</td>
+</tr>
+<tr>
+<td><code>spe</code></td>
+<td>Spectre compatibility</td>
+</tr>
+<tr>
+<td><code>lt</code></td>
+<td>LTSPICE compatibility</td>
+</tr>
+<tr>
+<td><code>s3</code></td>
+<td>Spice3 compatibility</td>
+</tr>
+<tr>
+<td><code>ll</code></td>
+<td>All (currently not used)</td>
+</tr>
+<tr>
+<td><code>ki</code></td>
+<td>KiCad compatibility</td>
+</tr>
+<tr>
+<td><code>eg</code></td>
+<td>EAGLE compatibility</td>
+</tr>
+<tr>
+<td><code>mc</code></td>
+<td>For 'make check' (test environments)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_18">模型导入</h3>
+<p>在实际中，由于同一个型号的半导体器件，可能由多个半导体制造商生产，尽管他们基本的电气特性可能相似，但是细节上还有差异。比如 1N4148 是一种非常普遍的开关二极管，但是各个仿真软件因为使用不同厂家的器件，造成参数不同。有时需要手动导入仿真软件没有提供的器件模型</p>
+<p>模型可以是</p>
+<ul>
+<li>通过 <code>.MODEL</code> 使用内置模型，只是修改一下参数</li>
+<li>使用 <code>.subckt</code> 定义新的使用各个内置模型创建的子电路</li>
+</ul>
+<p>直接编辑spice文件的话，使用 <code>.include</code>似乎就够了，但是在GUI下，需要编辑器件（对应好引脚，这样电路图和仿真模型才能对应）</p>
+<p>对于Kicad(NGSpice)</p>
+<ul>
+<li>https://docs.kicad.org/8.0/en/eeschema/eeschema.html#assigning_models</li>
+<li>https://ngspice.sourceforge.io/ngspice-eeschema.html#OpAmp1641</li>
+</ul>
+<p>对于LTSpice</p>
+<ul>
+<li><a href="https://www.analog.com/en/resources/technical-articles/ltspice-simple-steps-to-import-third-party-models.html">LTspice: Simple Steps to Import Third-Party Models</a></li>
+<li>https://ieee.li/pdf/viewgraphs/ltspice_importing_third_party_models.pdf</li>
+</ul>
+<p>对于MutiSim</p>
+<ul>
+<li><a href="https://knowledge.ni.com/KnowledgeArticleDetails?id=kA03q000000YH5fCAG&amp;l=zh-CN">在NI Multisim中创建自定义组件</a></li>
+<li><a href="https://knowledge.ni.com/KnowledgeArticleDetails?id=kA03q000000YIN6CAO&amp;l=zh-CN">在没有组件向导的情况下将SPICE模型导入Multisim</a></li>
+</ul>
+<h2 id="_19">在线仿真网站</h2>
+<p>有一堆在线网站，后台是否和spice有关不清楚</p>
+<ul>
+<li>multisim live（商业，收费）：https://www.multisim.com/</li>
+<li>easyeda（国产，免费，后台使用ngspice）：https://easyeda.com/</li>
+</ul>
+<ul>
+<li>circuitlab: https://www.circuitlab.com/</li>
+<li>everycircuit： https://everycircuit.com/</li>
+<li>circuitverse：https://circuitverse.org/simulator</li>
+<li>falsted:  https://www.falstad.com/circuit/</li>
+<li>circuitjs：https://lushprojects.com/circuitjs/</li>
+<li>dcalab：https://dcaclab.com/</li>
+</ul>
+<h2 id="_20">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/SPICE</li>
+<li>http://www.ecircuitcenter.com/SpiceTopics/History.htm</li>
+<li>http://www.ecircuitcenter.com/SPICEsummary.htm</li>
+<li>https://web.archive.org/web/20090928075648/http://newton.ex.ac.uk/teaching/CDHW/Electronics2/userguide/sec2.html</li>
+<li>https://www.altium.com/documentation/knowledge-base/altium-designer/understand-spice-models-supported-in-altium</li>
+<li>https://ngspice.sourceforge.io/ngspice-eeschema.html</li>
+<li>https://ngspice.sourceforge.io/resources.html</li>
+<li>https://xyce.sandia.gov/</li>
+<li>https://people.eecs.berkeley.edu/~boser/courses/40/software/MultiSim-Tutorial.pdf</li>
+<li>https://www.tina.com/</li>
+<li>https://en.wikipedia.org/wiki/TINA_(program)</li>
+<li>https://ngspice.sourceforge.io/resources.html</li>
+<li>https://p.qorvo.com/qspice-simulator.html</li>
+<li>http://www.intusoft.com/icap.htm</li>
+<li>https://ngspice.sourceforge.io/docs/ngspice-42-manual.pdf</li>
+<li>https://m.elecfans.com/article/1925576.html</li>
+<li>https://www.analog.com/en/resources/analog-dialogue/articles/spice-vs-ibis-choosing-the-more-appropriate-model-for-your-circuit.html</li>
+<li>http://www.wrcad.com/manual/wrsmanual/wrsmanual.html</li>
+<li>https://xschem.sourceforge.io/stefan/index.html</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-08-19T20:26:00+08:00" pubdate>Mon 19 August 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/cax.html'>CAx</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

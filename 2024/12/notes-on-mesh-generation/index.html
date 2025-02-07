@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Mesh网格生成小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/cax.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Mesh网格生成小记</h1>
+    <p class="meta">
+<time datetime="2024-12-19T18:23:00+08:00" pubdate>Thu 19 December 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>网格（Mesh）用于计算机屏幕渲染和物理模拟，如有限元分析（Finite Element Analysis, FEA）和计算流体力学（Computational Fluid Dynamics, CFD）。通过将复杂形状（如桥梁）分解为简单单元（如三角形），我们可以对每个单元进行计算并模拟其相互作用，从而实现模拟和可视化。</p>
+</blockquote>
+<div class="toc">
+<ul>
+<li><a href="#_1">术语</a><ul>
+<li><a href="#_2">网格生成</a></li>
+<li><a href="#_3">网格单元命名</a></li>
+<li><a href="#_4">常见单元</a></li>
+</ul>
+</li>
+<li><a href="#_5">网格类型</a><ul>
+<li><a href="#_6">按几何结构分类</a></li>
+<li><a href="#_7">按网格结构分类</a></li>
+<li><a href="#_8">按网格类型分类</a></li>
+<li><a href="#_9">按网格的适应性分类</a></li>
+<li><a href="#_10">按网格的质量分类</a></li>
+</ul>
+</li>
+<li><a href="#_11">生成方法</a></li>
+<li><a href="#_12">开源软件</a><ul>
+<li><a href="#gmsh">gmsh</a></li>
+<li><a href="#tetgen">tetgen</a></li>
+<li><a href="#meshfix">MeshFix</a></li>
+</ul>
+</li>
+<li><a href="#gmsh_1">gmsh例子</a></li>
+<li><a href="#_13">参考</a></li>
+</ul>
+</div>
+<p>网格生成（Mesh Generation）是指将连续的几何空间划分为离散的几何单元和拓扑单元的过程。</p>
+<p>这一过程通常通过计算机算法完成，必要时可结合人工干预。网格生成的目标是创建一个既能准确反映输入域几何特征，又具有高质量（形状良好）单元的网格。同时，需要避免生成过多的单元，以免增加后续计算的难度。在对后续计算至关重要的区域，网格应更为精细（单元尺寸较小），以提高计算精度。</p>
+<h2 id="_1">术语</h2>
+<h3 id="_2">网格生成</h3>
+<ul>
+<li><strong>Mesh generation / Meshing</strong>（网格生成/网格划分）：指生成网格的过程。</li>
+<li><strong>Grid generation / Gridding</strong>（网格生成/网格布置）：范围更广？？包含网格优化，即通过调整网格以提高数值计算的速度或精度。</li>
+<li><strong>Tessellation</strong>（镶嵌/铺砖）：在计算机图形学和数学中，有时用作网格的同义词。</li>
+</ul>
+<h3 id="_3">网格单元命名</h3>
+<ul>
+<li><strong>Nodes / Points</strong>（节点）：表示0维单元，在计算几何中通常称为Vertices（顶点）。</li>
+<li><strong>Edges</strong>（边）：表示1维单元。</li>
+<li><strong>Faces / Cells / Entities</strong>（面/单元/实体）：2维或更高维的单元，具体名称视应用而定。</li>
+<li><strong>Elements</strong>（单元）：在有限元中，表示最高维的网格单元。
+例如，3D网格中最高维单元是Elements，其2D子单元称为Faces。</li>
+</ul>
+<h3 id="_4">常见单元</h3>
+<ul>
+<li><strong>Triangles (Tris)</strong>（三角形）：二维三角形单元。简单，灵活</li>
+<li><strong>Quadrilaterals (Quads)</strong>（四边形）：二维四边形区域。对于规则几何区域比较高校，精度优于三角形网格</li>
+<li><strong>Tetrahedra (Tets)</strong>（四面体）：三维四面体单元。易于生成</li>
+<li><strong>Hexahedra (Hexes)</strong>（六面体/拓扑立方体）：六面体单元。较难生成，具有良好的数值性能。</li>
+</ul>
+<h2 id="_5">网格类型</h2>
+<h3 id="_6">按几何结构分类</h3>
+<ul>
+<li><strong>二维网格（2D Mesh）</strong>：主要用于二维问题，常见网格类型有三角形（Triangles）和四边形（Quadrilaterals）。  </li>
+<li><strong>三维网格（3D Mesh）</strong>：主要用于三维问题，常见网格类型有四面体（Tetrahedra）、六面体（Hexahedra）、棱柱体（Prisms）和金字塔（Pyramids）。</li>
+</ul>
+<h3 id="_7">按网格结构分类</h3>
+<ul>
+<li><strong>结构化网格（Structured Mesh）</strong>：网格单元按规则排列，适用于规则几何体，计算效率高。  </li>
+<li><strong>非结构化网格（Unstructured Mesh）</strong>：网格单元没有固定连接规则，适用于复杂几何形状，灵活性高。  </li>
+<li><strong>混合网格（Hybrid Mesh）</strong>：结合结构化和非结构化网格的优点，适用于规则和复杂区域。</li>
+</ul>
+<p><img alt="mesh" src="https://blog.debao.me/images/python/structured_unstructured_mesh.png"></p>
+<p>图片取自：Metal Forming Formability, Simulation, and Tool Design (Chris V. Nielsen, Paulo A.F. Martins)</p>
+<h3 id="_8">按网格类型分类</h3>
+<ul>
+<li><strong>点集网格（Point Set Mesh）</strong>：由离散点组成，通常不包含连接信息，适用于点云数据处理。  </li>
+<li><strong>面片网格（Surface Mesh）</strong>：网格单元仅限物体表面，常见类型有三角形面片网格和四边形面片网格。  </li>
+<li><strong>体积网格（Volume Mesh）</strong>：由三维单元组成，适用于三维问题，常见类型有四面体网格和六面体网格。</li>
+</ul>
+<h3 id="_9">按网格的适应性分类</h3>
+<ul>
+<li><strong>均匀网格（Uniform Mesh）</strong>：网格单元大小一致，适用于简单几何问题。  </li>
+<li><strong>自适应网格（Adaptive Mesh）</strong>：网格密度根据计算需求动态调整，适用于精细模拟高梯度区域。</li>
+</ul>
+<h3 id="_10">按网格的质量分类</h3>
+<ul>
+<li><strong>高质量网格（High-Quality Mesh）</strong>：网格单元形状规整，适用于高精度仿真。  </li>
+<li><strong>低质量网格（Low-Quality Mesh）</strong>：网格单元可能畸形，适用于快速仿真或低精度要求。</li>
+</ul>
+<h2 id="_11">生成方法</h2>
+<blockquote>
+<p>chatgpt结果，先列上</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th><strong>网格生成算法</strong></th>
+<th><strong>应用场景</strong></th>
+<th><strong>特点</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Delaunay 三角剖分</strong></td>
+<td>适用于二维空间的不规则区域</td>
+<td>优化三角形形状，避免长而细的单元，生成高质量网格。</td>
+</tr>
+<tr>
+<td><strong>Voronoi 图</strong></td>
+<td>点集划分，常与Delaunay三角剖分结合使用</td>
+<td>将空间分割为Voronoi区域，用于定义网格单元。</td>
+</tr>
+<tr>
+<td><strong>前沿推进法（Advancing Front）</strong></td>
+<td>生成不规则区域网格</td>
+<td>从边界开始逐步生成单元，覆盖整个域。</td>
+</tr>
+<tr>
+<td><strong>八叉树/四叉树（Octree / Quadtree）</strong></td>
+<td>大规模计算、自适应网格生成</td>
+<td>递归划分空间，适应复杂几何形状和动态变化。</td>
+</tr>
+<tr>
+<td><strong>拉普拉斯平滑（Laplacian Smoothing）</strong></td>
+<td>优化现有网格，改善网格质量</td>
+<td>平滑节点位置，减少畸形单元，优化网格形状。</td>
+</tr>
+<tr>
+<td><strong>网格重构算法（Mesh Refinement）</strong></td>
+<td>自适应网格、网格细化或粗化</td>
+<td>动态调整网格精度，特别适用于自适应网格。</td>
+</tr>
+<tr>
+<td><strong>多边形剖分（Polygonal Mesh Generation）</strong></td>
+<td>复杂几何形状的网格生成</td>
+<td>生成多边形单元，适应更复杂的形状。</td>
+</tr>
+<tr>
+<td><strong>结构化网格生成（Structured Mesh Generation）</strong></td>
+<td>规则几何区域（如矩形、正方形）</td>
+<td>生成规则网格单元，计算效率高，适用于简单几何问题。</td>
+</tr>
+<tr>
+<td><strong>自适应网格生成（Adaptive Mesh Refinement, AMR）</strong></td>
+<td>需要精细模拟高梯度区域或重要区域</td>
+<td>根据精度要求动态调整网格密度，适合复杂现象模拟。</td>
+</tr>
+<tr>
+<td><strong>混合网格生成（Hybrid Mesh Generation）</strong></td>
+<td>同时处理规则和复杂区域的应用</td>
+<td>结合结构化和非结构化网格的优点，适应多种几何形状。</td>
+</tr>
+<tr>
+<td><strong>六面体网格生成（Hexahedral Mesh Generation）</strong></td>
+<td>规则三维几何区域（如矩形、立方体）</td>
+<td>生成六面体单元，适用于流体力学或结构分析中的高精度计算。</td>
+</tr>
+<tr>
+<td><strong>混合元素网格生成（Mixed-Element Mesh Generation）</strong></td>
+<td>复杂几何或多物理场仿真</td>
+<td>结合多种网格元素（四面体、六面体、棱柱等），适应复杂场景。</td>
+</tr>
+<tr>
+<td><strong>网格划分法（Grid Generation by Partitioning）</strong></td>
+<td>将复杂几何域分割为多个规则子域</td>
+<td>常用于流体动力学、热传导等领域，稳定且高效。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_12">开源软件</h2>
+<h3 id="gmsh">gmsh</h3>
+<ul>
+<li>https://gmsh.info/</li>
+<li>https://pypi.org/project/gmsh/</li>
+<li>https://github.com/pyvista/scikit-gmsh</li>
+</ul>
+<p>注意: 采用GPL协议</p>
+<h3 id="tetgen">tetgen</h3>
+<ul>
+<li>https://wias-berlin.de/software/index.jsp?id=TetGen</li>
+<li>https://github.com/ufz/tetgen</li>
+<li>https://github.com/pyvista/tetgen</li>
+</ul>
+<p>注意：采用 AGPL 协议！！</p>
+<h3 id="meshfix">MeshFix</h3>
+<ul>
+<li>https://github.com/MarcoAttene/MeshFix-V2.1</li>
+<li>https://github.com/pyvista/pymeshfix</li>
+</ul>
+<p>注意：采用 GPL 协议</p>
+<h2 id="gmsh_1">gmsh例子</h2>
+<p><img alt="gmsh" src="https://blog.debao.me/images/python/gmsh_1.png"></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">gmsh</span>
+
+<span class="c1"># 初始化 GMSH</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+
+<span class="c1"># 创建一个 2D 矩形</span>
+<span class="n">length</span> <span class="o">=</span> <span class="mf">10.0</span>
+<span class="n">height</span> <span class="o">=</span> <span class="mf">5.0</span>
+
+<span class="c1"># 创建四个顶点</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addPoint</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+<span class="n">p2</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addPoint</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+<span class="n">p3</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addPoint</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+<span class="n">p4</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addPoint</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+<span class="c1"># 创建四条边</span>
+<span class="n">l1</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
+<span class="n">l2</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">p3</span><span class="p">)</span>
+<span class="n">l3</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="n">p3</span><span class="p">,</span> <span class="n">p4</span><span class="p">)</span>
+<span class="n">l4</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="n">p4</span><span class="p">,</span> <span class="n">p1</span><span class="p">)</span>
+
+<span class="c1"># 创建一个封闭的曲线环</span>
+<span class="n">loop</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addCurveLoop</span><span class="p">([</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">,</span> <span class="n">l3</span><span class="p">,</span> <span class="n">l4</span><span class="p">])</span>
+
+<span class="c1"># 创建一个面</span>
+<span class="n">surface</span> <span class="o">=</span> <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addPlaneSurface</span><span class="p">([</span><span class="n">loop</span><span class="p">])</span>
+
+<span class="c1"># 生成网格</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># 保存网格为 .msh 文件</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;rectangle.msh&quot;</span><span class="p">)</span>
+
+<span class="c1"># 结束 GMSH</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mesh generation finished!&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+
+<p>可以用pyvista显示（可能不太对，太复杂了）</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span> <span class="nn">meshio</span>
+<span class="kn">import</span> <span class="nn">pyvista</span> <span class="k">as</span> <span class="nn">pv</span>
+
+<span class="c1"># 使用 meshio 读取 GMSH 生成的网格文件</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">meshio</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;rectangle.msh&quot;</span><span class="p">)</span>
+
+<span class="c1"># 提取点（vertices）和三角形单元（triangles）</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">points</span>
+<span class="n">cells</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">cells_dict</span><span class="p">[</span><span class="s2">&quot;triangle&quot;</span><span class="p">]</span>
+
+<span class="n">cells_flat</span> <span class="o">=</span> <span class="n">cells</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>  <span class="c1"># 展平为一维数组</span>
+<span class="n">n_cells</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cells_flat</span><span class="p">)</span> <span class="o">//</span> <span class="mi">3</span>  <span class="c1"># 计算三角形单元的数量</span>
+
+<span class="c1"># 构建单元数组：每个元素包含一个整数 3（表示每个单元为三角形），后跟三个顶点索引</span>
+<span class="n">cell_array</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">3</span><span class="p">,</span> <span class="n">cells_flat</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">cells_flat</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">cells_flat</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_cells</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+
+<span class="c1"># 将点和单元传递给 PyVista 的 PolyData 对象</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">PolyData</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">cell_array</span><span class="p">)</span>
+
+<span class="c1"># 可视化网格</span>
+<span class="n">plotter</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">Plotter</span><span class="p">()</span>
+<span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">show_edges</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightblue&quot;</span><span class="p">)</span>
+<span class="n">plotter</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+
+<h2 id="_13">参考</h2>
+<ul>
+<li>https://en.wikipedia.org/wiki/Mesh_generation</li>
+<li>https://www.robertschneiders.de/meshgeneration/meshgeneration.html</li>
+<li>https://github.com/nschloe/meshio</li>
+</ul></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-12-19T18:23:00+08:00" pubdate>Thu 19 December 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/cax.html'>CAx</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

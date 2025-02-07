@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>Qt与OpenGL小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/qt.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Qt与OpenGL小记</h1>
+    <p class="meta">
+<time datetime="2024-04-08T21:41:00+08:00" pubdate>Mon 08 April 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>最近关于Qt3D模块去留的问题，社区讨论的火热。官方有意去掉这个由KDAB公司开发和维护的采用LGPL授权的Qt3D模块，并建议用户使用非LGPL授权的QtQuick3D模块。感觉Qt越来越不友好了...</p>
+</blockquote>
+<p>简单捋一捋OpenGL的东西，尽管之前没用过，以后也不一定用...</p>
+<h2 id="qt-opengl">Qt 与 OpenGL</h2>
+<p>Qt 的早期版本就开始提供对 OpenGL 的支持。</p>
+<h3 id="qt2xqt3x">Qt2.x/Qt3.x</h3>
+<p>在 <strong>Qt 2.x</strong>和Qt3.x中，OpenGL的支持类<code>QGLWidget</code>就已经存在，允许开发者将 OpenGL 渲染集成到 Qt 应用程序中。</p>
+<h3 id="qt4x">Qt4.x</h3>
+<p>在Qt4中，对 OpenGL 的支持上做了大量的改进。<code>QGLWidget</code> 依然是 OpenGL 集成的核心，但 Qt 提供了更多的工具和 API，以便更好地管理 OpenGL 资源和执行更复杂的渲染任务。比如</p>
+<ul>
+<li>Qt4.2 引入 QGLFramebufferObject 允许离屏渲染</li>
+<li>Qt4.6 引入 QGLShader 着色器支持</li>
+<li>Qt4.8 引入 QGLFunctions 来封装OPenGL/ES2.0 API</li>
+</ul>
+<h3 id="qt5x">Qt5.x</h3>
+<p>Qt 5 带来了对现代 OpenGL 的更好支持，并且重构了存在于旧版本中的许多 OpenGL 类和方法。</p>
+<p>Qt5中，OpenGL作为核心功能包含在QtGui中，作为QtQuick的基础。源自Qt4的Qt OpenGL模块被边缘化，官方不再建议在新代码中使用。</p>
+<ul>
+<li>QtGui中包含一堆QOpenGL开头的类，如 <code>QOpenGLWidget</code>、<code>QOpenGLContext</code>、<code>QOpenGLBuffer</code> 和 <code>QOpenGLShaderProgram</code> 等，这些类提供了对底层 OpenGL API 的更直接访问</li>
+</ul>
+<ul>
+<li>QtWidgets中包含 QOpenGLWidget。</li>
+</ul>
+<p>OpenGL看起来很美好，用起来，还挺复杂...</p>
+<h4 id="opengl">OpenGL后端选择？？？</h4>
+<blockquote>
+<p>为解决Windows平台下OpenGL支持不佳的问题，Qt引入 ANGLE，将Direct3D转换为OpenGL ES接口。</p>
+</blockquote>
+<p>编译Qt源码时，可以选择OpenGL</p>
+<ul>
+<li><code>configure -opengl desktop</code></li>
+<li><code>configure -opengl es2</code></li>
+<li><code>configure -opengl es2 -no-angle</code></li>
+<li><code>configure -opengl dynamic</code></li>
+</ul>
+<blockquote>
+<p>用于控制使用系统自带的opengl驱动，使用angle转换的opengl/es2，使用系统自带的opengl的es2，动态选择。</p>
+</blockquote>
+<p>对于dynamic，Qt程序先尝试系统opengl32.dll是否满足要求，复合要求就使用，不符合要求就尝试用Angle，当Qt程序所在环境不能提供合适的OpenGL2.0实现时，它会自动使用软件实现版本opengl32sw.dll。</p>
+<p>用户程序使用的OpenGL，可以通过环境变量<code>QT_OPENGL</code>指定</p>
+<ul>
+<li><code>desktop</code></li>
+<li><code>angle</code></li>
+<li><code>software</code></li>
+</ul>
+<blockquote>
+<p>使用系统自带，angle转换的，还是软件实现的OpenGL接口。</p>
+</blockquote>
+<p>还可以通过代码指定</p>
+<ul>
+<li><code>Qt::AA_UseDesktopOpenGL</code></li>
+<li><code>Qt::AA_UseOpenGLES</code></li>
+<li><code>Qt::AA_UseSoftwareOpenGL</code></li>
+</ul>
+<p>另外，通过json文件还可以根据运行时显卡进一步配置：</p>
+<ul>
+<li><code>disable_desktopgl</code></li>
+<li><code>disable_angle</code></li>
+<li><code>disable_d3d11</code></li>
+<li><code>disable_d3d9</code></li>
+</ul>
+<blockquote>
+<p>反正，OpenGL要用好，足够烧脑。</p>
+</blockquote>
+<ul>
+<li>https://phabricator.kde.org/T6728</li>
+</ul>
+<h3 id="qt6x">Qt6.x</h3>
+<p>随着Vulkan出现，OpenGL的高光地位不在。</p>
+<p>在 Qt 6 中，<code>QOpenGLWidget</code> 和相关的 OpenGL 类仍然可用，但已经不再位于QtGui中，在Qt中也不再具有核心地位。</p>
+<p>Qt 开始引入一个名为 RHI (Rendering Hardware Interface) 的新抽象层。RHI 旨在提供一个统一的 API，它可以映射到 OpenGL、Direct3D、Metal 或 Vulkan 等不同的底层图形 API，使得 Qt 应用程序可以更好地在不同平台上运行，同时利用各平台的本地图形接口。</p>
+<h2 id="qrhi">QRhi</h2>
+<p>QRhi是Qt Rendering Hardware Interface缩写，它是Qt内部3D接口的抽象层，提供对OpenGL、Vulkan、Metal、Direct3D等抽象。</p>
+<p>Qt6使用QRhi取代了Qt5中OpenGL的核心地位。</p>
+<p>QtQuick、QtQuick3D 默认都使用QRhi</p>
+<h3 id="_1">私有、半公开</h3>
+<ul>
+<li>在Qt6.6之前，QRhi都是私有的。</li>
+</ul>
+<ul>
+<li>Qt6.6中，类似qpa，变成半公开的API</li>
+</ul>
+<ul>
+<li>Qt6.7中，增加公开类 QRhiWidget（注意QRhi其他位于gui模块的类仍然是半公开的）</li>
+</ul>
+<ul>
+<li>在Qt6.7之前，使用QWindow进行绘制</li>
+</ul>
+<p>Qt6.6之前，官方手册不包含qrhi，有人使用qdoc从qt源码生成对应的qrhi对应的Qt手册</p>
+<ul>
+<li>https://alpqr.github.io/</li>
+<li>https://github.com/alpqr/qrhibasis</li>
+</ul>
+<h3 id="qrhi_1">QRhi后端</h3>
+<p>通过环境变量<code>QSG_RHI_BACKEND</code>选择：</p>
+<ul>
+<li>vlukan</li>
+<li>metal</li>
+<li>opengl</li>
+<li>d3d11</li>
+<li>d3d12</li>
+</ul>
+<p>也可以通过代码QSGRendererInterface::GraphicsApi配置:</p>
+<ul>
+<li>QSGRendererInterface::Software</li>
+<li>QSGRendererInterface::OpenVG</li>
+<li>QSGRendererInterface::OpenGL</li>
+<li>QSGRendererInterface::Direct3D11</li>
+<li>QSGRendererInterface::Direct3D12</li>
+<li>QSGRendererInterface::Vulkan</li>
+<li>QSGRendererInterface::Metal</li>
+</ul>
+<h3 id="_2">补遗</h3>
+<p>Qt官方封装 Widget，能正常处理Widget叠加问题。</p>
+<p>以QQuickWindow和QQuickWidget，后者之上可以叠加半透明的Widget，而前者不行。</p>
+<h2 id="qt3d">Qt3D</h2>
+<p>Qt3D的开发始于Qt在Nokia时期，初始版本使用Qt4.8进行开发，当时由demo可以运行于三大桌面系统和Nokia的N9手机。</p>
+<p>Qt5.0 alpha版本发布时，Qt3D是作为essential模块包含在内的，开发团队似乎在澳大利亚的布里斯班。但是随着Nokia突然转舵，这个团队似乎被就地解散了。所以Qt5.0正式发布时是已经没有这个模块了。</p>
+<p>Qt5.5 中出现的 Qt3D是KDAB 公司开发的，和一开始的Qt3D已经没有多大关系了。</p>
+<p>但是，现在，Qt6.8还没有发布。Qt官方已经计划要干掉 Qt3D了（KDAB和官方都没兴趣再维护它）....</p>
+<ul>
+<li>https://www.qt.io/blog/2012/04/11/qt-3d-and-qt5-qt4-news-and-releases</li>
+<li>https://www.kdab.com/qt3d-technology-preview-released-qt-5-5-0/</li>
+</ul>
+<h2 id="qtquick3d">QtQuick3D</h2>
+<blockquote>
+<p>不同于Qt3D支持LGPL协议，QtQuick3D和其他后出现的模块一样，不支持LGPL！！！</p>
+</blockquote>
+<ul>
+<li>2017年？，Qt 吸收了 NVIDIA DRIVE Design Studio 这一个3D设计工具</li>
+<li>2017年，Qt发布了基于NVIDIA的 Qt 3D Studio 1.0</li>
+<li>2018年，Qt 3D Studio 2.0。使用Qt引擎，取代 NVIDIA 渲染引擎。</li>
+<li>2019年，Qt Quick 3D 引入到 Qt5.14 中，进而 Qt Design Studio 中</li>
+<li>2020年，Qt 3D Studio 2.6。后面还有过2.8版本。最终融入Qt Quick 3D 和 Qt Design Studio 中</li>
+</ul>
+<h2 id="api">API</h2>
+<p>既然OpenGL相关，不妨放一个API表格：</p>
+<table>
+<thead>
+<tr>
+<th>年份</th>
+<th>OpenGL</th>
+<th>OpenGL ES</th>
+<th>WebGL</th>
+<th>Direct3D</th>
+<th>Direct3D 12</th>
+<th>Vulkan</th>
+<th>Metal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1992</td>
+<td>OpenGL 1.0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>1995</td>
+<td>OpenGL 1.1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>1995</td>
+<td></td>
+<td></td>
+<td></td>
+<td>DirectX 1.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>1996</td>
+<td></td>
+<td></td>
+<td></td>
+<td>DirectX 2.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>1997</td>
+<td></td>
+<td></td>
+<td></td>
+<td>DirectX 3.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>1997</td>
+<td></td>
+<td></td>
+<td></td>
+<td>DirectX 5.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>1998</td>
+<td>OpenGL 1.2</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>1998</td>
+<td></td>
+<td></td>
+<td></td>
+<td>DirectX 6.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>1999</td>
+<td></td>
+<td></td>
+<td></td>
+<td>DirectX 7.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2000</td>
+<td></td>
+<td></td>
+<td></td>
+<td>DirectX 8.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2001</td>
+<td>OpenGL 1.3</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2002</td>
+<td>OpenGL 1.4</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2003</td>
+<td>OpenGL 1.5</td>
+<td>OpenGL ES 1.0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2004</td>
+<td>OpenGL 2.0</td>
+<td></td>
+<td></td>
+<td>DirectX 9.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2006</td>
+<td>OpenGL 2.1</td>
+<td></td>
+<td></td>
+<td>DirectX 10</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2007</td>
+<td></td>
+<td>OpenGL ES 2.0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2008</td>
+<td>OpenGL 3.0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2009</td>
+<td>OpenGL 3.1/3.2</td>
+<td></td>
+<td></td>
+<td>DirectX 11</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2010</td>
+<td>OpenGL 4.0/3.3</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2010</td>
+<td>OpenGL 4.1</td>
+<td></td>
+<td></td>
+<td></td>
+<td>MacOS和iOS最后支持版本</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2011</td>
+<td></td>
+<td></td>
+<td>WebGL 1.0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2012</td>
+<td>OpenGL 4.2</td>
+<td>OpenGL ES 3.0</td>
+<td></td>
+<td>DirectX 11.1</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2012</td>
+<td>OpenGL 4.3</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2013</td>
+<td>OpenGL 4.4</td>
+<td></td>
+<td></td>
+<td>DirectX 11.2</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2014</td>
+<td></td>
+<td>OpenGL ES 3.1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2015</td>
+<td>OpenGL 4.5</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Vulkan 1.0</td>
+<td>Metal</td>
+</tr>
+<tr>
+<td>2016</td>
+<td></td>
+<td></td>
+<td>WebGL 2.0</td>
+<td></td>
+<td>DirectX 12</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2017</td>
+<td></td>
+<td>OpenGL ES 3.2</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2018</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Vulkan 1.1</td>
+<td></td>
+</tr>
+<tr>
+<td>2019</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Metal 2</td>
+</tr>
+<tr>
+<td>2020</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Vulkan 1.2</td>
+<td></td>
+</tr>
+<tr>
+<td>2021</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Metal 3</td>
+</tr>
+<tr>
+<td>2022</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Vulkan 1.3</td>
+<td></td>
+</tr>
+<tr>
+<td>2023</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-04-08T21:41:00+08:00" pubdate>Mon 08 April 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/qt.html'>Qt</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a class="category" href="https://blog.debao.me/tags/c.html">c++</a>,    <a class="category" href="https://blog.debao.me/tags/opengl.html">opengl</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>

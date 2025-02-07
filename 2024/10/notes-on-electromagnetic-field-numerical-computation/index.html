@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+
+  <title>电磁场数值计算小记 &mdash; 1+1=10</title>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Pelican" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Debao Zhang">
+    <meta name="description" content="记记笔记，放松一下..." />
+    <link href="https://blog.debao.me/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Full Atom Feed" />
+    <link href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Atom Feed" />
+    <link href="https://blog.debao.me/feeds/cax.atom.xml" type="application/atom+xml" rel="alternate" title="1+1=10 Categories Atom Feed" />
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN" || mathElements[i].tagName === "DIV") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+    </script>
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://blog.debao.me/favicon.png" rel="icon">
+
+  <link href="https://blog.debao.me/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="https://blog.debao.me/">1+1=10</a></h1>
+    <h2>记记笔记，放松一下...</h2>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="https://blog.debao.me/feeds/atom.xml" rel="subscribe-atom">Atom</a></li>
+</ul>
+
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.debao.me">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">电磁场数值计算小记</h1>
+    <p class="meta">
+<time datetime="2024-10-28T00:51:00+08:00" pubdate>Mon 28 October 2024</time>    </p>
+</header>
+
+  <div class="entry-content"><blockquote>
+<p>先列一些流水账，熟悉一下术语</p>
+</blockquote>
+<p>电磁场数值计算的核心是通过计算机求解麦克斯韦方程组。麦克斯韦方程组是描述电场和磁场相互作用的基本方程，但对于复杂的边界条件和介质分布，解析求解十分困难。这时，需要通过数值方法将这些偏微分方程离散化，并利用计算机进行求解。</p>
+<p>通过数值方法和计算机仿真来求解电磁场问题的学科，还有个专门名字——计算电磁学（Computational Electromagnetics, CEM）。</p>
+<h2 id="_1">术语</h2>
+<ul>
+<li><strong>FDM</strong>: Finite Difference Method（有限差分法）</li>
+<li><strong>FDTD</strong>: Finite Difference Time Domain（有限差分时域法）</li>
+<li><strong>FEM</strong>: Finite Element Method（有限元法）</li>
+<li><strong>MoM</strong>: Method of Moments（矩量法）</li>
+<li><strong>BEM</strong>: Boundary Element Method（边界元法）</li>
+<li><strong>GO</strong>: Geometrical Optics（几何光学）</li>
+<li><strong>PO</strong>: Physical Optics（物理光学）</li>
+<li><strong>GTD</strong>: Geometrical Theory of Diffraction（几何绕射理论）</li>
+<li><strong>UTD</strong>: Uniform Theory of Diffraction（均匀绕射理论）</li>
+<li><strong>PTD</strong>: Physical Theory of Diffraction（物理绕射理论）</li>
+<li><strong>MLFMA</strong>: Multilevel Fast Multipole Algorithm（多层快速多极子算法）</li>
+<li><strong>FFT</strong>: Fast Fourier Transform（快速傅里叶变换）</li>
+<li><strong>ACA</strong>: Adaptive Cross Approximation（自适应交叉逼近）</li>
+<li><strong>MLMDA</strong>: Multilevel Matrix Decomposition Algorithm（多层矩阵分解算法）</li>
+<li><strong>RCS</strong>：Radar Cross-Section (雷达散射截面)</li>
+<li><strong>IE</strong>：Integral Equation (积分方程)</li>
+<li><strong>DE</strong>：Differential Equation（微分方程）</li>
+<li><strong>TDDE</strong>: Time Domain Differential Equation（时域微分方程）</li>
+<li><strong>TDIE</strong>: Time Domain Integral Equation（时域积分方程）</li>
+<li><strong>FDIE</strong>: Frequency Domain Integral Equation（频域积分方程）</li>
+<li><strong>FDDE</strong>: Frequency Domain Differential Equation（频域微分方程）</li>
+</ul>
+<h2 id="cem">CEM发展历史</h2>
+<div class="mermaid">
+graph LR
+    A[CEM发展阶段]
+    A --> B1[阶段1: 解析法]
+    B1 --> B2[Mie Series]
+
+    A --> C1[阶段2: 近似法]
+    C1 --> C2[几何光学]
+    C2 --> C3[GO]
+    C2 --> C4[GTD]
+    C2 --> C5[UTD]
+    C1 --> D2[物理光学]
+    D2 --> D3[PO]
+    D2 --> D4[PTD]
+
+    A --> E1[阶段3: 数值方法]
+    E1 --> E2[FDTD]
+    E1 --> E3[FEM]
+    E1 --> E4[MOM IE]
+
+    A --> F1[阶段4: 快速方法 IE]
+    F1 --> F2[迭代求解技术]
+    F2 --> F3[MLFMA]
+    F2 --> F4[FFT]
+    F2 --> F5[ACA]
+    F1 --> G2[直接求解技术]
+    G2 --> G3[Hierarchical Matrix Methods]
+    G2 --> G4[MLMDA]
+</div>
+
+<p>随着计算技术和电磁理论的进步，CEM经历了不同的阶段</p>
+<h3 id="1-20">1. 解析法阶段（20世纪中期之前）</h3>
+<blockquote>
+<p>在计算机技术尚未发展之前，电磁问题的求解主要依赖于<strong>解析方法</strong>，通过严格的数学推导来解决麦克斯韦方程。解析法能够提供封闭形式的解决方案，但仅适用于较为简单的几何结构和理想化的边界条件，并需要依托高超的数学技能。</p>
+</blockquote>
+<ul>
+<li><strong>Mie级数</strong>：用于解决电磁波在球形对象上的散射问题。</li>
+<li><strong>其他经典解析方法</strong>：如分离变量法、傅里叶级数解等。</li>
+</ul>
+<blockquote>
+<p>局限：解析法只能处理简单的几何结构和边界条件，对于复杂的三维结构和非均匀介质问题，无法提供有效的解。</p>
+</blockquote>
+<h3 id="2-206080">2. 近似法阶段（20世纪60年代到80年代）</h3>
+<blockquote>
+<p>随着计算机的出现，解析法的局限性逐渐显现。为了应对更复杂的电磁问题，开始发展<strong>近似法</strong>。这些方法在一定的假设条件下对问题进行简化，以减少计算复杂度。近似法通常应用于高频电磁波的传播和散射问题。</p>
+</blockquote>
+<ul>
+<li><strong>几何光学（GO）</strong>：将电磁波近似为光线，波的传播问题可以采用射线追踪（Ray-Tracing）分析，适用于波长远小于物体尺寸的情况。忽略了波动的干涉和衍射效应，主要用于反射和折射问题。</li>
+<li><strong>物理光学（PO）</strong>：在几何光学的基础上增加了对衍射效应的考虑，适用于大尺寸物体上的散射问题。</li>
+<li><strong>几何绕射理论（GTD）</strong>：扩展了几何光学，能够处理电磁波沿物体边缘的绕射。</li>
+<li><strong>均匀绕射理论（UTD）</strong>：是 GTD 的改进，能够更准确地处理绕射问题。</li>
+</ul>
+<blockquote>
+<p>应用与局限：这些方法特别适合处理大尺度物体的电磁波传播和散射问题，广泛应用于雷达散射、天线设计等领域。但它们的精度依赖于特定条件，无法处理所有的电磁场问题。</p>
+</blockquote>
+<h3 id="3-2080">3. 数值方法阶段（20世纪80年代至今）</h3>
+<blockquote>
+<p>随着计算机性能的增强，数值方法成为解决复杂电磁问题的主要手段。数值方法通过将麦克斯韦方程组离散化为代数方程，从而能够处理复杂几何结构、异质介质以及复杂边界条件下的电磁问题。</p>
+</blockquote>
+<ul>
+<li><strong>有限差分时域法（FDTD）</strong>：基于时域求解，适合模拟电磁波的时域传播过程。它简单易实现，广泛用于天线设计、微波电路、雷达散射等领域。</li>
+<li><strong>有限元法（FEM）</strong>：通过将计算区域划分为多个有限单元，解决复杂几何和非均匀介质问题。FEM 被广泛应用于波导、天线、雷达散射等领域，尤其适合处理复杂边界条件。</li>
+<li><strong>矩量法（MoM）</strong>：基于积分方程，主要用于开放空间中的电磁波问题，如天线和电磁散射。它适合处理自由空间中的问题，但对计算资源要求较大。</li>
+</ul>
+<blockquote>
+<p>应用：数值方法能够处理复杂几何、异质材料和复杂边界条件，是现代工程中电磁仿真的核心技术。随着计算机的进步，数值方法可以应用于越来越复杂的系统。</p>
+</blockquote>
+<h3 id="4-21">4. 快速求解技术阶段（21世纪至今）</h3>
+<blockquote>
+<p>随着电磁问题的复杂性和规模不断增加，传统的数值方法在计算时间和内存占用方面面临挑战。为了解决这些问题，快速求解技术应运而生。这些技术通过优化算法、数据压缩和并行计算，大幅提高了大规模问题的求解效率。</p>
+</blockquote>
+<ul>
+<li><strong>迭代求解技术</strong><ul>
+<li><strong>多层快速多极子方法（MLFMA）</strong>：通过分层多极展开和分组处理，减少大规模电磁散射问题的计算复杂度，特别适合处理大尺度的问题。</li>
+<li><strong>快速傅里叶变换（FFT）</strong>：用于加速卷积运算，减少矩阵求解的运算时间。</li>
+<li><strong>自适应交叉逼近（ACA）</strong>：一种矩阵压缩技术，能够有效减少存储需求和计算时间，特别适用于多尺度问题。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>直接求解技术</strong>：<ul>
+<li><strong>分层矩阵方法（Hierarchical Matrix Methods）</strong>：通过对矩阵进行分层压缩，能够减少大型系统的计算和存储需求。</li>
+<li><strong>多层多尺度分析（MLMDA）</strong>：能够处理同时包含大尺度和小尺度特征的电磁问题，特别适合复杂结构的仿真。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>这些快速求解技术使得大规模和复杂电磁问题的仿真成为可能，特别是在天线阵列、雷达散射和复杂电磁环境的应用中。</p>
+</blockquote>
+<h2 id="_2">不同视角比较</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>时域/频域</th>
+<th>实空间/傅里叶空间</th>
+<th>积分/微分</th>
+<th>网格类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FDM</td>
+<td>频域/时域</td>
+<td>实空间</td>
+<td>微分</td>
+<td>结构化网格</td>
+</tr>
+<tr>
+<td>FDTD</td>
+<td>时域</td>
+<td>实空间</td>
+<td>微分</td>
+<td>结构化网格</td>
+</tr>
+<tr>
+<td>FEM</td>
+<td>频域/时域</td>
+<td>实空间</td>
+<td>微分</td>
+<td>非结构化网格</td>
+</tr>
+<tr>
+<td>MoM</td>
+<td>频域</td>
+<td>实空间</td>
+<td>积分</td>
+<td>表面网格</td>
+</tr>
+<tr>
+<td>BEM</td>
+<td>频域</td>
+<td>实空间</td>
+<td>积分</td>
+<td>表面网格</td>
+</tr>
+<tr>
+<td>GO</td>
+<td>频域</td>
+<td>实空间</td>
+<td>近似方法</td>
+<td>无需网格</td>
+</tr>
+<tr>
+<td>PO</td>
+<td>频域</td>
+<td>实空间</td>
+<td>近似方法</td>
+<td>无需网格</td>
+</tr>
+<tr>
+<td>GTD</td>
+<td>频域</td>
+<td>实空间</td>
+<td>近似方法</td>
+<td>无需网格</td>
+</tr>
+<tr>
+<td>UTD</td>
+<td>频域</td>
+<td>实空间</td>
+<td>近似方法</td>
+<td>无需网格</td>
+</tr>
+<tr>
+<td>PTD</td>
+<td>频域</td>
+<td>实空间</td>
+<td>近似方法</td>
+<td>无需网格</td>
+</tr>
+<tr>
+<td>MLFMA</td>
+<td>频域</td>
+<td>实空间</td>
+<td>积分</td>
+<td>表面网格</td>
+</tr>
+<tr>
+<td>FFT</td>
+<td>频域</td>
+<td>傅里叶空间</td>
+<td>数值变换方法</td>
+<td>无需网格</td>
+</tr>
+<tr>
+<td>ACA</td>
+<td>频域</td>
+<td>实空间</td>
+<td>数值逼近方法</td>
+<td>表面网格</td>
+</tr>
+<tr>
+<td>MLMDA</td>
+<td>频域</td>
+<td>实空间</td>
+<td>数值分解方法</td>
+<td>表面网格</td>
+</tr>
+</tbody>
+</table>
+<h4 id="1-frequency-domain-vs-time-domain">1. 频域（Frequency-Domain） vs. 时域（Time-Domain）</h4>
+<ul>
+<li>频域：适合处理稳态和尖锐共振问题，处理斜入射和周期性问题非常快，但可能错过一些细微的共振现象。</li>
+<li>时域：适合宽频带模拟，尤其在有源和非线性器件中表现出色，且扩展性好，但内存需求较大，处理纵向周期性和斜入射时存在困难。</li>
+</ul>
+<h4 id="2-semi-analytical-vs-fully-numerical">2. 半解析（Semi-Analytical） vs. 全数值（Fully Numerical）</h4>
+<ul>
+<li>半解析：收敛性好，适合复杂几何结构，但内存需求大，处理长均匀段时效率较低。</li>
+<li>全数值：非常快且高效，适合分层器件和复杂几何，但收敛性有时较差。</li>
+</ul>
+<h4 id="3-fourier-space-vs-real-space">3. 傅里叶空间（Fourier-Space） vs. 实空间（Real-Space）</h4>
+<ul>
+<li>傅里叶空间：适合高折射率对比、金属材料和细节解析，但在低折射率对比下速度较慢。</li>
+<li>实空间：非常适合处理周期性问题，速度快，内存占用低，但难以实现场可视化和解析复杂细节。</li>
+</ul>
+<h4 id="4-unstructured-grid-vs-structured-grid">4. 非结构化网格（Unstructured Grid） vs. 结构化网格（Structured Grid）</h4>
+<ul>
+<li>非结构化网格：实现简单，适合矩形结构，但效率较低，难以处理曲面。</li>
+<li>结构化网格：效率最高，适应大规模结构和曲面，但实现复杂，可能产生伪解。</li>
+</ul>
+<h4 id="5-integral-based-vs-differential-based">5. 积分法（Integral-Based） vs. 微分法（Differential-Based）</h4>
+<ul>
+<li>积分法：使用稀疏矩阵，实现简单，适合表面网格，但需要体积网格，可能出现伪解。</li>
+<li>微分法：只需表面网格，适合处理大规模结构，但矩阵是全矩阵，公式推导较复杂。</li>
+</ul>
+<h2 id="_3">软件</h2>
+<p>一些商业软件</p>
+<table>
+<thead>
+<tr>
+<th>软件名称</th>
+<th>开发公司</th>
+<th>求解器类型</th>
+<th>应用领域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ansys HFSS</strong></td>
+<td>ANSYS</td>
+<td>FEM</td>
+<td>(High Frequency Structure Simulation) 天线设计、射频电路、无线通信设备、雷达系统</td>
+</tr>
+<tr>
+<td><a href="https://www.ansys.com/products/electronics/ansys-maxwell"><strong>Ansys Maxwell</strong></a></td>
+<td>ANSYS</td>
+<td>FEM</td>
+<td>（Low Frequency）电机设计、变压器、感应加热、传感器、磁体设计</td>
+</tr>
+<tr>
+<td><a href="https://www.ansys.com/products/optics/fdtd"><strong>Ansys Lumerical FDTD</strong></a></td>
+<td>ANSYS</td>
+<td>FDTD</td>
+<td>高频仿真，特别适合光子学、纳米技术</td>
+</tr>
+<tr>
+<td><a href="https://www.ansys.com/products/optics/multiphysics"><strong>Ansys Lumerical Multiphysics</strong></a></td>
+<td>ANSYS</td>
+<td>FEM、FDTD、EIGENMODE</td>
+<td>高频仿真，特别适合光子学、纳米技术</td>
+</tr>
+<tr>
+<td><a href="https://www.3ds.com/products/simulia/cst-studio-suite"><strong>CST Studio Suite</strong></a></td>
+<td>Dassault Systèmes</td>
+<td>FDTD、FEM、积分方程法（IE）、静电求解器</td>
+<td>微波电路、天线设计、电磁兼容性（EMC/EMI）分析、射频电路</td>
+</tr>
+<tr>
+<td><a href="https://www.3ds.com/products/simulia/opera"><strong>SIMULIA Opera</strong></a></td>
+<td>Dassault Systèmes</td>
+<td>FEM</td>
+<td>静态场仿真，适合电透镜、磁透镜、加速器设计</td>
+</tr>
+<tr>
+<td><a href="https://www.comsol.com/comsol-multiphysics"><strong>COMSOL Multiphysics</strong></a></td>
+<td>COMSOL</td>
+<td>FEM</td>
+<td>电机设计、传感器、感应加热、电磁加热</td>
+</tr>
+<tr>
+<td><a href="https://altair.com/feko"><strong>Altair Feko</strong></a></td>
+<td>Altair Engineering</td>
+<td>MoM、FEM、GO、PO</td>
+<td>天线设计、雷达散射、无线通信、汽车电子</td>
+</tr>
+<tr>
+<td><a href="https://www.altair.com/flux/"><strong>Altair Flux</strong></a></td>
+<td>Altair Engineering</td>
+<td>FEM</td>
+<td>低频、静态场仿真，适合电机、磁性设备设计</td>
+</tr>
+<tr>
+<td><a href="https://plm.sw.siemens.com/en-US/simcenter/electromagnetics-simulation/magnet/"><strong>Simcenter MagNet</strong></a></td>
+<td>Siemens (原Infolytica)</td>
+<td>FEM</td>
+<td>低频和静磁场仿真，适合磁透镜、电机设计</td>
+</tr>
+<tr>
+<td><strong>Keysight EMPro</strong></td>
+<td>Keysight Technologies</td>
+<td>FEM、FDTD</td>
+<td>微波电路、天线、PCB设计、射频组件</td>
+</tr>
+<tr>
+<td><a href="https://quickfield.com/"><strong>QuickField</strong></a></td>
+<td>-</td>
+<td>FEM</td>
+<td>静态场和准静态场仿真，适合电透镜和磁透镜</td>
+</tr>
+<tr>
+<td><a href="https://www.remcom.com/xf7"><strong>XFdtd</strong></a></td>
+<td>-</td>
+<td>FDTD</td>
+<td>高频电磁仿真，适合天线、微波电路仿真</td>
+</tr>
+<tr>
+<td><a href="https://www.jmag-international.com/products/"><strong>JMAG</strong></a></td>
+<td>JSOL</td>
+<td>FEM</td>
+<td>低频、静态电磁场仿真，适合电机、传感器设计</td>
+</tr>
+<tr>
+<td><a href="https://simion.com/info/poisson_superfish.html"><strong>POISSON Superfish</strong></a></td>
+<td>simion</td>
+<td>FEM(2D)</td>
+<td>静态场仿真，适合粒子加速器、电透镜和磁透镜</td>
+</tr>
+</tbody>
+</table>
+<p>一些开源软件</p>
+<table>
+<thead>
+<tr>
+<th>软件名称</th>
+<th>开发组织</th>
+<th>求解器类型</th>
+<th>应用领域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/elmercsc/elmerfem">Elmer</a></td>
+<td>CSC – IT Center for Science</td>
+<td>有限元法（FEM）</td>
+<td>开源软件，适合低频和静态场仿真</td>
+</tr>
+<tr>
+<td><a href="https://freefem.org/">FreeFEM</a></td>
+<td>-</td>
+<td>FEM</td>
+<td>支持静电场，静磁场</td>
+</tr>
+<tr>
+<td><a href="https://fenicsproject.org/">Fenics</a></td>
+<td>-</td>
+<td>FEM</td>
+<td>有python绑定</td>
+</tr>
+<tr>
+<td><a href="http://getdp.info/">GetDP</a></td>
+<td>-</td>
+<td>FEM</td>
+<td>开源软件，支持静态电磁场仿真，适合复杂几何</td>
+</tr>
+<tr>
+<td><a href="https://openems.de/">GMSH + OpenEMS</a></td>
+<td>-</td>
+<td>FDTD</td>
+<td>开源工具，低频、静态场仿真，适合学术研究</td>
+</tr>
+<tr>
+<td><a href="https://meep.readthedocs.io/en/latest/">Meep</a></td>
+<td>-</td>
+<td>FDTD</td>
+<td>开源软件，适合光子学、纳米结构、电磁波仿真</td>
+</tr>
+<tr>
+<td><a href="https://www.openfoam.com/">OpenFOAM</a></td>
+<td>-</td>
+<td>有限体积法（FVM），支持电磁模块</td>
+<td>开源软件，主要用于流体仿真，但支持电磁仿真</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_4">参考</h2>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzIwODc4NzE1OA==&amp;mid=2247508781&amp;idx=1&amp;sn=00a6badc7461fc6b6f03c2b092de7f98&amp;chksm=977f2094a008a98278ec0c36047fffa33336335e28959bb2e55e88d3e4b8db326259725993bf&amp;scene=27">电磁计算方法的发展与展望</a> <a href="https://www.sohu.com/a/659900326_121124371">链接2</a></li>
+<li>https://empossible.net/academics/emp5337/</li>
+<li>https://engineering.purdue.edu/wcchew/ece604f19/Lecture%20Notes/Lect36.pdf</li>
+<li>https://en.wikipedia.org/wiki/Computational_electromagnetics</li>
+<li>https://en.wikipedia.org/wiki/List_of_finite_element_software_packages</li>
+</ul>
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+</script></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Debao Zhang
+    </span>
+  </span>
+<time datetime="2024-10-28T00:51:00+08:00" pubdate>Mon 28 October 2024</time>  <span class="categories">
+    <a class='category' href='https://blog.debao.me/categories/cax.html'>CAx</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="https://blog.debao.me/2025/02/notes-on-bpm/">BPM 小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/a-brief-note-on-semiconductor-memory-terminology/">半导体存储器术语小记</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/notes-on-yizhuang-bda-and-e-town/">亦庄、经开区、亦庄新城备忘</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/freecad-learning-notes-2/">FreeCAD学习小记（二）</a>
+      </li>
+      <li class="post">
+          <a href="https://blog.debao.me/2025/01/what-is-document-no.-37/">37号文是个啥？</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="https://blog.debao.me/categories/c.html">C++</a></li>
+        <li><a href="https://blog.debao.me/categories/cax.html">CAx</a></li>
+        <li><a href="https://blog.debao.me/categories/ee.html">EE</a></li>
+        <li><a href="https://blog.debao.me/categories/esl.html">ESL</a></li>
+        <li><a href="https://blog.debao.me/categories/javascript.html">JavaScript</a></li>
+        <li><a href="https://blog.debao.me/categories/legal.html">Legal</a></li>
+        <li><a href="https://blog.debao.me/categories/python.html">Python</a></li>
+        <li><a href="https://blog.debao.me/categories/qt.html">Qt</a></li>
+        <li><a href="https://blog.debao.me/categories/science.html">Science</a></li>
+        <li><a href="https://blog.debao.me/categories/sem.html">SEM</a></li>
+        <li><a href="https://blog.debao.me/categories/tools.html">Tools</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="https://blog.debao.me/tags/python.html">Python</a>,    <a href="https://blog.debao.me/tags/pyside.html">pyside</a>,    <a href="https://blog.debao.me/tags/qt.html">Qt</a>,    <a href="https://blog.debao.me/tags/c.html">C++</a>,    <a href="https://blog.debao.me/tags/pelican.html">pelican</a>,    <a href="https://blog.debao.me/tags/vtk.html">vtk</a>,    <a href="https://blog.debao.me/tags/sem.html">SEM</a>,    <a href="https://blog.debao.me/tags/cmake.html">cmake</a>,    <a href="https://blog.debao.me/tags/qmake.html">qmake</a>,    <a href="https://blog.debao.me/tags/cax.html">CAx</a>,    <a href="https://blog.debao.me/tags/latex.html">latex</a>,    <a href="https://blog.debao.me/tags/markdown.html">markdown</a>,    <a href="https://blog.debao.me/tags/pandoc.html">pandoc</a>,    <a href="https://blog.debao.me/tags/katex.html">katex</a>,    <a href="https://blog.debao.me/tags/vscode.html">vscode</a>,    <a href="https://blog.debao.me/tags/cad.html">cad</a>,    <a href="https://blog.debao.me/tags/stm32.html">STM32</a>,    <a href="https://blog.debao.me/tags/git.html">Git</a>,    <a href="https://blog.debao.me/tags/arm.html">ARM</a>,    <a href="https://blog.debao.me/tags/fpga.html">FPGA</a>,    <a href="https://blog.debao.me/tags/questa.html">Questa</a>,    <a href="https://blog.debao.me/tags/quartus.html">Quartus</a>,    <a href="https://blog.debao.me/tags/eda.html">EDA</a>,    <a href="https://blog.debao.me/tags/opengl.html">opengl</a>,    <a href="https://blog.debao.me/tags/coroutine.html">coroutine</a>,    <a href="https://blog.debao.me/tags/ui.html">ui</a>,    <a href="https://blog.debao.me/tags/javascript.html">javascript</a>,    <a href="https://blog.debao.me/tags/nodejs.html">nodejs</a>,    <a href="https://blog.debao.me/tags/web.html">web</a>,    <a href="https://blog.debao.me/tags/crypto.html">crypto</a>,    <a href="https://blog.debao.me/tags/rsa.html">rsa</a>,    <a href="https://blog.debao.me/tags/der.html">der</a>,    <a href="https://blog.debao.me/tags/openssl.html">openssl</a>,    <a href="https://blog.debao.me/tags/css.html">css</a>,    <a href="https://blog.debao.me/tags/scss.html">scss</a>,    <a href="https://blog.debao.me/tags/ci.html">CI</a>,    <a href="https://blog.debao.me/tags/github.html">github</a>,    <a href="https://blog.debao.me/tags/gitlab.html">gitlab</a>,    <a href="https://blog.debao.me/tags/joomla.html">Joomla</a>,    <a href="https://blog.debao.me/tags/qthread.html">QThread</a>,    <a href="https://blog.debao.me/tags/sdl.html">SDL</a>,    <a href="https://blog.debao.me/tags/qt-macros.html">Qt-Macros</a>,    <a href="https://blog.debao.me/tags/octopress.html">octopress</a>,    <a href="https://blog.debao.me/tags/qt4.html">Qt4</a>  </section>
+
+
+    <section>
+        <h1>Social</h1>
+        <ul>
+            <li><a href="https://blog.debao.me/feeds/atom.xml" type="application/atom+xml" rel="alternate">Atom</a></li>
+            <li><a href="https://github.com/dbzhang800" target="_blank">github</a></li>
+            <li><a href="https://www.zhihu.com/people/dbzhang800" target="_blank">zhihu</a></li>
+            <li><a href="https://blog.csdn.net/dbzhang800" target="_blank">csdn</a></li>
+        </ul>
+    </section>
+
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    Copyright &copy;  2010&ndash;2025  Debao Zhang &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+  <script src="https://blog.debao.me/theme/js/modernizr-2.0.js"></script>
+  <script src="https://blog.debao.me/theme/js/ender.js"></script>
+  <script src="https://blog.debao.me/theme/js/octopress.js" type="text/javascript"></script>
+</body>
+</html>
